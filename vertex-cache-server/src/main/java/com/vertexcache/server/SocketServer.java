@@ -1,5 +1,6 @@
 package com.vertexcache.server;
 
+import com.vertexcache.common.log.LogUtil;
 import com.vertexcache.domain.config.Config;
 import com.vertexcache.exception.VertexCacheSSLServerSocketException;
 import com.vertexcache.service.CommandProcessor;
@@ -15,7 +16,10 @@ import java.security.cert.CertificateException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+
 public class SocketServer {
+
+    private static final LogUtil logger = new LogUtil(SocketServer.class);
 
     private ServerSocket serverSocket = null;
     private Config config;
@@ -126,17 +130,19 @@ public class SocketServer {
                 .append("  Config file set: ").append(config.isConfigLoaded() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Config file loaded with no errors: ").append(!config.isConfigError() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Config file location: ").append(config.getConfigFilePath() != null ? config.getConfigFilePath() : "n/a").append(System.lineSeparator())
+                .append("  Log4j2 config file loaded with no errors: ").append(!config.isLogLoaded() ? "Yes" : "No").append(System.lineSeparator())
+                .append("  Log4j2 config file location: ").append(config.getLogFilePath() != null ? config.getLogFilePath() : "n/a").append(System.lineSeparator())
                 .append("Status: ").append(message).append(System.lineSeparator()) ;
-
-        System.out.println(stringBuilder);
+        logger.info(stringBuilder.toString());
     }
 
     private void outputStartUpError(String message, Exception exception) {
         this.outputStartup(message);
-        // exception.printStackTrace();
+        logger.error(exception.getMessage());
     }
 
+    // Relies on Log4j2 config
     private void outputInfo(String message) {
-        System.out.println(message);
+        logger.info(message);
     }
 }

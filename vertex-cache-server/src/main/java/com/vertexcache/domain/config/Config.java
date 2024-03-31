@@ -3,6 +3,7 @@ package com.vertexcache.domain.config;
 import com.vertexcache.common.config.ConfigBase;
 import com.vertexcache.common.config.reader.PropertiesLoader;
 import com.vertexcache.common.cli.CommandLineArgsParser;
+import com.vertexcache.common.log.LogUtil;
 import com.vertexcache.common.security.KeyPairHelper;
 
 import java.security.PrivateKey;
@@ -10,15 +11,15 @@ import java.security.PublicKey;
 
 public class Config extends ConfigBase {
 
-    private static volatile Config instance;
-
     private static final String APP_NAME = "VertexCache";
     private boolean configLoaded = false;
     private boolean configError = false;
     private String configFilePath;
-    private boolean enableVerbose = true;
 
     private int serverPort = ConfigKey.SERVER_PORT_DEFAULT;
+
+    private boolean logLoaded = false;
+    private String logFilePath;
 
     private boolean encryptMessage = false;
     private PrivateKey privateKey;
@@ -42,14 +43,15 @@ public class Config extends ConfigBase {
                 if (propertiesLoader.loadFromPath(this.configFilePath)) {
                     this.configLoaded = true;
 
-                    // Verbose
-                    if (propertiesLoader.isExist(ConfigKey.ENABLE_VERBOSE)) {
-                        this.enableVerbose = Boolean.parseBoolean(propertiesLoader.getProperty(ConfigKey.ENABLE_VERBOSE));
-                    }
-
                     // Port
                     if (propertiesLoader.isExist(ConfigKey.SERVER_PORT)) {
                         this.serverPort = Integer.parseInt(propertiesLoader.getProperty(ConfigKey.SERVER_PORT));
+                    }
+
+                    // Encrypt Transport Layer
+                    if (propertiesLoader.isExist(ConfigKey.LOG_FILEPATH)) {
+                        this.logFilePath = propertiesLoader.getProperty(ConfigKey.LOG_FILEPATH);
+                        this.logLoaded = LogUtil.load(this.logFilePath);
                     }
 
                     // Encrypt Message Layer
@@ -93,11 +95,13 @@ public class Config extends ConfigBase {
         return Config.APP_NAME;
     }
 
-    public boolean isEnableVerbose() {
-        return enableVerbose;
+    public boolean isLogLoaded() {
+        return logLoaded;
     }
 
-
+    public String getLogFilePath() {
+        return logFilePath;
+    }
 
     public int getServerPort() {
         return serverPort;

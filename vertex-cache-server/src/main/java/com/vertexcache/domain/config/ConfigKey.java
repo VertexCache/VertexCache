@@ -2,9 +2,7 @@ package com.vertexcache.domain.config;
 
 public class ConfigKey {
 
-    public static final String ENABLE_VERBOSE = "enable_verbose";
-
-    public static final String ENABLE_DEBUG = "enable_debug";
+    public static final String LOG_FILEPATH="log_filepath";
 
     public static final int SERVER_PORT_DEFAULT = 50505;
     public static final String SERVER_PORT = "server_port";
@@ -18,6 +16,4 @@ public class ConfigKey {
     public static final String ENABLE_ENCRYPT_TRANSPORT = "enable_encrypt_transport";
     public static final String KEYSTORE_FILEPATH="keystore_filepath";
     public static final String KEYSTORE_PASSWORD="keystore_password";
-
-
 }

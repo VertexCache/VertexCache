@@ -1,7 +1,5 @@
 package com.vertexcache.common.protocol;
 
-import com.vertexcache.common.log.Logger;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
