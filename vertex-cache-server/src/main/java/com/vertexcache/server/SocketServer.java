@@ -1,5 +1,6 @@
 package com.vertexcache.server;
 
+import com.vertexcache.VertexCacheServer;
 import com.vertexcache.common.log.LogUtil;
 import com.vertexcache.domain.config.Config;
 import com.vertexcache.exception.VertexCacheSSLServerSocketException;
@@ -133,6 +134,8 @@ public class SocketServer {
                 .append("  Log4j2 config file loaded with no errors: ").append(!config.isLogLoaded() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Log4j2 config file location: ").append(config.getLogFilePath() != null ? config.getLogFilePath() : "n/a").append(System.lineSeparator())
                 .append("Status: ").append(message).append(System.lineSeparator()) ;
+
+        // Relies on Log4j2 config
         logger.info(stringBuilder.toString());
     }
 
