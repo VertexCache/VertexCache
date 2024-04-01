@@ -1,5 +1,7 @@
 package com.vertexcache.server;
 
+import com.vertexcache.VertexCacheServer;
+import com.vertexcache.common.log.LogUtil;
 import com.vertexcache.domain.config.Config;
 import com.vertexcache.service.CommandProcessor;
 
@@ -15,6 +17,9 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 public class ClientHandler implements Runnable {
+
+    private static final LogUtil logger = new LogUtil(ClientHandler.class);
+
     private Socket clientSocket;
     private Config config;
     private CommandProcessor commandProcessor;
@@ -33,24 +38,24 @@ public class ClientHandler implements Runnable {
             Cipher cipher = config.isEncryptMessage() ? Cipher.getInstance("RSA") : null;
 
             while ((bytesRead = inputStream.read(buffer)) != -1) {
-                System.out.println("Received from client: " + new String(buffer, 0, bytesRead));
+                logger.info("Received: " + new String(buffer, 0, bytesRead));
                 byte[] processedData = processInputData(buffer, bytesRead, cipher);
                 outputStream.write(processedData);
             }
 
         } catch (IOException e) {
             // Log or handle the exception appropriately
-            e.printStackTrace();
+            logger.fatal(e.getMessage());
         } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
                  BadPaddingException | InvalidKeyException e) {
             // Log or handle the exception appropriately
-            throw new RuntimeException(e);
+            logger.fatal(e.getMessage());
         } finally {
             try {
                 clientSocket.close();
             } catch (IOException e) {
                 // Log or handle the exception appropriately
-                e.printStackTrace();
+                logger.fatal(e.getMessage());
             }
         }
     }
@@ -61,7 +66,7 @@ public class ClientHandler implements Runnable {
             cipher.init(Cipher.DECRYPT_MODE, this.config.getPrivateKey());
             byte[] decryptedBytes = cipher.doFinal(buffer, 0, bytesRead);
             String decryptedMessage = new String(decryptedBytes);
-            System.out.println("Decrypted message: " + decryptedMessage);
+            logger.info("Received: " + decryptedMessage);
             return commandProcessor.execute(decryptedBytes);
         } else {
             byte[] unencryptedData = new byte[bytesRead];
@@ -70,4 +75,3 @@ public class ClientHandler implements Runnable {
         }
     }
 }
-
