@@ -38,8 +38,9 @@ public class ClientHandler implements Runnable {
             Cipher cipher = config.isEncryptMessage() ? Cipher.getInstance("RSA") : null;
 
             while ((bytesRead = inputStream.read(buffer)) != -1) {
-                logger.info("Received: " + new String(buffer, 0, bytesRead));
+                logger.info("Request: " + new String(buffer, 0, bytesRead));
                 byte[] processedData = processInputData(buffer, bytesRead, cipher);
+                logger.info("Response: " + new String(processedData));
                 outputStream.write(processedData);
             }
 
@@ -66,8 +67,10 @@ public class ClientHandler implements Runnable {
             cipher.init(Cipher.DECRYPT_MODE, this.config.getPrivateKey());
             byte[] decryptedBytes = cipher.doFinal(buffer, 0, bytesRead);
             String decryptedMessage = new String(decryptedBytes);
-            logger.info("Received: " + decryptedMessage);
-            return commandProcessor.execute(decryptedBytes);
+            logger.info("Request: " + decryptedMessage);
+            byte[] response = commandProcessor.execute(decryptedBytes);
+            logger.info("Response: " + new String(response));
+            return response;
         } else {
             byte[] unencryptedData = new byte[bytesRead];
             System.arraycopy(buffer, 0, unencryptedData, 0, bytesRead);
