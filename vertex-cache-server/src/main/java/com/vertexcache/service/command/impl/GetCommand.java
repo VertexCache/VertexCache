@@ -1,7 +1,7 @@
-package com.vertexcache.service.command;
+package com.vertexcache.service.command.impl;
 
-import com.vertexcache.common.protocol.VertexCacheMessageProtocol;
-import com.vertexcache.service.Command;
+import com.vertexcache.service.command.Command;
+import com.vertexcache.service.command.CommandResponse;
 
 import java.util.Map;
 
@@ -15,15 +15,16 @@ public class GetCommand implements Command<String> {
         this.data = data;
     }
 
-    public String execute(String... args) {
+    public CommandResponse execute(String... args) {
 
 
         if (args.length != 1) {
             throw new IllegalArgumentException("GET command requires one argument: key-name");
         }
         String key = args[0];
-        return data.getOrDefault(key, "Key not found");
+       // return data.getOrDefault(key, "Key not found");
 
+        return new CommandResponse(true,"Key not found");
 
 
     }

@@ -1,9 +1,8 @@
 package com.vertexcache.server;
 
-import com.vertexcache.VertexCacheServer;
 import com.vertexcache.common.log.LogUtil;
 import com.vertexcache.domain.config.Config;
-import com.vertexcache.service.CommandProcessor;
+import com.vertexcache.service.command.CommandService;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -22,9 +21,9 @@ public class ClientHandler implements Runnable {
 
     private Socket clientSocket;
     private Config config;
-    private CommandProcessor commandProcessor;
+    private CommandService commandProcessor;
 
-    public ClientHandler(Socket clientSocket, Config config, CommandProcessor commandProcessor) {
+    public ClientHandler(Socket clientSocket, Config config, CommandService commandProcessor) {
         this.clientSocket = clientSocket;
         this.config = config;
         this.commandProcessor = commandProcessor;

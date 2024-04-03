@@ -1,4 +1,4 @@
-package com.vertexcache.service;
+package com.vertexcache.service.command;
 
 import com.vertexcache.common.protocol.VertexCacheMessageProtocol;
 

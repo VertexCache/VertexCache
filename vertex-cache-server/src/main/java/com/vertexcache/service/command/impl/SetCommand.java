@@ -1,6 +1,7 @@
-package com.vertexcache.service.command;
+package com.vertexcache.service.command.impl;
 
-import com.vertexcache.service.Command;
+import com.vertexcache.service.command.Command;
+import com.vertexcache.service.command.CommandResponse;
 
 import java.util.Map;
 
@@ -14,11 +15,12 @@ public class SetCommand implements Command<String> {
         this.data = data;
     }
 
-    public String execute(String... args) {
+    public CommandResponse execute(String... args) {
         if (args.length != 2) {
             throw new IllegalArgumentException("SET command requires two arguments: key-name and key-value");
         }
         String key = args[0];
-        return data.getOrDefault(key, "Key not set");
+        //return data.getOrDefault(key, "Key not set");
+        return new CommandResponse(true,"Key not set");
     }
 }

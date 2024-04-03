@@ -1,10 +1,9 @@
 package com.vertexcache.server;
 
-import com.vertexcache.VertexCacheServer;
 import com.vertexcache.common.log.LogUtil;
 import com.vertexcache.domain.config.Config;
 import com.vertexcache.exception.VertexCacheSSLServerSocketException;
-import com.vertexcache.service.CommandProcessor;
+import com.vertexcache.service.command.CommandService;
 
 import javax.net.ssl.*;
 import java.io.FileInputStream;
@@ -30,7 +29,7 @@ public class SocketServer {
     }
 
     public void execute() {
-        CommandProcessor commandProcessor = new CommandProcessor();
+        CommandService commandProcessor = new CommandService();
 
         try {
             ServerSocket serverSocket;

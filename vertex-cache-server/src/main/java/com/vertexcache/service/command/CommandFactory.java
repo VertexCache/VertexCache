@@ -1,9 +1,9 @@
-package com.vertexcache.service;
+package com.vertexcache.service.command;
 
-import com.vertexcache.service.command.GetCommand;
-import com.vertexcache.service.command.PingCommand;
-import com.vertexcache.service.command.SetCommand;
-import com.vertexcache.service.command.UnknownCommand;
+import com.vertexcache.service.command.impl.GetCommand;
+import com.vertexcache.service.command.impl.PingCommand;
+import com.vertexcache.service.command.impl.SetCommand;
+import com.vertexcache.service.command.impl.UnknownCommand;
 
 import java.util.Map;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
