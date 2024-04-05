@@ -9,15 +9,9 @@ public class CommandService {
     private CommandInvoker commandInvoker = new CommandInvoker(commandFactory);
 
     public byte[] execute(byte[] requestAsBytes) {
-
         if (requestAsBytes != null && requestAsBytes.length > 0) {
-
             String[] request = new String(requestAsBytes).toLowerCase().split("\\s+");
-
-            //return VertexCacheMessageProtocol.encodeString(commandInvoker.execute(request[0], ArrayUtils.remove(request, 0)));
-
             return (commandInvoker.execute(request[0], ArrayUtils.remove(request, 0))).toVCMPAsBytes();
-
         }
         return (new UnknownCommand()).execute().toVCMPAsBytes();
     }

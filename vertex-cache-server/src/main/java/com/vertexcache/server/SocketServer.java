@@ -29,7 +29,7 @@ public class SocketServer {
     }
 
     public void execute() {
-        CommandService commandProcessor = new CommandService();
+        CommandService commandService = new CommandService();
 
         try {
             ServerSocket serverSocket;
@@ -45,7 +45,7 @@ public class SocketServer {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 outputInfo("Connection: " + clientSocket);
-                executor.execute(new ClientHandler(clientSocket, config, commandProcessor));
+                executor.execute(new ClientHandler(clientSocket, config, commandService));
             }
         } catch (BindException e) {
             outputStartUpError("Error, Port already in use", e);

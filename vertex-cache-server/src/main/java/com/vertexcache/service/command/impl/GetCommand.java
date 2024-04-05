@@ -1,5 +1,6 @@
 package com.vertexcache.service.command.impl;
 
+import com.vertexcache.domain.cache.CacheService;
 import com.vertexcache.service.command.Command;
 import com.vertexcache.service.command.CommandResponse;
 
@@ -23,6 +24,8 @@ public class GetCommand implements Command<String> {
         }
         String key = args[0];
        // return data.getOrDefault(key, "Key not found");
+
+
 
         return new CommandResponse(true,"Key not found");
 
