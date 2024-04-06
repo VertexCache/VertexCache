@@ -1,6 +1,9 @@
 package com.vertexcache.server;
 
 import com.vertexcache.common.log.LogUtil;
+import com.vertexcache.domain.cache.CacheService;
+import com.vertexcache.domain.cache.impl.Cache;
+import com.vertexcache.domain.cache.impl.EvictionPolicy;
 import com.vertexcache.domain.config.Config;
 import com.vertexcache.exception.VertexCacheSSLServerSocketException;
 import com.vertexcache.service.command.CommandService;
@@ -24,14 +27,17 @@ public class SocketServer {
     private ServerSocket serverSocket = null;
     private Config config;
 
-    public SocketServer(Config config) {
-        this.config = config;
+    public SocketServer() {
+        this.config = Config.getInstance();
     }
 
-    public void execute() {
-        CommandService commandService = new CommandService();
-
+    public void execute() throws Exception {
         try {
+            CommandService commandService = new CommandService();
+
+
+            CacheService.getInstance(config.getCacheEvictionPolicy(),config.getCacheSize());
+
             ServerSocket serverSocket;
             if (config.isEncryptTransport()) {
                 serverSocket = secureSocket();
@@ -125,6 +131,8 @@ public class SocketServer {
         stringBuilder
                 .append(this.config.getAppName()).append(":").append(System.lineSeparator())
                 .append("  PORT: ").append(config.getServerPort()).append(System.lineSeparator())
+                .append("  Cache Eviction Policy: ").append(config.getCacheEvictionPolicy().toString()).append(System.lineSeparator())
+                .append("  Cache Size (only applies when eviction is not NONE): ").append(config.getCacheSize()).append(System.lineSeparator())
                 .append("  Transport Layer Encryption Enabled: ").append(config.isEncryptTransport() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Message Layer Encryption Enabled: ").append(config.isEncryptMessage() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Config file set: ").append(config.isConfigLoaded() ? "Yes" : "No").append(System.lineSeparator())

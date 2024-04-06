@@ -38,4 +38,9 @@ public enum EvictionPolicy {
     public String getDetails() {
         return details;
     }
+
+    @Override
+    public String toString() {
+        return this.abbreviation + " (" + this.description + "), " + this.description;
+    }
 }

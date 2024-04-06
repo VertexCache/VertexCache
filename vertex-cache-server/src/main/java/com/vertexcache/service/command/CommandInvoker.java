@@ -14,15 +14,4 @@ public class CommandInvoker {
         }
         return command.execute(args);
     }
-
-    /*
-    public String execute(String commandName, String... args) {
-        Command<String> command = commandFactory.getCommand(commandName);
-        if (command == null) {
-            throw new IllegalArgumentException("Unknown command: " + commandName);
-        }
-        return command.execute(args);
-    }
-
-     */
 }

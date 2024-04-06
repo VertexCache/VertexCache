@@ -5,9 +5,9 @@ import com.vertexcache.common.cli.CommandLineArgsParser;
 import com.vertexcache.domain.config.Config;
 
 public class VertexCacheServer {
-
     public static void main(String[] args) throws Exception {
-        SocketServer vertexCacheServer = new SocketServer((new Config()).loadPropertiesFromArgs(new CommandLineArgsParser(args)));
+        Config.getInstance().loadPropertiesFromArgs(new CommandLineArgsParser(args));
+        SocketServer vertexCacheServer = new SocketServer();
         vertexCacheServer.execute();
     }
 }

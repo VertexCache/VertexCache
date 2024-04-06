@@ -16,12 +16,18 @@ public abstract class CacheBase<K, V> {
     public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheException {
         if(secondaryKeys.length <= MAX_SECONDARY_INDEXES) {
             try {
-                this.getPrimaryCache().put(primaryKey, value);
-                if (secondaryKeys.length > 0 && secondaryKeys[0] != null) {
-                    this.getSecondaryIndexOne().put(secondaryKeys[0], primaryKey);
+                synchronized (this.getPrimaryCache()) {
+                    this.getPrimaryCache().put(primaryKey, value);
                 }
-                if (secondaryKeys.length > 1 && secondaryKeys[1] != null) {
-                    this.getSecondaryIndexTwo().put(secondaryKeys[1], primaryKey);
+                synchronized (this.getSecondaryIndexOne()) {
+                    if (secondaryKeys.length > 0 && secondaryKeys[0] != null) {
+                        this.getSecondaryIndexOne().put(secondaryKeys[0], primaryKey);
+                    }
+                }
+                synchronized (this.getSecondaryIndexTwo()) {
+                    if (secondaryKeys.length > 1 && secondaryKeys[1] != null) {
+                        this.getSecondaryIndexTwo().put(secondaryKeys[1], primaryKey);
+                    }
                 }
             } catch (OutOfMemoryError e) {
                 // This still potentially can occur even with LRU

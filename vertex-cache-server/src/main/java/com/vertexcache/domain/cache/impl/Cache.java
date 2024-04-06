@@ -72,5 +72,4 @@ public class Cache<K, V> {
     public void clear() {
         cache.clear();
     }
-
 }

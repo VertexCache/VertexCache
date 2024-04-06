@@ -5,8 +5,6 @@ import com.vertexcache.service.command.CommandResponse;
 
 public class UnknownCommand implements Command<String> {
     public CommandResponse execute(String... args) {
-
-        //return "Unknown command";
         return (new CommandResponse(false,"Unknown command"));
     }
 }

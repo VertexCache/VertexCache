@@ -5,11 +5,15 @@ import com.vertexcache.common.config.reader.PropertiesLoader;
 import com.vertexcache.common.cli.CommandLineArgsParser;
 import com.vertexcache.common.log.LogUtil;
 import com.vertexcache.common.security.KeyPairHelper;
+import com.vertexcache.domain.cache.impl.EvictionPolicy;
+import com.vertexcache.server.SocketServer;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
 public class Config extends ConfigBase {
+
+    private static final LogUtil logger = new LogUtil(Config.class);
 
     private static final String APP_NAME = "VertexCache";
     private boolean configLoaded = false;
@@ -29,7 +33,24 @@ public class Config extends ConfigBase {
     private String keystoreFilePath;
     private String keystorePassword;
 
-    public Config() {
+    private EvictionPolicy cacheEvictionPolicy;
+    private static int DEFAULT_CACHE_SIZE=1000000;
+    private int cacheSize;
+
+    private static volatile Config instance;
+
+    private Config() {
+    }
+
+    public static Config getInstance() {
+        if (instance == null) {
+            synchronized (Config.class) {
+                if (instance == null) {
+                    instance = new Config();
+                }
+            }
+        }
+        return instance;
     }
 
     public Config loadPropertiesFromArgs(CommandLineArgsParser commandLineArgsParser) {
@@ -66,6 +87,32 @@ public class Config extends ConfigBase {
                         this.encryptTransport = true;
                         this.keystoreFilePath = propertiesLoader.getProperty(ConfigKey.KEYSTORE_FILEPATH);
                         this.keystorePassword = propertiesLoader.getProperty(ConfigKey.KEYSTORE_PASSWORD);
+                    }
+
+                    // Cache Eviction Policy
+                    this.cacheEvictionPolicy = EvictionPolicy.NONE;
+                    if (propertiesLoader.isExist(ConfigKey.CACHE_EVICTION)) {
+                        try {
+                            this.cacheEvictionPolicy = EvictionPolicy.fromString(propertiesLoader.getProperty(ConfigKey.CACHE_EVICTION));
+                        } catch (IllegalArgumentException ie) {
+                            logger.warn("Invalid eviction policy given, defaulting to NONE");
+                            this.cacheEvictionPolicy = EvictionPolicy.NONE;
+                        }
+                    } else {
+                        logger.warn("Non-existent eviction policy given, defaulting to NONE");
+                    }
+
+                    // Cache Size, applied when Eviction Policy is not set to NONE
+                    this.cacheSize = DEFAULT_CACHE_SIZE;
+                    if (propertiesLoader.isExist(ConfigKey.CACHE_SIZE)) {
+                       long cacheSize = Long.parseLong(propertiesLoader.getProperty(ConfigKey.CACHE_SIZE));
+                        if (cacheSize <= Integer.MAX_VALUE) {
+                            this.cacheSize = (int) cacheSize;
+                        } else {
+                            logger.warn("Cache maximum size exceeded, defaulting to " + DEFAULT_CACHE_SIZE);
+                        }
+                    } else {
+                        logger.warn("Non-existent cache size, defaulting to " + DEFAULT_CACHE_SIZE);
                     }
 
                 }
@@ -129,5 +176,13 @@ public class Config extends ConfigBase {
 
     public String getKeystorePassword() {
         return keystorePassword;
+    }
+
+    public EvictionPolicy getCacheEvictionPolicy() {
+        return cacheEvictionPolicy;
+    }
+
+    public int getCacheSize() {
+        return cacheSize;
     }
 }

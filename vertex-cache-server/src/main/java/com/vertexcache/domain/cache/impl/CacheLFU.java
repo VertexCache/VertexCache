@@ -20,28 +20,35 @@ public class CacheLFU <K, V> extends CacheBase<K, V> {
         this.setSecondaryIndexTwo(Collections.synchronizedMap(new LinkedHashMap<>(sizeCapacity, 0.75f, true)));
     }
 
-    public void put(K key, V value, Object... secondaryKeys) {
-        synchronized (this.getPrimaryCache()) {
-            this.getPrimaryCache().put(key, value);
-        }
-        frequencyMap.put(key, frequencyMap.getOrDefault(key, 0) + 1);
+    public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheException {
+        if(secondaryKeys.length <= MAX_SECONDARY_INDEXES) {
+            try {
 
-        for (int i = 0; i < Math.min(secondaryKeys.length, 2); i++) {
-            switch (i) {
-                case 0:
-                    synchronized (this.getSecondaryIndexOne()) {
-                        this.getSecondaryIndexOne().put(secondaryKeys[i], key);
+                synchronized (this.getPrimaryCache()) {
+                    this.getPrimaryCache().put(primaryKey, value);
+                }
+                frequencyMap.put(primaryKey, frequencyMap.getOrDefault(primaryKey, 0) + 1);
+
+                synchronized (this.getSecondaryIndexOne()) {
+                    if (secondaryKeys.length > 0 && secondaryKeys[0] != null) {
+                        this.getSecondaryIndexOne().put(secondaryKeys[0], primaryKey);
                     }
-                    break;
-                case 1:
-                    synchronized (this.getSecondaryIndexTwo()) {
-                        this.getSecondaryIndexTwo().put(secondaryKeys[i], key);
+                }
+                synchronized (this.getSecondaryIndexTwo()) {
+                    if (secondaryKeys.length > 1 && secondaryKeys[1] != null) {
+                        this.getSecondaryIndexTwo().put(secondaryKeys[1], primaryKey);
                     }
-                    break;
+                }
+            } catch (OutOfMemoryError e) {
+                // This still potentially can occur even with LRU
+                throw new VertexCacheException("Out of memory, increase memory or use eviction policy other than none.");
             }
-        }
 
-        evictIfNecessary();
+            evictIfNecessary();
+
+        } else {
+            throw new VertexCacheException("Too many secondary index, maximum 2 allowed.");
+        }
     }
 
     public V get(K key) {

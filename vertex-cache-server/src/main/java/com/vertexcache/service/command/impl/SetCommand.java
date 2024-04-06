@@ -1,11 +1,14 @@
 package com.vertexcache.service.command.impl;
 
+import com.vertexcache.common.log.LogUtil;
 import com.vertexcache.service.command.Command;
 import com.vertexcache.service.command.CommandResponse;
 
 import java.util.Map;
 
 public class SetCommand implements Command<String> {
+
+    private static final LogUtil logger = new LogUtil(SetCommand.class);
 
     public static final String COMMAND_KEY = "set";
 
