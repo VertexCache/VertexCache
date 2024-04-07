@@ -1,9 +1,7 @@
 package com.vertexcache.server;
 
 import com.vertexcache.common.log.LogUtil;
-import com.vertexcache.domain.cache.CacheService;
-import com.vertexcache.domain.cache.impl.Cache;
-import com.vertexcache.domain.cache.impl.EvictionPolicy;
+import com.vertexcache.domain.cache.Cache;
 import com.vertexcache.domain.config.Config;
 import com.vertexcache.exception.VertexCacheSSLServerSocketException;
 import com.vertexcache.service.command.CommandService;
@@ -36,7 +34,7 @@ public class SocketServer {
             CommandService commandService = new CommandService();
 
 
-            CacheService.getInstance(config.getCacheEvictionPolicy(),config.getCacheSize());
+            Cache.getInstance(config.getCacheEvictionPolicy(),config.getCacheSize());
 
             ServerSocket serverSocket;
             if (config.isEncryptTransport()) {

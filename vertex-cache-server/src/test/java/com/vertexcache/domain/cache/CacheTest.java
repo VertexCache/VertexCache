@@ -1,8 +1,6 @@
 package com.vertexcache.domain.cache;
 
-import com.vertexcache.domain.cache.impl.Cache;
 import com.vertexcache.domain.cache.impl.EvictionPolicy;
-import com.vertexcache.exception.VertexCacheException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +35,9 @@ public class CacheTest {
 
         //Cache<Integer, String> plainCache = (Cache<Integer, String>) CacheService.getInstance(EvictionPolicy.LFU,1000);
 
-        Cache<Integer, String> plainCache = (Cache<Integer, String>) CacheService.getInstance(EvictionPolicy.RANDOM,1000);
+        //Cache<Integer, String> plainCache = (Cache<Integer, String>) CacheService.getInstance(EvictionPolicy.RANDOM,1000);
+
+        Cache<Object, Object> plainCache = Cache.getInstance(EvictionPolicy.RANDOM, 1000);
 
        // Cache<Integer, String> plainCache = new Cache<>(EvictionPolicy.LFU,1000);
 

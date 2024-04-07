@@ -4,14 +4,38 @@ import com.vertexcache.common.protocol.VertexCacheMessageProtocol;
 
 public class CommandResponse {
 
+    private static final String RESPONSE_OK = "OK";
+    private static final String RESPONSE_NIL = "(nil)";
+
     private boolean isOK;
 
     private String message;
 
-
+/*
     public CommandResponse(boolean isOK, String message) {
         this.isOK = isOK;
         this.message = message;
+    }
+    */
+
+    public void setResponse(String message) {
+        this.isOK = true;
+        this.message = message;
+    }
+
+    public void setResponseOK() {
+        this.isOK = true;
+        this.message = RESPONSE_OK;
+    }
+
+    public void setResponseError(String message) {
+        this.isOK = false;
+        this.message = message;
+    }
+
+    public void setResponseNil() {
+        this.isOK = true;
+        this.message = RESPONSE_NIL;
     }
 
     public boolean isOK() {

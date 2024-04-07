@@ -1,8 +1,7 @@
 package com.vertexcache.service.command.impl;
 
 import com.vertexcache.common.log.LogUtil;
-import com.vertexcache.domain.cache.CacheService;
-import com.vertexcache.domain.cache.impl.Cache;
+import com.vertexcache.domain.cache.Cache;
 import com.vertexcache.service.command.Command;
 import com.vertexcache.service.command.CommandResponse;
 
@@ -21,27 +20,23 @@ public class GetCommand implements Command<String> {
     }
 
     public CommandResponse execute(String... args) {
-        boolean isOK = false;
-        String result;
+        CommandResponse commandResponse = new CommandResponse();
         try {
             if (args.length == 1) {
-                Cache cache = CacheService.getCache();
+                Cache<Object, Object> cache = Cache.getInstance();
                 String value = (String) cache.get(args[0]);
                 if(value != null) {
-                    result = "Fake-Value";
-                    isOK = true;
+                    commandResponse.setResponse(value);
                 } else {
-                    // not error, just not found
-                    result = "(nil)";
-                    isOK = true;
+                    commandResponse.setResponseNil();
                 }
             } else {
-                result = "GET command requires a single argument, which is the key of the value you want to retrieve.";
+                commandResponse.setResponseError("GET command requires a single argument, which is the key of the value you want to retrieve.");
             }
         } catch (Exception ex) {
-            result = "GET command failed, fatal error, check logs.";
+            commandResponse.setResponseError("GET command failed, fatal error, check logs.");
             logger.fatal(ex.getMessage());
         }
-        return new CommandResponse(isOK,result);
+        return commandResponse;
     }
 }

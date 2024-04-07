@@ -1,12 +1,14 @@
-package com.vertexcache.domain.cache.impl;
+package com.vertexcache.domain.cache;
 
+import com.vertexcache.domain.cache.impl.*;
 import com.vertexcache.exception.VertexCacheException;
 
 public class Cache<K, V> {
 
+    private static volatile Cache<?, ?> instance;
     private final CacheBase<K, V> cache;
 
-    public Cache(EvictionPolicy evictionPolicy, int sizeCapacity) {
+    private Cache(EvictionPolicy evictionPolicy, int sizeCapacity) {
         switch (evictionPolicy) {
             case LRU:
                 cache = new CacheLRU<>(sizeCapacity);
@@ -30,18 +32,40 @@ public class Cache<K, V> {
         }
     }
 
-    public Cache(EvictionPolicy evictionPolicy) {
-        switch (evictionPolicy) {
-            case LRU:
-                throw new IllegalArgumentException("LRU eviction policy requires a capacity parameter");
-            case NONE:
-            default:
-                cache = new CacheNoEviction<>();
-                break;
+    public static <K, V> Cache<K, V> getInstance(EvictionPolicy evictionPolicy, int sizeCapacity) {
+        if (instance == null) {
+            synchronized (Cache.class) {
+                if (instance == null) {
+                    instance = new Cache<>(evictionPolicy, sizeCapacity);
+                }
+            }
         }
+        return (Cache<K, V>) instance;
     }
 
-    public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheException {
+    public static <K, V> Cache<K, V> getInstance(EvictionPolicy evictionPolicy) {
+        if (instance == null) {
+            synchronized (Cache.class) {
+                if (instance == null) {
+                    instance = new Cache<>(evictionPolicy, 0);
+                }
+            }
+        }
+        return (Cache<K, V>) instance;
+    }
+
+    public static <K, V> Cache<K, V> getInstance() throws Exception {
+        if (instance == null) {
+            synchronized (Cache.class) {
+                if (instance == null) {
+                    throw new Exception("Cache not yet initialized with eviction policy");
+                }
+            }
+        }
+        return (Cache<K, V>) instance;
+    }
+
+    public void put(K primaryKey, V value, String... secondaryKeys) throws VertexCacheException {
         cache.put(primaryKey, value, secondaryKeys);
     }
 
@@ -73,3 +97,4 @@ public class Cache<K, V> {
         cache.clear();
     }
 }
+
