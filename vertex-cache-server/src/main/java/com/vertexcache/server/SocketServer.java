@@ -4,7 +4,7 @@ import com.vertexcache.common.log.LogUtil;
 import com.vertexcache.domain.cache.Cache;
 import com.vertexcache.domain.config.Config;
 import com.vertexcache.exception.VertexCacheSSLServerSocketException;
-import com.vertexcache.service.command.CommandService;
+import com.vertexcache.domain.command.CommandService;
 
 import javax.net.ssl.*;
 import java.io.FileInputStream;

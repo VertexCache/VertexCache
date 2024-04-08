@@ -2,7 +2,7 @@ package com.vertexcache.server;
 
 import com.vertexcache.common.log.LogUtil;
 import com.vertexcache.domain.config.Config;
-import com.vertexcache.service.command.CommandService;
+import com.vertexcache.domain.command.CommandService;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
