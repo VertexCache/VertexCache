@@ -1,63 +1,90 @@
 package com.vertexcache.domain.command.impl;
 
 import com.vertexcache.common.log.LogUtil;
+import com.vertexcache.domain.cache.Cache;
+
 import com.vertexcache.domain.command.argument.ArgumentParser;
 import com.vertexcache.domain.command.Command;
 import com.vertexcache.domain.command.CommandResponse;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class SetCommand implements Command<String> {
 
     private static final LogUtil logger = new LogUtil(SetCommand.class);
 
+    private static final String SUB_ARG_SECONDARY_INDEX_ONE = "IDX1";
+    private static final String SUB_ARG_SECONDARY_INDEX_TWO = "IDX2";
+
     public static final String COMMAND_KEY = "set";
+    private Set<String> subArguments;
+
+    public SetCommand() {
+        this.subArguments = new HashSet<>();
+        this.subArguments.add(SUB_ARG_SECONDARY_INDEX_ONE);
+        this.subArguments.add(SUB_ARG_SECONDARY_INDEX_TWO);
+    }
 
     public CommandResponse execute(ArgumentParser argumentParser) {
         CommandResponse commandResponse = new CommandResponse();
-        commandResponse.setResponseError("SET command failed, fatal error, check logs.");
-        return commandResponse;
-        /*
-        CommandResponse commandResponse = new CommandResponse();
-
         try {
+            argumentParser.setSubArguments(this.subArguments);
 
-            int numArgs = args.length;
-
-            if (numArgs >= 2 && numArgs <= 4) {
-                Cache<Object, Object> cache = Cache.getInstance();
-                switch(numArgs) {
-
-                    case 2:
-
-                        System.out.println(args[0] + " " + args[1]);
-
-                        cache.put(args[0],args[1]);
-                        commandResponse.setResponseOK();
-                        break;
-
-                    case 3:
-                        cache.put(args[0],args[1],args[2]);
-                        commandResponse.setResponseOK();
-                        break;
-
-                    case 4:
-                        cache.put(args[0],args[1],args[2],args[3]);
-                        commandResponse.setResponseOK();
-                        break;
-
-                    default:
-                        // Should NOT happen, already checked
-                        commandResponse.setResponseError("SET command requires two arguments: key-name and key-value <optional-secondary-index-1> <optional-secondary-index-2>");
-                        break;
-                }
+            boolean isPrimaryOK = false;
+            if(argumentParser.getPrimaryArgument().isArgsExist() && argumentParser.getPrimaryArgument().getArgs().size() == 2) {
+                isPrimaryOK = true;
             } else {
-                commandResponse.setResponseError("SET command requires two arguments: key-name and key-value <optional-secondary-index-1> <optional-secondary-index-2>");
+                System.out.println("failed ====> " + argumentParser.getPrimaryArgument().getArgs().size());
             }
+
+            if(isPrimaryOK) {
+                Cache<Object, Object> cache = Cache.getInstance();
+
+                if (isPrimaryOK &&
+                        argumentParser.subArgumentExists(SUB_ARG_SECONDARY_INDEX_ONE) &&
+                        argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_ONE).getArgs().size() == 1 &&
+                        argumentParser.subArgumentExists(SUB_ARG_SECONDARY_INDEX_TWO) &&
+                        argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_TWO).getArgs().size() == 1
+                ) {
+                    // 2 Secondary Indexes
+                    cache.put(
+                            argumentParser.getPrimaryArgument().getArgs().get(0),
+                            argumentParser.getPrimaryArgument().getArgs().get(1),
+                            argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_ONE).getArgs().getFirst(),
+                            argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_TWO).getArgs().getFirst()
+                    );
+                    commandResponse.setResponseOK();
+                } else if (isPrimaryOK &&
+                        argumentParser.subArgumentExists(SUB_ARG_SECONDARY_INDEX_ONE) &&
+                        argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_ONE).getArgs().size() == 1 &&
+                        !argumentParser.subArgumentExists(SUB_ARG_SECONDARY_INDEX_TWO)) {
+                    // 1 Secondary Index
+                    cache.put(
+                            argumentParser.getPrimaryArgument().getArgs().get(0),
+                            argumentParser.getPrimaryArgument().getArgs().get(1),
+                            argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_ONE).getArgs().getFirst()
+                    );
+                    commandResponse.setResponseOK();
+                } else if (isPrimaryOK) {
+                    // No Secondary Indexes
+                    cache.put(
+                            argumentParser.getPrimaryArgument().getArgs().get(0),
+                            argumentParser.getPrimaryArgument().getArgs().get(1)
+                    );
+                    commandResponse.setResponseOK();
+                } else {
+                    commandResponse.setResponseError("SET command requires two arguments: key-name and key-value [IDX1] <optional-secondary-index-1> [IDX2] <optional-secondary-index-2>");
+                }
+
+            } else {
+                commandResponse.setResponseError("SET command requires two arguments: key-name and key-value [IDX1] <optional-secondary-index-1> [IDX2] <optional-secondary-index-2>");
+            }
+
         } catch (Exception ex) {
-            commandResponse.setResponseError("SET command failed, fatal error, check logs.");
+            commandResponse.setResponseError("GET command failed, fatal error, check logs.");
             logger.fatal(ex.getMessage());
         }
         return commandResponse;
-
-         */
     }
 }

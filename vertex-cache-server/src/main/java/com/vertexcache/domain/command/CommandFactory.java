@@ -1,9 +1,6 @@
 package com.vertexcache.domain.command;
 
-import com.vertexcache.domain.command.impl.GetCommand;
-import com.vertexcache.domain.command.impl.PingCommand;
-import com.vertexcache.domain.command.impl.SetCommand;
-import com.vertexcache.domain.command.impl.UnknownCommand;
+import com.vertexcache.domain.command.impl.*;
 
 import java.util.Map;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
@@ -14,7 +11,11 @@ public class CommandFactory {
     public CommandFactory() {
         commandMap = new CaseInsensitiveMap<>();
         commandMap.put(PingCommand.COMMAND_KEY, new PingCommand());
+
         commandMap.put(GetCommand.COMMAND_KEY, new GetCommand());
+        commandMap.put(GetSecondaryIdxOneCommand.COMMAND_KEY, new GetSecondaryIdxOneCommand());
+        commandMap.put(GetSecondaryIdxTwoCommand.COMMAND_KEY, new GetSecondaryIdxTwoCommand());
+
         commandMap.put(SetCommand.COMMAND_KEY, new SetCommand());
     }
 

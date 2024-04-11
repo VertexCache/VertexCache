@@ -1,7 +1,5 @@
 package com.vertexcache.domain.command.argument;
 
-import com.vertexcache.domain.command.argument.Argument;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,13 +12,17 @@ public class ArgumentParser {
     private List<Argument> arguments = new ArrayList<>();
 
     public ArgumentParser(String argumentString) {
-        this.argumentString = argumentString;
+        if(argumentString != null && !argumentString.isEmpty()) {
+            this.argumentString = argumentString.trim();
+        }
         this.subArguments = new HashSet<>(); // initialized empty
         this.parseArguments();
     }
 
     public void setSubArguments(Set<String> subArguments) {
+        this.arguments = new ArrayList<>(); // reset
         this.subArguments = subArguments;
+        this.parseArguments();
     }
 
     public Argument getPrimaryArgument() {
@@ -38,21 +40,27 @@ public class ArgumentParser {
             String name = parts[i++];
             List<String> args = new ArrayList<>();
 
-            while (i < parts.length && !parts[i].matches("[A-Z]+") && !subArguments.contains(parts[i])) {
-                args.add(parts[i++]);
-            }
+            if(parts.length == 1) {
+                this.arguments.add(new Argument(name, args));
+            } else {
 
-            if (i < parts.length && subArguments.contains(parts[i])) {
-                List<String> subArgumentArgs = new ArrayList<>();
-                String subArgumentName = parts[i++];
-
-                while (i < parts.length && !parts[i].matches("[A-Z]+") && !subArguments.contains(parts[i])) {
-                    subArgumentArgs.add(parts[i++]);
+                while (i < parts.length && !parts[i].matches("[A-Z]+") && !this.subArguments.contains(parts[i])) {
+                    args.add(parts[i++]);
+                    this.arguments.add(new Argument(name, args));
                 }
 
-                this.arguments.add(new Argument(subArgumentName, subArgumentArgs));
-            } else {
-                this.arguments.add(new Argument(name, args));
+                if (i < parts.length && this.subArguments.contains(parts[i])) {
+                    List<String> subArgumentArgs = new ArrayList<>();
+                    String subArgumentName = parts[i++];
+
+                    while (i < parts.length && !parts[i].matches("[A-Z]+") && !this.subArguments.contains(parts[i])) {
+                        subArgumentArgs.add(parts[i++]);
+                    }
+
+                    this.arguments.add(new Argument(subArgumentName, subArgumentArgs));
+                } //else {
+                    //  this.arguments.add(new Argument(name, args));
+                //}
             }
         }
     }
@@ -68,5 +76,9 @@ public class ArgumentParser {
 
     public boolean subArgumentExists(String subArgumentName) {
         return getSubArgumentByName(subArgumentName) != null;
+    }
+
+    public boolean isArgumentsExists() {
+        return !this.arguments.isEmpty();
     }
 }
