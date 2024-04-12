@@ -4,7 +4,7 @@
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%-4level] - %msg%n"/>
         </Console>
-        <File name="File" fileName="logs/application.log">
+        <File name="File" fileName="logs/vertex-cache-server.log">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%-4level] - %msg%n"/>
         </File>
     </Appenders>

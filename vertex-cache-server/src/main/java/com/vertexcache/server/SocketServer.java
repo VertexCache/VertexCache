@@ -33,7 +33,6 @@ public class SocketServer {
         try {
             CommandService commandService = new CommandService();
 
-
             Cache.getInstance(config.getCacheEvictionPolicy(),config.getCacheSize());
 
             ServerSocket serverSocket;

@@ -6,7 +6,6 @@ import com.vertexcache.common.cli.CommandLineArgsParser;
 import com.vertexcache.common.log.LogUtil;
 import com.vertexcache.common.security.KeyPairHelper;
 import com.vertexcache.domain.cache.impl.EvictionPolicy;
-import com.vertexcache.server.SocketServer;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -53,7 +52,8 @@ public class Config extends ConfigBase {
         return instance;
     }
 
-    public Config loadPropertiesFromArgs(CommandLineArgsParser commandLineArgsParser) {
+    @Override
+    public void loadPropertiesFromArgs(CommandLineArgsParser commandLineArgsParser) {
 
         try {
 
@@ -121,8 +121,6 @@ public class Config extends ConfigBase {
         } catch (Exception exception) {
             this.configLoaded = false;
             this.configError = true;
-        } finally {
-            return this;
         }
     }
 

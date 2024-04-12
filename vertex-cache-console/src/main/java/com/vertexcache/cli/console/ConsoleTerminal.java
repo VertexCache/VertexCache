@@ -1,9 +1,6 @@
 package com.vertexcache.cli.console;
 
-
-
-
-import com.vertexcache.cli.domain.Config;
+import com.vertexcache.cli.domain.config.Config;
 import com.vertexcache.common.security.CertificateTrustManager.ServerCertificateTrustManagerNoVerification;
 import com.vertexcache.common.security.KeyPairHelper;
 

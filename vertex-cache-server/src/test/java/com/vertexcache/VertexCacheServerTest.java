@@ -254,7 +254,7 @@ public class VertexCacheServerTest {
 
         // Create SSL context with dynamic certificate import
         SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(null, new X509TrustManager[]{new ServerCertificateTrustManagerVerification("../vertex-cache-config/test_server_certificate.pem")}, null);
+        sslContext.init(null, new X509TrustManager[]{new ServerCertificateTrustManagerVerification("../vertex-cache-config/server/test_server_certificate.pem")}, null);
 
         // Create SSL socket factory
         SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();

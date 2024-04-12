@@ -11,8 +11,6 @@ public class KeyPairHelper {
     private static String ALGO_RSA = "RSA";
     private static int KEY_SIZE = 2048;
 
-
-
     public static KeyPair generate() throws Exception {
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KeyPairHelper.ALGO_RSA);
@@ -23,7 +21,7 @@ public class KeyPairHelper {
         }
     }
 
-    /**
+    /*
      * Encode Key Base64
      */
     public static String encodeKey(Key key) {

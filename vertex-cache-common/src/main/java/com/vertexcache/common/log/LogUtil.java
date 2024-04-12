@@ -57,5 +57,4 @@ public class LogUtil {
 
         return true;
     }
-
 }
