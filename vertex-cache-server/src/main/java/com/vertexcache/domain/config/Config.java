@@ -69,7 +69,7 @@ public class Config extends ConfigBase {
                         this.serverPort = Integer.parseInt(propertiesLoader.getProperty(ConfigKey.SERVER_PORT));
                     }
 
-                    // Encrypt Transport Layer
+                    // Load Log4j2 property file path
                     if (propertiesLoader.isExist(ConfigKey.LOG_FILEPATH)) {
                         this.logFilePath = propertiesLoader.getProperty(ConfigKey.LOG_FILEPATH);
                         this.logLoaded = LogUtil.load(this.logFilePath);

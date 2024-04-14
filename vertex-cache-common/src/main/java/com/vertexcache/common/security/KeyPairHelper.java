@@ -57,4 +57,14 @@ public class KeyPairHelper {
             return keyFactory.generatePublic(new X509EncodedKeySpec(decodedKey));
         }
     }
+
+    public static String publicKeyToString(PublicKey publicKey) {
+        // Get the encoded public key bytes
+        byte[] publicKeyBytes = publicKey.getEncoded();
+
+        // Encode the bytes into a Base64 string
+        String publicKeyString = Base64.getEncoder().encodeToString(publicKeyBytes);
+
+        return publicKeyString;
+    }
 }
