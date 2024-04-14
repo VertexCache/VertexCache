@@ -6,10 +6,14 @@ import com.vertexcache.common.security.CertificateTrustManager.ServerCertificate
 import com.vertexcache.common.security.CertificateTrustManager.ServerCertificateTrustManagerVerification;
 import com.vertexcache.common.security.KeyPairHelper;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.net.ssl.*;
 import java.io.*;
 import java.net.Socket;
+import java.security.InvalidKeyException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -38,12 +42,8 @@ public class ConsoleTerminal {
     }
 
     public void execute() {
-
         Scanner scanner = new Scanner(System.in);
-
         System.out.println(Config.APP_WELCOME);
-        logger.info("VertexCache Console started.");
-
         try {
             OutputStream outputStream = null;
             InputStream inputStream = null;
@@ -58,6 +58,8 @@ public class ConsoleTerminal {
                 inputStream = socket.getInputStream();
             }
 
+            this.outputStartupOK();
+
             // Start the main loop
             while (true) {
                 System.out.print(ConsoleTerminal.consolePrompt);
@@ -70,6 +72,8 @@ public class ConsoleTerminal {
                     System.out.println(ConsoleTerminal.DISPLAY_EXIT);
                     break;
                 }
+
+                logger.info("Request: " + userInput);
 
                 byte[] bytesToSend;
                 if (config.isEncryptMessage()) {
@@ -91,14 +95,14 @@ public class ConsoleTerminal {
                 if (bytesRead != -1) {
                     String receivedMessage = new String(buffer, 0, bytesRead);
                     System.out.println(receivedMessage);
+                    logger.info("Response: " + receivedMessage);
                 } else {
                     System.out.println(ConsoleTerminal.DISPLAY_NO_RESPONSE);
+                    logger.info("Response: " + ConsoleTerminal.DISPLAY_NO_RESPONSE);
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            outputStartUpError("Error, unexpected error", e);
         } finally {
             scanner.close();
         }
@@ -124,4 +128,33 @@ public class ConsoleTerminal {
 
         return socket;
     }
+
+    private void outputStartupOK() {
+        this.outputStartup("OK, Server Started");
+    }
+
+    private void outputStartup(String message) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder
+                .append(Config.APP_NAME).append(":").append(System.lineSeparator())
+                .append("  HOST: ").append(config.getServerHost()).append(System.lineSeparator())
+                .append("  PORT: ").append(config.getServerPort()).append(System.lineSeparator())
+                .append("  Message Layer Encryption Enabled: ").append(config.isEncryptMessage() ? "Yes" : "No").append(System.lineSeparator())
+                .append("  Transport Layer Encryption Enabled: ").append(config.isEncryptTransport() ? "Yes" : "No").append(System.lineSeparator())
+                .append("  Transport Layer Verify Certificate: ").append(config.isVerifyServerCertificate() ? "Yes" : "No").append(System.lineSeparator())
+                .append("  Config file set: ").append(config.isConfigLoaded() ? "Yes" : "No").append(System.lineSeparator())
+                .append("  Config file loaded with no errors: ").append(!config.isConfigError() ? "Yes" : "No").append(System.lineSeparator())
+                .append("  Config file location: ").append(config.getConfigFilePath() != null ? config.getConfigFilePath() : "n/a").append(System.lineSeparator())
+                .append("  Log4j2 config file loaded with no errors: ").append(config.isLogLoaded() ? "Yes" : "No").append(System.lineSeparator())
+                .append("  Log4j2 config file location: ").append(config.getLogFilePath() != null ? config.getLogFilePath() : "n/a").append(System.lineSeparator())
+                .append("Status: ").append(message).append(System.lineSeparator()) ;
+
+        logger.info(stringBuilder.toString());
+    }
+
+    private void outputStartUpError(String message, Exception exception) {
+        this.outputStartup(message);
+        logger.error(exception.getMessage());
+    }
+
 }
