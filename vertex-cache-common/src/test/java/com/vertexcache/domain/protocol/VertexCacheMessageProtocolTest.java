@@ -1,36 +1,21 @@
 package com.vertexcache.domain.protocol;
 
-
-
 import com.vertexcache.common.protocol.VertexCacheMessageProtocol;
 import org.junit.Test;
-
 import java.nio.charset.StandardCharsets;
-
 import static org.junit.Assert.assertArrayEquals;
-
 
 public class VertexCacheMessageProtocolTest {
 
     @Test
     public void testEncodeString() {
-
         byte[] expected = "+SUCCESS\r\n".getBytes(StandardCharsets.UTF_8);
         byte[] actual = VertexCacheMessageProtocol.encodeString("SUCCESS");
         assertArrayEquals(expected, actual);
-
-
-        System.out.println("Encoded Array: " + new String(VertexCacheMessageProtocol.encodeArray(new byte[][]{
-                "Hello".getBytes(StandardCharsets.UTF_8),
-                "World".getBytes(StandardCharsets.UTF_8)
-        })));
-
     }
 
     @Test
     public void testEncodeArray() {
-
-
         byte[] expected = "[2\r\nHello\r\nWorld\r\n]\r\n".getBytes(StandardCharsets.UTF_8);
         byte[][] values = {
                 "Hello".getBytes(StandardCharsets.UTF_8),
@@ -38,6 +23,13 @@ public class VertexCacheMessageProtocolTest {
         };
         byte[] actual = VertexCacheMessageProtocol.encodeArray(values);
         assertArrayEquals(expected, actual);
-
     }
+
+    @Test
+    public void testError() {
+        byte[] expected = "-Error Message\r\n".getBytes(StandardCharsets.UTF_8);
+        byte[] actual = VertexCacheMessageProtocol.encodeError("Error Message");
+        assertArrayEquals(expected, actual);
+    }
+
 }
