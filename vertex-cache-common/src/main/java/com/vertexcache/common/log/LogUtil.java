@@ -3,8 +3,11 @@ package com.vertexcache.common.log;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.ConfigurationSource;
+import org.apache.logging.log4j.core.config.Configurator;
 
 import java.io.File;
+import java.io.FileInputStream;
 
 /*
  * LogLoader help log Log4j2 xml or .properties file based off of file location
@@ -40,21 +43,39 @@ public class LogUtil {
 
     public static boolean load(String log4jConfigFilePath)
     {
-        // Check if the file exists
-        File log4jConfigFile = new File(log4jConfigFilePath);
-        if (!log4jConfigFile.exists()) {
-            System.err.println("Log4j2 configuration file not found: " + log4jConfigFilePath);
-            // Handle the error, maybe set some default configuration or exit the application
+        try {
+            // Check if the file exists
+            File log4jConfigFile = new File(log4jConfigFilePath);
+            if (!log4jConfigFile.exists()) {
+                System.err.println("Log4j2 configuration file not found: " + log4jConfigFilePath);
+                // Handle the error, maybe set some default configuration or exit the application
+                return false;
+            }
+
+            // Initialize log4j with the specified configuration file
+            System.setProperty("log4j.configurationFile", log4jConfigFile.getAbsolutePath());
+
+            // Reload the logging configuration
+            //LoggerContext context = (LoggerContext) LogManager.getContext(false);
+           //context.reconfigure();
+
+           Configurator.initialize(null, log4jConfigFile.getAbsolutePath());
+
+//System.out.println("FILE Exists");
+
+           // ConfigurationSource source = new ConfigurationSource(new FileInputStream(log4jConfigFile));
+           // Configurator.initialize(null, source);
+
+            //ConfigurationSource source = new ConfigurationSource(new FileInputStream(log4jConfigFile));
+
+           // Configurator.initialize(null, source);
+
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
             return false;
         }
-
-        // Initialize log4j with the specified configuration file
-        System.setProperty("log4j.configurationFile", log4jConfigFile.getAbsolutePath());
-
-        // Reload the logging configuration
-        LoggerContext context = (LoggerContext) LogManager.getContext(false);
-        context.reconfigure();
-
-        return true;
     }
+
+
 }

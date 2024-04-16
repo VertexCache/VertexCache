@@ -1,5 +1,6 @@
 package com.vertexcache.server;
 
+import com.vertexcache.common.cli.CommandLineArgsParser;
 import com.vertexcache.common.log.LogUtil;
 import com.vertexcache.domain.cache.Cache;
 import com.vertexcache.domain.config.Config;
@@ -28,6 +29,15 @@ public class SocketServer {
     public SocketServer() {
         this.config = Config.getInstance();
     }
+
+    /*
+    public SocketServer(String[] args) throws Exception {
+
+        this.config = Config.getInstance();
+        this.config.loadPropertiesFromArgs(new CommandLineArgsParser(args));
+    }
+
+     */
 
     public void execute() throws Exception {
         try {

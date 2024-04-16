@@ -31,6 +31,15 @@
             <scope>compile</scope>
         </dependency>
 
+
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>vertex-cache-dashboard</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+
         <!-- Log4j -->
         <!--
         <dependency>
