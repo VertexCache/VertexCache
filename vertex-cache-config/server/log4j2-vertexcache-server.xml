@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
+    <Properties>
+        <Property name="logDir">logs</Property>
+        <Property name="pattern">%d{HH:mm:ss.SSS} [%-4level] - %msg%n</Property>
+    </Properties>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%-4level] - %msg%n"/>
+            <PatternLayout pattern="${pattern}"/>
         </Console>
-        <File name="File" fileName="logs/vertex-cache-server.log">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%-4level] - %msg%n"/>
+        <File name="File" fileName="${logDir}/vertex-cache-server.log">
+            <PatternLayout pattern="${pattern}"/>
         </File>
     </Appenders>
     <Loggers>

@@ -1,6 +1,6 @@
 package com.vertexcache;
 
-import com.vertexcache.server.SocketServer;
+import com.vertexcache.server.service.SocketServer;
 
 import com.vertexcache.common.security.CertificateTrustManager.ServerCertificateTrustManagerNoVerification;
 import com.vertexcache.common.security.CertificateTrustManager.ServerCertificateTrustManagerVerification;
@@ -188,7 +188,7 @@ public class VertexCacheServerTest {
      * Ignore checking for Cert, just accepts it
      * @throws Exception
      */
-    @Test
+   @Test
     public void testPingWithPublicKeyAndSSLIgnoreValidCert() throws Exception {
 
         // Create SSL context and trust manager
@@ -249,7 +249,7 @@ public class VertexCacheServerTest {
 
 
 
-   @Test
+  @Test
     public void testPingWithDynamicCertificateImport() throws Exception {
 
         // Create SSL context with dynamic certificate import

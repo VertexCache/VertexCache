@@ -12,7 +12,6 @@
         <module>vertex-cache-common</module>
         <module>vertex-cache-server</module>
         <module>vertex-cache-console</module>
-        <module>vertex-cache-dashboard</module>
     </modules>
 
     <properties>
