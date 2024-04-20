@@ -22,6 +22,7 @@ public class SocketServer {
 
     private static final LogUtil logger = new LogUtil(SocketServer.class);
 
+    private ExecutorService executor;
     private ServerSocket serverSocket = null;
     private Config config;
 
@@ -29,18 +30,11 @@ public class SocketServer {
     final String ANSI_GREEN = "\u001B[32m";
     final String ANSI_RESET = "\u001B[0m";
 
+
+
     public SocketServer() {
         this.config = Config.getInstance();
     }
-
-    /*
-    public SocketServer(String[] args) throws Exception {
-
-        this.config = Config.getInstance();
-        this.config.loadPropertiesFromArgs(new CommandLineArgsParser(args));
-    }
-
-     */
 
     public void execute() throws Exception {
         try {
@@ -56,12 +50,12 @@ public class SocketServer {
             }
 
             outputStartupOK();
-            ExecutorService executor = Executors.newCachedThreadPool(); // maybe use fixed-size thread pool instead?
+            this.executor = Executors.newCachedThreadPool(); // maybe use fixed-size thread pool instead?
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 outputInfo("Connection: " + clientSocket);
-                executor.execute(new ClientHandler(clientSocket, config, commandService));
+                this.executor.execute(new ClientHandler(clientSocket, config, commandService));
             }
         } catch (BindException e) {
             outputStartUpError("Error, Port already in use", e);
@@ -79,6 +73,20 @@ public class SocketServer {
             }
         }
     }
+
+    public void shutdown() {
+        try {
+            if(this.executor != null) {
+                this.executor.shutdown();
+            }
+            if(this.serverSocket != null) {
+                this.serverSocket.close();
+            }
+        } catch (IOException exception) {
+            logger.error(exception.getMessage());
+        }
+    }
+
 
     /**
      * Config SSLServerSocket, does require valid keystore file and associated password

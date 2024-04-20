@@ -19,6 +19,8 @@ public class Argument {
         return args;
     }
 
+    public void setArgs(List<String> args) { this.args = args;}
+
     public boolean isArgsExist() {
         return !args.isEmpty();
     }

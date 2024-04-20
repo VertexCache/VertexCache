@@ -32,7 +32,7 @@ public class Config extends ConfigBase {
     private String keystoreFilePath;
     private String keystorePassword;
 
-    private EvictionPolicy cacheEvictionPolicy;
+    private EvictionPolicy cacheEvictionPolicy = EvictionPolicy.NONE;
     private static int DEFAULT_CACHE_SIZE=1000000;
     private int cacheSize;
 

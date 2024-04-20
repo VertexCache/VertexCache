@@ -90,6 +90,8 @@ public class Cache<K, V> {
         return cache.containsValue(value);
     }
 
+    public void remove(K primaryKey) { cache.remove(primaryKey);}
+
     public int size() {
         return cache.size();
     }

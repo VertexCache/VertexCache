@@ -7,6 +7,7 @@ import com.vertexcache.server.domain.command.argument.ArgumentParser;
 import com.vertexcache.server.domain.command.Command;
 import com.vertexcache.server.domain.command.CommandResponse;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,14 +15,14 @@ public class SetCommand implements Command<String> {
 
     private static final LogUtil logger = new LogUtil(SetCommand.class);
 
-    private static final String SUB_ARG_SECONDARY_INDEX_ONE = "IDX1";
-    private static final String SUB_ARG_SECONDARY_INDEX_TWO = "IDX2";
+    private static final String SUB_ARG_SECONDARY_INDEX_ONE = "idx1";
+    private static final String SUB_ARG_SECONDARY_INDEX_TWO = "idx2";
 
     public static final String COMMAND_KEY = "set";
-    private Set<String> subArguments;
+    private ArrayList<String> subArguments;
 
     public SetCommand() {
-        this.subArguments = new HashSet<>();
+        this.subArguments = new ArrayList<>();
         this.subArguments.add(SUB_ARG_SECONDARY_INDEX_ONE);
         this.subArguments.add(SUB_ARG_SECONDARY_INDEX_TWO);
     }
