@@ -2,6 +2,7 @@ package com.vertexcache.server.domain.cache.impl;
 
 public enum EvictionPolicy {
     NONE("None", "None", "No eviction"),
+    ARC("ARC", "Adaptive Replacement Cache", "Combines the benefits of both LRU (Least Recently Used) and LFU (Least Frequently Used) cache"),
     LRU("LRU", "Least Recently Used", "Evict least recently accessed items"),
     MRU("MRU", "Most Recently Used", "Evict most recently accessed items"),
     FIFO("FIFO", "First In First Out", "Evict oldest items first"),

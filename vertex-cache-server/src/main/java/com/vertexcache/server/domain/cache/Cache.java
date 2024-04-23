@@ -11,6 +11,9 @@ public class Cache<K, V> {
 
     private Cache(EvictionPolicy evictionPolicy, int sizeCapacity) {
         switch (evictionPolicy) {
+            case ARC:
+                cache = new CacheARC<>(sizeCapacity);
+                break;
             case LRU:
                 cache = new CacheLRU<>(sizeCapacity);
                 break;
