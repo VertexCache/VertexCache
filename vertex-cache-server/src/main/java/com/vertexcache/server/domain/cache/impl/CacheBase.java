@@ -5,7 +5,7 @@ import com.vertexcache.server.exception.VertexCacheException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class CacheBase<K, V> {
+abstract public class CacheBase<K, V> {
 
     protected static final int MAX_SECONDARY_INDEXES = 2;
 
@@ -13,7 +13,11 @@ public abstract class CacheBase<K, V> {
     private Map<Object, K> secondaryIndexOne = new ConcurrentHashMap<>();
     private Map<Object, K> secondaryIndexTwo = new ConcurrentHashMap<>();
 
-    public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheException {
+    abstract public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheException;
+    abstract public V get(K primaryKey);
+    abstract public void remove(K primaryKey);
+
+    protected void putDefaultImpl(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheException {
         if(secondaryKeys.length <= MAX_SECONDARY_INDEXES) {
             try {
                 synchronized (this.getPrimaryCache()) {
@@ -38,19 +42,19 @@ public abstract class CacheBase<K, V> {
         }
     }
 
-    public void remove(K key) {
+    public void removeDefaultImpl(K primaryKey) {
         synchronized (this) {
-            primaryCache.remove(key);
+            primaryCache.remove(primaryKey);
         }
         synchronized (secondaryIndexOne) {
-            secondaryIndexOne.values().removeIf(k -> k.equals(key));
+            secondaryIndexOne.values().removeIf(k -> k.equals(primaryKey));
         }
         synchronized (secondaryIndexTwo) {
-            secondaryIndexTwo.values().removeIf(k -> k.equals(key));
+            secondaryIndexTwo.values().removeIf(k -> k.equals(primaryKey));
         }
     }
 
-    public V get(K primaryKey) {
+    public V getDefaultImpl(K primaryKey) {
         synchronized (this) {
             return this.getPrimaryCache().get(primaryKey);
         }
@@ -89,7 +93,11 @@ public abstract class CacheBase<K, V> {
     }
 
     public synchronized int size() {
-        return this.getPrimaryCache().size();
+        if(!this.getPrimaryCache().isEmpty()) {
+            return this.getPrimaryCache().size();
+        }  else {
+            return 0;
+        }
     }
 
     public void clear() {
@@ -104,27 +112,39 @@ public abstract class CacheBase<K, V> {
         }
     }
 
-    public Map<K, V> getPrimaryCache() {
+    protected Map<K, V> getPrimaryCache() {
         return primaryCache;
     }
 
-    public void setPrimaryCache(Map<K, V> primaryCache) {
+    protected void setPrimaryCache(Map<K, V> primaryCache) {
         this.primaryCache = primaryCache;
     }
 
-    public Map<Object, K> getSecondaryIndexOne() {
+    protected Map<Object, K> getSecondaryIndexOne() {
         return secondaryIndexOne;
     }
 
-    public void setSecondaryIndexOne(Map<Object, K> secondaryIndexOne) {
+    protected void setSecondaryIndexOne(Map<Object, K> secondaryIndexOne) {
         this.secondaryIndexOne = secondaryIndexOne;
     }
 
-    public Map<Object, K> getSecondaryIndexTwo() {
+    protected Map<Object, K> getSecondaryIndexTwo() {
         return secondaryIndexTwo;
     }
 
-    public void setSecondaryIndexTwo(Map<Object, K> secondaryIndexTwo) {
+    protected void setSecondaryIndexTwo(Map<Object, K> secondaryIndexTwo) {
         this.secondaryIndexTwo = secondaryIndexTwo;
+    }
+
+    protected void updateSecondaryKeys(K primaryKey, Object... secondaryKeys) {
+        for (int i = 0; i < secondaryKeys.length; i++) {
+            if (secondaryKeys[i] != null) {
+                if (i == 0) {
+                    this.getSecondaryIndexOne().put((K) secondaryKeys[i], primaryKey);
+                } else if (i == 1) {
+                    this.getSecondaryIndexTwo().put((K) secondaryKeys[i], primaryKey);
+                }
+            }
+        }
     }
 }

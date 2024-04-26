@@ -1,5 +1,7 @@
 package com.vertexcache.server.domain.cache.impl;
 
+import com.vertexcache.server.exception.VertexCacheException;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -54,9 +56,9 @@ public class CacheARC<K, V> extends CacheBase<K, V> {
         this.setSecondaryIndexTwo(Collections.synchronizedMap(new LinkedHashMap<Object, K>()));
     }
 
-    public void put(K key, V value, Object secondaryKeyOne, Object secondaryKeyTwo) {
+    public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheException {
         synchronized (this) {
-            if (this.getPrimaryCache().containsKey(key) || ghostCache.containsKey(key)) {
+            if (this.getPrimaryCache().containsKey(primaryKey) || ghostCache.containsKey(primaryKey)) {
                 return; // Key already in cache, no need to add
             }
 
@@ -72,16 +74,17 @@ public class CacheARC<K, V> extends CacheBase<K, V> {
                 }
             }
 
-            this.getPrimaryCache().put(key, value);
-            if (secondaryKeyOne != null) {
-                this.getSecondaryIndexOne().put(secondaryKeyOne, key);
+            this.getPrimaryCache().put(primaryKey, value);
+            if (secondaryKeys.length > 0 && secondaryKeys[0] != null) {
+                this.getSecondaryIndexOne().put(secondaryKeys[0], primaryKey);
             }
-            if (secondaryKeyTwo != null) {
-                this.getSecondaryIndexTwo().put(secondaryKeyTwo, key);
+            if (secondaryKeys.length > 1 && secondaryKeys[1] != null) {
+                this.getSecondaryIndexTwo().put(secondaryKeys[1], primaryKey);
             }
         }
     }
 
+    @Override
     public V get(K key) {
         synchronized (this) {
             if (this.getPrimaryCache().containsKey(key)) {
@@ -98,16 +101,17 @@ public class CacheARC<K, V> extends CacheBase<K, V> {
         }
     }
 
-    public void remove(K key) {
+    @Override
+    public void remove(K primaryKey) {
         synchronized (this) {
-            this.getPrimaryCache().remove(key);
-            ghostCache.remove(key);
-            mainEvict.remove(key);
-            ghostEvict.remove(key);
+            this.getPrimaryCache().remove(primaryKey);
+            ghostCache.remove(primaryKey);
+            mainEvict.remove(primaryKey);
+            ghostEvict.remove(primaryKey);
 
             // Remove from secondary indexes
             for (Map<Object, K> index : new Map[]{this.getSecondaryIndexOne(), this.getSecondaryIndexTwo()}) {
-                index.entrySet().removeIf(entry -> entry.getValue().equals(key));
+                index.entrySet().removeIf(entry -> entry.getValue().equals(primaryKey));
             }
         }
     }

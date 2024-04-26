@@ -1,5 +1,7 @@
 package com.vertexcache.server.domain.cache.impl;
 
+import com.vertexcache.server.exception.VertexCacheException;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -34,6 +36,22 @@ public class CacheMRU<K, V> extends CacheBase<K, V> {
         });
     }
 
+    @Override
+    public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheException {
+        this.putDefaultImpl(primaryKey,value,secondaryKeys);
+    }
+
+    @Override
+    public V get(K primaryKey) {
+        return this.getDefaultImpl(primaryKey);
+    }
+
+    @Override
+    public void remove(K primaryKey) {
+        this.removeDefaultImpl(primaryKey);
+    }
+
+    @Override
     public V getBySecondaryKeyIndexOne(Object secondaryKey) {
         if (secondaryKey != null && this.getSecondaryIndexOne().containsKey(secondaryKey)) {
             K key = this.getSecondaryIndexOne().get(secondaryKey);
@@ -47,6 +65,7 @@ public class CacheMRU<K, V> extends CacheBase<K, V> {
         return null;
     }
 
+    @Override
     public V getBySecondaryKeyIndexTwo(Object secondaryKey) {
         if (secondaryKey != null && this.getSecondaryIndexTwo().containsKey(secondaryKey)) {
             K key = this.getSecondaryIndexTwo().get(secondaryKey);

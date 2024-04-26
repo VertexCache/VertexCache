@@ -18,6 +18,7 @@ public class CacheRandom<K, V> extends CacheBase<K, V> {
         this.random = new Random();
     }
 
+    @Override
     public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheException {
         if(secondaryKeys.length <= MAX_SECONDARY_INDEXES) {
             try {
@@ -43,6 +44,16 @@ public class CacheRandom<K, V> extends CacheBase<K, V> {
         } else {
             throw new VertexCacheException("Too many secondary index, maximum 2 allowed.");
         }
+    }
+
+    @Override
+    public V get(K primaryKey) {
+        return this.getDefaultImpl(primaryKey);
+    }
+
+    @Override
+    public void remove(K primaryKey) {
+        this.removeDefaultImpl(primaryKey);
     }
 
     private void evictRandom() {

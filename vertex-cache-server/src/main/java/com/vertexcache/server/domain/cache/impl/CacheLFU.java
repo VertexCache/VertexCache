@@ -20,6 +20,7 @@ public class CacheLFU <K, V> extends CacheBase<K, V> {
         this.setSecondaryIndexTwo(Collections.synchronizedMap(new LinkedHashMap<>(sizeCapacity, 0.75f, true)));
     }
 
+    @Override
     public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheException {
         if(secondaryKeys.length <= MAX_SECONDARY_INDEXES) {
             try {
@@ -51,6 +52,12 @@ public class CacheLFU <K, V> extends CacheBase<K, V> {
         }
     }
 
+    @Override
+    public void remove(K primaryKey) {
+        this.removeDefaultImpl(primaryKey);
+    }
+
+    @Override
     public V get(K key) {
         V value;
         synchronized (this.getPrimaryCache()) {

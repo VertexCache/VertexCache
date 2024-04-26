@@ -1,5 +1,7 @@
 package com.vertexcache.server.domain.cache.impl;
 
+import com.vertexcache.server.exception.VertexCacheException;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -37,4 +39,21 @@ public class CacheFIFO<K, V> extends CacheBase<K, V> {
         this.setSecondaryIndexOne(Collections.synchronizedMap(new LinkedHashMap<>(sizeCapacity, LOAD_FACTOR, false)));
         this.setSecondaryIndexTwo(Collections.synchronizedMap(new LinkedHashMap<>(sizeCapacity, LOAD_FACTOR, false)));
     }
+
+    @Override
+    public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheException {
+        this.putDefaultImpl(primaryKey,value,secondaryKeys);
+    }
+
+    @Override
+    public V get(K primaryKey) {
+        return this.getDefaultImpl(primaryKey);
+    }
+
+    @Override
+    public void remove(K primaryKey) {
+        this.removeDefaultImpl(primaryKey);
+    }
+
+
 }

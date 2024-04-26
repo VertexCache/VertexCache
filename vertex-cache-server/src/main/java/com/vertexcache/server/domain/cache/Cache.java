@@ -11,9 +11,6 @@ public class Cache<K, V> {
 
     private Cache(EvictionPolicy evictionPolicy, int sizeCapacity) {
         switch (evictionPolicy) {
-            case ARC:
-                cache = new CacheARC<>(sizeCapacity);
-                break;
             case LRU:
                 cache = new CacheLRU<>(sizeCapacity);
                 break;
@@ -28,6 +25,15 @@ public class Cache<K, V> {
                 break;
             case RANDOM:
                 cache = new CacheRandom<>(sizeCapacity);
+                break;
+            case ARC:
+                cache = new CacheARC<>(sizeCapacity);
+                break;
+            case TwoQueues:
+                cache = new CacheTwoQueues<>(sizeCapacity);
+                break;
+            case Clock:
+                cache = new CacheClock<>(sizeCapacity);
                 break;
             case NONE:
             default:
