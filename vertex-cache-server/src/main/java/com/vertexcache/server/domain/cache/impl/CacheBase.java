@@ -146,5 +146,13 @@ abstract public class CacheBase<K, V> {
                 }
             }
         }
+        /*
+              if (secondaryKeys.length > 0 && secondaryKeys[0] != null) {
+                this.getSecondaryIndexOne().put((K) secondaryKeys[0], primaryKey);
+            }
+            if (secondaryKeys.length > 1 && secondaryKeys[1] != null) {
+                this.getSecondaryIndexTwo().put((K) secondaryKeys[1], primaryKey);
+            }
+         */
     }
 }

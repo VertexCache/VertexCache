@@ -12,6 +12,7 @@ public enum EvictionPolicy {
     ARC("ARC", "Adaptive Replacement Cache", "Combines the benefits of both LRU (Least Recently Used) and LFU (Least Frequently Used) cache"),
     TwoQueues("2Queue", "Two Queues", "Cache by prioritizing recently accessed items (inQueue) and identifying less frequently accessed items for potential eviction (outQueue)"),
     Clock("Clock", "Clock (or Clock-Pro)", "Cache based on the Clock (or Clock-Pro) algorithm, designed to efficiently manage a cache of key-value pairs with a limited capacity"),
+    TinyLFU("TinyLFU", "Tiny Least Frequently Used", " Cache designed to efficiently manage cache evictions while maintaining high hit ratios, especially in scenarios with skewed access patterns"),
     ;
 
     private final String abbreviation;

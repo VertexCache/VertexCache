@@ -35,6 +35,9 @@ public class Cache<K, V> {
             case Clock:
                 cache = new CacheClock<>(sizeCapacity);
                 break;
+            case TinyLFU:
+                cache = new CacheTinyLFU<>(sizeCapacity);
+                break;
             case NONE:
             default:
                 cache = new CacheNoEviction<>();
