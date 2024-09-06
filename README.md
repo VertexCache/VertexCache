@@ -6,35 +6,52 @@
   -->
 <meta name='keywords' content='in-memory cache, caching, java, data structure, database'>
 
-# VertexCache
+VertexCache
+==============
 
-## What is VertexCache?
+# What is VertexCache?
 VertexCache is a straightforward in-memory caching system designed with a strong emphasis on security. It supports a 
 range of algorithms and offers multi-index caching capabilities, allowing for efficient data retrieval using one primary 
 key and two secondary keys.
 
 VertexCache is implemented in Java and uses a straightforward, string-based protocol call VCMP (VertexCacheProtocolMessage) for message delivery, which is transmitted over the wire as bytes.
 
-## Features
+# Getting Started
+
+
+# Features
 
 * [Security](#Security) 
   * No Encryption / Plain Transport
   * Encryption during Transport via TLS (optional)
   * Encryption at the message layer using Public/Private keys (optional)
   * Encryption during Transport and message layer (optional)
-* Eviction Policies / Cache Algorithms
-* Interactive Console
-* Robust Logging
-* Easy Configuration
+* [Eviction Policies / Cache Algorithms](#eviction-policies---cache-algorithms)
+* [Interactive Console](#interactive-console)
+* [Robust Logging](#robust-logging)
+* [Easy Configuration](#easy-configuration)
 
-## Security
+# Security
 
-## Eviction policies / Cache Algorithms
+# Eviction Policies / Cache Algorithms
 
-## Interactive Console
+# Interactive Console
 
-## Robust Logging
+# Robust Logging
 
-## Easy Configuration
+# Easy Configuration
 
-### Example
+## Property File location
+
+## Property File Example
+
+
+---
+
+# VertexCache Developer Guide 
+
+## Overview
+
+## Source Code Layout
+
+## Compiling & Running
