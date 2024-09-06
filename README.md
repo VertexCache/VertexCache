@@ -26,14 +26,14 @@ VertexCache is implemented in Java and uses a straightforward, string-based prot
   * Encryption during Transport via TLS (optional)
   * Encryption at the message layer using Public/Private keys (optional)
   * Encryption during Transport and message layer (optional)
-* [Eviction Policies / Cache Algorithms](#eviction-policies---cache-algorithms)
+* [Eviction Policies and Cache Algorithms](#eviction-policies-and-cache-algorithms)
 * [Interactive Console](#interactive-console)
 * [Robust Logging](#robust-logging)
 * [Easy Configuration](#easy-configuration)
 
 # Security
 
-# Eviction Policies / Cache Algorithms
+# Eviction Policies and Cache Algorithms
 
 # Interactive Console
 
