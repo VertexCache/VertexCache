@@ -38,7 +38,7 @@ public class CacheTest {
 
         //Cache<Integer, String> plainCache = (Cache<Integer, String>) CacheService.getInstance(EvictionPolicy.RANDOM,1000);
 
-        Cache<Object, Object> plainCache = Cache.getInstance(EvictionPolicy.RANDOM, 1000);
+        Cache<Object, Object> plainCache = Cache.getInstance(EvictionPolicy.TwoQueues, 1000);
 
        // Cache<Integer, String> plainCache = new Cache<>(EvictionPolicy.LFU,1000);
 

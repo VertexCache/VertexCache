@@ -1,5 +1,6 @@
 package com.vertexcache.console.domain.terminal;
 
+import com.vertexcache.common.version.VersionUtil;
 import com.vertexcache.console.domain.config.Config;
 import com.vertexcache.common.log.LogUtil;
 import com.vertexcache.common.security.CertificateTrustManager.ServerCertificateTrustManagerNoVerification;
@@ -126,15 +127,16 @@ public class ConsoleTerminal {
     }
 
     private void outputStartupOK() {
-        this.outputStartup("OK, Server Started");
+        this.outputStartup("OK, Console Client Started");
     }
 
     private void outputStartup(String message) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
                 .append(Config.APP_NAME).append(":").append(System.lineSeparator())
-                .append("  HOST: ").append(config.getServerHost()).append(System.lineSeparator())
-                .append("  PORT: ").append(config.getServerPort()).append(System.lineSeparator())
+                .append("  Version: ").append(VersionUtil.getAppVersion()).append(System.lineSeparator())
+                .append("  Host: ").append(config.getServerHost()).append(System.lineSeparator())
+                .append("  Port: ").append(config.getServerPort()).append(System.lineSeparator())
                 .append("  Message Layer Encryption Enabled: ").append(config.isEncryptMessage() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Transport Layer Encryption Enabled: ").append(config.isEncryptTransport() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Transport Layer Verify Certificate: ").append(config.isVerifyServerCertificate() ? "Yes" : "No").append(System.lineSeparator())

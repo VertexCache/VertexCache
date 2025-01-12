@@ -34,7 +34,7 @@ public class ClientHandler implements Runnable {
         try (InputStream inputStream = clientSocket.getInputStream(); OutputStream outputStream = clientSocket.getOutputStream()) {
             byte[] buffer = new byte[1024];
             int bytesRead;
-            Cipher cipher = config.isEncryptMessage() ? Cipher.getInstance("RSA") : null;
+            Cipher cipher = config.isEncryptMessage() ? Cipher.getInstance("RSA/ECB/PKCS1Padding") : null;
 
             while ((bytesRead = inputStream.read(buffer)) != -1) {
                 byte[] processedData = processInputData(buffer, bytesRead, cipher);
@@ -47,6 +47,7 @@ public class ClientHandler implements Runnable {
         } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
                  BadPaddingException | InvalidKeyException e) {
             // Log or handle the exception appropriately
+            System.out.println(e.getStackTrace());
             logger.fatal(e.getMessage());
         } finally {
             try {
@@ -61,7 +62,7 @@ public class ClientHandler implements Runnable {
     private byte[] processInputData(byte[] buffer, int bytesRead, Cipher cipher) throws InvalidKeyException,
             IllegalBlockSizeException, BadPaddingException {
         if(this.config.isEncryptMessage()) {
-            cipher.init(Cipher.DECRYPT_MODE, this.config.getPrivateKey());
+            cipher.init(Cipher.PRIVATE_KEY, this.config.getPrivateKey());
             byte[] decryptedBytes = cipher.doFinal(buffer, 0, bytesRead);
             String decryptedMessage = new String(decryptedBytes);
             logger.info("Request: " + decryptedMessage);

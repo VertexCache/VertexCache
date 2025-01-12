@@ -1,6 +1,7 @@
 package com.vertexcache.server.service;
 
 import com.vertexcache.common.log.LogUtil;
+import com.vertexcache.common.version.VersionUtil;
 import com.vertexcache.server.domain.cache.Cache;
 import com.vertexcache.server.domain.config.Config;
 import com.vertexcache.server.exception.VertexCacheSSLServerSocketException;
@@ -148,7 +149,8 @@ public class SocketServer {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
                 .append(this.config.getAppName()).append(":").append(System.lineSeparator())
-                .append("  PORT: ").append(config.getServerPort()).append(System.lineSeparator())
+                .append("  Version: ").append(VersionUtil.getAppVersion()).append(System.lineSeparator())
+                .append("  Port: ").append(config.getServerPort()).append(System.lineSeparator())
                 .append("  Cache Eviction Policy: ").append(config.getCacheEvictionPolicy().toString()).append(System.lineSeparator())
                 .append("  Cache Size (only applies when eviction is not NONE): ").append(config.getCacheSize()).append(System.lineSeparator())
                 .append("  Transport Layer Encryption Enabled: ").append(config.isEncryptTransport() ? "Yes" : "No").append(System.lineSeparator())
