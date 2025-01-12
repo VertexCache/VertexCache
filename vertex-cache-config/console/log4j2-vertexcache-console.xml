@@ -2,7 +2,7 @@
 <Configuration status="WARN">
     <Properties>
         <Property name="logDir">logs</Property>
-        <Property name="pattern">%d{HH:mm:ss.SSS} [%-4level] - %msg%n</Property>
+        <Property name="pattern">%d{yyyy-MM-dd HH:mm:ss} [%-5level] - %msg%n</Property>
     </Properties>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
