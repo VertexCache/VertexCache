@@ -8,8 +8,6 @@ import com.vertexcache.server.domain.command.Command;
 import com.vertexcache.server.domain.command.CommandResponse;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 public class SetCommand implements Command<String> {
 
