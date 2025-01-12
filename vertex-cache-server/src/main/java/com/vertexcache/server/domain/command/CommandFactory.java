@@ -4,7 +4,6 @@ import com.vertexcache.server.domain.command.impl.*;
 
 import java.util.Map;
 
-import com.vertexcache.server.domain.command.impl.*;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
 public class CommandFactory {
@@ -19,6 +18,7 @@ public class CommandFactory {
         commandMap.put(GetSecondaryIdxTwoCommand.COMMAND_KEY, new GetSecondaryIdxTwoCommand());
 
         commandMap.put(SetCommand.COMMAND_KEY, new SetCommand());
+        commandMap.put(DelCommand.COMMAND_KEY, new DelCommand());
     }
 
     public Command<String> getCommand(String commandName) {
