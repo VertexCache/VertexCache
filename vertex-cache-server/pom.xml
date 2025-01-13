@@ -12,7 +12,7 @@
 
     <groupId>com.vertexcache</groupId>
     <artifactId>vertex-cache-server</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.0</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
