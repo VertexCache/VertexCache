@@ -47,7 +47,6 @@ public class LogUtil {
             // Check if the file exists
             File log4jConfigFile = new File(log4jConfigFilePath);
             if (!log4jConfigFile.exists()) {
-                System.err.println("Log4j2 configuration file not found: " + log4jConfigFilePath);
                 // Handle the error, maybe set some default configuration or exit the application
                 return false;
             }
@@ -57,18 +56,9 @@ public class LogUtil {
 
             // Reload the logging configuration
             //LoggerContext context = (LoggerContext) LogManager.getContext(false);
-           //context.reconfigure();
+            //context.reconfigure();
 
-           Configurator.initialize(null, log4jConfigFile.getAbsolutePath());
-
-//System.out.println("FILE Exists");
-
-           // ConfigurationSource source = new ConfigurationSource(new FileInputStream(log4jConfigFile));
-           // Configurator.initialize(null, source);
-
-            //ConfigurationSource source = new ConfigurationSource(new FileInputStream(log4jConfigFile));
-
-           // Configurator.initialize(null, source);
+            Configurator.initialize(null, log4jConfigFile.getAbsolutePath());
 
             return true;
         } catch (Exception ex) {
@@ -76,6 +66,4 @@ public class LogUtil {
             return false;
         }
     }
-
-
 }
