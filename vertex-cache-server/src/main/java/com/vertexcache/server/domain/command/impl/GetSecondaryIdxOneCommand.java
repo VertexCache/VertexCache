@@ -1,14 +1,12 @@
 package com.vertexcache.server.domain.command.impl;
 
-import com.vertexcache.common.log.LogUtil;
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.server.domain.cache.Cache;
 import com.vertexcache.server.domain.command.Command;
 import com.vertexcache.server.domain.command.CommandResponse;
 import com.vertexcache.server.domain.command.argument.ArgumentParser;
 
 public class GetSecondaryIdxOneCommand implements Command<String> {
-
-    private static final LogUtil logger = new LogUtil(GetSecondaryIdxOneCommand.class);
 
     public static final String COMMAND_KEY = "GETIDX1";
 
@@ -28,7 +26,7 @@ public class GetSecondaryIdxOneCommand implements Command<String> {
             }
         } catch (Exception ex) {
             commandResponse.setResponseError(COMMAND_KEY + " command failed, fatal error, check logs.");
-            logger.fatal(ex.getMessage());
+            LogHelper.getInstance().logFatal(ex.getMessage());
         }
         return commandResponse;
     }

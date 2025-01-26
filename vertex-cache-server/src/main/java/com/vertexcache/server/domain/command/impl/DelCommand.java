@@ -1,14 +1,12 @@
 package com.vertexcache.server.domain.command.impl;
 
-import com.vertexcache.common.log.LogUtil;
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.server.domain.cache.Cache;
 import com.vertexcache.server.domain.command.Command;
 import com.vertexcache.server.domain.command.CommandResponse;
 import com.vertexcache.server.domain.command.argument.ArgumentParser;
 
 public class DelCommand implements Command<String> {
-
-    private static final LogUtil logger = new LogUtil(DelCommand.class);
 
     public static final String COMMAND_KEY = "del";
 
@@ -30,7 +28,7 @@ public class DelCommand implements Command<String> {
             }
         } catch (Exception ex) {
             commandResponse.setResponseError("DEL command failed, fatal error, check logs.");
-            logger.fatal(ex.getMessage());
+            LogHelper.getInstance().logFatal(ex.getMessage());
         }
         return commandResponse;
     }

@@ -3,7 +3,7 @@ package com.vertexcache.server.domain.config;
 import com.vertexcache.common.config.ConfigBase;
 import com.vertexcache.common.config.reader.PropertiesLoader;
 import com.vertexcache.common.cli.CommandLineArgsParser;
-import com.vertexcache.common.log.LogUtil;
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.security.KeyPairHelper;
 import com.vertexcache.server.domain.cache.impl.EvictionPolicy;
 
@@ -11,8 +11,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 
 public class Config extends ConfigBase {
-
-    private static final LogUtil logger = new LogUtil(Config.class);
 
     private static final String APP_NAME = "VertexCache";
     private boolean configLoaded = false;
@@ -72,7 +70,8 @@ public class Config extends ConfigBase {
                     // Load Log4j2 property file path
                     if (propertiesLoader.isExist(ConfigKey.LOG_FILEPATH)) {
                         this.logFilePath = propertiesLoader.getProperty(ConfigKey.LOG_FILEPATH);
-                        this.logLoaded = LogUtil.load(this.logFilePath);
+                        //this.logLoaded = LogUtil.load(this.logFilePath);
+                        this.logLoaded = LogHelper.getInstance().loadConfiguration(this.logFilePath);
                     }
 
                     // Encrypt Message Layer
@@ -95,11 +94,11 @@ public class Config extends ConfigBase {
                         try {
                             this.cacheEvictionPolicy = EvictionPolicy.fromString(propertiesLoader.getProperty(ConfigKey.CACHE_EVICTION));
                         } catch (IllegalArgumentException ie) {
-                            logger.warn("Invalid eviction policy given, defaulting to NONE");
+                            LogHelper.getInstance().logWarn("Invalid eviction policy given, defaulting to NONE");
                             this.cacheEvictionPolicy = EvictionPolicy.NONE;
                         }
                     } else {
-                        logger.warn("Non-existent eviction policy given, defaulting to NONE");
+                        LogHelper.getInstance().logWarn("Non-existent eviction policy given, defaulting to NONE");
                     }
 
                     // Cache Size, applied when Eviction Policy is not set to NONE
@@ -109,16 +108,24 @@ public class Config extends ConfigBase {
                         if (cacheSize <= Integer.MAX_VALUE) {
                             this.cacheSize = (int) cacheSize;
                         } else {
-                            logger.warn("Cache maximum size exceeded, defaulting to " + DEFAULT_CACHE_SIZE);
+                            LogHelper.getInstance().logWarn("Cache maximum size exceeded, defaulting to " + DEFAULT_CACHE_SIZE);
                         }
                     } else {
-                        logger.warn("Non-existent cache size, defaulting to " + DEFAULT_CACHE_SIZE);
+                        LogHelper.getInstance().logWarn("Non-existent cache size, defaulting to " + DEFAULT_CACHE_SIZE);
                     }
 
+                    System.out.println("end load file");
+
+                } else {
+                    System.out.println("Config path wrong");
+                    System.exit(0);
                 }
+            } else {
+                System.out.println("Missing config seeting");
             }
 
         } catch (Exception exception) {
+            System.out.println(exception.getMessage());
             this.configLoaded = false;
             this.configError = true;
         }

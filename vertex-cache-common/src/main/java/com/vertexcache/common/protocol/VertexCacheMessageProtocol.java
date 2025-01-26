@@ -1,14 +1,12 @@
 package com.vertexcache.common.protocol;
 
-import com.vertexcache.common.log.LogUtil;
+import com.vertexcache.common.log.LogHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class VertexCacheMessageProtocol {
-
-    private static final LogUtil logger = new LogUtil(VertexCacheMessageProtocol.class);
 
     private static final String SYSTEM_ERROR = "ERR, Unable to convert to bytes";
 
@@ -45,13 +43,13 @@ public class VertexCacheMessageProtocol {
             output.write(getBytes("", ARRAY_SUFFIX));
             return output.toByteArray();
         } catch (IOException e) {
-            logger.fatal(e.getMessage());
+            LogHelper.getInstance().logFatal(e.getMessage());
             return getBytes(SYSTEM_ERROR,ERROR_PREFIX);
         } finally {
             try {
                 output.close();
             } catch (IOException e) {
-                logger.fatal(e.getMessage());
+                LogHelper.getInstance().logFatal(e.getMessage());
             }
         }
     }
@@ -75,13 +73,13 @@ public class VertexCacheMessageProtocol {
             output.write(LINE_FFED);
             return output;
         } catch (IOException e) {
-            logger.fatal(e.getMessage());
+            LogHelper.getInstance().logFatal(e.getMessage());
             return getByteArrayOutputStream(SYSTEM_ERROR,ERROR_PREFIX);
         } finally {
             try {
                 output.close();
             } catch (IOException e) {
-                logger.fatal(e.getMessage());
+                LogHelper.getInstance().logFatal(e.getMessage());
             }
         }
     }

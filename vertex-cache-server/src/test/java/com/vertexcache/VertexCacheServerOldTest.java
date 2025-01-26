@@ -12,14 +12,14 @@ import org.junit.jupiter.api.Test;
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.security.*;
 import javax.crypto.*;
 import javax.net.ssl.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class VertexCacheServerTest {
+public class VertexCacheServerOldTest {
 
+    // this public key, is the same test public key in ./vertex-cache-config/vertex-cache-server.properties file
     private static String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2urk3svMX6hHDHPpASohDaxggCK3sKj9izN3l7yq1+BUWtpQxLShJyaNRkv4iSHrNmr6f9Lx4csfMSuJqPU4Nh03BfP+0bxkpaUexDm431wFl/dHghfmoGqeg11iSBnnjGh9Q0TdlEbx3fqKqKgGCERle2OK96Wx7t0rKxhk37nlzcClBjSulgrCy1wSfIbtpfU/s4tYPVKUr+whFtk07bcsXgiE5uIO+oTdfq1UBx8IiaZq+tXYMPmJj3xyz3fVkyi20CUlaTdreOUYQYTzW6lAINNqhd4XqS4rRdXRSDQXvt3HLe+dYDF3qvBnPFTA6XHkBrx4plnLBi5GB4+7vwIDAQAB";
 
 
@@ -34,9 +34,18 @@ public class VertexCacheServerTest {
 //    private PrivateKey privateKey;
 
     @BeforeEach
-    public void setUp() throws NoSuchAlgorithmException {
+    public void setUp() throws Exception {
 
         /*
+        String filePath = System.getProperty("user.dir") + "/vertex-cache-config/server/vertex-cache-server.properties";
+
+        String args[] = {"--config="+filePath};
+
+        Config.getInstance().loadPropertiesFromArgs(new CommandLineArgsParser(args));
+        SocketServer vertexCacheServer = new SocketServer();
+        vertexCacheServer.execute();
+
+
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(2048);
         KeyPair keyPair = keyPairGenerator.generateKeyPair();

@@ -3,7 +3,7 @@ package com.vertexcache.console.domain.config;
 import com.vertexcache.common.cli.CommandLineArgsParser;
 import com.vertexcache.common.config.ConfigBase;
 import com.vertexcache.common.config.reader.PropertiesLoader;
-import com.vertexcache.common.log.LogUtil;
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.security.KeyPairHelper;
 
 import java.security.PublicKey;
@@ -70,7 +70,7 @@ public class Config extends ConfigBase {
                 // Load Log4j2 property file path
                 if (propertiesLoader.isExist(ConfigKey.LOG_FILEPATH)) {
                     this.logFilePath = propertiesLoader.getProperty(ConfigKey.LOG_FILEPATH);
-                    this.logLoaded = LogUtil.load(this.logFilePath);
+                    this.logLoaded = LogHelper.getInstance().loadConfiguration(this.logFilePath);
                 }
 
                 // Encrypt Message Layer

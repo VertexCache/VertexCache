@@ -1,14 +1,12 @@
 package com.vertexcache.server.domain.command.impl;
 
-import com.vertexcache.common.log.LogUtil;
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.server.domain.cache.Cache;
 import com.vertexcache.server.domain.command.argument.ArgumentParser;
 import com.vertexcache.server.domain.command.Command;
 import com.vertexcache.server.domain.command.CommandResponse;
 
 public class GetCommand implements Command<String> {
-
-    private static final LogUtil logger = new LogUtil(GetCommand.class);
 
     public static final String COMMAND_KEY = "get";
 
@@ -28,7 +26,7 @@ public class GetCommand implements Command<String> {
             }
         } catch (Exception ex) {
             commandResponse.setResponseError("GET command failed, fatal error, check logs.");
-            logger.fatal(ex.getMessage());
+            LogHelper.getInstance().logFatal(ex.getMessage());
         }
         return commandResponse;
     }

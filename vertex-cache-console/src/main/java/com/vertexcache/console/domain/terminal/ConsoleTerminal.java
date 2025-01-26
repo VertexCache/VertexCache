@@ -1,8 +1,8 @@
 package com.vertexcache.console.domain.terminal;
 
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.version.VersionUtil;
 import com.vertexcache.console.domain.config.Config;
-import com.vertexcache.common.log.LogUtil;
 import com.vertexcache.common.security.CertificateTrustManager.ServerCertificateTrustManagerNoVerification;
 import com.vertexcache.common.security.CertificateTrustManager.ServerCertificateTrustManagerVerification;
 import com.vertexcache.common.security.KeyPairHelper;
@@ -17,8 +17,6 @@ import java.security.cert.CertificateException;
 import java.util.Scanner;
 
 public class ConsoleTerminal {
-
-    private static final LogUtil logger = new LogUtil(ConsoleTerminal.class);
 
     private static final String CMD_EXIT = "exit";
     private static final String CMD_QUIT = "quit";
@@ -70,7 +68,7 @@ public class ConsoleTerminal {
                     break;
                 }
 
-                logger.info("Request: " + userInput);
+                LogHelper.getInstance().logInfo("Request: " + userInput);
 
                 byte[] bytesToSend;
                 if (config.isEncryptMessage()) {
@@ -92,10 +90,10 @@ public class ConsoleTerminal {
                 if (bytesRead != -1) {
                     String receivedMessage = new String(buffer, 0, bytesRead);
                     System.out.println(receivedMessage);
-                    logger.info("Response: " + receivedMessage);
+                    LogHelper.getInstance().logInfo("Response: " + receivedMessage);
                 } else {
                     System.out.println(ConsoleTerminal.DISPLAY_NO_RESPONSE);
-                    logger.info("Response: " + ConsoleTerminal.DISPLAY_NO_RESPONSE);
+                    LogHelper.getInstance().logInfo("Response: " + ConsoleTerminal.DISPLAY_NO_RESPONSE);
                 }
             }
         } catch (Exception e) {
@@ -147,12 +145,12 @@ public class ConsoleTerminal {
                 .append("  Log4j2 config file location: ").append(config.getLogFilePath() != null ? config.getLogFilePath() : "n/a").append(System.lineSeparator())
                 .append("Status: ").append(message).append(System.lineSeparator()) ;
 
-        logger.info(stringBuilder.toString());
+        LogHelper.getInstance().logInfo(stringBuilder.toString());
     }
 
     private void outputStartUpError(String message, Exception exception) {
         this.outputStartup(message);
-        logger.error(exception.getMessage());
+        LogHelper.getInstance().logError(exception.getMessage());
     }
 
 }

@@ -1,6 +1,6 @@
 package com.vertexcache.server.domain.command.impl;
 
-import com.vertexcache.common.log.LogUtil;
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.server.domain.cache.Cache;
 
 import com.vertexcache.server.domain.command.argument.ArgumentParser;
@@ -10,8 +10,6 @@ import com.vertexcache.server.domain.command.CommandResponse;
 import java.util.ArrayList;
 
 public class SetCommand implements Command<String> {
-
-    private static final LogUtil logger = new LogUtil(SetCommand.class);
 
     private static final String SUB_ARG_SECONDARY_INDEX_ONE = "idx1";
     private static final String SUB_ARG_SECONDARY_INDEX_TWO = "idx2";
@@ -82,7 +80,7 @@ public class SetCommand implements Command<String> {
 
         } catch (Exception ex) {
             commandResponse.setResponseError("GET command failed, fatal error, check logs.");
-            logger.fatal(ex.getMessage());
+            LogHelper.getInstance().logFatal(ex.getMessage());
         }
         return commandResponse;
     }

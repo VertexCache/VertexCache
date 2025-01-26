@@ -1,6 +1,6 @@
 package com.vertexcache.server.service;
 
-import com.vertexcache.common.log.LogUtil;
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.version.VersionUtil;
 import com.vertexcache.server.domain.cache.Cache;
 import com.vertexcache.server.domain.config.Config;
@@ -20,8 +20,6 @@ import java.util.concurrent.Executors;
 
 
 public class SocketServer {
-
-    private static final LogUtil logger = new LogUtil(SocketServer.class);
 
     private ExecutorService executor;
     private ServerSocket serverSocket = null;
@@ -84,7 +82,7 @@ public class SocketServer {
                 this.serverSocket.close();
             }
         } catch (IOException exception) {
-            logger.error(exception.getMessage());
+            //logger.error(exception.getMessage());
         }
     }
 
@@ -146,6 +144,7 @@ public class SocketServer {
     }
 
     private void outputStartup(String message) {
+
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
                 .append(this.config.getAppName()).append(":").append(System.lineSeparator())
@@ -161,18 +160,16 @@ public class SocketServer {
                 .append("  Log4j2 config file loaded with no errors: ").append(!config.isLogLoaded() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Log4j2 config file location: ").append(config.getLogFilePath() != null ? config.getLogFilePath() : "n/a").append(System.lineSeparator())
                 .append("  Status: ").append(ANSI_GREEN).append(message).append(ANSI_RESET).append(System.lineSeparator()) ;
-
-        // Relies on Log4j2 config
-        logger.info(stringBuilder.toString());
+        LogHelper.getInstance().logInfo(stringBuilder.toString());
     }
 
     private void outputStartUpError(String message, Exception exception) {
         this.outputStartup(message);
-        logger.error(exception.getMessage());
+        LogHelper.getInstance().logError(exception.getMessage());
     }
 
     // Relies on Log4j2 config
     private void outputInfo(String message) {
-        logger.info(message);
+       LogHelper.getInstance().logError(message);
     }
 }

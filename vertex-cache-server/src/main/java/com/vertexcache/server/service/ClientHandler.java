@@ -1,6 +1,6 @@
 package com.vertexcache.server.service;
 
-import com.vertexcache.common.log.LogUtil;
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.server.domain.config.Config;
 import com.vertexcache.server.domain.command.CommandService;
 
@@ -16,8 +16,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 public class ClientHandler implements Runnable {
-
-    private static final LogUtil logger = new LogUtil(ClientHandler.class);
 
     private Socket clientSocket;
     private Config config;
@@ -43,18 +41,18 @@ public class ClientHandler implements Runnable {
 
         } catch (IOException e) {
             // Log or handle the exception appropriately
-            logger.fatal(e.getMessage());
+            LogHelper.getInstance().logFatal(e.getMessage());
         } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
                  BadPaddingException | InvalidKeyException e) {
             // Log or handle the exception appropriately
             System.out.println(e.getStackTrace());
-            logger.fatal(e.getMessage());
+            LogHelper.getInstance().logFatal(e.getMessage());
         } finally {
             try {
                 clientSocket.close();
             } catch (IOException e) {
                 // Log or handle the exception appropriately
-                logger.fatal(e.getMessage());
+                LogHelper.getInstance().logFatal(e.getMessage());
             }
         }
     }
@@ -65,16 +63,16 @@ public class ClientHandler implements Runnable {
             cipher.init(Cipher.PRIVATE_KEY, this.config.getPrivateKey());
             byte[] decryptedBytes = cipher.doFinal(buffer, 0, bytesRead);
             String decryptedMessage = new String(decryptedBytes);
-            logger.info("Request: " + decryptedMessage);
+            LogHelper.getInstance().logInfo("Request: " + decryptedMessage);
             byte[] response = commandProcessor.execute(decryptedBytes);
-            logger.info("Response: " + new String(response));
+            LogHelper.getInstance().logInfo("Response: " + new String(response));
             return response;
         } else {
             byte[] unencryptedData = new byte[bytesRead];
-            logger.info("Request: " + new String(buffer, 0, bytesRead));
+            LogHelper.getInstance().logInfo("Request: " + new String(buffer, 0, bytesRead));
             System.arraycopy(buffer, 0, unencryptedData, 0, bytesRead);
             byte[] response = commandProcessor.execute(unencryptedData);
-            logger.info("Response: " + new String(response));
+            LogHelper.getInstance().logInfo("Response: " + new String(response));
             return response;
         }
     }
