@@ -147,6 +147,7 @@ public class SocketServer {
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
+                .append(System.lineSeparator()).append(System.lineSeparator())
                 .append(this.config.getAppName()).append(":").append(System.lineSeparator())
                 .append("  Version: ").append(VersionUtil.getAppVersion()).append(System.lineSeparator())
                 .append("  Port: ").append(config.getServerPort()).append(System.lineSeparator())
