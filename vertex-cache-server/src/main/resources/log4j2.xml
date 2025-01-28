@@ -15,11 +15,6 @@
             <PatternLayout pattern="${pattern}"/>
         </Console>
 
-        <!-- File appender outputs logs to the file -->
-        <File name="File" fileName="${logDir}/${logFilename}.log">
-            <PatternLayout pattern="${pattern}"/>
-        </File>
-
         <!-- Rolling file appender for managing log files -->
         <RollingFile name="File" fileName="${logDir}/${logFilename}.log"
                      filePattern="${logDir}/${logFilename}-%d{yyyy-MM-dd}-%i.log">
