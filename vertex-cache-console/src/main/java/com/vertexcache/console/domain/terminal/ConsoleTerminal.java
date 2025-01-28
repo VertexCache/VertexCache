@@ -38,7 +38,6 @@ public class ConsoleTerminal {
 
     public void execute() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println(Config.APP_WELCOME);
         try {
             OutputStream outputStream = null;
             InputStream inputStream = null;
@@ -68,7 +67,7 @@ public class ConsoleTerminal {
                     break;
                 }
 
-                LogHelper.getInstance().logInfo("Request: " + userInput);
+                //LogHelper.getInstance().logInfo("Request: " + userInput);
 
                 byte[] bytesToSend;
                 if (config.isEncryptMessage()) {
@@ -89,11 +88,13 @@ public class ConsoleTerminal {
                 int bytesRead = inputStream.read(buffer);
                 if (bytesRead != -1) {
                     String receivedMessage = new String(buffer, 0, bytesRead);
-                    System.out.println(receivedMessage);
-                    LogHelper.getInstance().logInfo("Response: " + receivedMessage);
+                    //System.out.println(receivedMessage);
+                    //LogHelper.getInstance().logInfo("Response: " + receivedMessage);
+                    LogHelper.getInstance().logInfo(receivedMessage);
                 } else {
-                    System.out.println(ConsoleTerminal.DISPLAY_NO_RESPONSE);
-                    LogHelper.getInstance().logInfo("Response: " + ConsoleTerminal.DISPLAY_NO_RESPONSE);
+                    //System.out.println(ConsoleTerminal.DISPLAY_NO_RESPONSE);
+                    //LogHelper.getInstance().logInfo("Response: " + ConsoleTerminal.DISPLAY_NO_RESPONSE);
+                    LogHelper.getInstance().logInfo(ConsoleTerminal.DISPLAY_NO_RESPONSE);
                 }
             }
         } catch (Exception e) {
@@ -131,6 +132,7 @@ public class ConsoleTerminal {
     private void outputStartup(String message) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder
+                .append(System.lineSeparator()).append(System.lineSeparator())
                 .append(Config.APP_NAME).append(":").append(System.lineSeparator())
                 .append("  Version: ").append(VersionUtil.getAppVersion()).append(System.lineSeparator())
                 .append("  Host: ").append(config.getServerHost()).append(System.lineSeparator())

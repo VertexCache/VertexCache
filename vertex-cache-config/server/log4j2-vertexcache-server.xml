@@ -6,7 +6,7 @@
         <!-- Prefix the log file name, change it to your preference -->
         <Property name="logFilename">vertex-cache-server</Property>
         <!-- Log pattern format: timestamp, thread, log level, logger name, message -->
-        <Property name="pattern">%d{yyyy-MM-dd HH:mm:ss} [%t] [%-5level] %logger{36} - %msg%n</Property>
+        <Property name="pattern">%d{yyyy-MM-dd HH:mm:ss} [%t] [%-5level]: %msg%n</Property>
     </Properties>
     <Appenders>
 
