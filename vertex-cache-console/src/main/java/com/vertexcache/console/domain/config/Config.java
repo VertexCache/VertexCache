@@ -10,7 +10,6 @@ import java.security.PublicKey;
 public class Config extends ConfigBase {
 
     public static final String APP_NAME = "VertexCache Console";
-    public static final String APP_WELCOME = System.lineSeparator() + "Welcome to VertexCache Console Terminal: " + System.lineSeparator();
     private boolean configLoaded = false;
     private boolean configError = false;
     private String configFilePath;
