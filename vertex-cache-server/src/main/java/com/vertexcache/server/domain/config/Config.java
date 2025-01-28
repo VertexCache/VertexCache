@@ -19,9 +19,6 @@ public class Config extends ConfigBase {
 
     private int serverPort = ConfigKey.SERVER_PORT_DEFAULT;
 
-    private boolean logLoaded = false;
-    private String logFilePath;
-
     private boolean encryptMessage = false;
     private PrivateKey privateKey;
     private PublicKey publicKey;
@@ -67,13 +64,6 @@ public class Config extends ConfigBase {
                         this.serverPort = Integer.parseInt(propertiesLoader.getProperty(ConfigKey.SERVER_PORT));
                     }
 
-                    // Load Log4j2 property file path
-                    if (propertiesLoader.isExist(ConfigKey.LOG_FILEPATH)) {
-                        this.logFilePath = propertiesLoader.getProperty(ConfigKey.LOG_FILEPATH);
-                        //this.logLoaded = LogUtil.load(this.logFilePath);
-                        this.logLoaded = LogHelper.getInstance().loadConfiguration(this.logFilePath);
-                    }
-
                     // Encrypt Message Layer
                     if (propertiesLoader.isExist(ConfigKey.ENABLE_ENCRYPT_MESSAGE) && Boolean.parseBoolean(propertiesLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_MESSAGE))) {
                         this.encryptMessage = true;
@@ -114,14 +104,13 @@ public class Config extends ConfigBase {
                         LogHelper.getInstance().logWarn("Non-existent cache size, defaulting to " + DEFAULT_CACHE_SIZE);
                     }
 
-                    System.out.println("end load file");
-
                 } else {
-                    System.out.println("Config path wrong");
+                    LogHelper.getInstance().logFatal("Properties file failed to load");
                     System.exit(0);
                 }
             } else {
-                System.out.println("Missing config seeting");
+                LogHelper.getInstance().logFatal("Parameter --config not set");
+                System.exit(0);
             }
 
         } catch (Exception exception) {
@@ -145,14 +134,6 @@ public class Config extends ConfigBase {
 
     public String getAppName() {
         return Config.APP_NAME;
-    }
-
-    public boolean isLogLoaded() {
-        return logLoaded;
-    }
-
-    public String getLogFilePath() {
-        return logFilePath;
     }
 
     public int getServerPort() {

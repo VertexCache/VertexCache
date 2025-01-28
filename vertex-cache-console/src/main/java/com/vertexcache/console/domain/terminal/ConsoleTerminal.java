@@ -141,8 +141,6 @@ public class ConsoleTerminal {
                 .append("  Config file set: ").append(config.isConfigLoaded() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Config file loaded with no errors: ").append(!config.isConfigError() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Config file location: ").append(config.getConfigFilePath() != null ? config.getConfigFilePath() : "n/a").append(System.lineSeparator())
-                .append("  Log4j2 config file loaded with no errors: ").append(config.isLogLoaded() ? "Yes" : "No").append(System.lineSeparator())
-                .append("  Log4j2 config file location: ").append(config.getLogFilePath() != null ? config.getLogFilePath() : "n/a").append(System.lineSeparator())
                 .append("Status: ").append(message).append(System.lineSeparator()) ;
 
         LogHelper.getInstance().logInfo(stringBuilder.toString());

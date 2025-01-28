@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
 import java.io.File;
+import java.net.URI;
 
 public class LogHelper {
 
@@ -50,6 +51,52 @@ public class LogHelper {
             return true;
         } catch (Exception ex) {
             logger.error("Error loading Log4j2 configuration", ex);
+            return false;
+        }
+    }
+
+    /**
+     * Checks and returns the URI of the current Log4j2 configuration file.
+     *
+     * @return the URI of the configuration file, or null if not set
+     */
+    public URI getCurrentConfigurationFile() {
+        try {
+            LoggerContext context = (LoggerContext) LogManager.getContext(false);
+            URI configLocation = context.getConfigLocation();
+
+            if (configLocation != null) {
+                logger.info("Current Log4j2 configuration file: " + configLocation);
+                return configLocation;
+            } else {
+                logger.warn("No Log4j2 configuration file is currently loaded.");
+                return null;
+            }
+        } catch (Exception ex) {
+            logger.error("Error retrieving current Log4j2 configuration file", ex);
+            return null;
+        }
+    }
+
+    /**
+     * Checks if Log4j2 configuration is loaded successfully.
+     *
+     * @return true if configuration is loaded, false otherwise
+     */
+    public boolean isConfigurationLoaded() {
+        try {
+            LoggerContext context = (LoggerContext) LogManager.getContext(false);
+            URI configLocation = context.getConfigLocation();
+
+            if (configLocation != null) {
+                logger.info("Log4j2 configuration is successfully loaded from: " + configLocation);
+                return true;
+            } else {
+                logger.warn("Log4j2 configuration is not loaded.");
+                return false;
+            }
+        } catch (Exception ex) {
+            logger.error("Error checking if Log4j2 configuration is loaded", ex);
             return false;
         }
     }

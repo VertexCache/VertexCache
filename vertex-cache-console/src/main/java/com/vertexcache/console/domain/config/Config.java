@@ -3,7 +3,6 @@ package com.vertexcache.console.domain.config;
 import com.vertexcache.common.cli.CommandLineArgsParser;
 import com.vertexcache.common.config.ConfigBase;
 import com.vertexcache.common.config.reader.PropertiesLoader;
-import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.security.KeyPairHelper;
 
 import java.security.PublicKey;
@@ -15,9 +14,6 @@ public class Config extends ConfigBase {
     private boolean configLoaded = false;
     private boolean configError = false;
     private String configFilePath;
-
-    private boolean logLoaded = false;
-    private String logFilePath;
 
     private String serverHost = ConfigKey.SERVER_HOST_DEFAULT;
     private int serverPort = ConfigKey.SERVER_PORT_DEFAULT;
@@ -65,12 +61,6 @@ public class Config extends ConfigBase {
                 // Port
                 if (propertiesLoader.isExist(ConfigKey.SERVER_PORT)) {
                     this.serverPort = Integer.parseInt(propertiesLoader.getProperty(ConfigKey.SERVER_PORT));
-                }
-
-                // Load Log4j2 property file path
-                if (propertiesLoader.isExist(ConfigKey.LOG_FILEPATH)) {
-                    this.logFilePath = propertiesLoader.getProperty(ConfigKey.LOG_FILEPATH);
-                    this.logLoaded = LogHelper.getInstance().loadConfiguration(this.logFilePath);
                 }
 
                 // Encrypt Message Layer
@@ -138,13 +128,5 @@ public class Config extends ConfigBase {
 
     public String getServerCertificatePath() {
         return serverCertificatePath;
-    }
-
-    public boolean isLogLoaded() {
-        return logLoaded;
-    }
-
-    public String getLogFilePath() {
-        return logFilePath;
     }
 }
