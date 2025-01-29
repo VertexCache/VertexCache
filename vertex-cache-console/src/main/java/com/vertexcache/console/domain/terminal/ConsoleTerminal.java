@@ -21,7 +21,7 @@ public class ConsoleTerminal {
     private static final String CMD_EXIT = "exit";
     private static final String CMD_QUIT = "quit";
 
-    private static final String DISPLAY_EXIT = "Existing...";
+    private static final String DISPLAY_EXIT = "VertexCache Console Terminated...";
     private static final String DISPLAY_NO_RESPONSE = "No response received.";
 
     private static final String CIPHER_RSA = "RSA";
