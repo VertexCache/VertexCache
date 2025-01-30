@@ -16,7 +16,29 @@ key and two secondary keys.
 
 VertexCache is implemented in Java and uses a straightforward, string-based protocol call VCMP (VertexCacheProtocolMessage) for message delivery, which is transmitted over the wire as bytes.
 
-# Getting Started
+# Getting Started & Quick Snapshot Overview
+
+## Prerequisites
+Java Version 21.0.2 (this was the latest it was compiled with)
+
+## Installation
+Visit [releases](https://github.com/jasonlam604/VertexCache/releases) and download the latest release.
+
+Unzip the contents, the file structure will containt the following:
+
+```
+/root
+|
+|-/logs
+|
+|-/vertex-cache-config
+   |
+   |-/console
+   
+
+```
+
+
 
 
 # Features
