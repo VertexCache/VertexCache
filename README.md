@@ -6,9 +6,6 @@
   -->
 <meta name='keywords' content='in-memory cache, caching, java, data structure, database'>
 
-VertexCache
-==============
-
 # What is VertexCache?
 VertexCache is a straightforward in-memory caching system designed with a strong emphasis on security. It supports a 
 range of algorithms and offers multi-index caching capabilities, allowing for efficient data retrieval using one primary 
@@ -16,12 +13,21 @@ key and two secondary keys.
 
 VertexCache is implemented in Java and uses a straightforward, string-based protocol call VCMP (VertexCacheProtocolMessage) for message delivery, which is transmitted over the wire as bytes.
 
-# Getting Started & Quick Snapshot Overview
+# Getting Started
 
-## Prerequisites
-Java Version 21.0.2 (this was the latest it was compiled with)
+## Run It Now!
+- Prerequisites: Java Version 21.0.2 (this was the latest it was compiled with)
+- Install: Visit [releases](https://github.com/jasonlam604/VertexCache/releases) and download the latest release.
 
-## Installation
+### MacOS/Linux!
+On MacOS or Linux first start the server by invoking at command line ~/run_console.sh
+
+### Windows
+On Windows first start the server by invoking at command line ~/run_server.bat
+
+# Quick Overview of what is inside a Release
+
+## Individual File Explanation
 Visit [releases](https://github.com/jasonlam604/VertexCache/releases) and download the latest release.
 
 Unzip the contents, the file structure will containt the following:
@@ -32,14 +38,37 @@ Unzip the contents, the file structure will containt the following:
 |-/logs
 |
 |-/vertex-cache-config
-   |
-   |-/console
-   
+|  |
+|  |-/console
+|  |  |-log4j2-vertexcache-console.xml
+|  |  |-test_server_certificate.pem
+|  |  |-vertex-cache-console.properties
+|  |
+|  |-/server
+|     |-log4j2-vertexcache-server.xml
+|     |-test_server_certificate.crt
+|     |-test_server_certificate.der
+|     |-test_server_keystore.jks
+|     |-vertex-cache-server.properties
+|
+|-README.txt
+|
+|-run_console.bat
+|-run_console.sh
+|
+|-run_server.bat
+|-run_server.sh
+|
+|-vertex-cache-console-X.X.X.jar (where X.X.X is the latest release version)
+|-vertex-cache-server-X.X.X.jar (where X.X.X is the latest release version)
+|
 
 ```
 
 
 
+
+---
 
 # Features
 
