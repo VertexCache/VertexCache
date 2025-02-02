@@ -59,8 +59,10 @@ Unzip the contents, the file structure will containt the following:
 |-run_server.bat
 |-run_server.sh
 |
-|-vertex-cache-console-X.X.X.jar (where X.X.X is the latest release version)
-|-vertex-cache-server-X.X.X.jar (where X.X.X is the latest release version)
+|-version.txt
+|
+|-vertex-cache-console.jar
+|-vertex-cache-server.jar
 |
 
 ```
