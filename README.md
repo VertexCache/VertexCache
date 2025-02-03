@@ -19,10 +19,34 @@ VertexCache is implemented in Java and uses a straightforward, string-based prot
 - Prerequisites: Java Version 21.0.2 (this was the latest it was compiled with)
 - Install: Visit [releases](https://github.com/jasonlam604/VertexCache/releases) and download the latest release.
 
-### MacOS/Linux!
-On MacOS or Linux first start the server by invoking at command line ~/run_console.sh
+### Running it on MacOS/Linux
+On MacOS or Linux first ensure the script is runnable
 
-### Windows
+```bash
+chmod +x run_server.sh
+```
+
+Now Execute the file
+```bash
+run_server.sh
+```
+
+Successful Output
+```console
+VertexCache:
+  Version: 1.0.0
+  Port: 50505
+  Cache Eviction Policy: LRU (Least Recently Used), Least Recently Used
+  Cache Size (only applies when eviction is not NONE): 100000
+  Transport Layer Encryption Enabled: Yes
+  Message Layer Encryption Enabled: Yes
+  Config file set: Yes
+  Config file loaded with no errors: Yes
+  Config file location: ./vertex-cache-config/server/vertex-cache-server.properties
+  Status: Server Started
+```
+
+### Running it on Windows
 On Windows first start the server by invoking at command line ~/run_server.bat
 
 # Quick Overview of what is inside a Release
@@ -63,7 +87,7 @@ Unzip the contents, the file structure will containt the following:
 |
 |-vertex-cache-console.jar
 |-vertex-cache-server.jar
-|
+
 
 ```
 
