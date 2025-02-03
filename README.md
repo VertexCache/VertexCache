@@ -20,6 +20,8 @@ VertexCache is implemented in Java and uses a straightforward, string-based prot
 - Install: Visit [releases](https://github.com/jasonlam604/VertexCache/releases) and download the latest release.
 
 ### Running it on MacOS/Linux
+
+#### Start Server
 On MacOS or Linux first ensure the script is runnable
 
 ```bash
@@ -44,6 +46,33 @@ VertexCache:
   Config file loaded with no errors: Yes
   Config file location: ./vertex-cache-config/server/vertex-cache-server.properties
   Status: Server Started
+```
+
+#### Start Console Client
+On MacOS or Linux first ensure the script is runnable
+
+```bash
+chmod +x run_console.sh
+```
+
+Now Execute the file
+```bash
+run_console.sh
+```
+
+Successful Output
+```console
+VertexCache Console:
+  Version: 1.0.0
+  Host: localhost
+  Port: 50505
+  Message Layer Encryption Enabled: Yes
+  Transport Layer Encryption Enabled: Yes
+  Transport Layer Verify Certificate: Yes
+  Config file set: Yes
+  Config file loaded with no errors: Yes
+  Config file location: ./vertex-cache-config/console/vertex-cache-console.properties
+Status: OK, Console Client Started
 ```
 
 ### Running it on Windows
