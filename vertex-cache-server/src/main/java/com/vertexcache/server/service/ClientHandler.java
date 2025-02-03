@@ -44,8 +44,6 @@ public class ClientHandler implements Runnable {
             LogHelper.getInstance().logFatal(e.getMessage());
         } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
                  BadPaddingException | InvalidKeyException e) {
-            // Log or handle the exception appropriately
-            System.out.println(e.getStackTrace());
             LogHelper.getInstance().logFatal(e.getMessage());
         } finally {
             try {

@@ -53,7 +53,7 @@ public class SocketServer {
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                outputInfo("Connection: " + clientSocket);
+                outputInfo("Client Connection initiated, " + clientSocket);
                 this.executor.execute(new ClientHandler(clientSocket, config, commandService));
             }
         } catch (BindException e) {
@@ -82,7 +82,7 @@ public class SocketServer {
                 this.serverSocket.close();
             }
         } catch (IOException exception) {
-            //logger.error(exception.getMessage());
+            LogHelper.getInstance().logError(exception.getMessage());
         }
     }
 
@@ -169,6 +169,6 @@ public class SocketServer {
 
     // Relies on Log4j2 config
     private void outputInfo(String message) {
-       LogHelper.getInstance().logError(message);
+       LogHelper.getInstance().logInfo(message);
     }
 }
