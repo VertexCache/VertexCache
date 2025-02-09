@@ -169,11 +169,12 @@ this is configurable, see the property configuration file section.
 ## Ping
 In the VertexCache Console type:
 
+Request:
 ```console
 VertexCache Console, localhost:50505> ping
 ```
 
-Response is **+PONG**
+Response:
 ```console
 VertexCache Console, localhost:50505> ping
 +PONG
@@ -189,4 +190,5 @@ VertexCache Console, localhost:50505> ping
 
 ## Get By Seconardy Indexes
 
-
+## Server Output / Logs
+**Note**: The server output is displayed because the default configuration file (~/vertex-cache-config/server/vertex-cache-server.properties) has *enable_verbose* set to *true*.
