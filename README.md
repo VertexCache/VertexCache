@@ -26,6 +26,13 @@ VertexCache is implemented in Java and uses a straightforward, string-based prot
     * [Console Client Started Output](#console-client-started-output)
 * [Test It](#test-it)
 
+**Beyond Getting Started**
+* VertexCache Server Configuration
+* VertexCache Console Configuration
+* Reading Log File and Configuration
+* Using Native Clients like PHP
+* Understanding the Message Protocol VCMP abbreviated for VertexCacheProtocolMessage
+
 **Releases**
 * Release History
 
@@ -147,10 +154,30 @@ VertexCache Console:
   Config file location: ./vertex-cache-config/console/vertex-cache-console.properties
 Status: OK, Console Client Started
 ```
+You will given a VertexCache Prompt
+
+```console
+VertexCache Console, localhost:50505> _
+```
+
+The first part **VertexCache Console** is just indicating this is the VertexCache Console and **localhost:50505** is where the console running in this case localhost and on the default port of 50505.  Yes
+this is configurable, see the property configuration file section.
+
 
 # Test It
 
 ## Ping
+In the VertexCache Console type:
+
+```console
+VertexCache Console, localhost:50505> ping
+```
+
+Response is **+PONG**
+```console
+VertexCache Console, localhost:50505> ping
++PONG
+```
 
 ## Set Primary Index and Value
 
