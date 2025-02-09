@@ -40,7 +40,8 @@ VertexCache is implemented in Java and uses a straightforward, string-based prot
 * [Interactive Console](#interactive-console)
 * [Logging](#logging)
 * [Easy Configuration](#easy-configuration)
-* [Client Libraries](#client-libraries)
+
+**Available Clients**
   * C#
   * Elixir
   * Go
