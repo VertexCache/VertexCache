@@ -26,6 +26,10 @@ VertexCache is implemented in Java and uses a straightforward, string-based prot
     * [Console Client Started Output](#console-client-started-output)
 * [Test It](#test-it)
 
+**Releases**
+* What's Inside
+* Release History
+
 **Features**
 * [Security](#Security) 
   * No Encryption / Plain Transport
@@ -143,78 +147,4 @@ Status: OK, Console Client Started
 
 ## Get By Seconardy Indexes
 
-# Quick Overview of what is inside a Release
 
-## Individual File Explanation
-Visit [releases](https://github.com/jasonlam604/VertexCache/releases) and download the latest release.
-
-Unzip the contents, the file structure will containt the following:
-
-```
-/root
-|
-|-/logs
-|
-|-/vertex-cache-config
-|  |
-|  |-/console
-|  |  |-log4j2-vertexcache-console.xml
-|  |  |-test_server_certificate.pem
-|  |  |-vertex-cache-console.properties
-|  |
-|  |-/server
-|     |-log4j2-vertexcache-server.xml
-|     |-test_server_certificate.crt
-|     |-test_server_certificate.der
-|     |-test_server_keystore.jks
-|     |-vertex-cache-server.properties
-|
-|-README.txt
-|
-|-run_console.bat
-|-run_console.sh
-|
-|-run_server.bat
-|-run_server.sh
-|
-|-version.txt
-|
-|-vertex-cache-console.jar
-|-vertex-cache-server.jar
-
-
-```
-
-
-
-
----
-
-# Features
-
-
-
-# Security
-
-# Eviction Policies and Cache Algorithms
-
-# Interactive Console
-
-# Logging
-
-# Easy Configuration
-
-## Property File location
-
-## Property File Example
-
-
----
-
-# VertexCache Developer Guide 
-
-## Overview
-
-## Source Code Layout
-
-## Compiling & Running
