@@ -13,14 +13,20 @@ key and two secondary keys.
 
 VertexCache is implemented in Java and uses a straightforward, string-based protocol call VCMP (VertexCacheProtocolMessage) for message delivery, which is transmitted over the wire as bytes.
 
-**VertexCache Landing Page (this page)**
-* [What is VertexCache](#what-is-vertexcache)
+**Getting Started Fast**
 * [Quick Start in 60 Seconds](#quick-start-in-60-seconds)
   * [Prerequisites](#prerequisites)
-  * [Run it on Mac or Linux](#running-it-on-macoslinux)
-  * [Run it on Windows](#running-it-on-windows)
+  * [Start Server](#start-server)
+    * [Start Server on MacOS/Linux](#start-server-on-macoslinux)
+    * [Start Server on Windows](#start-server-on-windows)
+    * [Server Started Output](#server-started-output)
+  * [Start Console Client](#start-console-client)
+    * [Start Console Client on MacOS/Linux](#start-console-client-on-macoslinux)
+    * [Start Console Client on Windows](#start-console-client-on-windows)
+    * [Console Client Started Output](#console-client-started-output)
+* [Test It](#test-it)
 
-**More Information (Wiki)**
+**More Detailed Information**
  * More Info to come here
 
 # Quick Start in 60 seconds
@@ -56,7 +62,7 @@ run_server.sh
 run_server.bat
 ```
 ---
-#### Server Output
+#### Server Started Output
 ```console
 VertexCache:
   Version: 1.0.0
@@ -85,12 +91,12 @@ Now Execute the file
 run_console.sh
 ```
 ---
-#### Start Console Client on MacOS/Linux
+#### Start Console Client on Windows
 ```bash
 run_console.bat
 ```
 ---
-#### Console Client Output
+#### Console Client Started Output
 ```console
 VertexCache Console:
   Version: 1.0.0
@@ -105,7 +111,19 @@ VertexCache Console:
 Status: OK, Console Client Started
 ```
 
+# Test It
 
+## Ping
+
+## Set Primary Index and Value
+
+## Get By Primary Index
+
+## Remove Primary Index
+
+## Set Primary and Secondary Indexes 
+
+## Get By Seconardy Indexes
 
 # Quick Overview of what is inside a Release
 
