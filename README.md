@@ -26,8 +26,26 @@ VertexCache is implemented in Java and uses a straightforward, string-based prot
     * [Console Client Started Output](#console-client-started-output)
 * [Test It](#test-it)
 
-**More Detailed Information**
- * More Info to come here
+**Features**
+* [Security](#Security) 
+  * No Encryption / Plain Transport
+  * Encryption during Transport via TLS (optional)
+  * Encryption at the message layer using Public/Private keys (optional)
+  * Encryption during Transport and message layer (optional)
+* [Eviction Policies and Cache Algorithms](#eviction-policies-and-cache-algorithms)
+* [Interactive Console](#interactive-console)
+* [Logging](#logging)
+* [Easy Configuration](#easy-configuration)
+
+**Architecture and Design Overview**
+ * Coming Soon
+
+**How to Contribute**
+ * Contribute to the Sever Code
+ * Create a Client
+ * 
+
+   
 
 # Quick Start in 60 seconds
 The following section will guide you through running the VertexCache Server locally and using the Console Client to quickly test cache commands. This quick start setup includes secure transport via TLS and message encryption using public/private keys.
@@ -174,15 +192,7 @@ Unzip the contents, the file structure will containt the following:
 
 # Features
 
-* [Security](#Security) 
-  * No Encryption / Plain Transport
-  * Encryption during Transport via TLS (optional)
-  * Encryption at the message layer using Public/Private keys (optional)
-  * Encryption during Transport and message layer (optional)
-* [Eviction Policies and Cache Algorithms](#eviction-policies-and-cache-algorithms)
-* [Interactive Console](#interactive-console)
-* [Logging](#logging)
-* [Easy Configuration](#easy-configuration)
+
 
 # Security
 
