@@ -27,7 +27,6 @@ VertexCache is implemented in Java and uses a straightforward, string-based prot
 * [Test It](#test-it)
 
 **Releases**
-* What's Inside
 * Release History
 
 **Features**
@@ -53,14 +52,19 @@ VertexCache is implemented in Java and uses a straightforward, string-based prot
   * Rust   
 
 **Architecture and Design Overview**
- * Coming Soon
+ * What's in a release, the file structure
+ * MonoRepo and Fat JAR approach
+ * Technology stack used
+ * Message Protocol - VCMP otherwise know as VertexCacheProtocolMessage
+ * Design Patterns used for ease of adding new Commands and new Caching Algorithms
 
 **How to Contribute**
- * Contribute to the Sever Code
- * Create a Client
- * 
+ * Developer Guide for VertexCache server changes
+ * Developer Guide to add a new client
+ * Developer Guide to update an existing client
+ * Log an issue or bug
 
-   
+---   
 
 # Quick Start in 60 seconds
 The following section will guide you through running the VertexCache Server locally and using the Console Client to quickly test cache commands. This quick start setup includes secure transport via TLS and message encryption using public/private keys.
