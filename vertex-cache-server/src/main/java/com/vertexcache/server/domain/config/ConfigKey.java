@@ -7,6 +7,9 @@ public class ConfigKey {
     public static final int SERVER_PORT_DEFAULT = 50505;
     public static final String SERVER_PORT = "server_port";
 
+    public static final boolean ENABLE_VERBOSE_DEFAULT = false;
+    public static final String ENABLE_VERBOSE = "enable_verbose";
+
     // Encrypt Message Layer, Public/Private Key
     public static final String ENABLE_ENCRYPT_MESSAGE = "enable_encrypt_message";
     public static final String PUBLIC_KEY = "public_key";

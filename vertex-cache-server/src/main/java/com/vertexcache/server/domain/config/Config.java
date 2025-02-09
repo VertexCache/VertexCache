@@ -19,6 +19,8 @@ public class Config extends ConfigBase {
 
     private int serverPort = ConfigKey.SERVER_PORT_DEFAULT;
 
+    private boolean enableVerbose = ConfigKey.ENABLE_VERBOSE_DEFAULT;
+
     private boolean encryptMessage = false;
     private PrivateKey privateKey;
     private PublicKey publicKey;
@@ -62,6 +64,11 @@ public class Config extends ConfigBase {
                     // Port
                     if (propertiesLoader.isExist(ConfigKey.SERVER_PORT)) {
                         this.serverPort = Integer.parseInt(propertiesLoader.getProperty(ConfigKey.SERVER_PORT));
+                    }
+
+                    // Enable Verbose
+                    if (propertiesLoader.isExist(ConfigKey.ENABLE_VERBOSE)) {
+                        this.enableVerbose = Boolean.parseBoolean(propertiesLoader.getProperty(ConfigKey.ENABLE_VERBOSE));
                     }
 
                     // Encrypt Message Layer
@@ -139,6 +146,8 @@ public class Config extends ConfigBase {
     public int getServerPort() {
         return serverPort;
     }
+
+    public boolean isEnableVerbose() { return enableVerbose; }
 
     public boolean isEncryptTransport() {
         return encryptTransport;

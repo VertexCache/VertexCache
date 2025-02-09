@@ -61,16 +61,24 @@ public class ClientHandler implements Runnable {
             cipher.init(Cipher.PRIVATE_KEY, this.config.getPrivateKey());
             byte[] decryptedBytes = cipher.doFinal(buffer, 0, bytesRead);
             String decryptedMessage = new String(decryptedBytes);
-            LogHelper.getInstance().logInfo("Request: " + decryptedMessage);
+            if(this.config.isEnableVerbose()) {
+                LogHelper.getInstance().logInfo("Request: " + decryptedMessage);
+            }
             byte[] response = commandProcessor.execute(decryptedBytes);
-            LogHelper.getInstance().logInfo("Response: " + new String(response));
+            if(this.config.isEnableVerbose()) {
+                LogHelper.getInstance().logInfo("Response: " + new String(response));
+            }
             return response;
         } else {
             byte[] unencryptedData = new byte[bytesRead];
-            LogHelper.getInstance().logInfo("Request: " + new String(buffer, 0, bytesRead));
+            if(this.config.isEnableVerbose()) {
+                LogHelper.getInstance().logInfo("Request: " + new String(buffer, 0, bytesRead));
+            }
             System.arraycopy(buffer, 0, unencryptedData, 0, bytesRead);
             byte[] response = commandProcessor.execute(unencryptedData);
-            LogHelper.getInstance().logInfo("Response: " + new String(response));
+            if(this.config.isEnableVerbose()) {
+                LogHelper.getInstance().logInfo("Response: " + new String(response));
+            }
             return response;
         }
     }

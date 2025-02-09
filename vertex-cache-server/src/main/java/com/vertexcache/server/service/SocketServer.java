@@ -143,6 +143,9 @@ public class SocketServer {
         this.outputStartup("Server Started");
     }
 
+    /**
+     * On startup output, regardless of verbose enabled or disabled
+     */
     private void outputStartup(String message) {
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -151,6 +154,7 @@ public class SocketServer {
                 .append(this.config.getAppName()).append(":").append(System.lineSeparator())
                 .append("  Version: ").append(VersionUtil.getAppVersion()).append(System.lineSeparator())
                 .append("  Port: ").append(config.getServerPort()).append(System.lineSeparator())
+                .append("  Verbose: ").append(config.isEnableVerbose() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Cache Eviction Policy: ").append(config.getCacheEvictionPolicy().toString()).append(System.lineSeparator())
                 .append("  Cache Size (only applies when eviction is not NONE): ").append(config.getCacheSize()).append(System.lineSeparator())
                 .append("  Transport Layer Encryption Enabled: ").append(config.isEncryptTransport() ? "Yes" : "No").append(System.lineSeparator())
@@ -162,13 +166,22 @@ public class SocketServer {
         LogHelper.getInstance().logInfo(stringBuilder.toString());
     }
 
+    /**
+     * On startup output with error, regardless of verbose enabled or disabled
+     */
     private void outputStartUpError(String message, Exception exception) {
         this.outputStartup(message);
         LogHelper.getInstance().logError(exception.getMessage());
     }
 
-    // Relies on Log4j2 config
+    /**
+     * General Output, only if Verbose is enabled (set to true)
+     *
+     * Additional relies on Log4j2 config
+     */
     private void outputInfo(String message) {
-       LogHelper.getInstance().logInfo(message);
+        if(this.config.isEnableVerbose()) {
+            LogHelper.getInstance().logInfo(message);
+        }
     }
 }
