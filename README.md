@@ -6,22 +6,38 @@
   -->
 <meta name='keywords' content='in-memory cache, caching, java, data structure, database'>
 
-# What is VertexCache?
+# What is VertexCache
 VertexCache is a straightforward in-memory caching system designed with a strong emphasis on security. It supports a 
 range of algorithms and offers multi-index caching capabilities, allowing for efficient data retrieval using one primary 
 key and two secondary keys.
 
 VertexCache is implemented in Java and uses a straightforward, string-based protocol call VCMP (VertexCacheProtocolMessage) for message delivery, which is transmitted over the wire as bytes.
 
-# Getting Started
+**VertexCache Landing Page (this page)**
+* [What is VertexCache](#what-is-vertexcache)
+* [Quick Start in 60 Seconds](#quick-start-in-60-seconds)
+  * [Prerequisites](#prerequisites)
+  * [Run it on Mac or Linux](#running-it-on-macoslinux)
+  * [Run it on Windows](#running-it-on-windows)
 
-## Run It Now!
+**More Information (Wiki)**
+ * More Info to come here
+
+# Quick Start in 60 seconds
+The following section will guide you through running the VertexCache Server locally and using the Console Client to quickly test cache commands. This quick start setup includes secure transport via TLS and message encryption using public/private keys.
+
+To make the setup as seamless as possible, test certificates and keys are provided for convenience.
+
+⚠️ Warning: DO NOT use these test certificates and keys in a production environment, as they are publicly shared in this GitHub repository.
+
+## Prerequisites
 - Prerequisites: Java Version 21.0.2 (this was the latest it was compiled with)
 - Install: Visit [releases](https://github.com/jasonlam604/VertexCache/releases) and download the latest release.
 
-### Running it on MacOS/Linux
+### Start Server
 
-#### Start Server
+#### Start Server on MacOS/Linux
+Instructions for MacOS/Linux VertexCache server.
 On MacOS or Linux first ensure the script is runnable
 
 ```bash
@@ -33,7 +49,14 @@ Now Execute the file
 run_server.sh
 ```
 
-Successful Output
+---
+
+#### Start Server on Windows
+```bash
+run_server.bat
+```
+---
+#### Server Output
 ```console
 VertexCache:
   Version: 1.0.0
@@ -48,7 +71,9 @@ VertexCache:
   Status: Server Started
 ```
 
-#### Start Console Client
+### Start Console Client
+
+#### Start Console Client on MacOS/Linux
 On MacOS or Linux first ensure the script is runnable
 
 ```bash
@@ -59,8 +84,13 @@ Now Execute the file
 ```bash
 run_console.sh
 ```
-
-Successful Output
+---
+#### Start Console Client on MacOS/Linux
+```bash
+run_console.bat
+```
+---
+#### Console Client Output
 ```console
 VertexCache Console:
   Version: 1.0.0
@@ -75,8 +105,7 @@ VertexCache Console:
 Status: OK, Console Client Started
 ```
 
-### Running it on Windows
-On Windows first start the server by invoking at command line ~/run_server.bat
+
 
 # Quick Overview of what is inside a Release
 
