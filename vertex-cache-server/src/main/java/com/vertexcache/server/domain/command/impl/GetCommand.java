@@ -1,6 +1,7 @@
 package com.vertexcache.server.domain.command.impl;
 
 import com.vertexcache.common.log.LogHelper;
+import com.vertexcache.common.util.StringUtil;
 import com.vertexcache.server.domain.cache.Cache;
 import com.vertexcache.server.domain.command.argument.ArgumentParser;
 import com.vertexcache.server.domain.command.Command;
@@ -17,7 +18,7 @@ public class GetCommand implements Command<String> {
                 Cache<Object, Object> cache = Cache.getInstance();
                 String value = (String) cache.get(argumentParser.getPrimaryArgument().getArgs().getFirst());
                 if(value != null) {
-                    commandResponse.setResponse(value);
+                    commandResponse.setResponse(StringUtil.esacpeQuote(value));
                 } else {
                     commandResponse.setResponseNil();
                 }

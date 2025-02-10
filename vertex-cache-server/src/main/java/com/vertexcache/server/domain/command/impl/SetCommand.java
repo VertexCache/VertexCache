@@ -31,8 +31,6 @@ public class SetCommand implements Command<String> {
             boolean isPrimaryOK = false;
             if(argumentParser.getPrimaryArgument().isArgsExist() && argumentParser.getPrimaryArgument().getArgs().size() == 2) {
                 isPrimaryOK = true;
-            } else {
-                System.out.println("failed ====> " + argumentParser.getPrimaryArgument().getArgs().size());
             }
 
             if(isPrimaryOK) {
@@ -47,7 +45,7 @@ public class SetCommand implements Command<String> {
                     // 2 Secondary Indexes
                     cache.put(
                             argumentParser.getPrimaryArgument().getArgs().get(0),
-                            argumentParser.getPrimaryArgument().getArgs().get(1),
+                            argumentParser.getPrimaryArgument().getArgs().get(1).replace("\"", "\\\""),
                             argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_ONE).getArgs().getFirst(),
                             argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_TWO).getArgs().getFirst()
                     );
@@ -59,7 +57,7 @@ public class SetCommand implements Command<String> {
                     // 1 Secondary Index
                     cache.put(
                             argumentParser.getPrimaryArgument().getArgs().get(0),
-                            argumentParser.getPrimaryArgument().getArgs().get(1),
+                            argumentParser.getPrimaryArgument().getArgs().get(1).replace("\"", "\\\""),
                             argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_ONE).getArgs().getFirst()
                     );
                     commandResponse.setResponseOK();
@@ -67,7 +65,7 @@ public class SetCommand implements Command<String> {
                     // No Secondary Indexes
                     cache.put(
                             argumentParser.getPrimaryArgument().getArgs().get(0),
-                            argumentParser.getPrimaryArgument().getArgs().get(1)
+                            argumentParser.getPrimaryArgument().getArgs().get(1).replace("\"", "\\\"")
                     );
                     commandResponse.setResponseOK();
                 } else {
