@@ -68,24 +68,6 @@ public class ArgumentParser {
         }
     }
 
-    private String[] splitWithQuotesold1(String argumentString) {
-        List<String> parts = new ArrayList<>();
-        Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(argumentString);
-        while (m.find()) {
-            parts.add(m.group(1).replaceAll("\"", ""));
-        }
-        return parts.toArray(new String[0]);
-    }
-
-    private String[] splitWithQuotesold2(String argumentString) {
-        List<String> parts = new ArrayList<>();
-        Matcher m = Pattern.compile("([^\"]\\S*|\"[^\"]+\")\\s*").matcher(argumentString);
-        while (m.find()) {
-            parts.add(m.group(1)); // Do NOT remove quotes
-        }
-        return parts.toArray(new String[0]);
-    }
-
     private String[] splitWithQuotes(String argumentString) {
         List<String> parts = new ArrayList<>();
         Matcher m = Pattern.compile("([^\"]\\S*|\"[^\"]+\")\\s*").matcher(argumentString);
@@ -98,9 +80,7 @@ public class ArgumentParser {
         }
         return parts.toArray(new String[0]);
     }
-
-
-
+    
     public Argument getSubArgumentByName(String subArgumentName) {
         for (Argument argument : this.arguments) {
             if (argument.getName().equalsIgnoreCase(subArgumentName)) {
