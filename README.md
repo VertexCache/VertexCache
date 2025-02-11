@@ -8,8 +8,8 @@
 
 # What is VertexCache
 VertexCache is a straightforward in-memory caching system designed with a strong emphasis on security. It supports a 
-range of algorithms and offers multi-index caching capabilities, allowing for efficient data retrieval using one primary 
-key and two secondary keys.
+range of algorithms and offers **multi-index** caching capabilities, allowing for efficient data retrieval using one primary 
+key and **two secondary keys (optional)**.
 
 VertexCache is implemented in Java and uses a straightforward, string-based protocol call VCMP (VertexCacheProtocolMessage) for message delivery, which is transmitted over the wire as bytes.
 
@@ -180,15 +180,35 @@ VertexCache Console, localhost:50505> ping
 +PONG
 ```
 
-## Set Primary Index and Value
+## Set, Get and Remove with Primary Index and Value
+Let's move beyond a simple "Hello World" example. Instead, let's consider a scenario where we want to store basic user information in the cache after a successful login to avoid unnecessary I/O calls to the database.
 
-## Get By Primary Index
+Example User Json Object:
+```json
+{
+  "first_name": "John",
+  "last_name": "doe",
+  "email": "john.doe@fake-domain.com",
+  "username": "rocketman"
+}
+```
 
-## Remove Primary Index
+As well, let's say the associated unique ID you have to the user in your database is the following UUID *0194ed3a-5d8f-7689-8b57-3a72cd2da3d8*
 
-## Set Primary and Secondary Indexes 
+Request to **set** the User Object in Cache:
+Request and Response:
+```console
+VertexCache Console, localhost:50505> set 0194ed3a-5d8f-7689-8b57-3a72cd2da3d8 {"first_name":"John","last_name":"doe","email":"john.doe@fake-domain.com","username":"rocketman"}
++OK
+```
 
-## Get By Seconardy Indexes
+A successful response of *+OK* is expected, with no return value other than an acknowledgment that it was set.
+
+
+
+
+## Set, Get and Remove with Primary and Secondary Indexes 
+
 
 ## Server Output / Logs
 **Note**: The server output is displayed because the default configuration file (~/vertex-cache-config/server/vertex-cache-server.properties) has *enable_verbose* set to *true*.
