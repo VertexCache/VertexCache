@@ -195,7 +195,7 @@ Example User Json Object:
 
 As well, let's say the associated unique ID you have to the user in your database is the following UUID *0194ed3a-5d8f-7689-8b57-3a72cd2da3d8*
 
-Request to **set** the User Object in Cache:
+Request to **set** the User Object in cache:
 Request and Response:
 ```console
 VertexCache Console, localhost:50505> set 0194ed3a-5d8f-7689-8b57-3a72cd2da3d8 {"first_name":"John","last_name":"doe","email":"john.doe@fake-domain.com","username":"rocketman"}
@@ -204,8 +204,20 @@ VertexCache Console, localhost:50505> set 0194ed3a-5d8f-7689-8b57-3a72cd2da3d8 {
 
 A successful response of *+OK* is expected, with no return value other than an acknowledgment that it was set.
 
+Request to **get** the user json object from the cache:
+```console
+VertexCache Console, localhost:50505> get 0194ed3a-5d8f-7689-8b57-3a72cd2da3d8
++{"first_name":"John","last_name":"doe","email":"john.doe@fake-domain.com","username":"rocketman"}
+```
 
+Request to **remove** the user json object from the cache with verification it's no longer set in the cache.
+```console
+VertexCache Console, localhost:50505> del 0194ed3a-5d8f-7689-8b57-3a72cd2da3d8
++OK
 
+VertexCache Console, localhost:50505> get 0194ed3a-5d8f-7689-8b57-3a72cd2da3d8
++(nil)
+```
 
 ## Set, Get and Remove with Primary and Secondary Indexes 
 
