@@ -240,7 +240,7 @@ VertexCache Console, localhost:50505> getidx2 johnnyrocket
 +{"first_name":"John","last_name":"doe","email":"john.doe@fake-domain.com","username":"rocketman"}
 ```
 
-## Server Output / Logs
+## Logs
 **Note**: The server output is displayed because the default configuration file (~/vertex-cache-config/server/vertex-cache-server.properties) has *enable_verbose* set to *true*.
 
 To see the details of the logs view the files:
