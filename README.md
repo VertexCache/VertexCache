@@ -220,7 +220,32 @@ VertexCache Console, localhost:50505> get 0194ed3a-5d8f-7689-8b57-3a72cd2da3d8
 ```
 
 ## Set, Get and Remove with Primary and Secondary Indexes 
+Now, let's say you want the ability to fetch a user not by their internal unique UUID, but instead by other unique attributes such as username or email. In this example, we assume that these attributes are treated as unique.
 
+Request to **set** the User Object in cache, along with secondary indexes (both of which are optional):
+Request and Response:
+```console
+VertexCache Console, localhost:50505> set 0194ed3a-5d8f-7689-8b57-3a72cd2da3d8 {"first_name":"John","last_name":"doe","email":"john.doe@fake-domain.com","username":"rocketman"} idx1 john.doe@fake-domain.com idx2 johnnyrocket
++OK
+```
+Request to **get** the user json object from the cache, using the 3 approaches by Primary Key, secondary key 1 and secondary key 2:
+```console
+VertexCache Console, localhost:50505> get 0194ed3a-5d8f-7689-8b57-3a72cd2da3d8
++{"first_name":"John","last_name":"doe","email":"john.doe@fake-domain.com","username":"rocketman"}
+
+VertexCache Console, localhost:50505> getidx1 john.doe@fake-domain.com
++{"first_name":"John","last_name":"doe","email":"john.doe@fake-domain.com","username":"rocketman"}
+
+VertexCache Console, localhost:50505> getidx2 johnnyrocket
++{"first_name":"John","last_name":"doe","email":"john.doe@fake-domain.com","username":"rocketman"}
+```
 
 ## Server Output / Logs
 **Note**: The server output is displayed because the default configuration file (~/vertex-cache-config/server/vertex-cache-server.properties) has *enable_verbose* set to *true*.
+
+To see the details of the logs view the files:
+* ~/logs/vertex-cache-console.log
+* ~/logs/vertex-cache-server.log
+
+For further information on log configuration including auto log rollover please visit the Log section.
+  
