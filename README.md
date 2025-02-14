@@ -25,6 +25,7 @@ VertexCache is implemented in Java and uses a straightforward, string-based prot
     * [Start Console Client on Windows](#start-console-client-on-windows)
     * [Console Client Started Output](#console-client-started-output)
 * [Test It](#test-it)
+* [Logs](#logs)
 
 **Beyond Getting Started**
 * VertexCache Server Configuration
