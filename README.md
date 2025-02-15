@@ -27,17 +27,7 @@ VertexCache is implemented in Java and uses a straightforward, string-based prot
 * [Test It](#test-it)
 * [Logs](#logs)
 
-**Beyond Getting Started**
-* VertexCache Server Configuration
-* VertexCache Console Configuration
-* Reading Log File and Configuration
-* Using Native Clients like PHP
-* Understanding the Message Protocol VCMP abbreviated for VertexCacheProtocolMessage
-
-**Releases**
-* Release History
-
-**Features**
+**Features and Configuration**
 * [Security](#Security) 
   * No Encryption / Plain Transport
   * Encryption during Transport via TLS (optional)
@@ -47,6 +37,8 @@ VertexCache is implemented in Java and uses a straightforward, string-based prot
 * [Interactive Console](#interactive-console)
 * [Logging](#logging)
 * [Easy Configuration](#easy-configuration)
+  * VertexCache Server Configuration
+  * VertexCache Console Configuration
 
 **Available Clients**
   * C#
