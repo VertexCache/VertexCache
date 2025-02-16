@@ -14,18 +14,18 @@ key and **two secondary keys (optional)**.
 VertexCache is implemented in Java and uses a straightforward, string-based protocol call VCMP (VertexCacheProtocolMessage) for message delivery, which is transmitted over the wire as bytes.
 
 **Getting Started Fast**
-* [Quick Start in 60 Seconds](#quick-start-in-60-seconds)
-  * [Prerequisites](#prerequisites)
-  * [Start Server](#start-server)
-    * [Start Server on MacOS/Linux](#start-server-on-macoslinux)
-    * [Start Server on Windows](#start-server-on-windows)
-    * [Server Started Output](#server-started-output)
-  * [Start Console Client](#start-console-client)
-    * [Start Console Client on MacOS/Linux](#start-console-client-on-macoslinux)
-    * [Start Console Client on Windows](#start-console-client-on-windows)
-    * [Console Client Started Output](#console-client-started-output)
-* [Test It](#test-it)
-* [Logs](#logs)
+* [Quick Start in 60 Seconds](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide#getting-started-in-60-seconds)
+  * [Prerequisites](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide#prerequisites)
+  * [Start Server](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide#start-server)
+    * [Start Server on MacOS/Linux](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide#start-server-on-macoslinux)
+    * [Start Server on Windows](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide#start-server-on-windows)
+    * [Server Started Output](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide#server-started-output)
+  * [Start Console Client](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide#start-console-client)
+    * [Start Console Client on MacOS/Linux](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide#start-console-client-on-macoslinux)
+    * [Start Console Client on Windows](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide#start-console-client-on-windows)
+    * [Console Client Started Output](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide#console-client-started-output)
+* [Test It](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide#test-it)
+* [Logs](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide#logs)
 
 **Features and Configuration**
 * [Security](#Security) 
