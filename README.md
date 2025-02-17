@@ -22,7 +22,7 @@ VertexCache is implemented in Java and uses a straightforward, string-based prot
   - [Prerequisites](https://github.com/jasonlam604/VertexCache/wiki/Installation#Prerequisites)
   - [Download](https://github.com/jasonlam604/VertexCache/wiki/Installation#Download)
   - [What's Inside](https://github.com/jasonlam604/VertexCache/wiki/Installation#Whats-Inside)
-- [Quick Start Guide](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide)
+- [Quick Start Guide - Up and Running in 60 seconds](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide)
 - [Configuration](https://github.com/jasonlam604/VertexCache/wiki/Configuration)
 
 ## Features
