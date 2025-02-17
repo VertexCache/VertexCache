@@ -80,7 +80,7 @@ public class ArgumentParser {
         }
         return parts.toArray(new String[0]);
     }
-    
+
     public Argument getSubArgumentByName(String subArgumentName) {
         for (Argument argument : this.arguments) {
             if (argument.getName().equalsIgnoreCase(subArgumentName)) {
