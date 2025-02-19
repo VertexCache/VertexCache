@@ -23,6 +23,8 @@ The GitHub repository contains the source code. If you are interested in using V
   - [What's Inside](https://github.com/jasonlam604/VertexCache/wiki/Installation#Whats-Inside)
 - [Quick Start Guide - Up and Running in 60 seconds](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide)
 - [Configuration](https://github.com/jasonlam604/VertexCache/wiki/Configuration)
+  - [Server](https://github.com/jasonlam604/VertexCache/wiki/Configuration#Server)
+  - [Console Client](https://github.com/jasonlam604/VertexCache/wiki/Configuration#Console-Client)
 
 ## Features
 - [Primary & Secondary Cache](https://github.com/jasonlam604/VertexCache/wiki/Primary-and-Secondary-Cache)
