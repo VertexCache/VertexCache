@@ -22,25 +22,37 @@ The GitHub repository contains the source code. If you are interested in using V
   - [Download](https://github.com/jasonlam604/VertexCache/wiki/Installation#Download)
   - [What's Inside](https://github.com/jasonlam604/VertexCache/wiki/Installation#Whats-Inside)
 - [Quick Start Guide - Up and Running in 60 seconds](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide)
-- [Configuration](https://github.com/jasonlam604/VertexCache/wiki/Configuration)
-  - [Server](https://github.com/jasonlam604/VertexCache/wiki/Configuration#Server)
-  - [Console Client](https://github.com/jasonlam604/VertexCache/wiki/Configuration#Console-Client)
 
-## Features
-- [Primary & Secondary Cache](https://github.com/jasonlam604/VertexCache/wiki/Primary-and-Secondary-Cache)
+## Feature Overview
+- [Fast Key/Value Caching](Fast-Key-Value-Caching)
+- [Primary and Secondary Keys](Primary-and-Secondary-Keys)
+- [Easy to Use Client SDKs](Easy-to-Use-Client-SDKs)
+- [Open Message Protocol, VXML](Open-Message-Protocol,-VXML)
+- [Open Source](Open-Source)
+- [Configurable](Configurable)
+- [Built in Logging](Built-in-Logging)  
+
+## HowTos and Tutorials
+- [Configuration](Configuration)
+  - [Server](Configuration#Server)
+  - [Console Client](Configuration#Console-Client)
+  - [Logs](Configuration#Logs)
 - [Encryption](https://github.com/jasonlam604/VertexCache/wiki/Encryption)
   - [TLS](https://github.com/jasonlam604/VertexCache/wiki/Encryption-with-TLS)
   - [Public and Private Keys](https://github.com/jasonlam604/VertexCache/wiki/Encryption-with-Public-and-Private-Keys)
   - [No Encryption](https://github.com/jasonlam604/VertexCache/wiki/No-Encryption)
 - [Eviction Policies / Cache Algorithms](https://github.com/jasonlam604/VertexCache/wiki/Eviction-Policies-Cache-Algorithms)
 - [Interactive Console](https://github.com/jasonlam604/VertexCache/wiki/Interactive-Console)
-- [Logging](Logging)
+- [Configuration](https://github.com/jasonlam604/VertexCache/wiki/Configuration)
+  - [Server](https://github.com/jasonlam604/VertexCache/wiki/Configuration#Server)
+  - [Console Client](https://github.com/jasonlam604/VertexCache/wiki/Configuration#Console-Client)
+  - [Logs](https://github.com/jasonlam604/VertexCache/wiki/Configuration#Logs)
 
-## Integration
+## Developer Integration
 - [Using Client SDKs](Using-Client-SDKs)
 - [Custom Client](Using-Custom-Client)
 
-## Contribute
+## Developer Contributor
 - [Architecture Overview](Architecture-Overview)
 - [VXML, VertexCache Message Protocol](VertexCache-Message-Protocol)
 - [Developer Guidelines](Developer-Guidelines)
