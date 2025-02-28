@@ -24,13 +24,13 @@ The GitHub repository contains the source code. If you are interested in using V
 - [Quick Start Guide - Up and Running in 60 seconds](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide)
 
 ## Feature Overview
-- [Fast Key/Value Caching](Fast-Key-Value-Caching)
-- [Primary and Secondary Keys](Primary-and-Secondary-Keys)
-- [Easy to Use Client SDKs](Easy-to-Use-Client-SDKs)
-- [Open Message Protocol, VXML](Open-Message-Protocol,-VXML)
-- [Open Source](Open-Source)
-- [Configurable](Configurable)
-- [Built in Logging](Built-in-Logging)  
+- [Fast Key/Value Caching](https://github.com/jasonlam604/VertexCache/wiki/Features#Fast-Key-Value-Caching)
+- [Primary and Secondary Keys](https://github.com/jasonlam604/VertexCache/wiki/Features#Primary-and-Secondary-Keys)
+- [Easy to Use Client SDKs](https://github.com/jasonlam604/VertexCache/wiki/Features#Easy-to-Use-Client-SDKs)
+- [Open Message Protocol, VXML](https://github.com/jasonlam604/VertexCache/wiki/Features#Open-Message-Protocol,-VXML)
+- [Open Source](https://github.com/jasonlam604/VertexCache/wiki/Features#Open-Source)
+- [Configurable](https://github.com/jasonlam604/VertexCache/wiki/Features#Configurable)
+- [Built in Logging](https://github.com/jasonlam604/VertexCache/wiki/Features#Built-in-Logging)  
 
 ## HowTos and Tutorials
 - [Configuration](Configuration)
