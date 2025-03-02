@@ -28,7 +28,7 @@ The GitHub repository contains the source code. If you are interested in using V
 - [Easy to Use Client SDKs](https://github.com/jasonlam604/VertexCache/wiki/Easy-to-Use-Client-SDKs)
 - [Open Message Protocol, VCMP - VertexCache Message Protocol](https://github.com/jasonlam604/VertexCache/wiki/Open-Message-Protocol,-VCMP)
 - [Open Source, License MIT](https://github.com/jasonlam604/VertexCache/wiki/Open-Source)
-- [Highly Configurable](https://github.com/jasonlam604/VertexCache/wiki/Configurable)
+- [Highly Configurable](https://github.com/jasonlam604/VertexCache/wiki/Highly-Configurable)
 - [Built in Logging](https://github.com/jasonlam604/VertexCache/wiki/Built-in-Logging)  
 
 ## HowTos and Tutorials
