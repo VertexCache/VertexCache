@@ -53,7 +53,7 @@ The GitHub repository contains the source code. If you are interested in using V
 
 ## Developer Contributor
 - [Architecture Overview](Architecture-Overview)
-- [VXML, VertexCache Message Protocol](VertexCache-Message-Protocol)
+- [VCMP, VertexCache Message Protocol](VertexCache-Message-Protocol)
 - [Developer Guidelines](Developer-Guidelines)
 
 ## Help & Support
