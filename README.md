@@ -44,7 +44,7 @@ Visit the GitHub repository to download the latest **[release](https://github.co
 - [Encryption Configuration](https://github.com/jasonlam604/VertexCache/wiki/Encryption-Configuration)
   - [Generating TLS (SSL) Certificates](https://github.com/jasonlam604/VertexCache/wiki/Generating-TLS-(SSL)-Certificates)
   - [Generating Public and Private Keys](https://github.com/jasonlam604/VertexCache/wiki/Generating-Public-and-Private-Keys)
-  - [Disabling Encryption](https://github.com/jasonlam604/VertexCache/wiki/Encryption#Disabling-Encryption)
+  - [Disabling Encryption](https://github.com/jasonlam604/VertexCache/wiki/Encryption-Configuration#Disabling-Encryption)
 - [Eviction Policies / Cache Algorithms](https://github.com/jasonlam604/VertexCache/wiki/Eviction-Policies-Cache-Algorithms)
 - [Interactive Console](https://github.com/jasonlam604/VertexCache/wiki/Interactive-Console)
 - [Configuration](https://github.com/jasonlam604/VertexCache/wiki/Configuration)
