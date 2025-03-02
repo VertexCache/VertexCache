@@ -24,12 +24,12 @@ The GitHub repository contains the source code. If you are interested in using V
 - [Quick Start Guide - Up and Running in 60 seconds](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide)
 
 ## Feature Overview
-- [High-Performance Primary & Secondary Key Indexing](https://github.com/jasonlam604/VertexCache/wiki/Features#High-Performance-Primary-&-Secondary-Key-Indexing)
-- [Easy to Use Client SDKs](https://github.com/jasonlam604/VertexCache/wiki/Features#Easy-to-Use-Client-SDKs)
-- [Open Message Protocol, VXML](https://github.com/jasonlam604/VertexCache/wiki/Features#Open-Message-Protocol,-VXML)
-- [Open Source](https://github.com/jasonlam604/VertexCache/wiki/Features#Open-Source)
-- [Configurable](https://github.com/jasonlam604/VertexCache/wiki/Features#Configurable)
-- [Built in Logging](https://github.com/jasonlam604/VertexCache/wiki/Features#Built-in-Logging)  
+- [High-Performance Primary & Secondary Key Indexing](https://github.com/jasonlam604/VertexCache/wiki/High-Performance-Primary-&-Secondary-Key-Indexing)
+- [Easy to Use Client SDKs](https://github.com/jasonlam604/VertexCache/wiki/Easy-to-Use-Client-SDKs)
+- [Open Message Protocol, VXML](https://github.com/jasonlam604/VertexCache/wiki/Open-Message-Protocol,-VXMP)
+- [Open Source](https://github.com/jasonlam604/VertexCache/wiki/Open-Source)
+- [Configurable](https://github.com/jasonlam604/VertexCache/wiki/Configurable)
+- [Built in Logging](https://github.com/jasonlam604/VertexCache/wiki/Built-in-Logging)  
 
 ## HowTos and Tutorials
 - [Configuration](Configuration)
