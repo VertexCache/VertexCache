@@ -24,7 +24,6 @@ The GitHub repository contains the source code. If you are interested in using V
 - [Quick Start Guide - Up and Running in 60 seconds](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide)
 
 ## Feature Overview
-- [Fast Key/Value Caching](https://github.com/jasonlam604/VertexCache/wiki/Features#Fast-Key-Value-Caching)
 - [High-Performance Primary & Secondary Key Indexing](https://github.com/jasonlam604/VertexCache/wiki/Features#High-Performance-Primary-&-Secondary-Key-Indexing)
 - [Easy to Use Client SDKs](https://github.com/jasonlam604/VertexCache/wiki/Features#Easy-to-Use-Client-SDKs)
 - [Open Message Protocol, VXML](https://github.com/jasonlam604/VertexCache/wiki/Features#Open-Message-Protocol,-VXML)
