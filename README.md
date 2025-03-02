@@ -27,8 +27,8 @@ The GitHub repository contains the source code. If you are interested in using V
 - [High-Performance Primary & Secondary Key Indexing](https://github.com/jasonlam604/VertexCache/wiki/High-Performance-Primary-&-Secondary-Key-Indexing)
 - [Easy to Use Client SDKs](https://github.com/jasonlam604/VertexCache/wiki/Easy-to-Use-Client-SDKs)
 - [Open Message Protocol, VXML](https://github.com/jasonlam604/VertexCache/wiki/Open-Message-Protocol,-VXMP)
-- [Open Source](https://github.com/jasonlam604/VertexCache/wiki/Open-Source)
-- [Configurable](https://github.com/jasonlam604/VertexCache/wiki/Configurable)
+- [Open Source, License MIT](https://github.com/jasonlam604/VertexCache/wiki/Open-Source)
+- [Highly Configurable](https://github.com/jasonlam604/VertexCache/wiki/Configurable)
 - [Built in Logging](https://github.com/jasonlam604/VertexCache/wiki/Built-in-Logging)  
 
 ## HowTos and Tutorials
