@@ -55,6 +55,7 @@ Visit the GitHub repository to download the latest **[release](https://github.co
 ## Developer Integration
 - [Using Client SDKs](Using-Client-SDKs)
 - [Custom Client](Using-Custom-Client)
+- [Commands](Commands)
 
 ## Developer Contributor
 - [Architecture Overview](Architecture-Overview)
