@@ -34,7 +34,8 @@ Visit the GitHub repository to download the latest **[release](https://github.co
 - [Open Message Protocol, VCMP - VertexCache Message Protocol](https://github.com/jasonlam604/VertexCache/wiki/Open-Message-Protocol,-VCMP)
 - [Open Source, License MIT](https://github.com/jasonlam604/VertexCache/wiki/Open-Source)
 - [Highly Configurable](https://github.com/jasonlam604/VertexCache/wiki/Highly-Configurable)
-- [Built in Logging](https://github.com/jasonlam604/VertexCache/wiki/Built-in-Logging)  
+- [Built in Logging](https://github.com/jasonlam604/VertexCache/wiki/Built-in-Logging)
+- [Interactive Console](https://github.com/jasonlam604/VertexCache/wiki/Interactive-Console)
 
 ## HowTos and Tutorials
 - [Configuration](https://github.com/jasonlam604/VertexCache/wiki/Configuration)
@@ -46,7 +47,6 @@ Visit the GitHub repository to download the latest **[release](https://github.co
   - [Generating Public and Private Keys](https://github.com/jasonlam604/VertexCache/wiki/Generating-Public-and-Private-Keys)
   - [Disabling Encryption](https://github.com/jasonlam604/VertexCache/wiki/Encryption-Configuration#Disabling-Encryption)
 - [Eviction Policies / Cache Algorithms](https://github.com/jasonlam604/VertexCache/wiki/Eviction-Policies-Cache-Algorithms)
-- [Interactive Console](https://github.com/jasonlam604/VertexCache/wiki/Interactive-Console)
 
 ## Developer Integration
 - [Using Client SDKs](Using-Client-SDKs)
