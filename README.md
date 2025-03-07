@@ -37,20 +37,16 @@ Visit the GitHub repository to download the latest **[release](https://github.co
 - [Built in Logging](https://github.com/jasonlam604/VertexCache/wiki/Built-in-Logging)  
 
 ## HowTos and Tutorials
-- [Configuration](Configuration)
-  - [Server](Configuration#Server)
-  - [Console Client](Configuration#Console-Client)
-  - [Logs](Configuration#Logs)
+- [Configuration](https://github.com/jasonlam604/VertexCache/wiki/Configuration)
+  - [Server](https://github.com/jasonlam604/VertexCache/wiki/Configuration#Server)
+  - [Console Client](https://github.com/jasonlam604/VertexCache/wiki/Configuration#Console-Client)
+  - [Logs](https://github.com/jasonlam604/VertexCache/wiki/Configuration#Logs)
 - [Encryption Configuration](https://github.com/jasonlam604/VertexCache/wiki/Encryption-Configuration)
   - [Generating TLS (SSL) Certificates](https://github.com/jasonlam604/VertexCache/wiki/Generating-TLS-(SSL)-Certificates)
   - [Generating Public and Private Keys](https://github.com/jasonlam604/VertexCache/wiki/Generating-Public-and-Private-Keys)
   - [Disabling Encryption](https://github.com/jasonlam604/VertexCache/wiki/Encryption-Configuration#Disabling-Encryption)
 - [Eviction Policies / Cache Algorithms](https://github.com/jasonlam604/VertexCache/wiki/Eviction-Policies-Cache-Algorithms)
 - [Interactive Console](https://github.com/jasonlam604/VertexCache/wiki/Interactive-Console)
-- [Configuration](https://github.com/jasonlam604/VertexCache/wiki/Configuration)
-  - [Server](https://github.com/jasonlam604/VertexCache/wiki/Configuration#Server)
-  - [Console Client](https://github.com/jasonlam604/VertexCache/wiki/Configuration#Console-Client)
-  - [Logs](https://github.com/jasonlam604/VertexCache/wiki/Configuration#Logs)
 
 ## Developer Integration
 - [Using Client SDKs](Using-Client-SDKs)
