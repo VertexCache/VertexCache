@@ -38,6 +38,7 @@ Visit the GitHub repository to download the latest **[release](https://github.co
 - [Interactive Console](https://github.com/jasonlam604/VertexCache/wiki/Interactive-Console)
 
 ## HowTos and Tutorials
+- [Commands](https://github.com/jasonlam604/VertexCache/wiki/Commands)
 - [Configuration](https://github.com/jasonlam604/VertexCache/wiki/Configuration)
   - [Server](https://github.com/jasonlam604/VertexCache/wiki/Configuration#Server)
   - [Console Client](https://github.com/jasonlam604/VertexCache/wiki/Configuration#Console-Client)
@@ -51,7 +52,6 @@ Visit the GitHub repository to download the latest **[release](https://github.co
 ## Developer Integration
 - [Using Client SDKs](Using-Client-SDKs)
 - [Custom Client](Using-Custom-Client)
-- [Commands](Commands)
 
 ## Developer Contributor
 - [Architecture Overview](Architecture-Overview)
