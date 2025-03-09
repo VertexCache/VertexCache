@@ -39,6 +39,10 @@ Visit the GitHub repository to download the latest **[release](https://github.co
 
 ## HowTos and Tutorials
 - [Commands](https://github.com/jasonlam604/VertexCache/wiki/Commands)
+  - [Ping](https://github.com/jasonlam604/VertexCache/wiki/Commands#Ping)
+  - [Set](https://github.com/jasonlam604/VertexCache/wiki/Commands#Set)
+  - [Get](https://github.com/jasonlam604/VertexCache/wiki/Commands#Get)
+  - [Del](https://github.com/jasonlam604/VertexCache/wiki/Commands#Del) 
 - [Configuration](https://github.com/jasonlam604/VertexCache/wiki/Configuration)
   - [Server](https://github.com/jasonlam604/VertexCache/wiki/Configuration#Server)
   - [Console Client](https://github.com/jasonlam604/VertexCache/wiki/Configuration#Console-Client)
