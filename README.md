@@ -59,7 +59,7 @@ Visit the GitHub repository to download the latest **[release](https://github.co
 
 ## Developer Contributor
 - [Architecture Overview](Architecture-Overview)
-- [VCMP, VertexCache Message Protocol](VertexCache-Message-Protocol)
+- [VCMP, VertexCacheMessageProtocol](https://github.com/jasonlam604/VertexCache/wiki/Open-Message-Protocol,-VCMP)
 - [Developer Guidelines](Developer-Guidelines)
 
 ## Help & Support
