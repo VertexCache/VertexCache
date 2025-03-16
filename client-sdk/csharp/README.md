@@ -1,1 +1,1 @@
-# VertexCache C++ Client SDK
+# VertexCache C# Client SDK
