@@ -1,0 +1,35 @@
+# Go build artifacts
+/bin/
+/pkg/
+*.exe
+*.out
+*.test
+
+# Go modules
+/go.sum
+/go.work
+/go.work.sum
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.iml
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+*.swo
+*.bak
+
+# MacOS system files
+.DS_Store
+
+# Coverage and test reports
+*.cover
+*.prof
+*.cov
+/testdata/
+
+# Local Go dependencies
+vendor/
