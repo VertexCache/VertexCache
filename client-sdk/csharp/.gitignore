@@ -1,0 +1,51 @@
+# Ignore build and binary files
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.nuget.props
+*.nuget.targets
+*.cache
+*.log
+*.bak
+*.swp
+
+# Ignore NuGet packages
+packages/
+.nuget/
+
+# Ignore Rider and JetBrains IDE files
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.dotsettings
+
+# Ignore VS Code settings
+.vscode/
+
+# Ignore test results
+TestResults/
+.trx
+.coverage
+
+# Ignore temporary files
+~$*
+*.tmp
+*.temp
+*.DS_Store
+
+# Ignore build artifacts
+artifacts/
+
+# Ignore solution files backup
+*.sln.ide
+
+# Ignore PowerShell history
+Microsoft.PowerShell_profile.ps1
+
+# Ignore macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
