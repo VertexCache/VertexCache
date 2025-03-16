@@ -1,0 +1,31 @@
+# Ignore compiled files
+/_build/
+/deps/
+/mix.lock
+
+# Ignore editor/IDE files
+*.swp
+*.swo
+*.swn
+*.bak
+*.tmp
+.DS_Store
+/.vscode/
+/.idea/
+/*.iml
+/.elixir_ls/
+
+# Ignore test coverage reports
+/cover/
+*.coverdata
+
+# Ignore logs and temporary files
+/log/
+/tmp/
+
+# Ignore files created by command-line editors
+*~
+
+# Ignore Elixir releases
+/rel/
+.erlang.cookie
