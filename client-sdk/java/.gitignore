@@ -1,0 +1,35 @@
+# OS-Specific Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+*.swp
+*.swo
+
+# Compiled Java Files
+*.class
+*.jar
+*.war
+*.ear
+
+# Maven Build Directory
+target/
+!**/src/main/**/target/  # Allow versioned target folders inside source directories
+
+# IDE / Editor Directories and Files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+*.project
+*.classpath
+*.settings/
+*.factorypath
+.metadata/
+
+# Maven Artifacts
+.mvn/
+.m2/
+
+# Logs & Debugging Files
+
