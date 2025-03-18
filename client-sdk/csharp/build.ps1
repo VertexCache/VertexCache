@@ -1,4 +1,4 @@
-# Stop script on first error
+# Stop execution on any error
 $ErrorActionPreference = "Stop"
 
 # Define project paths
@@ -7,30 +7,38 @@ $SdkProject = "sdk/VertexCache.Sdk.csproj"
 $ClientProject = "client/VertexCache.Client.csproj"
 $TestProject = "tests/VertexCache.Tests.csproj"
 
-# Function to print messages in color
-function Write-Info {
-    param ([string]$Message)
-    Write-Host $Message -ForegroundColor Cyan
-}
-
 # Clean previous builds
-Write-Info "Cleaning previous builds..."
+Write-Host "Cleaning previous builds..."
 dotnet clean $SolutionFile
 
+Write-Host "Cleaning artifacts and temporary files..."
+Remove-Item -Recurse -Force artifacts/ -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force sdk/bin/, sdk/obj/ -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force client/bin/, client/obj/ -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force tests/bin/, tests/obj/ -ErrorAction SilentlyContinue
+
+Write-Host "Clean completed!"
+
 # Restore dependencies
-Write-Info "Restoring dependencies..."
+Write-Host "Restoring dependencies..."
 dotnet restore $SolutionFile
 
+Write-Host "Restoration completed!"
+
 # Build SDK and Client
-Write-Info "Building SDK and Client..."
+Write-Host "Building SDK and Client..."
 dotnet build $SolutionFile --configuration Release
 
+Write-Host "Build completed!"
+
 # Run tests
-Write-Info "Running tests..."
+Write-Host "Running tests..."
 dotnet test $TestProject --configuration Release --no-build
 
-# Pack SDK (for NuGet)
-Write-Info "Packing SDK..."
-dotnet pack $SdkProject --configuration Release --no-build --output ./artifacts
+Write-Host "Tests completed!"
 
-Write-Info "Build completed successfully!"
+# Run Client Application
+Write-Host "Running Client Application..."
+dotnet run --project $ClientProject
+
+Write-Host "Execution completed!"

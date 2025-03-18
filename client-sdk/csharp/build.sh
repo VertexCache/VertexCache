@@ -1,8 +1,9 @@
 #!/bin/bash
 
-set -e  # Exit immediately if a command exits with a non-zero status
+# Stop execution on any error
+set -e
 
-# Define project directories
+# Define project paths
 SOLUTION_FILE="VertexCache.sln"
 SDK_PROJECT="sdk/VertexCache.Sdk.csproj"
 CLIENT_PROJECT="client/VertexCache.Client.csproj"
@@ -12,21 +13,34 @@ TEST_PROJECT="tests/VertexCache.Tests.csproj"
 echo "Cleaning previous builds..."
 dotnet clean $SOLUTION_FILE
 
+echo "Cleaning artifacts and temporary files..."
+rm -rf artifacts/
+rm -rf sdk/bin/ sdk/obj/
+rm -rf client/bin/ client/obj/
+rm -rf tests/bin/ tests/obj/
+
+echo "Clean completed!"
+
 # Restore dependencies
 echo "Restoring dependencies..."
 dotnet restore $SOLUTION_FILE
 
-# Build the SDK and Client
+echo "Restoration completed!"
+
+# Build SDK and Client
 echo "Building SDK and Client..."
 dotnet build $SOLUTION_FILE --configuration Release
+
+echo "Build completed!"
 
 # Run tests
 echo "Running tests..."
 dotnet test $TEST_PROJECT --configuration Release --no-build
 
-# Pack SDK (for NuGet)
-echo "Packing SDK..."
-dotnet pack $SDK_PROJECT --configuration Release --no-build --output ./artifacts
+echo "Tests completed!"
 
-# Done
-echo "Build completed successfully!"
+# Run Client Application
+echo "Running Client Application..."
+dotnet run --project $CLIENT_PROJECT
+
+echo "Execution completed!"
