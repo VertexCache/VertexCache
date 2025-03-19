@@ -1,0 +1,15 @@
+{
+  "name": "vertexcache-client-sdk",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "clean": "node scripts/clean.js",
+    "build": "node scripts/build.js",
+    "package": "npm pack ./sdk",
+    "test": "cd sdk && npm test",
+    "display": "node scripts/display.js"
+  },
+  "dependencies": {
+    "@vertexcache/sdk": "file:sdk"
+  }
+}

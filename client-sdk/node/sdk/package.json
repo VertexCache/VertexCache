@@ -1,0 +1,13 @@
+{
+  "name": "@vertexcache/sdk",
+  "version": "1.0.0",
+  "description": "Client SDK for VertexCache",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  }
+}
