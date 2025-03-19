@@ -1,0 +1,51 @@
+# 💡 Ignore Gradle build outputs
+/build/
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+
+# 💡 Ignore IntelliJ IDEA and Android Studio project files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# 💡 Ignore VS Code project files
+.vscode/
+
+# 💡 Ignore Mac system files
+.DS_Store
+
+# 💡 Ignore Java & Kotlin compiled classes and temporary files
+*.class
+*.jar
+*.war
+*.ear
+*.kt~
+*.swp
+out/
+
+# 💡 Ignore logs and crash reports
+logs/
+*.log
+hs_err_pid*
+
+# 💡 Ignore dependency caches
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# 💡 Ignore test reports and coverage data
+test-results/
+coverage/
+jacoco/
+
+# 💡 Ignore temporary files
+*.tmp
+*.lock
+*.bak
+*.swo
+*.swn
+
+# 💡 Ignore application-specific files
+*.env
+local.properties
