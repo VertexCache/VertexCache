@@ -1,0 +1,35 @@
+# Composer dependencies
+/vendor
+/vendor/
+/client/vendor
+/sdk/vendor
+/composer.lock
+
+# PHPUnit cache
+/.phpunit.result.cache
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# Logs & environment files
+*.log
+*.env
+.env.local
+.env.*.local
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Cache & temp files
+*.cache
+*.tmp
+
+# PHPStorm specific
+.phpstorm.meta.php
+
+# macOS & Linux system files
+._*
+*.swp

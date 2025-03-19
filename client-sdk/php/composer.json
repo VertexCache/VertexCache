@@ -1,0 +1,22 @@
+{
+  "name": "jasonlam604/vertexcache-php",
+  "description": "VertexCache PHP SDK and Client",
+  "require": {
+    "jasonlam604/vertexcache-sdk": "dev-main"
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "./sdk",
+      "options": {
+        "symlink": true
+      }
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "vertexcache\\sdk\\": "sdk/src/",
+      "vertexcache\\client\\": "client/src/"
+    }
+  }
+}
