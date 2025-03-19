@@ -3,6 +3,10 @@ set -e  # Stop on error
 
 ARCH=$(uname -m)  # Detect architecture
 
+echo "Cleaning build directory..."
+rm -rf build
+echo "Clean complete."
+
 echo "Building for macOS ($ARCH)..."
 mkdir -p build && cd build
 
