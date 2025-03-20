@@ -1,0 +1,36 @@
+FROM ubuntu:20.04
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    cmake \
+    ninja-build \
+    clang \
+    lld \
+    libstdc++-10-dev \
+    curl \
+    unzip \
+    git \
+    make \
+    automake \
+    libtool \
+    xz-utils
+
+# Clone osxcross for macOS cross-compilation
+RUN git clone https://github.com/tpoechtrager/osxcross.git /opt/osxcross
+
+# Copy the macOS SDK tarball into the container
+COPY MacOSX14.0.sdk.tar.xz /opt/osxcross/tarballs/
+
+# Extract and build osxcross
+RUN cd /opt/osxcross && \
+    UNATTENDED=1 ./tools/get_dependencies.sh && \
+    UNATTENDED=1 ./build.sh
+
+# Set environment variables for macOS cross-compilation
+ENV PATH="/opt/osxcross/target/bin:$PATH"
+ENV OSX_SDK_PATH="/opt/osxcross/target/SDK/MacOSX14.0.sdk"
+
+WORKDIR /project
+COPY . .
+
+CMD ["bash"]
