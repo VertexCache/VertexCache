@@ -98,11 +98,6 @@ public class ConsoleTerminal {
                 }
             }
         } catch (Exception e) {
-
-            System.out.println(e.getMessage());
-
-            e.printStackTrace();
-
             outputStartUpError("Error, unexpected error", e);
         } finally {
             scanner.close();

@@ -2,7 +2,8 @@ package com.vertexcache.console.domain.config;
 
 import com.vertexcache.common.cli.CommandLineArgsParser;
 import com.vertexcache.common.config.ConfigBase;
-import com.vertexcache.common.config.reader.PropertiesLoader;
+import com.vertexcache.common.config.reader.ConfigLoader;
+import com.vertexcache.common.config.reader.ConfigLoaderFactory;
 import com.vertexcache.common.security.KeyPairHelper;
 
 import java.security.PublicKey;
@@ -47,35 +48,35 @@ public class Config extends ConfigBase {
             if(commandLineArgsParser.isExist("--config")) {
                 this.configFilePath = commandLineArgsParser.getValue("--config");
 
-                PropertiesLoader propertiesLoader = new PropertiesLoader();
-                if (propertiesLoader.loadFromPath(this.configFilePath)) {
+                ConfigLoader configLoader = ConfigLoaderFactory.getLoader(this.configFilePath);
+                if (configLoader.loadFromPath(this.configFilePath)) {
                     this.configLoaded = true;
                 }
 
                 // Host
-                if (propertiesLoader.isExist(ConfigKey.SERVER_HOST)) {
-                    this.serverHost = propertiesLoader.getProperty(ConfigKey.SERVER_HOST);
+                if (configLoader.isExist(ConfigKey.SERVER_HOST)) {
+                    this.serverHost = configLoader.getProperty(ConfigKey.SERVER_HOST);
                 }
 
                 // Port
-                if (propertiesLoader.isExist(ConfigKey.SERVER_PORT)) {
-                    this.serverPort = Integer.parseInt(propertiesLoader.getProperty(ConfigKey.SERVER_PORT));
+                if (configLoader.isExist(ConfigKey.SERVER_PORT)) {
+                    this.serverPort = Integer.parseInt(configLoader.getProperty(ConfigKey.SERVER_PORT));
                 }
 
                 // Encrypt Message Layer
-                if (propertiesLoader.isExist(ConfigKey.ENABLE_ENCRYPT_MESSAGE) && Boolean.parseBoolean(propertiesLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_MESSAGE))) {
+                if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_MESSAGE) && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_MESSAGE))) {
                     this.encryptMessage = true;
-                    this.publicKey = KeyPairHelper.decodePublicKey(propertiesLoader.getProperty(ConfigKey.PUBLIC_KEY));
+                    this.publicKey = KeyPairHelper.decodePublicKey(configLoader.getProperty(ConfigKey.PUBLIC_KEY));
                 }
 
                 // Encrypt Transport Layer
-                if (propertiesLoader.isExist(ConfigKey.ENABLE_ENCRYPT_TRANSPORT) && Boolean.parseBoolean(propertiesLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_TRANSPORT))) {
+                if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_TRANSPORT) && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_TRANSPORT))) {
                    this.encryptTransport = true;
 
-                    if (propertiesLoader.isExist(ConfigKey.ENABLE_VERIFY_SERVER_CERTIFICATE) && Boolean.parseBoolean(propertiesLoader.getProperty(ConfigKey.ENABLE_VERIFY_SERVER_CERTIFICATE))) {
+                    if (configLoader.isExist(ConfigKey.ENABLE_VERIFY_SERVER_CERTIFICATE) && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_VERIFY_SERVER_CERTIFICATE))) {
                         this.verifyServerCertificate = true;
-                        if (propertiesLoader.isExist(ConfigKey.SERVER_CERTIFICATE_FILEPATH)) {
-                            this.serverCertificatePath = propertiesLoader.getProperty(ConfigKey.SERVER_CERTIFICATE_FILEPATH);
+                        if (configLoader.isExist(ConfigKey.SERVER_CERTIFICATE_FILEPATH)) {
+                            this.serverCertificatePath = configLoader.getProperty(ConfigKey.SERVER_CERTIFICATE_FILEPATH);
                         }
                     }
                 }

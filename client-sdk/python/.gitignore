@@ -1,0 +1,56 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Poetry virtual environments (if enabled)
+.env/
+.venv/
+poetry.lock
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Logs and databases
+*.log
+*.sqlite3
+
+# Unit test / coverage reports
+.coverage
+.tox/
+.nox/
+htmlcov/
+coverage.xml
+nosetests.xml
+pytest_cache/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# IDE & Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Python virtual environment
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Cython compiled files
+*.c
+*.so
+
+# macOS system files
+._*
+
+# Other project-specific files
+*.bak

@@ -1,6 +1,8 @@
 package com.vertexcache.server.domain.config;
 
 import com.vertexcache.common.config.ConfigBase;
+import com.vertexcache.common.config.reader.ConfigLoader;
+import com.vertexcache.common.config.reader.ConfigLoaderFactory;
 import com.vertexcache.common.config.reader.PropertiesLoader;
 import com.vertexcache.common.cli.CommandLineArgsParser;
 import com.vertexcache.common.log.LogHelper;
@@ -57,39 +59,39 @@ public class Config extends ConfigBase {
             if(commandLineArgsParser.isExist("--config")) {
                 this.configFilePath = commandLineArgsParser.getValue("--config");
 
-                PropertiesLoader propertiesLoader = new PropertiesLoader();
-                if (propertiesLoader.loadFromPath(this.configFilePath)) {
+                ConfigLoader configLoader = ConfigLoaderFactory.getLoader(this.configFilePath);
+                if (configLoader.loadFromPath(this.configFilePath)) {
                     this.configLoaded = true;
 
                     // Port
-                    if (propertiesLoader.isExist(ConfigKey.SERVER_PORT)) {
-                        this.serverPort = Integer.parseInt(propertiesLoader.getProperty(ConfigKey.SERVER_PORT));
+                    if (configLoader.isExist(ConfigKey.SERVER_PORT)) {
+                        this.serverPort = Integer.parseInt(configLoader.getProperty(ConfigKey.SERVER_PORT));
                     }
 
                     // Enable Verbose
-                    if (propertiesLoader.isExist(ConfigKey.ENABLE_VERBOSE)) {
-                        this.enableVerbose = Boolean.parseBoolean(propertiesLoader.getProperty(ConfigKey.ENABLE_VERBOSE));
+                    if (configLoader.isExist(ConfigKey.ENABLE_VERBOSE)) {
+                        this.enableVerbose = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_VERBOSE));
                     }
 
                     // Encrypt Message Layer
-                    if (propertiesLoader.isExist(ConfigKey.ENABLE_ENCRYPT_MESSAGE) && Boolean.parseBoolean(propertiesLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_MESSAGE))) {
+                    if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_MESSAGE) && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_MESSAGE))) {
                         this.encryptMessage = true;
-                        this.publicKey = KeyPairHelper.decodePublicKey(propertiesLoader.getProperty(ConfigKey.PUBLIC_KEY));
-                        this.privateKey = KeyPairHelper.decodePrivateKey(propertiesLoader.getProperty(ConfigKey.PRIVATE_KEY));
+                        this.publicKey = KeyPairHelper.decodePublicKey(configLoader.getProperty(ConfigKey.PUBLIC_KEY));
+                        this.privateKey = KeyPairHelper.decodePrivateKey(configLoader.getProperty(ConfigKey.PRIVATE_KEY));
                     }
 
                     // Encrypt Transport Layer
-                    if (propertiesLoader.isExist(ConfigKey.ENABLE_ENCRYPT_TRANSPORT) && Boolean.parseBoolean(propertiesLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_TRANSPORT))) {
+                    if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_TRANSPORT) && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_TRANSPORT))) {
                         this.encryptTransport = true;
-                        this.keystoreFilePath = propertiesLoader.getProperty(ConfigKey.KEYSTORE_FILEPATH);
-                        this.keystorePassword = propertiesLoader.getProperty(ConfigKey.KEYSTORE_PASSWORD);
+                        this.keystoreFilePath = configLoader.getProperty(ConfigKey.KEYSTORE_FILEPATH);
+                        this.keystorePassword = configLoader.getProperty(ConfigKey.KEYSTORE_PASSWORD);
                     }
 
                     // Cache Eviction Policy
                     this.cacheEvictionPolicy = EvictionPolicy.NONE;
-                    if (propertiesLoader.isExist(ConfigKey.CACHE_EVICTION)) {
+                    if (configLoader.isExist(ConfigKey.CACHE_EVICTION)) {
                         try {
-                            this.cacheEvictionPolicy = EvictionPolicy.fromString(propertiesLoader.getProperty(ConfigKey.CACHE_EVICTION));
+                            this.cacheEvictionPolicy = EvictionPolicy.fromString(configLoader.getProperty(ConfigKey.CACHE_EVICTION));
                         } catch (IllegalArgumentException ie) {
                             LogHelper.getInstance().logWarn("Invalid eviction policy given, defaulting to NONE");
                             this.cacheEvictionPolicy = EvictionPolicy.NONE;
@@ -100,8 +102,8 @@ public class Config extends ConfigBase {
 
                     // Cache Size, applied when Eviction Policy is not set to NONE
                     this.cacheSize = DEFAULT_CACHE_SIZE;
-                    if (propertiesLoader.isExist(ConfigKey.CACHE_SIZE)) {
-                       long cacheSize = Long.parseLong(propertiesLoader.getProperty(ConfigKey.CACHE_SIZE));
+                    if (configLoader.isExist(ConfigKey.CACHE_SIZE)) {
+                       long cacheSize = Long.parseLong(configLoader.getProperty(ConfigKey.CACHE_SIZE));
                         if (cacheSize <= Integer.MAX_VALUE) {
                             this.cacheSize = (int) cacheSize;
                         } else {

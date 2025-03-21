@@ -28,3 +28,6 @@ target/
 *.iml
 
 /.idea/
+
+# Env files
+.env
