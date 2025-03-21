@@ -1,0 +1,35 @@
+# Ignore Bundler files
+/.bundle/
+/vendor/bundle
+
+# Ignore Gems built packages
+*.gem
+pkg/
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.DS_Store
+
+# Ignore Ruby-specific temporary files
+coverage/
+*.rbc
+*.sass-cache
+.rspec_status
+
+# Ignore log files and temporary files
+*.log
+tmp/
+*.tmp
+
+# Ignore environment files (sensitive info)
+.env
+.env.*
+
+# MacOS files
+.DS_Store
+
+# Ignore test artifacts
+test/re

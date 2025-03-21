@@ -1,0 +1,6 @@
+# Gemfile (in your ruby/ directory)
+source "https://rubygems.org"
+
+# Add useful gems you might need:
+gem 'minitest'
+gem 'pry' # helpful debugging tool (optional)
