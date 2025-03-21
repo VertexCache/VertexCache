@@ -3,7 +3,6 @@ package com.vertexcache.server.domain.config;
 import com.vertexcache.common.config.ConfigBase;
 import com.vertexcache.common.config.reader.ConfigLoader;
 import com.vertexcache.common.config.reader.ConfigLoaderFactory;
-import com.vertexcache.common.config.reader.PropertiesLoader;
 import com.vertexcache.common.cli.CommandLineArgsParser;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.security.KeyPairHelper;
