@@ -27,10 +27,10 @@ target/
 .idea/
 *.iml
 
-/.idea/
-
 # Env files
 .env
 
-# Dist
+# VertexCache Specific Folders to ignore
+/logs
 /dist
+/vertex-cache-config
