@@ -1,0 +1,55 @@
+#
+# VertexCache Server - Default Property File
+#
+# Default settings enable TLS/SSL and the use of Public/Private Keys. Please do not use this in a production
+# environment; it is solely intended to help you get up and running as quickly as possible. The client console is
+# configured the same way, allowing both to communicate with each other out of the box.
+#
+# Full Documentation available at the VertexCache Wiki https://github.com/jasonlam604/VertexCache/wiki
+#
+
+# Verbose Output, default false
+enable_verbose=true
+
+# Server Port, default 50505
+server_port=50505
+
+# Cache Eviction Policy
+#
+#   Available options:
+#
+#    NONE - No Eviction applied, unbound your limit will be the available memory
+#    LRU - Least Recently Used
+#    MRU - Most Recently Used
+#    FIFO - First In and First Out
+#    LFU - Least Frequently Used
+#    RANDOM - Random
+#    ARC - Adaptive Replacement Cache
+#    2Queue - Two Queues
+#    Clock - Clock (or Clock-Pro)
+#    TinyLFU - Tiny Least Frequently Used
+#
+cache_eviction=LRU
+
+# this is required when using eviction policy other than NONE
+cache_size=100000
+
+# Encrypt Message Layer public/private keys, default false
+#
+#   *** WARNING ***
+#
+#   This are test keys, DO NOT USE IN PRODUCTION
+#
+enable_encrypt_message=true
+public_key=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2urk3svMX6hHDHPpASohDaxggCK3sKj9izN3l7yq1+BUWtpQxLShJyaNRkv4iSHrNmr6f9Lx4csfMSuJqPU4Nh03BfP+0bxkpaUexDm431wFl/dHghfmoGqeg11iSBnnjGh9Q0TdlEbx3fqKqKgGCERle2OK96Wx7t0rKxhk37nlzcClBjSulgrCy1wSfIbtpfU/s4tYPVKUr+whFtk07bcsXgiE5uIO+oTdfq1UBx8IiaZq+tXYMPmJj3xyz3fVkyi20CUlaTdreOUYQYTzW6lAINNqhd4XqS4rRdXRSDQXvt3HLe+dYDF3qvBnPFTA6XHkBrx4plnLBi5GB4+7vwIDAQAB
+private_key=MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDa6uTey8xfqEcMc+kBKiENrGCAIrewqP2LM3eXvKrX4FRa2lDEtKEnJo1GS/iJIes2avp/0vHhyx8xK4mo9Tg2HTcF8/7RvGSlpR7EObjfXAWX90eCF+agap6DXWJIGeeMaH1DRN2URvHd+oqoqAYIRGV7Y4r3pbHu3SsrGGTfueXNwKUGNK6WCsLLXBJ8hu2l9T+zi1g9UpSv7CEW2TTttyxeCITm4g76hN1+rVQHHwiJpmr61dgw+YmPfHLPd9WTKLbQJSVpN2t45RhBhPNbqUAg02qF3hepLitF1dFINBe+3cct751gMXeq8Gc8VMDpceQGvHimWcsGLkYHj7u/AgMBAAECggEAD2mWL3FdtCZeyium7eQPa60FJkBLem6LWy+GbfJkfMpYZgUUxqSI6/6014wltVHkA3LIrBMn4GOykH2mNXT+PiEUbKDfAdknpNnZLqt5rpAF/Mr2B9yy6fxXqJv8fWMFgEci+odwqi3MfXpUJMeflRlro6JAeGr7+fssPN58y5tjgbtqwk3hfxGEEdUbZGS3qF+p05E+U1UZD6ZeKy52JPCo/pb6D2gr3I5Dt35D0InwRg/5dG0OkGwkAsqTLkrz/LANGuz8tQOr1WSrMi+/YGu7AMWs7eHuN6THhy/4Ox7nXFVJnL1ZXOF2d1jyrp5hkagX5IVu3/5x2JqLilAgQQKBgQD8QfUR13nlabjVBP0uPqK+xaFwrNWI955CXs2mnSk4n8Pd0F2HkVp6onwdbihILiwDnRiOmF9cNB8kXOJRBKfWY7vsjSU8gCDqJ2YXZxmwKCJF/8aM0wNnni8elnESaoY8tWN4DCcbzZm1pl2vuokoYsmc9BkkXIsTrxq6sGcmjwKBgQDeKlC1J17OOZRyFVBJeJYrtWvEMbS0uCSZEnRgbFYj14EgNgGB6v0iOtfMgZiA+853VKCHseL0alaK/E6QtfF+QxBdywojnJxlEuIQV1CnneIAbSK+NWoNDn3uK9CjLLxBKyz36SMMmd7seR7dtB16kBu1OoMus9F/zHUTcusv0QKBgEFQrqzM9xHwmtwFK6zyqN7uewuapLuPKdoTg/oVDVxM+cEQN3dnql7AfZR9Nk7iLaFN5tLdHyvXjwyyRCMoKnD3Z+wq665LmromM2fx2RPkgGNRg85owKPusFKiL2rOTC2h5bxqoSGwzZDcH7vld6gOVBegmHXyxEv3ddtK25p/AoGARI0OBje1uzBtK56D/Yel3qrGK+2icrj3IfxdyHrlQX33q/a+FFZr8Sny+HlskzAfjxafyf8LpptBRPWBUImzkGAlJqvF3yMt5soi0yP+ERpYaAVE2SgmJw03skv2vsLI+9rUr1JSrEq2TIU7DvHKvszEn/EEFV8K38I4xd2J0GECgYEA3sqqOBEgQqqMGvhCFW837jI1oaCs58bLEs8xzrInGcCoAqxJgPFL3le3mCMFgkmIs/arXyCHTakHtoLP43rxzHkfOSkMUgi+KXSszTK3eSHYPxrt/VKX+ZmqyzbTDH/ypCTZPRh4Yjuuol4GqMJETnoEZZqABpGG8zAdEBkMrjQ=
+
+# Encrypt Transport layer using TLS
+#
+#   *** WARNING ***
+#
+#   This is test keystore, DO NOT USE IN PRODUCTION
+#
+enable_encrypt_transport=true
+keystore_filepath=./vertex-cache-config/server/test_server_keystore.jks
+keystore_password=testtest
