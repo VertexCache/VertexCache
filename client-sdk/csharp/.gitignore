@@ -1,51 +1,54 @@
-# Ignore build and binary files
+# Build output
 bin/
 obj/
-*.dll
-*.exe
-*.pdb
-*.nuget.props
-*.nuget.targets
-*.cache
-*.log
-*.bak
-*.swp
+build/
+dist/
 
-# Ignore NuGet packages
-packages/
-.nuget/
-
-# Ignore Rider and JetBrains IDE files
-.idea/
-*.suo
+# User-specific files
 *.user
+*.suo
 *.userosscache
-*.sln.dotsettings
+*.sln.docstates
 
-# Ignore VS Code settings
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# VS Code
 .vscode/
 
-# Ignore test results
+# Logs
+*.log
+
+# Test results
 TestResults/
-.trx
-.coverage
+*.coverage
+*.coveragejson
 
-# Ignore temporary files
-~$*
+# Temporary files
 *.tmp
-*.temp
+*.bak
+*.swp
 *.DS_Store
+Thumbs.db
 
-# Ignore build artifacts
+# Config files (local only)
+config/.env
+config/*.pem
+
+# NuGet
+*.nupkg
+.nuget/
+
+# Dotnet CLI artifacts
+.project/
+.cache/
 artifacts/
 
-# Ignore solution files backup
-*.sln.ide
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
 
-# Ignore PowerShell history
-Microsoft.PowerShell_profile.ps1
-
-# Ignore macOS system files
-.DS_Store
-.AppleDouble
-.LSOverride
+# Others
+*.db
+*.sqlite

@@ -12,7 +12,7 @@ mkdir -p ./vertex-cache-config/server
 
 # Copy over example .env files
 copy_file "./etc/config/env-example-server" "./vertex-cache-config/server/.env"
-copy_file "./etc/config/env-example-console" "./vertex-cache-config/console/.env"
+copy_file "./etc/config/env-example-client" "./vertex-cache-config/console/.env"
 
 # Copy over the Test TLS Certs
 copy_file "./etc/config/test_server_keystore.jks" "./vertex-cache-config/server/test_server_keystore.jks"
