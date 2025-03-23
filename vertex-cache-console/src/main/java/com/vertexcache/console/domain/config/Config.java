@@ -64,10 +64,24 @@ public class Config extends ConfigBase {
                 }
 
                 // Encrypt Message Layer
-                if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_MESSAGE) && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_MESSAGE))) {
-                    this.encryptMessage = true;
-                    this.publicKey = KeyPairHelper.decodePublicKey(configLoader.getProperty(ConfigKey.PUBLIC_KEY));
+                // Encrypt Message Layer
+                if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_MESSAGE)
+                        && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_MESSAGE))) {
+                    try {
+                        this.publicKey = KeyPairHelper.loadPublicKey(configLoader.getProperty(ConfigKey.PUBLIC_KEY));
+                        if (this.publicKey == null) {
+                            throw new IllegalStateException("❌ PublicKey returned null!");
+                        }
+
+                        this.encryptMessage = true;
+                        System.out.println("✅ Public key loaded. Encoded length: " + this.publicKey.getEncoded().length);
+                    } catch (Exception e) {
+                        System.err.println("❌ Failed to load public key: " + e.getMessage());
+                        e.printStackTrace();
+                        this.encryptMessage = false;
+                    }
                 }
+
 
                 // Encrypt Transport Layer
                 if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_TRANSPORT) && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_TRANSPORT))) {

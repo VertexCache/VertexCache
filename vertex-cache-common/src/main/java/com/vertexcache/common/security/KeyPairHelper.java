@@ -1,70 +1,105 @@
 package com.vertexcache.common.security;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.security.*;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
+import java.security.spec.*;
 import java.util.Base64;
 
 public class KeyPairHelper {
 
-    private static String ALGO_RSA = "RSA";
-    private static int KEY_SIZE = 2048;
+    private static final String ALGO_RSA = "RSA";
+    private static final int KEY_SIZE = 2048;
 
     public static KeyPair generate() throws Exception {
         try {
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KeyPairHelper.ALGO_RSA);
-            keyPairGenerator.initialize(KeyPairHelper.KEY_SIZE);
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(ALGO_RSA);
+            keyPairGenerator.initialize(KEY_SIZE);
             return keyPairGenerator.generateKeyPair();
-        } catch (Exception exception) {
-            throw new Exception("Failed to generate public private key pair");
+        } catch (Exception e) {
+            throw new Exception("Failed to generate public/private key pair", e);
         }
     }
 
-    /*
-     * Encode Key Base64
-     */
     public static String encodeKey(Key key) {
+        if (key == null) {
+            throw new IllegalStateException("❌ Key is null — likely failed to load or decode.");
+        }
         return Base64.getEncoder().encodeToString(key.getEncoded());
+    }
+
+    public static String publicKeyToString(PublicKey publicKey) {
+        return encodeKey(publicKey);
+    }
+
+    public static PublicKey loadPublicKey(String source) throws Exception {
+        String pem = resolvePemSource(source);
+        String base64 = extractBase64FromPem(pem, "PUBLIC KEY");
+        return decodePublicKey(base64);
+    }
+
+    public static PrivateKey loadPrivateKey(String source) throws Exception {
+        String pem = resolvePemSource(source);
+        String base64 = extractBase64FromPem(pem, "PRIVATE KEY");
+        return decodePrivateKey(base64);
     }
 
     public static PublicKey decodePublicKey(String keyBase64) throws Exception {
         try {
-            return (PublicKey) decodeKey(keyBase64, "RSA", false);
-        } catch (Exception exception) {
-            throw new Exception("Failed to decode public key, check if valid key");
+            return (PublicKey) decodeKey(keyBase64, ALGO_RSA, false);
+        } catch (Exception e) {
+            System.err.println("❌ Exception during decodePublicKey: " + e.getMessage());
+            throw new Exception("Failed to decode public key — ensure it's valid Base64 content", e);
         }
     }
 
     public static PrivateKey decodePrivateKey(String keyBase64) throws Exception {
         try {
-            return (PrivateKey) decodeKey(keyBase64, "RSA", true);
-        } catch (Exception exception) {
-            throw new Exception("Failed to decode private key, check if valid key");
+            return (PrivateKey) decodeKey(keyBase64, ALGO_RSA, true);
+        } catch (Exception e) {
+            System.err.println("❌ Exception during decodePrivateKey: " + e.getMessage());
+            throw new Exception("Failed to decode private key — ensure it's valid Base64 content", e);
         }
     }
 
-    /*
-     * Decode Key Base64
-     */
-    private static Key decodeKey(String base64Key, String algorithm, boolean isPrivate) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    private static Key decodeKey(String base64Key, String algorithm, boolean isPrivate)
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
         byte[] decodedKey = Base64.getDecoder().decode(base64Key);
-        KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+        System.out.println("🔎 Decoded key byte length: " + decodedKey.length);
 
-        if (isPrivate) {
-            return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(decodedKey));
-        } else {
-            return keyFactory.generatePublic(new X509EncodedKeySpec(decodedKey));
-        }
+        KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+        return isPrivate
+                ? keyFactory.generatePrivate(new PKCS8EncodedKeySpec(decodedKey))
+                : keyFactory.generatePublic(new X509EncodedKeySpec(decodedKey));
     }
 
-    public static String publicKeyToString(PublicKey publicKey) {
-        // Get the encoded public key bytes
-        byte[] publicKeyBytes = publicKey.getEncoded();
+    private static String resolvePemSource(String source) throws Exception {
+        File file = new File(source);
+        if (file.exists() && file.isFile()) {
+            System.out.println("📁 Loading PEM from file: " + file.getAbsolutePath());
+            return Files.readString(file.toPath());
+        }
 
-        // Encode the bytes into a Base64 string
-        String publicKeyString = Base64.getEncoder().encodeToString(publicKeyBytes);
+        System.out.println("📄 Treating source as embedded PEM string.");
+        return source;
+    }
 
-        return publicKeyString;
+    private static String extractBase64FromPem(String pem, String type) {
+        String beginMarker = "-----BEGIN " + type + "-----";
+        String endMarker = "-----END " + type + "-----";
+
+        if (!pem.contains(beginMarker) || !pem.contains(endMarker)) {
+            throw new IllegalArgumentException("PEM format invalid: BEGIN/END block not found");
+        }
+
+        // 🔧 Strip the surrounding markers
+        String base64Body = pem
+                .replace(beginMarker, "")
+                .replace(endMarker, "")
+                .replaceAll("\\s+", ""); // remove all whitespace
+
+        return base64Body;
     }
 }
+
+

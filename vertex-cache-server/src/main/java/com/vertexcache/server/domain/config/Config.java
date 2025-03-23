@@ -74,9 +74,12 @@ public class Config extends ConfigBase {
 
                     // Encrypt Message Layer
                     if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_MESSAGE) && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_MESSAGE))) {
-                        this.encryptMessage = true;
-                        this.publicKey = KeyPairHelper.decodePublicKey(configLoader.getProperty(ConfigKey.PUBLIC_KEY));
-                        this.privateKey = KeyPairHelper.decodePrivateKey(configLoader.getProperty(ConfigKey.PRIVATE_KEY));
+                        try {
+                            this.privateKey = KeyPairHelper.loadPrivateKey(configLoader.getProperty(ConfigKey.PRIVATE_KEY));
+                            this.encryptMessage = true;
+                        } catch (Exception e) {
+                            this.encryptMessage = false;
+                        }
                     }
 
                     // Encrypt Transport Layer

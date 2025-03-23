@@ -58,7 +58,7 @@ public class ClientHandler implements Runnable {
     private byte[] processInputData(byte[] buffer, int bytesRead, Cipher cipher) throws InvalidKeyException,
             IllegalBlockSizeException, BadPaddingException {
         if(this.config.isEncryptMessage()) {
-            cipher.init(Cipher.PRIVATE_KEY, this.config.getPrivateKey());
+            cipher.init(Cipher.DECRYPT_MODE, this.config.getPrivateKey());
             byte[] decryptedBytes = cipher.doFinal(buffer, 0, bytesRead);
             String decryptedMessage = new String(decryptedBytes);
             if(this.config.isEnableVerbose()) {

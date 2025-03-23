@@ -72,7 +72,7 @@ public class ConsoleTerminal {
                 byte[] bytesToSend;
                 if (config.isEncryptMessage()) {
                     // Encrypt the user's input
-                    Cipher cipher = Cipher.getInstance(ConsoleTerminal.CIPHER_RSA);
+                    Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
                     cipher.init(Cipher.ENCRYPT_MODE, KeyPairHelper.decodePublicKey(KeyPairHelper.publicKeyToString(this.config.getPublicKey())));
                     bytesToSend = cipher.doFinal(userInput.getBytes());
                 } else {

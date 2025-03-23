@@ -6,46 +6,60 @@ import java.util.regex.Pattern;
 
 public class PemUtils {
 
-    private static final Pattern CERT_PATTERN = Pattern.compile(
-            "-----BEGIN CERTIFICATE-----([^-]+)-----END CERTIFICATE-----",
+    private static final Pattern PEM_PATTERN = Pattern.compile(
+            "-----BEGIN ([A-Z ]+)-----(.*?)-----END \\1-----",
             Pattern.DOTALL
     );
 
+    /**
+     * Normalize a PEM block (CERTIFICATE, PUBLIC KEY, PRIVATE KEY).
+     * - Strips whitespace
+     * - Validates base64
+     * - Rewraps at 64-char lines
+     */
     public static String normalizePemBlock(String pem) {
-        if (pem == null) throw new IllegalArgumentException("PEM content is null");
+        if (pem == null || pem.trim().isEmpty()) {
+            throw new IllegalArgumentException("PEM content is null or empty");
+        }
 
-        Matcher matcher = CERT_PATTERN.matcher(pem.trim());
-
+        Matcher matcher = PEM_PATTERN.matcher(pem.trim());
         if (!matcher.find()) {
             throw new IllegalArgumentException("PEM format invalid: BEGIN/END block not found");
         }
 
-        // Extract base64 body and strip all whitespace
-        String base64Body = matcher.group(1).replaceAll("\\s+", "");
+        String type = matcher.group(1).trim();
+        String base64Body = matcher.group(2).replaceAll("\\s+", "");
 
-        // Validate base64 length
         if (base64Body.length() % 4 != 0) {
             throw new IllegalArgumentException("PEM base64 body is invalid length: " + base64Body.length());
         }
 
-        // Validate base64 content
+        // Base64 decode for validation
         try {
             Base64.getDecoder().decode(base64Body);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("PEM base64 body is invalid: " + e.getMessage(), e);
         }
 
-        // Rewrap as standard PEM
-        StringBuilder pemOut = new StringBuilder();
-        pemOut.append("-----BEGIN CERTIFICATE-----\n");
+        // Rewrap to PEM format
+        StringBuilder normalized = new StringBuilder();
+        normalized.append("-----BEGIN ").append(type).append("-----\n");
         for (int i = 0; i < base64Body.length(); i += 64) {
-            pemOut.append(base64Body, i, Math.min(i + 64, base64Body.length())).append("\n");
+            normalized.append(base64Body, i, Math.min(i + 64, base64Body.length())).append("\n");
         }
-        pemOut.append("-----END CERTIFICATE-----\n");
+        normalized.append("-----END ").append(type).append("-----\n");
 
-        return pemOut.toString();
+        return normalized.toString();
+    }
+
+    /**
+     * Extracts the base64 body from a PEM block, stripping headers and whitespace.
+     */
+    public static String extractBase64FromPem(String pem) {
+        Matcher matcher = PEM_PATTERN.matcher(pem.trim());
+        if (!matcher.find()) {
+            throw new IllegalArgumentException("PEM format invalid: BEGIN/END block not found");
+        }
+        return matcher.group(2).replaceAll("\\s+", "");
     }
 }
-
-
-

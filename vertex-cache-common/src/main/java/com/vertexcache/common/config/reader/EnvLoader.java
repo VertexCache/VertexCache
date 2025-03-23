@@ -1,4 +1,5 @@
 package com.vertexcache.common.config.reader;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -29,11 +30,11 @@ public class EnvLoader implements ConfigLoader {
                 // Handle continuation of a multiline value
                 if (lastKey != null) {
                     if (line.endsWith("\\")) {
-                        multilineValue.append(line, 0, line.length() - 1).append("\n");
+                        multilineValue.append(line, 0, line.length() - 1).append("\\n");
                     } else {
                         multilineValue.append(line);
                         String fullValue = multilineValue.toString();
-                        envVariables.put(lastKey, fullValue);
+                        envVariables.put(lastKey, removeSurroundingQuotes(fullValue));
                         printDebug(lastKey, fullValue);
                         lastKey = null;
                         multilineValue.setLength(0);
@@ -51,21 +52,19 @@ public class EnvLoader implements ConfigLoader {
                 String key = line.substring(0, delimiterIndex).trim();
                 String value = line.substring(delimiterIndex + 1).trim();
 
-                value = removeSurroundingQuotes(value);
-
                 if (value.endsWith("\\")) {
                     lastKey = key;
-                    multilineValue.append(value, 0, value.length() - 1).append("\n");
+                    multilineValue.append(value, 0, value.length() - 1).append("\\n");
                 } else {
-                    envVariables.put(key, value);
+                    envVariables.put(key, removeSurroundingQuotes(value));
                     printDebug(key, value);
                 }
             }
 
-            // Handle any final unterminated multiline value
+            // Final unterminated multiline value
             if (lastKey != null && multilineValue.length() > 0) {
                 String fullValue = multilineValue.toString();
-                envVariables.put(lastKey, fullValue);
+                envVariables.put(lastKey, removeSurroundingQuotes(fullValue));
                 printDebug(lastKey, fullValue);
             }
 
@@ -113,7 +112,7 @@ public class EnvLoader implements ConfigLoader {
         System.out.println("🔹 Contains newline: " + value.contains("\n"));
         System.out.println("🔹 Total length: " + value.length());
         System.out.println();
-
-         */
+        */
     }
 }
+
