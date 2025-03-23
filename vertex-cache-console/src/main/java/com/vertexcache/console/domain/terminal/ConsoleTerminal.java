@@ -108,7 +108,7 @@ public class ConsoleTerminal {
         SSLContext sslContext = SSLContext.getInstance(ConsoleTerminal.SOCKET_PROTOCOL);
 
         if(config.isVerifyServerCertificate()) {
-            sslContext.init(null, new X509TrustManager[]{new ServerCertificateTrustManagerVerification(config.getServerCertificatePath())}, null);
+            sslContext.init(null, new X509TrustManager[]{new ServerCertificateTrustManagerVerification(config.getServerCertificate())}, null);
         } else {
             sslContext.init(null, new TrustManager[]{new ServerCertificateTrustManagerNoVerification()}, null);
         }

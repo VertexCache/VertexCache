@@ -23,7 +23,7 @@ public class Config extends ConfigBase {
 
     private boolean encryptTransport = false;
     private boolean verifyServerCertificate = false;
-    private String serverCertificatePath;
+    private String serverCertificate;
 
     private static volatile Config instance;
 
@@ -75,8 +75,8 @@ public class Config extends ConfigBase {
 
                     if (configLoader.isExist(ConfigKey.ENABLE_VERIFY_SERVER_CERTIFICATE) && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_VERIFY_SERVER_CERTIFICATE))) {
                         this.verifyServerCertificate = true;
-                        if (configLoader.isExist(ConfigKey.SERVER_CERTIFICATE_FILEPATH)) {
-                            this.serverCertificatePath = configLoader.getProperty(ConfigKey.SERVER_CERTIFICATE_FILEPATH);
+                        if (configLoader.isExist(ConfigKey.SERVER_CERTIFICATE)) {
+                            this.serverCertificate = configLoader.getProperty(ConfigKey.SERVER_CERTIFICATE);
                         }
                     }
                 }
@@ -126,7 +126,7 @@ public class Config extends ConfigBase {
         return verifyServerCertificate;
     }
 
-    public String getServerCertificatePath() {
-        return serverCertificatePath;
+    public String getServerCertificate() {
+        return serverCertificate;
     }
 }

@@ -17,6 +17,6 @@ public class ConfigKey {
     // Encrypt Transport Layer, SSL/TLS
     public static final String ENABLE_ENCRYPT_TRANSPORT = "enable_encrypt_transport";
     public static final String ENABLE_VERIFY_SERVER_CERTIFICATE = "enable_verify_certificate";
-    public static final String SERVER_CERTIFICATE_FILEPATH = "server_certificate";
+    public static final String SERVER_CERTIFICATE = "server_certificate";
 
 }
