@@ -30,8 +30,20 @@ server_port=50505
 ########################################################################################################################
 enable_encrypt_message=true
 
+#public_key=./vertex-cache-config/console/test_public_key.pem
 
-public_key="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2urk3svMX6hHDHPpASohDaxggCK3sKj9izN3l7yq1+BUWtpQxLShJyaNRkv4iSHrNmr6f9Lx4csfMSuJqPU4Nh03BfP+0bxkpaUexDm431wFl/dHghfmoGqeg11iSBnnjGh9Q0TdlEbx3fqKqKgGCERle2OK96Wx7t0rKxhk37nlzcClBjSulgrCy1wSfIbtpfU/s4tYPVKUr+whFtk07bcsXgiE5uIO+oTdfq1UBx8IiaZq+tXYMPmJj3xyz3fVkyi20CUlaTdreOUYQYTzW6lAINNqhd4XqS4rRdXRSDQXvt3HLe+dYDF3qvBnPFTA6XHkBrx4plnLBi5GB4+7vwIDAQAB"
+#public_key="-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnwwKN2M7niJj+Vd0+w9Q\nbw5gw5TzAWw2PUBl5rnepgn5QrLmvQ0s4aoDL6JGsnyx+GpSo6UmkrvXknObW+AI\nUzsHLc7bFe9qe/urSvgLKzThl9kb/KN4NueDVJ+s33sDA9z+rRA9+sjp8Pc2Ycmm\nGzN1lC22KM+oPSxHQvRcT5dQ7u6NGg7pX81DJ1ZsCXReE3vGoCQRyJoRPdLA54oR\nNwC82/xKm9cRfghjRKqvnkmpS3FfCj0sLPy4W7ARBWU+RbhU0UmdUutB3Ce1LfIo\n6DpmfhgHJ1P1yd/0ic8qfkqjvwUoxRUhR5+dWIakA8KZYQ95gP6oawmXiu2PcPeV\nEwIDAQAB\n-----END PUBLIC KEY-----"
+
+public_key=-----BEGIN PUBLIC KEY-----\
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3sDjjKzXriMb7vF5wHEw\
+0AkZjHxzMmmAjKMumkjcY+U1nDHVavV/c/0qV2aUlAhapn9KmnYHxROUYUjvEdAy\
+c9uJqYkYNSoxDKvUYKjNPLIS02MSJECVq58OEwT7hMB/EhEvYjUQ1gnYlfRhJgHF\
+SOunOZdmcW+UORyIUc9U3ZrHYQjTz6U9xxsKnXwDbKBiApdjzksZ9L2D77guG52c\
+Ev7cUrJfjb6x+hzzyHPUDItPUMcP5xxi4GoP37ThYQ3azOrcBaS3CTJ8+M4PtNJS\
+JZkB+jTxvq3An2f9zx6MFqZ9DgN7AqkDB9Fc2J+zfgIuDLtwRNTZ5N5Y27KrTdsU\
+1QIDAQAB\
+-----END PUBLIC KEY-----
+
 
 
 ########################################################################################################################

@@ -21,7 +21,7 @@ copy_file "./etc/config/env-example-server" "./vertex-cache-config/server/.env"
 copy_file "./etc/config/env-example-client" "./vertex-cache-config/console/.env"
 
 # Copy over the Test TLS Certs
-copy_file "./etc/config/test_private_key.pem" "./vertex-cache-config/server/test_private_key.jks"
+copy_file "./etc/config/test_private_key.pem" "./vertex-cache-config/server/test_private_key.pem"
 copy_file "./etc/config/test_public_key.pem" "./vertex-cache-config/console/test_public_key.pem"
 
 # Copy over the Test Public/Private Keys, for VertexCache Server and Console Client
