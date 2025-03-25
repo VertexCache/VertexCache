@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -60,7 +61,7 @@ public class ClientHandler implements Runnable {
         if(this.config.isEncryptMessage()) {
             cipher.init(Cipher.DECRYPT_MODE, this.config.getPrivateKey());
             byte[] decryptedBytes = cipher.doFinal(buffer, 0, bytesRead);
-            String decryptedMessage = new String(decryptedBytes);
+            String decryptedMessage = new String(decryptedBytes, StandardCharsets.UTF_8);
             if(this.config.isEnableVerbose()) {
                 LogHelper.getInstance().logInfo("Request: " + decryptedMessage);
             }

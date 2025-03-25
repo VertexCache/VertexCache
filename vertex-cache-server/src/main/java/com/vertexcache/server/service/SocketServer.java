@@ -1,6 +1,8 @@
 package com.vertexcache.server.service;
 
 import com.vertexcache.common.log.LogHelper;
+import com.vertexcache.common.security.KeyPairHelper;
+import com.vertexcache.common.util.PemUtils;
 import com.vertexcache.common.version.VersionUtil;
 import com.vertexcache.server.domain.cache.Cache;
 import com.vertexcache.server.domain.config.Config;
@@ -8,13 +10,18 @@ import com.vertexcache.server.exception.VertexCacheSSLServerSocketException;
 import com.vertexcache.server.domain.command.CommandService;
 
 import javax.net.ssl.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.security.*;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -98,6 +105,7 @@ public class SocketServer {
      * @return
      * @throws VertexCacheSSLServerSocketException
      */
+
     private SSLServerSocket secureSocket() throws VertexCacheSSLServerSocketException {
 
         try {
@@ -138,6 +146,61 @@ public class SocketServer {
             throw new VertexCacheSSLServerSocketException(e);
         }
     }
+
+/*
+    private SSLServerSocket secureSocket() throws VertexCacheSSLServerSocketException {
+        try {
+            System.out.println("🔐 Initializing secure socket...");
+
+            // Load cert and key (already resolved to PEM string via config)
+            String certPem = this.config.getTlsCertificate();
+            String keyPem = this.config.getTlsPrivateKey();
+
+            System.out.println("📄 TLS Certificate length: " + (certPem != null ? certPem.length() : "null"));
+            System.out.println("📄 TLS Private Key length: " + (keyPem != null ? keyPem.length() : "null"));
+
+            // Parse private key and certificate
+            PrivateKey privateKey = KeyPairHelper.loadPrivateKey(keyPem);
+            System.out.println("✅ Private key loaded: " + privateKey.getAlgorithm());
+
+            X509Certificate certificate = PemUtils.parseCertificate(certPem);
+            System.out.println("✅ Certificate loaded: " + certificate.getSubjectDN());
+
+            // In-memory keystore
+            KeyStore keyStore = KeyStore.getInstance("JKS");
+            keyStore.load(null); // initialize empty keystore
+            keyStore.setKeyEntry("vertexcache", privateKey, new char[0], new X509Certificate[]{certificate});
+            System.out.println("✅ In-memory keystore populated");
+
+            // Setup KeyManagerFactory with in-memory keystore
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+            kmf.init(keyStore, new char[0]);
+            System.out.println("🔐 KeyManagerFactory initialized");
+
+            // Create and initialize SSL context (no TrustManager for now)
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(kmf.getKeyManagers(), null, null);
+            System.out.println("🔒 SSLContext initialized");
+
+            // Create and configure the SSLServerSocket
+            SSLServerSocketFactory sslFactory = sslContext.getServerSocketFactory();
+            SSLServerSocket serverSocket = (SSLServerSocket) sslFactory.createServerSocket(config.getServerPort());
+
+            serverSocket.setEnabledProtocols(new String[]{"TLSv1.2"});
+            serverSocket.setEnabledCipherSuites(new String[]{"TLS_RSA_WITH_AES_256_CBC_SHA256"});
+
+            System.out.println("🚀 Secure server socket created on port: " + config.getServerPort());
+            return serverSocket;
+
+        } catch (Exception e) {
+            System.err.println("❌ Error during secure socket initialization: " + e.getMessage());
+            e.printStackTrace();
+            throw new VertexCacheSSLServerSocketException(e);
+        }
+    }
+*/
+
+
 
     private void outputStartupOK() {
         this.outputStartup("Server Started");

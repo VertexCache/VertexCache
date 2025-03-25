@@ -107,8 +107,8 @@ public class ConsoleTerminal {
     private SSLSocket buildSecureSocket() throws NoSuchAlgorithmException, KeyManagementException, IOException, CertificateException {
         SSLContext sslContext = SSLContext.getInstance(ConsoleTerminal.SOCKET_PROTOCOL);
 
-        if(config.isVerifyServerCertificate()) {
-            sslContext.init(null, new X509TrustManager[]{new ServerCertificateTrustManagerVerification(config.getServerCertificate())}, null);
+        if(config.isVerifyTLSCertificate()) {
+            sslContext.init(null, new X509TrustManager[]{new ServerCertificateTrustManagerVerification(config.getTlsCertificate())}, null);
         } else {
             sslContext.init(null, new TrustManager[]{new ServerCertificateTrustManagerNoVerification()}, null);
         }
@@ -139,7 +139,7 @@ public class ConsoleTerminal {
                 .append("  Port: ").append(config.getServerPort()).append(System.lineSeparator())
                 .append("  Message Layer Encryption Enabled: ").append(config.isEncryptMessage() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Transport Layer Encryption Enabled: ").append(config.isEncryptTransport() ? "Yes" : "No").append(System.lineSeparator())
-                .append("  Transport Layer Verify Certificate: ").append(config.isVerifyServerCertificate() ? "Yes" : "No").append(System.lineSeparator())
+                .append("  Transport Layer Verify Certificate: ").append(config.isVerifyTLSCertificate() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Config file set: ").append(config.isConfigLoaded() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Config file loaded with no errors: ").append(!config.isConfigError() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Config file location: ").append(config.getConfigFilePath() != null ? config.getConfigFilePath() : "n/a").append(System.lineSeparator())

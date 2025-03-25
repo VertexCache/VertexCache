@@ -21,10 +21,15 @@ copy_file "./etc/config/env-example-server" "./vertex-cache-config/server/.env"
 copy_file "./etc/config/env-example-client" "./vertex-cache-config/console/.env"
 
 # Copy over the Test TLS Certs
+copy_file "./etc/config/test_tls_certificate.pem" "./vertex-cache-config/server/test_tls_certificate.pem"
+copy_file "./etc/config/test_tls_private_key.pem" "./vertex-cache-config/server/test_tls_private_key.pem"
+
+copy_file "./etc/config/test_tls_certificate.pem" "./vertex-cache-config/console/test_tls_certificate.pem"
+
+# Copy over the Test Public/Private Keys, for VertexCache Server and Console Client
 copy_file "./etc/config/test_private_key.pem" "./vertex-cache-config/server/test_private_key.pem"
 copy_file "./etc/config/test_public_key.pem" "./vertex-cache-config/console/test_public_key.pem"
 
-# Copy over the Test Public/Private Keys, for VertexCache Server and Console Client
 
 # Copy over the Log4J Configuration Files
 copy_file "./etc/config/log4j2-vertexcache-server.xml" "./vertex-cache-config/server/log4j2-vertexcache-server.xml"

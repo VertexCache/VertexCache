@@ -17,6 +17,9 @@ public class ConfigKey {
 
     // Encrypt Transport Layer, SSL/TLS
     public static final String ENABLE_ENCRYPT_TRANSPORT = "enable_encrypt_transport";
+    public static final String TLS_CERTIFICATE = "tls_certificate";
+    public static final String TLS_PRIVATE_KEY = "tls_private_key";
+
     public static final String KEYSTORE_FILEPATH = "keystore_filepath";
     public static final String KEYSTORE_PASSWORD = "keystore_password";
 

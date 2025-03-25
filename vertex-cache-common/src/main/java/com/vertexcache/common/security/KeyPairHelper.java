@@ -1,5 +1,7 @@
 package com.vertexcache.common.security;
 
+import com.vertexcache.common.util.PemUtils;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.security.*;
@@ -38,6 +40,7 @@ public class KeyPairHelper {
         return decodePublicKey(base64);
     }
 
+
     public static PrivateKey loadPrivateKey(String source) throws Exception {
         String pem = resolvePemSource(source);
         String base64 = extractBase64FromPem(pem, "PRIVATE KEY");
@@ -48,7 +51,6 @@ public class KeyPairHelper {
         try {
             return (PublicKey) decodeKey(keyBase64, ALGO_RSA, false);
         } catch (Exception e) {
-            System.err.println("❌ Exception during decodePublicKey: " + e.getMessage());
             throw new Exception("Failed to decode public key — ensure it's valid Base64 content", e);
         }
     }
@@ -57,7 +59,6 @@ public class KeyPairHelper {
         try {
             return (PrivateKey) decodeKey(keyBase64, ALGO_RSA, true);
         } catch (Exception e) {
-            System.err.println("❌ Exception during decodePrivateKey: " + e.getMessage());
             throw new Exception("Failed to decode private key — ensure it's valid Base64 content", e);
         }
     }
@@ -65,7 +66,6 @@ public class KeyPairHelper {
     private static Key decodeKey(String base64Key, String algorithm, boolean isPrivate)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
         byte[] decodedKey = Base64.getDecoder().decode(base64Key);
-        System.out.println("🔎 Decoded key byte length: " + decodedKey.length);
 
         KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
         return isPrivate
@@ -76,27 +76,45 @@ public class KeyPairHelper {
     private static String resolvePemSource(String source) throws Exception {
         File file = new File(source);
         if (file.exists() && file.isFile()) {
-            System.out.println("📁 Loading PEM from file: " + file.getAbsolutePath());
             return Files.readString(file.toPath());
         }
 
-        System.out.println("📄 Treating source as embedded PEM string.");
-        return source;
+        // Normalize: remove surrounding quotes, unify newlines, unescape \n
+        String normalized = source.trim();
+
+        if ((normalized.startsWith("\"") && normalized.endsWith("\"")) ||
+                (normalized.startsWith("'") && normalized.endsWith("'"))) {
+            normalized = normalized.substring(1, normalized.length() - 1);
+        }
+
+        // Handle .env trailing backslashes and embedded \n markers
+        normalized = normalized
+                .replaceAll("\\\\n", "\n")     // embedded \n -> newline
+                .replaceAll("\\\\\\s*", "")    // remove line continuation backslashes (e.g. at end of lines)
+                .replace("\r\n", "\n")
+                .replace("\r", "\n");
+
+        return normalized;
     }
 
     private static String extractBase64FromPem(String pem, String type) {
         String beginMarker = "-----BEGIN " + type + "-----";
         String endMarker = "-----END " + type + "-----";
 
-        if (!pem.contains(beginMarker) || !pem.contains(endMarker)) {
-            throw new IllegalArgumentException("PEM format invalid: BEGIN/END block not found");
+        int beginIndex = pem.indexOf(beginMarker);
+        int endIndex = pem.indexOf(endMarker);
+
+        if (beginIndex == -1 || endIndex == -1) {
+            throw new IllegalArgumentException("PEM format invalid: BEGIN/END block not found for type " + type);
         }
 
-        // 🔧 Strip the surrounding markers
         String base64Body = pem
-                .replace(beginMarker, "")
-                .replace(endMarker, "")
-                .replaceAll("\\s+", ""); // remove all whitespace
+                .substring(beginIndex + beginMarker.length(), endIndex)
+                .replaceAll("\\s+", ""); // remove all whitespace/newlines
+
+        if (base64Body.length() % 4 != 0) {
+            throw new IllegalArgumentException("PEM base64 body is invalid length: " + base64Body.length());
+        }
 
         return base64Body;
     }

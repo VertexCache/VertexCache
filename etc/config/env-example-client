@@ -30,33 +30,30 @@ server_port=50505
 ########################################################################################################################
 enable_encrypt_message=true
 
-#public_key=./vertex-cache-config/console/test_public_key.pem
 
+########################################################################################################################
+# There are two supported methods for providing the Public Key. Currently, option 2 is active.
+########################################################################################################################
+
+# --> Option 1 - Set Filepath to Public Key, currently commented out
+########################################################################################################################
+public_key=./vertex-cache-config/console/test_public_key.pem
+
+# --> Option 2 - Embed Public Key as single line (must include literal \n for newlines)
+########################################################################################################################
 #public_key="-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnwwKN2M7niJj+Vd0+w9Q\nbw5gw5TzAWw2PUBl5rnepgn5QrLmvQ0s4aoDL6JGsnyx+GpSo6UmkrvXknObW+AI\nUzsHLc7bFe9qe/urSvgLKzThl9kb/KN4NueDVJ+s33sDA9z+rRA9+sjp8Pc2Ycmm\nGzN1lC22KM+oPSxHQvRcT5dQ7u6NGg7pX81DJ1ZsCXReE3vGoCQRyJoRPdLA54oR\nNwC82/xKm9cRfghjRKqvnkmpS3FfCj0sLPy4W7ARBWU+RbhU0UmdUutB3Ce1LfIo\n6DpmfhgHJ1P1yd/0ic8qfkqjvwUoxRUhR5+dWIakA8KZYQ95gP6oawmXiu2PcPeV\nEwIDAQAB\n-----END PUBLIC KEY-----"
-
-public_key=-----BEGIN PUBLIC KEY-----\
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3sDjjKzXriMb7vF5wHEw\
-0AkZjHxzMmmAjKMumkjcY+U1nDHVavV/c/0qV2aUlAhapn9KmnYHxROUYUjvEdAy\
-c9uJqYkYNSoxDKvUYKjNPLIS02MSJECVq58OEwT7hMB/EhEvYjUQ1gnYlfRhJgHF\
-SOunOZdmcW+UORyIUc9U3ZrHYQjTz6U9xxsKnXwDbKBiApdjzksZ9L2D77guG52c\
-Ev7cUrJfjb6x+hzzyHPUDItPUMcP5xxi4GoP37ThYQ3azOrcBaS3CTJ8+M4PtNJS\
-JZkB+jTxvq3An2f9zx6MFqZ9DgN7AqkDB9Fc2J+zfgIuDLtwRNTZ5N5Y27KrTdsU\
-1QIDAQAB\
------END PUBLIC KEY-----
-
-
 
 ########################################################################################################################
 # Encrypt Transport layer using TLS
 #
 #   *** WARNING ***
 #
-#   This is test keystore, DO NOT USE IN PRODUCTION
+#   This is test certificate, DO NOT USE IN PRODUCTION
 #
 # There are 3 settings related to this below, refer to their respective comments
 #  - enable_encrypt_transport
 #  - enable_verify_certificate
-#  - server_certificate
+#  - tls_certificate (note be sure to use the client certificate not the server certificate)
 #
 ########################################################################################################################
 enable_encrypt_transport=true
@@ -67,41 +64,14 @@ enable_encrypt_transport=true
 enable_verify_certificate=true
 
 ########################################################################################################################
-# There are 3 ways to provide the CERT PEM file, to allow flexibility in environments
-# where you may not have full control. For example, depending on the service you are using,
-# you might not be able to mount a file and can only set .env values through a UI.
-# Supporting multiple formats ensures compatibility across local, CI/CD, and hosted setups.
+# There are two supported methods for providing the TLS CERT. Currently, option 2 is active.
 ########################################################################################################################
 
-# --> Option 1 - Set Filepath, currently commented out
+# --> Option 1 - Set Filepath to TLS Cert, currently commented out
 ########################################################################################################################
-#server_certificate=./vertex-cache-config/console/test_server_certificate.pem
+#tls_certificate=./vertex-cache-config/console/test_tls_certificate.pem
 
-
-# --> Option 2 - Embed the cert as single line, currently commented out
+# --> Option 2 - Embed TLS Cert as single line (must include literal \n for newlines)
 ########################################################################################################################
-#server_certificate_pem="-----BEGIN CERTIFICATE-----MIIDiTCCAnGgAwIBAgIITq/F/pEVepgwDQYJKoZIhvcNAQEMBQAwcjELMAkGA1UEBhMCQkMxCzAJBgNVBAgTAlZDMRQwEgYDVQQHEwtWZXJ0ZXhDYWNoZTEUMBIGA1UEChMLVmVydGV4Q2FjaGUxFDASBgNVBAsTC1ZlcnRleENhY2hlMRQwEgYDVQQDEwtWZXJ0ZXhDYWNoZTAgFw0yNTAzMTYxNTIwMjVaGA8yMTI1MDIyMDE1MjAyNVowcjELMAkGA1UEBhMCQkMxCzAJBgNVBAgTAlZDMRQwEgYDVQQHEwtWZXJ0ZXhDYWNoZTEUMBIGA1UEChMLVmVydGV4Q2FjaGUxFDASBgNVBAsTC1ZlcnRleENhY2hlMRQwEgYDVQQDEwtWZXJ0ZXhDYWNoZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJAkANp/l5iPScBSDhRu3iGPfvoAkmbJMDTnxP3i6hdOx3999b1C0yKdVJJClMGOaywKboa414SUvzfRXx2/7WTgkjdOTL/m2kNNUc0FHtqUpIjR2eCkyXh9DM+2GpF+fUMtHjClhOA8eolImcI6xYJynpejGV3YmBd9HQxOGOWJmzrptrPpZP/tdPwjqrxtMa1/luTp2JIsrQpzfvdiats0WE3JhvyA1SX2+Tx0O6ri3q9hqLBsdPChgF5hiGYUUdIikX9MMCkzWa8gbBp2QipgwKlk+qgc+aw2A/yVJGGkYB4vLkDQ4GKRcXUNnc5cjlR8ExYMWdAC55giRL9zdm0CAwEAAaMhMB8wHQYDVR0OBBYEFAwCU6xaQHRkZdw4MeoHybhSMfnnMA0GCSqGSIb3DQEBDAUAA4IBAQB7gzu5nV5c+76ZjVgdGgi/DeIPVAKYvPxxiIIJuZl5ySryyri2W/k0vmUm8LGbcNCNtOOXnpunKem7Nzk6EfzR1Ckl9CALIDg6NXmwoFaortP0O3QsAOKjmXmrPNJ6zomqdBOTbUxnGgqrEWqpMClc5gvPvqeUyEtJLNROUSqC4tuXO5IDSE3s1bYMfSQj69nThPzTyX+u9vXahi3IDi7aBPU/ds1ltqVzU8tqMk9bGfgyUt5n6g0W/Q98MAEbE2yRnWUV4SncSevyzl87JCk2Zm/zFnVvyxc63ee/dspYo4m5e3AKrFLcPO4DR+YzIoregc6FiQCTo0W0RjPskrGZ-----END CERTIFICATE-----"
+tls_certificate="-----BEGIN CERTIFICATE-----\nMIIDiTCCAnGgAwIBAgIITq/F/pEVepgwDQYJKoZIhvcNAQEMBQAwcjELMAkGA1UE\nBhMCQkMxCzAJBgNVBAgTAlZDMRQwEgYDVQQHEwtWZXJ0ZXhDYWNoZTEUMBIGA1UE\nChMLVmVydGV4Q2FjaGUxFDASBgNVBAsTC1ZlcnRleENhY2hlMRQwEgYDVQQDEwtW\nZXJ0ZXhDYWNoZTAgFw0yNTAzMTYxNTIwMjVaGA8yMTI1MDIyMDE1MjAyNVowcjEL\nMAkGA1UEBhMCQkMxCzAJBgNVBAgTAlZDMRQwEgYDVQQHEwtWZXJ0ZXhDYWNoZTEU\nMBIGA1UEChMLVmVydGV4Q2FjaGUxFDASBgNVBAsTC1ZlcnRleENhY2hlMRQwEgYD\nVQQDEwtWZXJ0ZXhDYWNoZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB\nAJAkANp/l5iPScBSDhRu3iGPfvoAkmbJMDTnxP3i6hdOx3999b1C0yKdVJJClMGO\naywKboa414SUvzfRXx2/7WTgkjdOTL/m2kNNUc0FHtqUpIjR2eCkyXh9DM+2GpF+\nfUMtHjClhOA8eolImcI6xYJynpejGV3YmBd9HQxOGOWJmzrptrPpZP/tdPwjqrxt\nMa1/luTp2JIsrQpzfvdiats0WE3JhvyA1SX2+Tx0O6ri3q9hqLBsdPChgF5hiGYU\nUdIikX9MMCkzWa8gbBp2QipgwKlk+qgc+aw2A/yVJGGkYB4vLkDQ4GKRcXUNnc5c\njlR8ExYMWdAC55giRL9zdm0CAwEAAaMhMB8wHQYDVR0OBBYEFAwCU6xaQHRkZdw4\nMeoHybhSMfnnMA0GCSqGSIb3DQEBDAUAA4IBAQB7gzu5nV5c+76ZjVgdGgi/DeIP\nVAKYvPxxiIIJuZl5ySryyri2W/k0vmUm8LGbcNCNtOOXnpunKem7Nzk6EfzR1Ckl\n9CALIDg6NXmwoFaortP0O3QsAOKjmXmrPNJ6zomqdBOTbUxnGgqrEWqpMClc5gvP\nvqeUyEtJLNROUSqC4tuXO5IDSE3s1bYMfSQj69nThPzTyX+u9vXahi3IDi7aBPU/\nds1ltqVzU8tqMk9bGfgyUt5n6g0W/Q98MAEbE2yRnWUV4SncSevyzl87JCk2Zm/z\nFnVvyxc63ee/dspYo4m5e3AKrFLcPO4DR+YzIoregc6FiQCTo0W0RjPskrGZ\n-----END CERTIFICATE-----"
 
-# --> Option 3 - Embed the cert as multi-line, current using this approach
-########################################################################################################################
-server_certificate=-----BEGIN CERTIFICATE-----\
-MIIDiTCCAnGgAwIBAgIITq/F/pEVepgwDQYJKoZIhvcNAQEMBQAwcjELMAkGA1UE\
-BhMCQkMxCzAJBgNVBAgTAlZDMRQwEgYDVQQHEwtWZXJ0ZXhDYWNoZTEUMBIGA1UE\
-ChMLVmVydGV4Q2FjaGUxFDASBgNVBAsTC1ZlcnRleENhY2hlMRQwEgYDVQQDEwtW\
-ZXJ0ZXhDYWNoZTAgFw0yNTAzMTYxNTIwMjVaGA8yMTI1MDIyMDE1MjAyNVowcjEL\
-MAkGA1UEBhMCQkMxCzAJBgNVBAgTAlZDMRQwEgYDVQQHEwtWZXJ0ZXhDYWNoZTEU\
-MBIGA1UEChMLVmVydGV4Q2FjaGUxFDASBgNVBAsTC1ZlcnRleENhY2hlMRQwEgYD\
-VQQDEwtWZXJ0ZXhDYWNoZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB\
-AJAkANp/l5iPScBSDhRu3iGPfvoAkmbJMDTnxP3i6hdOx3999b1C0yKdVJJClMGO\
-aywKboa414SUvzfRXx2/7WTgkjdOTL/m2kNNUc0FHtqUpIjR2eCkyXh9DM+2GpF+\
-fUMtHjClhOA8eolImcI6xYJynpejGV3YmBd9HQxOGOWJmzrptrPpZP/tdPwjqrxt\
-Ma1/luTp2JIsrQpzfvdiats0WE3JhvyA1SX2+Tx0O6ri3q9hqLBsdPChgF5hiGYU\
-UdIikX9MMCkzWa8gbBp2QipgwKlk+qgc+aw2A/yVJGGkYB4vLkDQ4GKRcXUNnc5c\
-jlR8ExYMWdAC55giRL9zdm0CAwEAAaMhMB8wHQYDVR0OBBYEFAwCU6xaQHRkZdw4\
-MeoHybhSMfnnMA0GCSqGSIb3DQEBDAUAA4IBAQB7gzu5nV5c+76ZjVgdGgi/DeIP\
-VAKYvPxxiIIJuZl5ySryyri2W/k0vmUm8LGbcNCNtOOXnpunKem7Nzk6EfzR1Ckl\
-9CALIDg6NXmwoFaortP0O3QsAOKjmXmrPNJ6zomqdBOTbUxnGgqrEWqpMClc5gvP\
-vqeUyEtJLNROUSqC4tuXO5IDSE3s1bYMfSQj69nThPzTyX+u9vXahi3IDi7aBPU/\
-ds1ltqVzU8tqMk9bGfgyUt5n6g0W/Q98MAEbE2yRnWUV4SncSevyzl87JCk2Zm/z\
-FnVvyxc63ee/dspYo4m5e3AKrFLcPO4DR+YzIoregc6FiQCTo0W0RjPskrGZ\
------END CERTIFICATE-----

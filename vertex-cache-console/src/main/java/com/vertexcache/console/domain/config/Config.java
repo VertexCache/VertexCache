@@ -22,8 +22,8 @@ public class Config extends ConfigBase {
     private PublicKey publicKey;
 
     private boolean encryptTransport = false;
-    private boolean verifyServerCertificate = false;
-    private String serverCertificate;
+    private boolean verifyTLSCertificate = false;
+    private String tlsCertificate;
 
     private static volatile Config instance;
 
@@ -64,33 +64,27 @@ public class Config extends ConfigBase {
                 }
 
                 // Encrypt Message Layer
-                // Encrypt Message Layer
                 if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_MESSAGE)
                         && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_MESSAGE))) {
                     try {
                         this.publicKey = KeyPairHelper.loadPublicKey(configLoader.getProperty(ConfigKey.PUBLIC_KEY));
-                        if (this.publicKey == null) {
-                            throw new IllegalStateException("❌ PublicKey returned null!");
+                        if (this.publicKey != null) {
+                            this.encryptMessage = true;
                         }
-
-                        this.encryptMessage = true;
-                        System.out.println("✅ Public key loaded. Encoded length: " + this.publicKey.getEncoded().length);
                     } catch (Exception e) {
-                        System.err.println("❌ Failed to load public key: " + e.getMessage());
-                        e.printStackTrace();
+                        // should be already false
                         this.encryptMessage = false;
                     }
                 }
-
 
                 // Encrypt Transport Layer
                 if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_TRANSPORT) && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_TRANSPORT))) {
                    this.encryptTransport = true;
 
-                    if (configLoader.isExist(ConfigKey.ENABLE_VERIFY_SERVER_CERTIFICATE) && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_VERIFY_SERVER_CERTIFICATE))) {
-                        this.verifyServerCertificate = true;
-                        if (configLoader.isExist(ConfigKey.SERVER_CERTIFICATE)) {
-                            this.serverCertificate = configLoader.getProperty(ConfigKey.SERVER_CERTIFICATE);
+                    if (configLoader.isExist(ConfigKey.ENABLE_VERIFY_TLS_CERTIFICATE) && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_VERIFY_TLS_CERTIFICATE))) {
+                        this.verifyTLSCertificate = true;
+                        if (configLoader.isExist(ConfigKey.TLS_CERTIFICATE)) {
+                            this.tlsCertificate = configLoader.getProperty(ConfigKey.TLS_CERTIFICATE);
                         }
                     }
                 }
@@ -136,11 +130,9 @@ public class Config extends ConfigBase {
         return encryptTransport;
     }
 
-    public boolean isVerifyServerCertificate() {
-        return verifyServerCertificate;
+    public boolean isVerifyTLSCertificate() {
+        return verifyTLSCertificate;
     }
 
-    public String getServerCertificate() {
-        return serverCertificate;
-    }
+    public String getTlsCertificate() { return tlsCertificate; }
 }

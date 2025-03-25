@@ -30,12 +30,11 @@ public class EnvLoader implements ConfigLoader {
                 // Handle continuation of a multiline value
                 if (lastKey != null) {
                     if (line.endsWith("\\")) {
-                        multilineValue.append(line, 0, line.length() - 1).append("\\n");
+                        multilineValue.append(line, 0, line.length() - 1).append("\n");
                     } else {
                         multilineValue.append(line);
                         String fullValue = multilineValue.toString();
                         envVariables.put(lastKey, removeSurroundingQuotes(fullValue));
-                        printDebug(lastKey, fullValue);
                         lastKey = null;
                         multilineValue.setLength(0);
                     }
@@ -45,19 +44,19 @@ public class EnvLoader implements ConfigLoader {
                 // New key=value pair
                 int delimiterIndex = line.indexOf('=');
                 if (delimiterIndex == -1) {
-                    System.err.println("⚠️ Skipping invalid line: " + line);
                     continue;
                 }
 
                 String key = line.substring(0, delimiterIndex).trim();
                 String value = line.substring(delimiterIndex + 1).trim();
 
+                value = removeSurroundingQuotes(value);
+
                 if (value.endsWith("\\")) {
                     lastKey = key;
-                    multilineValue.append(value, 0, value.length() - 1).append("\\n");
+                    multilineValue.append(value, 0, value.length() - 1).append("\n");
                 } else {
-                    envVariables.put(key, removeSurroundingQuotes(value));
-                    printDebug(key, value);
+                    envVariables.put(key, value);
                 }
             }
 
@@ -65,12 +64,10 @@ public class EnvLoader implements ConfigLoader {
             if (lastKey != null && multilineValue.length() > 0) {
                 String fullValue = multilineValue.toString();
                 envVariables.put(lastKey, removeSurroundingQuotes(fullValue));
-                printDebug(lastKey, fullValue);
             }
 
             return true;
         } catch (IOException e) {
-            System.err.println("❌ Error reading .env file: " + e.getMessage());
             return false;
         }
     }
@@ -85,11 +82,6 @@ public class EnvLoader implements ConfigLoader {
         return envVariables.get(key);
     }
 
-    public void printAllKeysAndValues() {
-        System.out.println("🔎 Loaded Environment Variables:");
-        envVariables.forEach(this::printDebug);
-    }
-
     private String removeSurroundingQuotes(String input) {
         if ((input.startsWith("\"") && input.endsWith("\"")) ||
                 (input.startsWith("'") && input.endsWith("'"))) {
@@ -101,18 +93,4 @@ public class EnvLoader implements ConfigLoader {
                 .replace("\\r", "\r")
                 .replace("\\t", "\t");
     }
-
-    private void printDebug(String key, String value) {
-        /*
-        System.out.println("✅ Loaded ENV key: " + key);
-        System.out.println("🔹 Value (first 80 chars): " +
-                (value.length() > 80 ? value.substring(0, 80) + "..." : value));
-        System.out.println("🔹 Contains BEGIN: " + value.contains("-----BEGIN"));
-        System.out.println("🔹 Contains END: " + value.contains("-----END"));
-        System.out.println("🔹 Contains newline: " + value.contains("\n"));
-        System.out.println("🔹 Total length: " + value.length());
-        System.out.println();
-        */
-    }
 }
-

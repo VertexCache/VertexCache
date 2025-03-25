@@ -6,8 +6,10 @@ import com.vertexcache.common.config.reader.ConfigLoaderFactory;
 import com.vertexcache.common.cli.CommandLineArgsParser;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.security.KeyPairHelper;
+import com.vertexcache.common.util.PemUtils;
 import com.vertexcache.server.domain.cache.impl.EvictionPolicy;
 
+import java.io.IOException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -24,9 +26,10 @@ public class Config extends ConfigBase {
 
     private boolean encryptMessage = false;
     private PrivateKey privateKey;
-    private PublicKey publicKey;
 
     private boolean encryptTransport = false;
+    private String tlsCertificate;
+    private String tlsPrivateKey;
     private String keystoreFilePath;
     private String keystorePassword;
 
@@ -84,6 +87,16 @@ public class Config extends ConfigBase {
 
                     // Encrypt Transport Layer
                     if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_TRANSPORT) && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_TRANSPORT))) {
+                        if (configLoader.isExist(ConfigKey.TLS_CERTIFICATE) && configLoader.isExist(ConfigKey.TLS_PRIVATE_KEY)) {
+                            try {
+                                this.tlsCertificate = PemUtils.loadPem(configLoader.getProperty(ConfigKey.TLS_CERTIFICATE));
+                                this.tlsPrivateKey = PemUtils.loadPem(configLoader.getProperty(ConfigKey.TLS_PRIVATE_KEY));
+                                this.encryptTransport = true;
+                            } catch (IOException e) {
+                                this.encryptTransport = false;
+                            }
+                        }
+                        // delete this
                         this.encryptTransport = true;
                         this.keystoreFilePath = configLoader.getProperty(ConfigKey.KEYSTORE_FILEPATH);
                         this.keystorePassword = configLoader.getProperty(ConfigKey.KEYSTORE_PASSWORD);
@@ -165,9 +178,11 @@ public class Config extends ConfigBase {
         return privateKey;
     }
 
-    public PublicKey getPublicKey() {
-        return publicKey;
+    public String getTlsCertificate() {
+        return tlsCertificate;
     }
+
+    public String getTlsPrivateKey() { return tlsPrivateKey; }
 
     public String getKeystoreFilePath() {
         return keystoreFilePath;
