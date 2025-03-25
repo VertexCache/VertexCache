@@ -10,20 +10,23 @@ import com.vertexcache.server.exception.VertexCacheSSLServerSocketException;
 import com.vertexcache.server.domain.command.CommandService;
 
 import javax.net.ssl.*;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 
 
 public class SocketServer {
@@ -107,6 +110,51 @@ public class SocketServer {
      */
 
     private SSLServerSocket secureSocket() throws VertexCacheSSLServerSocketException {
+        try {
+            String certPem = this.config.getTlsCertificate();
+            String keyPem = this.config.getTlsPrivateKey();
+
+            // Load certificate
+            X509Certificate certificate = loadCertificate(certPem);
+
+            // Load private key
+            PrivateKey privateKey = loadPrivateKey(keyPem);
+
+            // Load into in-memory keystore
+            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(null, null);
+            keyStore.setKeyEntry("server", privateKey, "changeit".toCharArray(), new X509Certificate[]{certificate});
+
+            // Init managers
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+            kmf.init(keyStore, "changeit".toCharArray());
+
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+            tmf.init(keyStore);
+
+            // SSL context
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+
+            // Server socket
+            SSLServerSocketFactory factory = sslContext.getServerSocketFactory();
+            SSLServerSocket serverSocket = (SSLServerSocket) factory.createServerSocket(config.getServerPort());
+
+            serverSocket.setEnabledProtocols(new String[]{"TLSv1.2"});
+            serverSocket.setEnabledCipherSuites(new String[]{"TLS_RSA_WITH_AES_256_CBC_SHA256"});
+
+            return serverSocket;
+
+        } catch (Exception e) {
+            System.err.println("Secure socket initialization failed:");
+            e.printStackTrace();
+            throw new VertexCacheSSLServerSocketException(e);
+        }
+    }
+
+
+    /*
+    private SSLServerSocket secureSocket___Orig() throws VertexCacheSSLServerSocketException {
 
         try {
             // Load the keystore
@@ -147,59 +195,7 @@ public class SocketServer {
         }
     }
 
-/*
-    private SSLServerSocket secureSocket() throws VertexCacheSSLServerSocketException {
-        try {
-            System.out.println("🔐 Initializing secure socket...");
-
-            // Load cert and key (already resolved to PEM string via config)
-            String certPem = this.config.getTlsCertificate();
-            String keyPem = this.config.getTlsPrivateKey();
-
-            System.out.println("📄 TLS Certificate length: " + (certPem != null ? certPem.length() : "null"));
-            System.out.println("📄 TLS Private Key length: " + (keyPem != null ? keyPem.length() : "null"));
-
-            // Parse private key and certificate
-            PrivateKey privateKey = KeyPairHelper.loadPrivateKey(keyPem);
-            System.out.println("✅ Private key loaded: " + privateKey.getAlgorithm());
-
-            X509Certificate certificate = PemUtils.parseCertificate(certPem);
-            System.out.println("✅ Certificate loaded: " + certificate.getSubjectDN());
-
-            // In-memory keystore
-            KeyStore keyStore = KeyStore.getInstance("JKS");
-            keyStore.load(null); // initialize empty keystore
-            keyStore.setKeyEntry("vertexcache", privateKey, new char[0], new X509Certificate[]{certificate});
-            System.out.println("✅ In-memory keystore populated");
-
-            // Setup KeyManagerFactory with in-memory keystore
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-            kmf.init(keyStore, new char[0]);
-            System.out.println("🔐 KeyManagerFactory initialized");
-
-            // Create and initialize SSL context (no TrustManager for now)
-            SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(kmf.getKeyManagers(), null, null);
-            System.out.println("🔒 SSLContext initialized");
-
-            // Create and configure the SSLServerSocket
-            SSLServerSocketFactory sslFactory = sslContext.getServerSocketFactory();
-            SSLServerSocket serverSocket = (SSLServerSocket) sslFactory.createServerSocket(config.getServerPort());
-
-            serverSocket.setEnabledProtocols(new String[]{"TLSv1.2"});
-            serverSocket.setEnabledCipherSuites(new String[]{"TLS_RSA_WITH_AES_256_CBC_SHA256"});
-
-            System.out.println("🚀 Secure server socket created on port: " + config.getServerPort());
-            return serverSocket;
-
-        } catch (Exception e) {
-            System.err.println("❌ Error during secure socket initialization: " + e.getMessage());
-            e.printStackTrace();
-            throw new VertexCacheSSLServerSocketException(e);
-        }
-    }
 */
-
 
 
     private void outputStartupOK() {
@@ -247,4 +243,50 @@ public class SocketServer {
             LogHelper.getInstance().logInfo(message);
         }
     }
+
+    private X509Certificate loadCertificate(String input) throws Exception {
+        String content = loadPemContent(input); // already handles newline conversion
+
+        try (InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))) {
+            CertificateFactory factory = CertificateFactory.getInstance("X.509");
+            return (X509Certificate) factory.generateCertificate(stream);
+        }
+    }
+
+
+    private PrivateKey loadPrivateKey(String input) throws Exception {
+        String content = loadPemContent(input); // already handles newline conversion
+
+        // Sanity check: validate header
+        if (!content.contains("-----BEGIN PRIVATE KEY-----")) {
+            throw new IllegalArgumentException("Invalid private key: missing BEGIN header");
+        }
+
+        // Strip headers and collapse to Base64
+        String base64 = content
+                .replace("-----BEGIN PRIVATE KEY-----", "")
+                .replace("-----END PRIVATE KEY-----", "")
+                .replaceAll("\\s+", "");
+
+        byte[] decoded = Base64.getDecoder().decode(base64);
+
+        // Generate private key
+        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(decoded);
+        KeyFactory factory = KeyFactory.getInstance("RSA");
+        return factory.generatePrivate(spec);
+    }
+
+
+    private String loadPemContent(String input) throws IOException {
+        Path path = Paths.get(input);
+        if (Files.exists(path)) {
+            return Files.readString(path, StandardCharsets.UTF_8).trim();
+        } else {
+            // Convert escaped `\n` to real newlines for inline .env values
+            return input.replace("\\n", "\n").trim();
+        }
+    }
+
+
+
 }

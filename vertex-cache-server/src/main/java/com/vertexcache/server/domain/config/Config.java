@@ -88,13 +88,10 @@ public class Config extends ConfigBase {
                     // Encrypt Transport Layer
                     if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_TRANSPORT) && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_TRANSPORT))) {
                         if (configLoader.isExist(ConfigKey.TLS_CERTIFICATE) && configLoader.isExist(ConfigKey.TLS_PRIVATE_KEY)) {
-                            try {
-                                this.tlsCertificate = PemUtils.loadPem(configLoader.getProperty(ConfigKey.TLS_CERTIFICATE));
-                                this.tlsPrivateKey = PemUtils.loadPem(configLoader.getProperty(ConfigKey.TLS_PRIVATE_KEY));
-                                this.encryptTransport = true;
-                            } catch (IOException e) {
-                                this.encryptTransport = false;
-                            }
+                            this.tlsCertificate = configLoader.getProperty(ConfigKey.TLS_CERTIFICATE);
+                            this.tlsPrivateKey = configLoader.getProperty(ConfigKey.TLS_PRIVATE_KEY);
+                            this.encryptTransport = true;
+
                         }
                         // delete this
                         this.encryptTransport = true;
