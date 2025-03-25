@@ -6,12 +6,9 @@ import com.vertexcache.common.config.reader.ConfigLoaderFactory;
 import com.vertexcache.common.cli.CommandLineArgsParser;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.security.KeyPairHelper;
-import com.vertexcache.common.util.PemUtils;
 import com.vertexcache.server.domain.cache.impl.EvictionPolicy;
-
-import java.io.IOException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
+
 
 public class Config extends ConfigBase {
 
@@ -30,8 +27,6 @@ public class Config extends ConfigBase {
     private boolean encryptTransport = false;
     private String tlsCertificate;
     private String tlsPrivateKey;
-    private String keystoreFilePath;
-    private String keystorePassword;
 
     private EvictionPolicy cacheEvictionPolicy = EvictionPolicy.NONE;
     private static int DEFAULT_CACHE_SIZE=1000000;
@@ -93,10 +88,6 @@ public class Config extends ConfigBase {
                             this.encryptTransport = true;
 
                         }
-                        // delete this
-                        this.encryptTransport = true;
-                        this.keystoreFilePath = configLoader.getProperty(ConfigKey.KEYSTORE_FILEPATH);
-                        this.keystorePassword = configLoader.getProperty(ConfigKey.KEYSTORE_PASSWORD);
                     }
 
                     // Cache Eviction Policy
@@ -180,14 +171,6 @@ public class Config extends ConfigBase {
     }
 
     public String getTlsPrivateKey() { return tlsPrivateKey; }
-
-    public String getKeystoreFilePath() {
-        return keystoreFilePath;
-    }
-
-    public String getKeystorePassword() {
-        return keystorePassword;
-    }
 
     public EvictionPolicy getCacheEvictionPolicy() {
         return cacheEvictionPolicy;

@@ -20,9 +20,6 @@ public class ConfigKey {
     public static final String TLS_CERTIFICATE = "tls_certificate";
     public static final String TLS_PRIVATE_KEY = "tls_private_key";
 
-    public static final String KEYSTORE_FILEPATH = "keystore_filepath";
-    public static final String KEYSTORE_PASSWORD = "keystore_password";
-
     public static final String CACHE_EVICTION = "cache_eviction";
     public static final String CACHE_SIZE = "cache_size";
 }
