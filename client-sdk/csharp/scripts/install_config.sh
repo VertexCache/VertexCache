@@ -7,8 +7,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$SCRIPT_DIR/../../.."
 COPY_UTIL_PATH="$ROOT_DIR/scripts/common/copy-utils.sh"
 
-TLS_CERT_SRC_FILE="$ROOT_DIR/etc/config/test_server_certificate.pem"
-TLS_CERT_DEST_FILE="$SCRIPT_DIR/../config/test_server_certificate.pem"
+PUBLIC_KEY_SRC_FILE="$ROOT_DIR/etc/config/test_public_key.pem"
+PUBLIC_KEY_DEST_FILE="$SCRIPT_DIR/../config/test_public_key.pem"
+
+TLS_CERT_SRC_FILE="$ROOT_DIR/etc/config/test_tls_certificate.pem"
+TLS_CERT_DEST_FILE="$SCRIPT_DIR/../config/test_tls_certificate.pem"
 
 ENV_EXAMPLE_SRC_FILE="$ROOT_DIR/etc/config/env-example-client"
 ENV_EXAMPLE_DEST_FILE="$SCRIPT_DIR/../config/.env"
@@ -25,6 +28,6 @@ fi
 
 
 # Copy using shared function
+copy_file "$PUBLIC_KEY_SRC_FILE" "$PUBLIC_KEY_DEST_FILE"
 copy_file "$TLS_CERT_SRC_FILE" "$TLS_CERT_DEST_FILE"
-
 copy_file "$ENV_EXAMPLE_SRC_FILE" "$ENV_EXAMPLE_DEST_FILE"
