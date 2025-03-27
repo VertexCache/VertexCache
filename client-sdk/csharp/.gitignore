@@ -1,54 +1,66 @@
-# Build output
+############################################
+# .NET build output
+############################################
 bin/
 obj/
+*.user
+*.rsuser
+*.suo
+*.cache
+*.vs/
+
+############################################
+# Build and Dist Artifacts
+############################################
 build/
 dist/
-
-# User-specific files
-*.user
-*.suo
-*.userosscache
-*.sln.docstates
-
-# Rider / JetBrains
-.idea/
-*.sln.iml
-
-# VS Code
-.vscode/
-
-# Logs
-*.log
-
-# Test results
-TestResults/
-*.coverage
-*.coveragejson
-
-# Temporary files
-*.tmp
-*.bak
-*.swp
-*.DS_Store
-Thumbs.db
-
-# Config files (local only)
-config/.env
-config/*.pem
-
-# NuGet
-*.nupkg
-.nuget/
-
-# Dotnet CLI artifacts
-.project/
-.cache/
 artifacts/
 
-# ReSharper
-_ReSharper*/
-*.[Rr]e[Ss]harper
+############################################
+# Logs and dumps
+############################################
+*.log
+*.pid
+*.err
+*.out
 
-# Others
-*.db
-*.sqlite
+############################################
+# Environment and Secrets
+############################################
+.env
+.env.*
+config/.env
+config/test_*.pem
+*.pfx
+*.cer
+*.crt
+*.key
+
+############################################
+# OS-generated files
+############################################
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+$RECYCLE.BIN/
+
+############################################
+# Editor/Tool files
+############################################
+.vscode/
+.idea/
+*.swp
+*.bak
+*.tmp
+*.orig
+
+############################################
+# Archives
+############################################
+*.zip
+*.tar.gz
+*.tgz
+*.7z
+*.rar

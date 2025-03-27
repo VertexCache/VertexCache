@@ -8,13 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Reference to SDK project -->
-    <ProjectReference Include="..\sdk\VertexCache.Sdk.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- External dependencies -->
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
+    <ProjectReference Include="../sdk/VertexCache.Sdk.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
     <PackageReference Include="DotNetEnv" Version="2.4.0" />
   </ItemGroup>
 
