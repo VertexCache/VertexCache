@@ -2,13 +2,10 @@ namespace VertexCache.Sdk
 {
     public enum VCacheErrorCode
     {
-        None,
+        Unknown,
         InvalidCommand,
-        NetworkFailure,
-        Timeout,
-        ConnectionError,
         EncryptionError,
-        AuthenticationFailed,
-        Unknown
+        EmptyResponse,
+        NetworkFailure
     }
 }

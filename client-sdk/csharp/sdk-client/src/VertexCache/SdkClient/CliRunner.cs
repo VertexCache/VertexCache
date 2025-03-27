@@ -1,41 +1,46 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using VertexCache.Sdk;
-using DotNetEnv;
 
 namespace VertexCache.SdkClient
 {
     public class CliRunner
     {
-        public async Task RunAsync()
+        private readonly VertexCacheSdkClient _client;
+
+        public CliRunner(VertexCacheSdkClient client)
         {
-            var sdkClient = new VertexCacheSdkClient();
+            _client = client;
+        }
 
-                while (true)
+        public async Task RunInteractiveAsync()
+        {
+            Console.WriteLine("🧠 VertexCache Console - Interactive Mode");
+            Console.WriteLine("Type 'exit' to quit.");
+
+            while (true)
+            {
+                Console.Write("> ");
+                var line = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(line)) continue;
+                if (line.Trim().ToLower() == "exit") break;
+
+                var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                var command = parts[0]; // ✅ this was likely missing the semicolon
+                var args = parts.Length > 1 ? parts[1..] : Array.Empty<string>();
+
+                var result = await _client.RunCommandAsync(command, args);
+
+                if (result.IsSuccess)
                 {
-                    Console.Write("Enter command (ping, get, set, del, exit): ");
-                    string? input = Console.ReadLine();
-                    if (string.IsNullOrWhiteSpace(input)) continue;
-
-                    input = input.Trim();
-
-                    if (input.Equals("exit", StringComparison.OrdinalIgnoreCase)) break;
-
-                    var (command, args) = CommandParser.Parse(input);
-                    var result = await sdkClient.RunCommandAsync(command, args);
-
-                    if (result.Success)
-                    {
-                        Console.WriteLine($"✅ Success: {result.Response}");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"❌ Error: [{result.ErrorCode}] {result.ErrorMessage}");
-                    }
+                    Console.WriteLine($"✅ Server: {result.Message}");
                 }
-
+                else
+                {
+                    Console.WriteLine($"❌ Error: [{result.ErrorCode}] {result.Message}");
+                }
+            }
         }
     }
 }

@@ -1,8 +1,9 @@
+using System;
 using System.Threading.Tasks;
-using DotNetEnv;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
 using VertexCache.Sdk;
+using VertexCache.Sdk.Helpers;
+using DotNetEnv;
 
 namespace VertexCache.SdkClient
 {
@@ -10,32 +11,38 @@ namespace VertexCache.SdkClient
     {
         private readonly VertexCacheSdk _sdk;
 
-        public VertexCacheSdkClient()
+        public VertexCacheSdkClient(ILogger<VertexCacheSdk>? logger = null)
         {
-            // Load config from .env
-            Env.Load("config/.env");
+            Env.Load("./config/.env");
+
+            var rawPublicKeyValue = Env.GetString("public_key");
+            var tlsCertValue = Env.GetString("tls_certificate");
 
             var options = new VertexCacheSdkOptions
             {
                 ServerHost = Env.GetString("server_host", "127.0.0.1"),
                 ServerPort = Env.GetInt("server_port", 50505),
                 EnableEncryption = Env.GetBool("enable_encrypt_message", false),
-                PublicKey = Env.GetString("public_key"),
+                PublicKey = EncryptionHelper.NormalizePublicKey(
+                    PemLoader.LoadFromFileOrRaw(rawPublicKeyValue) ?? ""
+                ),
                 EnableEncryptionTransport = Env.GetBool("enable_encrypt_transport", false),
                 EnableVerifyCertificate = Env.GetBool("enable_verify_certificate", true),
-                CertificatePem = Env.GetString("server_certificate_pem")
+                CertificatePem = PemLoader.LoadFromFileOrRaw(Env.GetString("tls_certificate")),
             };
 
-            var services = new ServiceCollection();
-            services.AddLogging(config => config.AddConsole().SetMinimumLevel(LogLevel.Information));
-            var provider = services.BuildServiceProvider();
+            Console.WriteLine("\uD83D\uDD10 Encryption Transport Enabled: " + options.EnableEncryptionTransport);
+            Console.WriteLine("\uD83D\uDD12 Verify Certificate: " + options.EnableVerifyCertificate);
+            Console.WriteLine("\uD83D\uDD0F Message Encryption: " + options.EnableEncryption);
+            Console.WriteLine("\uD83D\uDCDC Public Key Length: " + (options.PublicKey?.Length ?? 0));
+            Console.WriteLine("\uD83D\uDCC4 TLS Cert Length: " + (options.CertificatePem?.Length ?? 0));
 
-            _sdk = new VertexCacheSdk(options, provider.GetRequiredService<ILogger<VertexCacheSdk>>());
+            _sdk = new VertexCacheSdk(options, logger);
         }
 
-        public Task<VCacheResult> RunCommandAsync(string command, string[] args)
+        public async Task<VCacheResult> RunCommandAsync(string command, string[] args)
         {
-            return _sdk.RunCommandAsync(command, args);
+            return await _sdk.RunCommandAsync(command, args);
         }
     }
 }

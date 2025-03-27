@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 namespace VertexCache.SdkClient
@@ -6,8 +7,9 @@ namespace VertexCache.SdkClient
     {
         static async Task Main(string[] args)
         {
-            var runner = new CliRunner();
-            await runner.RunAsync();
+            var client = new VertexCacheSdkClient();
+            var cli = new CliRunner(client);
+            await cli.RunInteractiveAsync();
         }
     }
 }
