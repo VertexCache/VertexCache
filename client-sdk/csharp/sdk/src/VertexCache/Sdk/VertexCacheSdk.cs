@@ -1,7 +1,7 @@
 using System;
 using System.IO;
-using System.Net.Security;
 using System.Net.Sockets;
+using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,30 +22,37 @@ namespace VertexCache.Sdk
 
         public async Task<VCacheResult> RunCommandAsync(string command, string[] args)
         {
-            _logger?.LogInformation("DEBUG: TLS enabled? {TLS}, CertVerify? {Verify}, Cert length: {CertLen}",
-                _options.EnableEncryptionTransport,
-                _options.EnableVerifyCertificate,
-                _options.CertificatePem?.Length ?? 0);
+            _logger?.LogInformation("🏁 RunCommandAsync invoked: '{Command}' with {ArgCount} args", command, args.Length);
 
             if (string.IsNullOrWhiteSpace(command))
+            {
+                _logger?.LogWarning("❌ Empty command rejected before socket creation");
                 return VCacheResult.Failure(VCacheErrorCode.InvalidCommand, "Command cannot be empty.");
+            }
 
             string rawCommand = CommandFormatter.Format(command, args);
 
-            if (_options.EnableEncryption && !string.IsNullOrWhiteSpace(_options.PublicKey))
+            if (_options.EnableEncryption)
             {
                 try
                 {
-                 _logger?.LogInformation("🔐 Encrypting command: {Raw}", rawCommand);
-                 _logger?.LogInformation("🔢 Byte length: {Len}", Encoding.UTF8.GetByteCount(rawCommand));
+                    string? rawKey = _options.PublicKey;
+                    if (string.IsNullOrWhiteSpace(rawKey))
+                        return VCacheResult.Failure(VCacheErrorCode.EncryptionError, "Missing public key for encryption.");
 
-                 string normalizedKey = EncryptionHelper.NormalizePublicKey(_options.PublicKey);
-                 rawCommand = EncryptionHelper.Encrypt(rawCommand, normalizedKey);
+                    _logger?.LogInformation("🔐 Encrypting command: {Raw}", rawCommand);
+                    int byteLen = Encoding.UTF8.GetByteCount(rawCommand);
+                    _logger?.LogInformation("🔢 Byte length before encryption: {Len}", byteLen);
 
+                    if (byteLen > 245)
+                        return VCacheResult.Failure(VCacheErrorCode.EncryptionError, $"Message too long for RSA: {byteLen} bytes");
+
+                    string normalizedKey = EncryptionHelper.NormalizePublicKey(rawKey);
+                    rawCommand = EncryptionHelper.Encrypt(rawCommand, normalizedKey);
                 }
                 catch (Exception ex)
                 {
-                    _logger?.LogError(ex, "Failed to encrypt command");
+                    _logger?.LogError(ex, "❌ Encryption failed");
                     return VCacheResult.Failure(VCacheErrorCode.EncryptionError, $"Failed to encrypt command: {ex.Message}");
                 }
             }
@@ -54,6 +61,8 @@ namespace VertexCache.Sdk
             {
                 try
                 {
+                    _logger?.LogInformation("🌐 Connecting to {Host}:{Port} (Attempt {Attempt})", _options.ServerHost, _options.ServerPort, attempt + 1);
+
                     using var client = new TcpClient();
                     var connectTask = client.ConnectAsync(_options.ServerHost, _options.ServerPort);
                     if (!connectTask.Wait(_options.TimeoutMs))
@@ -69,7 +78,7 @@ namespace VertexCache.Sdk
                             if (!_options.EnableVerifyCertificate) return true;
                             if (certificate is null || string.IsNullOrWhiteSpace(_options.CertificatePem)) return false;
 
-                            var expected = new X509Certificate2(Encoding.UTF8.GetBytes(_options.CertificatePem));
+                            var expected = X509Certificate2.CreateFromPem(_options.CertificatePem);
                             return certificate.GetCertHashString() == expected.GetCertHashString();
                         });
 
@@ -77,17 +86,23 @@ namespace VertexCache.Sdk
                         ioStream = ssl;
                     }
 
-                    // Write without BOM
                     using var writer = new StreamWriter(ioStream, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)) { AutoFlush = true };
                     using var reader = new StreamReader(ioStream, Encoding.UTF8);
 
-                    byte[] rawBytes = Convert.FromBase64String(rawCommand);
-                    await ioStream.WriteAsync(rawBytes, 0, rawBytes.Length);
-                    await ioStream.FlushAsync();
-
+                    if (_options.EnableEncryption)
+                    {
+                        byte[] encryptedBytes = Convert.FromBase64String(rawCommand);
+                        _logger?.LogInformation("📤 Sending {Len} encrypted bytes (raw)", encryptedBytes.Length);
+                        await ioStream.WriteAsync(encryptedBytes, 0, encryptedBytes.Length);
+                        await ioStream.FlushAsync();
+                    }
+                    else
+                    {
+                        _logger?.LogInformation("📤 Sending command (plaintext): {Raw}", rawCommand);
+                        await writer.WriteLineAsync(rawCommand);
+                    }
 
                     string? response = await reader.ReadLineAsync();
-
                     return ProtocolParser.Parse(response);
                 }
                 catch (Exception ex)

@@ -1,36 +1,55 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VertexCache.Sdk;
 
 namespace VertexCache.SdkClient
 {
     public class CliRunner
     {
-        private readonly VertexCacheSdkClient _client;
+        private readonly VCachePersistentClient _client;
 
-        public CliRunner(VertexCacheSdkClient client)
+        public CliRunner(VCachePersistentClient client)
         {
             _client = client;
         }
 
         public async Task RunInteractiveAsync()
         {
-            Console.WriteLine("🧠 VertexCache Console - Interactive Mode");
+            Console.WriteLine("🧠 VertexCache Console - Persistent Mode");
             Console.WriteLine("Type 'exit' to quit.");
+
+            var connectResult = await _client.ConnectAsync();
+            if (!connectResult.IsSuccess)
+            {
+                Console.WriteLine($"❌ Connection failed: {connectResult.Message}");
+                return;
+            }
+
+            Console.WriteLine("✅ Connected to VertexCache");
 
             while (true)
             {
                 Console.Write("> ");
                 var line = Console.ReadLine();
 
-                if (string.IsNullOrWhiteSpace(line)) continue;
-                if (line.Trim().ToLower() == "exit") break;
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
 
-                var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                var command = parts[0]; // ✅ this was likely missing the semicolon
-                var args = parts.Length > 1 ? parts[1..] : Array.Empty<string>();
+                var trimmed = line.Trim();
 
-                var result = await _client.RunCommandAsync(command, args);
+                if (trimmed.Equals("exit", StringComparison.OrdinalIgnoreCase))
+                    break;
+
+                var (command, args) = CommandParser.Parse(trimmed);
+
+                if (string.IsNullOrWhiteSpace(command))
+                {
+                    Console.WriteLine("⚠️  Empty command. Try again.");
+                    continue;
+                }
+
+                var result = await _client.SendCommandAsync(command, args);
 
                 if (result.IsSuccess)
                 {

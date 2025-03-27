@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VertexCache.Sdk;
 using VertexCache.Sdk.Helpers;
-using DotNetEnv;
 
 namespace VertexCache.SdkClient
 {
@@ -11,31 +10,37 @@ namespace VertexCache.SdkClient
     {
         private readonly VertexCacheSdk _sdk;
 
-        public VertexCacheSdkClient(ILogger<VertexCacheSdk>? logger = null)
+        public VertexCacheSdkClient()
         {
-            Env.Load("./config/.env");
+            var rawPublicKeyValue = Env.GetString("public_key")
+                ?? throw new InvalidOperationException("Missing env var: public_key");
 
-            var rawPublicKeyValue = Env.GetString("public_key");
-            var tlsCertValue = Env.GetString("tls_certificate");
+            var rawCertificateValue = Env.GetString("tls_certificate")
+                ?? throw new InvalidOperationException("Missing env var: tls_certificate");
 
             var options = new VertexCacheSdkOptions
             {
-                ServerHost = Env.GetString("server_host", "127.0.0.1"),
+                ServerHost = Env.GetString("server_host", "127.0.0.1")!,
                 ServerPort = Env.GetInt("server_port", 50505),
-                EnableEncryption = Env.GetBool("enable_encrypt_message", false),
-                PublicKey = EncryptionHelper.NormalizePublicKey(
-                    PemLoader.LoadFromFileOrRaw(rawPublicKeyValue) ?? ""
-                ),
                 EnableEncryptionTransport = Env.GetBool("enable_encrypt_transport", false),
                 EnableVerifyCertificate = Env.GetBool("enable_verify_certificate", true),
-                CertificatePem = PemLoader.LoadFromFileOrRaw(Env.GetString("tls_certificate")),
+                EnableEncryption = Env.GetBool("enable_encrypt_message", false),
+                TimeoutMs = Env.GetInt("timeout_ms", 3000),
+                MaxRetries = 0,
+                PublicKey = PemLoader.LoadFromFileOrRaw(rawPublicKeyValue!)!,
+                CertificatePem = PemLoader.LoadFromFileOrRaw(rawCertificateValue!)!
             };
 
-            Console.WriteLine("\uD83D\uDD10 Encryption Transport Enabled: " + options.EnableEncryptionTransport);
-            Console.WriteLine("\uD83D\uDD12 Verify Certificate: " + options.EnableVerifyCertificate);
-            Console.WriteLine("\uD83D\uDD0F Message Encryption: " + options.EnableEncryption);
-            Console.WriteLine("\uD83D\uDCDC Public Key Length: " + (options.PublicKey?.Length ?? 0));
-            Console.WriteLine("\uD83D\uDCC4 TLS Cert Length: " + (options.CertificatePem?.Length ?? 0));
+            var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddSimpleConsole(o =>
+                {
+                    o.SingleLine = true;
+                    o.TimestampFormat = "HH:mm:ss ";
+                });
+            });
+
+            var logger = loggerFactory.CreateLogger<VertexCacheSdk>();
 
             _sdk = new VertexCacheSdk(options, logger);
         }

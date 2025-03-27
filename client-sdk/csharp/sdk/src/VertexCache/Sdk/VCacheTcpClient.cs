@@ -2,6 +2,10 @@ using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System;
+using System.IO;
+using System.Threading.Tasks;
+
 
 namespace VertexCache.Sdk
 {
@@ -24,11 +28,9 @@ namespace VertexCache.Sdk
                 var ssl = new SslStream(_stream, false, (sender, certificate, chain, sslPolicyErrors) =>
                 {
                     if (!verifyCert) return true;
+                    if (certificate is null || string.IsNullOrWhiteSpace(certPem)) return false;
 
-                    if (certificate is null) return false;
-                    if (string.IsNullOrWhiteSpace(certPem)) return false;
-
-                    var expected = new X509Certificate2(Encoding.UTF8.GetBytes(certPem));
+                    var expected = X509Certificate2.CreateFromPem(certPem);
                     return certificate.GetCertHashString() == expected.GetCertHashString();
                 });
 

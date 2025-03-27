@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using VertexCache.Sdk;
 
 namespace VertexCache.Sdk.Helpers
 {
