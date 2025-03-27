@@ -9,8 +9,6 @@ namespace VertexCache.Sdk.Helpers
         static Env()
         {
             LoadEnvFile("config/.env");
-            Console.WriteLine("🔍 Loading .env file from current working directory: " + Directory.GetCurrentDirectory());
-
         }
 
         private static void LoadEnvFile(string filePath)
