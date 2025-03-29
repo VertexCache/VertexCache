@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
+clear
+
 HOST="127.0.0.1"
 PORT=50505
 TIMEOUT=2
@@ -39,18 +41,11 @@ if [[ ! -f "$CLIENT_EXECUTABLE" ]]; then
   exit 1
 fi
 
-# Check if server is reachable
-echo "🔍 Checking if VertexCache server is running on $HOST:$PORT..."
-if nc -z -w $TIMEOUT "$HOST" "$PORT"; then
-  echo "✅ Server is reachable."
-else
-  echo "⚠️  VertexCache server not reachable at $HOST:$PORT (timeout ${TIMEOUT}s)"
-  echo "   Make sure the server is running before starting the client."
+# Check if server is reachable (quiet success, verbose failure)
+if ! nc -z -w $TIMEOUT "$HOST" "$PORT" >/dev/null 2>&1; then
+  echo "❌ VertexCache server not reachable at $HOST:$PORT (timeout ${TIMEOUT}s)"
+  echo "💡 Make sure the server is running before starting the client."
   exit 1
 fi
-
-echo "🚀 Running VertexCache SdkClient for platform: $TARGET"
-echo "🖥️  Executable: $CLIENT_EXECUTABLE"
-echo
 
 "$CLIENT_EXECUTABLE"

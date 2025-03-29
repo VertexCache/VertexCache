@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace VertexCache.Sdk
 {
-    public class VCachePersistentClient : IVCacheClient, IDisposable
+    public class VCachePersistentClient : IDisposable, IVCacheClient
     {
         private readonly VertexCacheSdkOptions _options;
         private readonly ILogger? _logger;
@@ -23,7 +23,6 @@ namespace VertexCache.Sdk
         {
             _options = options;
             _logger = logger;
-            _logger?.LogInformation("🛠️ VCachePersistentClient constructor called.");
         }
 
         public async Task<VCacheResult> ConnectAsync()
@@ -32,8 +31,6 @@ namespace VertexCache.Sdk
 
             try
             {
-                _logger?.LogInformation("🌐 Connecting to {Host}:{Port}", _options.ServerHost, _options.ServerPort);
-
                 _client = new TcpClient();
                 var connectTask = _client.ConnectAsync(_options.ServerHost, _options.ServerPort);
                 if (!connectTask.Wait(_options.TimeoutMs))
@@ -44,9 +41,6 @@ namespace VertexCache.Sdk
 
                 if (_options.EnableEncryptionTransport)
                 {
-                    await Task.Delay(20); // 👈 small delay to prevent TLS race condition
-                    _logger?.LogInformation("🔐 Performing TLS handshake...");
-
                     var ssl = new SslStream(stream, false, (sender, certificate, chain, sslPolicyErrors) =>
                     {
                         if (!_options.EnableVerifyCertificate) return true;
@@ -56,9 +50,8 @@ namespace VertexCache.Sdk
                         return certificate.GetCertHashString() == expected.GetCertHashString();
                     });
 
+                    await Task.Delay(20); // Mitigate possible TLS timing issues
                     await ssl.AuthenticateAsClientAsync(_options.ServerHost);
-                    _logger?.LogInformation("✅ TLS handshake complete.");
-
                     _stream = ssl;
                 }
 
@@ -66,7 +59,6 @@ namespace VertexCache.Sdk
                 _reader = new StreamReader(_stream, Encoding.UTF8);
                 _connected = true;
 
-                _logger?.LogInformation("✅ Connection established.");
                 return VCacheResult.Success("Connected successfully.");
             }
             catch (Exception ex)
@@ -76,7 +68,7 @@ namespace VertexCache.Sdk
             }
         }
 
-        public async Task<VCacheResult> SendCommandAsync(string command, string[] args)
+        public async Task<VCacheResult> RunCommandAsync(string command, string[] args)
         {
             if (!_connected)
             {
@@ -135,11 +127,5 @@ namespace VertexCache.Sdk
             _client?.Close();
             _connected = false;
         }
-
-        public Task<VCacheResult> RunCommandAsync(string command, string[] args)
-        {
-            return SendCommandAsync(command, args);
-        }
-
     }
 }
