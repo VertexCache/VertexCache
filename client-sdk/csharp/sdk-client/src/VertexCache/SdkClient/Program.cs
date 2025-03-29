@@ -40,7 +40,7 @@ class Program
         var logger = loggerFactory.CreateLogger("VCacheClient");
 
         using var client = new VCachePersistentClient(options, logger);
-        var runner = new CliRunner(client);
+        var runner = new CliRunner(client, options);
         await runner.RunInteractiveAsync();
     }
 }

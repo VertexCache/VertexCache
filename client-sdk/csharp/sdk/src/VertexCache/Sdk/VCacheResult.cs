@@ -2,23 +2,36 @@ namespace VertexCache.Sdk
 {
     public class VCacheResult
     {
-        public bool IsSuccess { get; private set; }
-        public string? Message { get; private set; }
-        public VCacheErrorCode? ErrorCode { get; private set; }
+        public bool IsSuccess { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public VCacheErrorCode Code { get; set; } = VCacheErrorCode.None;
+        public string? Raw { get; set; }
 
-        private VCacheResult(bool success, string? message, VCacheErrorCode? errorCode = null)
+        public VCacheResult() { }
+
+        public static VCacheResult Success(string message)
         {
-            IsSuccess = success;
-            Message = message;
-            ErrorCode = errorCode;
+            return new VCacheResult
+            {
+                IsSuccess = true,
+                Message = message,
+                Code = VCacheErrorCode.None
+            };
         }
 
-        public static VCacheResult Success(string? message) => new VCacheResult(true, message);
-        public static VCacheResult Failure(VCacheErrorCode code, string message) => new VCacheResult(false, message, code);
+        public static VCacheResult Failure(VCacheErrorCode code, string message)
+        {
+            return new VCacheResult
+            {
+                IsSuccess = false,
+                Message = message,
+                Code = code
+            };
+        }
 
         public override string ToString()
         {
-            return IsSuccess ? $"✅ {Message}" : $"❌ [{ErrorCode}] {Message}";
+            return IsSuccess ? $"+{Message}" : $"-{Message}";
         }
     }
 }

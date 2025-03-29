@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace VertexCache.Sdk
 {
-    public class VCachePersistentClient : IDisposable
+    public class VCachePersistentClient : IVCacheClient, IDisposable
     {
         private readonly VertexCacheSdkOptions _options;
         private readonly ILogger? _logger;
@@ -23,6 +23,7 @@ namespace VertexCache.Sdk
         {
             _options = options;
             _logger = logger;
+            _logger?.LogInformation("🛠️ VCachePersistentClient constructor called.");
         }
 
         public async Task<VCacheResult> ConnectAsync()
@@ -43,6 +44,8 @@ namespace VertexCache.Sdk
 
                 if (_options.EnableEncryptionTransport)
                 {
+                    await Task.Delay(20); // 👈 small delay to prevent TLS race condition
+                    _logger?.LogInformation("🔐 Performing TLS handshake...");
 
                     var ssl = new SslStream(stream, false, (sender, certificate, chain, sslPolicyErrors) =>
                     {
@@ -53,8 +56,9 @@ namespace VertexCache.Sdk
                         return certificate.GetCertHashString() == expected.GetCertHashString();
                     });
 
-
                     await ssl.AuthenticateAsClientAsync(_options.ServerHost);
+                    _logger?.LogInformation("✅ TLS handshake complete.");
+
                     _stream = ssl;
                 }
 
@@ -62,6 +66,7 @@ namespace VertexCache.Sdk
                 _reader = new StreamReader(_stream, Encoding.UTF8);
                 _connected = true;
 
+                _logger?.LogInformation("✅ Connection established.");
                 return VCacheResult.Success("Connected successfully.");
             }
             catch (Exception ex)
@@ -74,7 +79,11 @@ namespace VertexCache.Sdk
         public async Task<VCacheResult> SendCommandAsync(string command, string[] args)
         {
             if (!_connected)
-                return VCacheResult.Failure(VCacheErrorCode.NetworkFailure, "Not connected.");
+            {
+                var result = await ConnectAsync();
+                if (!result.IsSuccess)
+                    return result;
+            }
 
             if (string.IsNullOrWhiteSpace(command))
                 return VCacheResult.Failure(VCacheErrorCode.InvalidCommand, "Command cannot be empty.");
@@ -126,5 +135,11 @@ namespace VertexCache.Sdk
             _client?.Close();
             _connected = false;
         }
+
+        public Task<VCacheResult> RunCommandAsync(string command, string[] args)
+        {
+            return SendCommandAsync(command, args);
+        }
+
     }
 }

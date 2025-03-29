@@ -5,20 +5,30 @@ namespace VertexCache.Sdk
         public static VCacheResult Parse(string? response)
         {
             if (string.IsNullOrWhiteSpace(response))
-            {
-                return VCacheResult.Failure(VCacheErrorCode.EmptyResponse, "No response received from server");
-            }
+                return VCacheResult.Failure(VCacheErrorCode.ProtocolError, "Empty response");
 
-            response = response.Trim();
+            var result = new VCacheResult { Raw = response };
 
             if (response.StartsWith("+"))
-                return VCacheResult.Success(response[1..].Trim());
+            {
+                result.IsSuccess = true;
+                result.Message = response[1..].Trim();
+                result.Code = VCacheErrorCode.None;
+            }
+            else if (response.StartsWith("-"))
+            {
+                result.IsSuccess = false;
+                result.Message = response[1..].Trim();
+                result.Code = VCacheErrorCode.ServerError;
+            }
+            else
+            {
+                result.IsSuccess = false;
+                result.Message = "Malformed response";
+                result.Code = VCacheErrorCode.ProtocolError;
+            }
 
-            if (response.StartsWith("-"))
-                return VCacheResult.Failure(VCacheErrorCode.InvalidCommand, response[1..].Trim());
-
-            // Fallback: treat raw response as success
-            return VCacheResult.Success(response);
+            return result;
         }
     }
 }
