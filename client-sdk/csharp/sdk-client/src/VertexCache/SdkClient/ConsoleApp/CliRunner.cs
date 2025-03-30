@@ -1,8 +1,10 @@
 using System;
 using System.Threading.Tasks;
 using VertexCache.Sdk;
+using VertexCache.Sdk.Transport;
+using VertexCache.Sdk.Core;
 
-namespace VertexCache.SdkClient
+namespace VertexCache.SdkClient.ConsoleApp
 {
     public class CliRunner
     {

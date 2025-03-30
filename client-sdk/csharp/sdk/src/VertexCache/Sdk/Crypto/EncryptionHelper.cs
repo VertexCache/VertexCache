@@ -2,7 +2,7 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace VertexCache.Sdk
+namespace VertexCache.Sdk.Crypto
 {
     public static class EncryptionHelper
     {

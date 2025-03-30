@@ -2,7 +2,11 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VertexCache.Sdk;
-using VertexCache.Sdk.Helpers;
+using VertexCache.Sdk.Core;
+using VertexCache.Sdk.Crypto;
+using VertexCache.Sdk.Transport;
+using VertexCache.SdkClient.Config;
+using VertexCache.SdkClient.ConsoleApp;
 using VertexCache.SdkClient;
 
 class Program

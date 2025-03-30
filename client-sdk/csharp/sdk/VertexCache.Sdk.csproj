@@ -10,18 +10,28 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="src/VertexCache/Sdk/CommandFormatter.cs" />
-    <Compile Include="src/VertexCache/Sdk/EncryptionHelper.cs" />
-    <Compile Include="src/VertexCache/Sdk/IVCacheClient.cs" />
-    <Compile Include="src/VertexCache/Sdk/PemLoader.cs" />
-    <Compile Include="src/VertexCache/Sdk/ProtocolParser.cs" />
-    <Compile Include="src/VertexCache/Sdk/VCacheErrorCode.cs" />
-    <Compile Include="src/VertexCache/Sdk/VCacheResult.cs" />
-    <Compile Include="src/VertexCache/Sdk/VCacheTcpClient.cs" />
-    <Compile Include="src/VertexCache/Sdk/VCachePersistentClient.cs" />
+    <!-- Core -->
+    <Compile Include="src/VertexCache/Sdk/Core/IVCacheClient.cs" />
+    <Compile Include="src/VertexCache/Sdk/Core/VCacheErrorCode.cs" />
+    <Compile Include="src/VertexCache/Sdk/Core/VCacheResult.cs" />
+    <Compile Include="src/VertexCache/Sdk/Core/VertexCacheSdkOptions.cs" />
+
+    <!-- Crypto -->
+    <Compile Include="src/VertexCache/Sdk/Crypto/EncryptionHelper.cs" />
+    <Compile Include="src/VertexCache/Sdk/Crypto/PemLoader.cs" />
+
+    <!-- Protocol -->
+    <Compile Include="src/VertexCache/Sdk/Protocol/ProtocolParser.cs" />
+    <Compile Include="src/VertexCache/Sdk/Protocol/CommandFormatter.cs" />
+
+    <!-- Transport -->
+    <Compile Include="src/VertexCache/Sdk/Transport/VCacheTcpClient.cs" />
+    <Compile Include="src/VertexCache/Sdk/Transport/VCachePersistentClient.cs" />
+
+    <!-- Root SDK -->
     <Compile Include="src/VertexCache/Sdk/VertexCacheSdk.cs" />
-    <Compile Include="src/VertexCache/Sdk/VertexCacheSdkOptions.cs" />
   </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />

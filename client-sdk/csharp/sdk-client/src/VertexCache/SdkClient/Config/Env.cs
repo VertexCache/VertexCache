@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace VertexCache.Sdk.Helpers
+namespace VertexCache.SdkClient.Config
 {
     public static class Env
     {

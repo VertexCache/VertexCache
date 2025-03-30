@@ -1,4 +1,4 @@
-namespace VertexCache.Sdk
+namespace VertexCache.Sdk.Protocol
 {
     public static class CommandFormatter
     {

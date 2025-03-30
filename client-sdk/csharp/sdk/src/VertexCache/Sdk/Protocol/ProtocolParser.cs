@@ -1,4 +1,6 @@
-namespace VertexCache.Sdk
+using VertexCache.Sdk.Core;
+
+namespace VertexCache.Sdk.Protocol
 {
     public static class ProtocolParser
     {

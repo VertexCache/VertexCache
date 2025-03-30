@@ -7,7 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 
 
-namespace VertexCache.Sdk
+namespace VertexCache.Sdk.Transport
 {
     public class VCacheTcpClient : IDisposable
     {

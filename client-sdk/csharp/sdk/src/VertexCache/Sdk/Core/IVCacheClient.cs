@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace VertexCache.Sdk
+namespace VertexCache.Sdk.Core
 {
     public interface IVCacheClient
     {

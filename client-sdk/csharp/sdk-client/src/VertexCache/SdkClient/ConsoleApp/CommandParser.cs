@@ -1,6 +1,6 @@
 using System;
 
-namespace VertexCache.SdkClient
+namespace VertexCache.SdkClient.ConsoleApp
 {
     public static class CommandParser
     {
