@@ -1,4 +1,4 @@
-namespace VertexCache.Sdk.Core
+namespace VertexCache.Sdk.Results
 {
     public class VCacheResult
     {

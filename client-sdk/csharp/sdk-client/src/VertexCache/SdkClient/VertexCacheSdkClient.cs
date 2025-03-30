@@ -5,6 +5,7 @@ using VertexCache.Sdk;
 using VertexCache.Sdk.Core;
 using VertexCache.Sdk.Crypto;
 using VertexCache.Sdk.Transport;
+using VertexCache.Sdk.Results;
 using VertexCache.SdkClient.Config;
 using VertexCache.SdkClient.ConsoleApp;
 

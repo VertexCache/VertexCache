@@ -1,8 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using VertexCache.Sdk;
-using VertexCache.Sdk.Transport;
+using VertexCache.Sdk.Results;
+using VertexCache.SdkClient.Config;
+using VertexCache.SdkClient.ConsoleApp;
 using VertexCache.Sdk.Core;
+using VertexCache.Sdk.Transport;
 
 namespace VertexCache.SdkClient.ConsoleApp
 {
@@ -19,40 +21,31 @@ namespace VertexCache.SdkClient.ConsoleApp
 
         public async Task RunInteractiveAsync()
         {
-            PrintStartupBanner();
+            ConsoleDisplay.PrintWelcomeBanner(_options);
 
             while (true)
             {
-                Console.Write($"VertexCache Console, {_options.ServerHost}:{_options.ServerPort}> ");
-                string? input = Console.ReadLine()?.Trim();
+                ConsoleDisplay.PrintPrompt(_options);
 
-                if (string.IsNullOrEmpty(input)) continue;
-                if (input.Equals("exit", StringComparison.OrdinalIgnoreCase)) break;
+                string? input = System.Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(input)) continue;
 
-                var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                string command = parts[0];
-                string[] args = parts.Length > 1 ? parts[1..] : Array.Empty<string>();
+                if (input.Trim().Equals("exit", StringComparison.OrdinalIgnoreCase))
+                    break;
 
-                var result = await _client.RunCommandAsync(command, args);
-                Console.WriteLine(result.Raw);
+                var (cmd, args) = CommandParser.Parse(input);
+
+                var result = await _client.RunCommandAsync(cmd, args);
+
+                if (result.IsSuccess)
+                {
+                    System.Console.WriteLine(result.Message); // ✅ Print success message
+                }
+                else
+                {
+                    System.Console.WriteLine($"[ERROR] {result.Message}"); // ✅ Print error
+                }
             }
         }
-
-        private void PrintStartupBanner()
-        {
-            Console.WriteLine("VertexCache Console:");
-            Console.WriteLine("  Version: 1.0.0");
-            Console.WriteLine($"  Host: {_options.ServerHost}");
-            Console.WriteLine($"  Port: {_options.ServerPort}");
-            Console.WriteLine($"  Message Layer Encryption Enabled: {(ToYesNo(_options.EnableEncryption))}");
-            Console.WriteLine($"  Transport Layer Encryption Enabled: {(ToYesNo(_options.EnableEncryptionTransport))}");
-            Console.WriteLine($"  Transport Layer Verify Certificate: {(ToYesNo(_options.EnableVerifyCertificate))}");
-            Console.WriteLine($"  Config file set: Yes"); // TODO: Make this dynamic if needed
-            Console.WriteLine($"  Config file loaded with no errors: Yes"); // TODO: Make this dynamic if needed
-            Console.WriteLine($"  Config file location: ./vertex-cache-config/console/.env"); // TODO: Make this dynamic if needed
-            Console.WriteLine("Status: OK, Console Client Started\n");
-        }
-
-        private static string ToYesNo(bool value) => value ? "Yes" : "No";
     }
 }

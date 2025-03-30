@@ -11,16 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Main Application Files -->
-    <Compile Include="src/VertexCache/SdkClient/Program.cs" />
-    <Compile Include="src/VertexCache/SdkClient/VertexCacheSdkClient.cs" />
-
-    <!-- Config -->
-    <Compile Include="src/VertexCache/SdkClient/Config/Env.cs" />
-
-    <!-- Console -->
-    <Compile Include="src/VertexCache/SdkClient/ConsoleApp/CliRunner.cs" />
-    <Compile Include="src/VertexCache/SdkClient/ConsoleApp/CommandParser.cs" />
+    <Compile Include="src/VertexCache/SdkClient/**/*.cs" />
   </ItemGroup>
 
   <ItemGroup>

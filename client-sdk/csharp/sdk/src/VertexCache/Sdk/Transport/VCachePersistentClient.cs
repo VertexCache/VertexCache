@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using VertexCache.Sdk.Core;
 using VertexCache.Sdk.Crypto;
 using VertexCache.Sdk.Protocol;
-
+using VertexCache.Sdk.Results;
 
 namespace VertexCache.Sdk.Transport
 {

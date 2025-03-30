@@ -10,6 +10,7 @@ using VertexCache.Sdk.Core;
 using VertexCache.Sdk.Transport;
 using VertexCache.Sdk.Crypto;
 using VertexCache.Sdk.Protocol;
+using VertexCache.Sdk.Results;
 
 namespace VertexCache.Sdk
 {
