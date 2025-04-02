@@ -3,7 +3,6 @@ set -euo pipefail
 
 # Resolve paths
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
 ROOT_DIR="$SCRIPT_DIR/../../.."
 COPY_UTIL_PATH="$ROOT_DIR/scripts/common/copy-utils.sh"
 
@@ -25,9 +24,13 @@ else
     exit 1
 fi
 
-
-
 # Copy using shared function
 copy_file "$PUBLIC_KEY_SRC_FILE" "$PUBLIC_KEY_DEST_FILE"
 copy_file "$TLS_CERT_SRC_FILE" "$TLS_CERT_DEST_FILE"
 copy_file "$ENV_EXAMPLE_SRC_FILE" "$ENV_EXAMPLE_DEST_FILE"
+
+# Leave lines commented, but update paths to point to local /config
+sed -i '' \
+    -e 's|^#public_key=.*|#public_key=./config/test_public_key.pem|' \
+    -e 's|^#tls_certificate=.*|#tls_certificate=./config/test_tls_certificate.pem|' \
+    "$ENV_EXAMPLE_DEST_FILE"
