@@ -9,6 +9,28 @@ namespace VertexCache.Sdk.Results
 
         public VCacheResult() { }
 
+        public static VCacheResult SuccessWithRaw(string raw)
+        {
+            return new VCacheResult
+            {
+                IsSuccess = true,
+                Message = raw,
+                Code = VCacheErrorCode.None,
+                Raw = raw
+            };
+        }
+
+        public static VCacheResult FailureWithRaw(VCacheErrorCode code, string message, string raw)
+        {
+            return new VCacheResult
+            {
+                IsSuccess = false,
+                Message = message,
+                Code = code,
+                Raw = raw
+            };
+        }
+
         public static VCacheResult Success(string message)
         {
             return new VCacheResult

@@ -6,10 +6,7 @@ namespace VertexCache.Sdk.Protocol.Parsers
     {
         public bool CanParse(string response) => response.StartsWith("-");
 
-        public VCacheResult Parse(string response)
-        {
-            return VCacheResult.Failure(VCacheErrorCode.ServerError, response);
-        }
+        public VCacheResult Parse(string response) =>
+            VCacheResult.FailureWithRaw(VCacheErrorCode.ServerError, response, response);
     }
 }
-

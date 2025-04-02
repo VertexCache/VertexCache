@@ -6,9 +6,6 @@ namespace VertexCache.Sdk.Protocol.Parsers
     {
         public bool CanParse(string response) => response == "+OK";
 
-        public VCacheResult Parse(string response)
-        {
-            return VCacheResult.Success(response);
-        }
+        public VCacheResult Parse(string response) => VCacheResult.SuccessWithRaw(response);
     }
 }
