@@ -1,31 +1,43 @@
-# Ignore compiled files
+############################################
+# Elixir / Mix
+############################################
 /_build/
 /deps/
-/mix.lock
+/erl_crash.dump
+/.elixir_ls/
+/coverage/
+*.ez
 
-# Ignore editor/IDE files
+############################################
+# Tests & Coverage
+############################################
+/test/tmp/
+test/tmp/
+.excoveralls
+
+############################################
+# Hex package tarballs
+############################################
+*.tar
+
+############################################
+# Dialyzer
+############################################
+.plt
+.plt.*
+
+############################################
+# Editor & OS junk
+############################################
 *.swp
 *.swo
-*.swn
-*.bak
-*.tmp
-.DS_Store
-/.vscode/
-/.idea/
-/*.iml
-/.elixir_ls/
+*.DS_Store
+.idea/
+.vscode/
+*.log
 
-# Ignore test coverage reports
-/cover/
-*.coverdata
-
-# Ignore logs and temporary files
-/log/
-/tmp/
-
-# Ignore files created by command-line editors
-*~
-
-# Ignore Elixir releases
-/rel/
-.erlang.cookie
+############################################
+# Secrets or local env (optional)
+############################################
+.env
+.env.*
