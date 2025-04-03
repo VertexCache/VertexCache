@@ -17,10 +17,9 @@ defmodule VertexCacheSDK.Crypto.Encrypt do
     if encrypt_flag == "true" do
       public_key = KeyHelper.get_public_key()
       encrypted = :public_key.encrypt_public(payload, public_key)
-      base64 = Base.encode64(encrypted)
 
-      Logger.debug("Encrypted payload (Base64): #{String.slice(base64, 0..60)}...")
-      base64
+      Logger.debug("Encrypted payload (raw bytes, #{byte_size(encrypted)} bytes)")
+      encrypted
     else
       Logger.debug("Sending plaintext payload: #{inspect(payload)}")
       payload

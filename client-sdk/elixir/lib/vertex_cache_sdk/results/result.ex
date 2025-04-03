@@ -1,32 +1,18 @@
 defmodule VertexCacheSDK.Results.Result do
-  @moduledoc """
-  Represents a parsed response from the VertexCache server.
-  Supports parsing simple OK/ERR patterns and payloads.
-  """
+  @moduledoc "Parses response results from VertexCache server."
 
-  defstruct [:status, :message, :raw]
+  defstruct [:status, :message]
 
-  @type status_t :: :ok | :error | :unknown
-
-  @type t :: %__MODULE__{
-               status: status_t,
-               message: String.t(),
-               raw: String.t()
-             }
-
-  @doc """
-  Parses a raw response line into a Result struct.
-  """
   def parse(response) when is_binary(response) do
-    cond do
-      String.starts_with?(response, "OK") ->
-        %__MODULE__{status: :ok, message: String.trim_leading(response, "OK"), raw: response}
+    case String.trim(response) do
+      <<"+"::utf8, rest::binary>> ->
+        %__MODULE__{status: "ok", message: rest}
 
-      String.starts_with?(response, "ERR") ->
-        %__MODULE__{status: :error, message: String.trim_leading(response, "ERR"), raw: response}
+      <<"-"::utf8, rest::binary>> ->
+        %__MODULE__{status: "error", message: rest}
 
-      true ->
-        %__MODULE__{status: :unknown, message: response, raw: response}
+      other ->
+        %__MODULE__{status: "unknown", message: other}
     end
   end
 end

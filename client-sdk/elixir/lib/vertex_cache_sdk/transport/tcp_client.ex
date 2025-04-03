@@ -47,7 +47,7 @@ defmodule VertexCacheSDK.Transport.TcpClient do
 
       case :ssl.connect(String.to_charlist(host), port, ssl_opts, 5000) do
         {:ok, socket} ->
-          Logger.info("Connected via SSL")
+
           {:ok, %__MODULE__{host: host, port: port, socket: socket}}
 
         {:error, reason} ->
