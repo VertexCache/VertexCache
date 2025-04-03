@@ -1,19 +1,22 @@
-# Run with: mix run vertex_cache_sdk_client/main.exs
-
 alias VertexCacheSDK.Transport.TcpClient
 alias VertexCacheSDK.Protocol.Command
 alias VertexCacheSDK.Results.Result
 
 defmodule Demo do
   def run do
-    # Connect using .env
     case TcpClient.connect() do
       {:ok, client} ->
-        # Build a command
-        command = Command.new("PING") |> Command.to_wire()
+        command_struct = Command.new("PING")
+        command_str = Command.to_wire(command_struct)
 
-        # Send the command
-        case TcpClient.send_command(client, command) do
+        IO.puts(">>> Outgoing command: #{command_str}")
+
+        payload = VertexCacheSDK.Crypto.Encrypt.maybe_encrypt(command_str)
+
+        IO.puts(">>> Payload sent to server:")
+        IO.inspect(payload)
+
+        case TcpClient.send_command(client, command_str) do
           {:ok, response} ->
             parsed = Result.parse(response)
             IO.puts("Server Response: #{parsed.status} - #{String.trim(parsed.message)}")

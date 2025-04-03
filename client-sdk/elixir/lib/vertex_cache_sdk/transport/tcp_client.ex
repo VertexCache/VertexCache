@@ -14,9 +14,6 @@ defmodule VertexCacheSDK.Transport.TcpClient do
                socket: :ssl.sslsocket() | :gen_tcp.socket() | nil
              }
 
-  @doc """
-  Establishes a secure TLS connection using either embedded or file-based TLS cert.
-  """
   def connect(opts \\ []) do
     DotenvParser.load_file("config/.env")
 
@@ -28,8 +25,8 @@ defmodule VertexCacheSDK.Transport.TcpClient do
         str when is_binary(str) -> String.to_integer(str)
       end
 
-    use_ssl = System.get_env("enable_encrypt_transport") == "true"
-    verify_cert = System.get_env("enable_verify_certificate") == "true"
+    use_ssl = String.trim(System.get_env("enable_encrypt_transport") || "") == "true"
+    verify_cert = String.trim(System.get_env("enable_verify_certificate") || "") == "true"
 
     Logger.debug("Connecting to #{host}:#{port} via TLS: #{use_ssl}, verify: #{verify_cert}")
 
@@ -40,17 +37,13 @@ defmodule VertexCacheSDK.Transport.TcpClient do
         cacertfile: String.to_charlist(certfile),
         verify: if(verify_cert, do: :verify_peer, else: :verify_none),
         depth: 3,
+        ciphers: [{:rsa, :aes_256_cbc, :sha256}],
         versions: [:"tlsv1.2"],
-        ciphers: [
-          {:rsa, :aes_256_cbc, :sha256}
-        ],
         server_name_indication: String.to_charlist(host),
         active: false,
         reuse_sessions: false,
         packet: :line
       ]
-
-
 
       case :ssl.connect(String.to_charlist(host), port, ssl_opts, 5000) do
         {:ok, socket} ->
@@ -82,14 +75,18 @@ defmodule VertexCacheSDK.Transport.TcpClient do
 
     with :ok <- send_data(socket, payload),
          {:ok, response} <- recv(socket) do
-      {:ok, String.trim(response)}
+      {:ok, String.trim(to_string(response))}
     else
       error -> {:error, error}
     end
   end
 
   def close(%__MODULE__{socket: socket}) do
-    if is_ssl?(socket), do: :ssl.close(socket), else: :gen_tcp.close(socket)
+    case socket do
+      {:sslsocket, _, _} -> :ssl.close(socket)
+      port when is_port(port) -> :gen_tcp.close(port)
+    end
+
     :ok
   end
 
@@ -98,9 +95,6 @@ defmodule VertexCacheSDK.Transport.TcpClient do
 
   defp recv(socket) when is_port(socket), do: :gen_tcp.recv(socket, 0)
   defp recv(socket), do: :ssl.recv(socket, 0)
-
-  defp is_ssl?(%{__struct__: :ssl_sslsocket}), do: true
-  defp is_ssl?(_), do: false
 
   defp resolve_embedded_or_path(nil, _filename), do: raise "Missing tls_certificate in .env"
 
