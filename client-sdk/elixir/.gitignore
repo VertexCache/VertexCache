@@ -41,3 +41,5 @@ test/tmp/
 ############################################
 .env
 .env.*
+config/.env
+config/test_*.pem
