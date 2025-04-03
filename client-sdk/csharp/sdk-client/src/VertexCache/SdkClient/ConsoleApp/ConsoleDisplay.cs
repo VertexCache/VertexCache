@@ -7,7 +7,7 @@ namespace VertexCache.SdkClient.ConsoleApp
         public static void PrintWelcomeBanner(VertexCacheSdkOptions options)
         {
             System.Console.Clear();
-            System.Console.WriteLine("VertexCache Console:");
+            System.Console.WriteLine("VertexCache C# Client Console:");
             System.Console.WriteLine("  Version: 1.0.0");
             System.Console.WriteLine($"  Host: {options.ServerHost}");
             System.Console.WriteLine($"  Port: {options.ServerPort}");
