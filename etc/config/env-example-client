@@ -61,7 +61,7 @@ enable_encrypt_transport=true
 ########################################################################################################################
 # Verify the TLS/SSL cert or just accept any, set 'true' then indicate the server certificate to be verified
 ########################################################################################################################
-enable_verify_certificate=true
+enable_verify_certificate=false
 
 ########################################################################################################################
 # There are two supported methods for providing the TLS CERT. Currently, option 2 is active.
