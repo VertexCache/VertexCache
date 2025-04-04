@@ -59,13 +59,13 @@ defmodule VertexCacheSDK.Transport.TcpClient do
 
       case :gen_tcp.connect(String.to_charlist(host), port, [:binary, packet: :line, active: false]) do
         {:ok, socket} ->
-          Logger.info("Connected via TCP")
           {:ok, %__MODULE__{host: host, port: port, socket: socket}}
 
         {:error, reason} ->
           Logger.error("TCP connect failed: #{inspect(reason)}")
           {:error, reason}
       end
+
     end
   end
 
