@@ -1,35 +1,44 @@
+############################################
 # Go build artifacts
-/bin/
-/pkg/
+############################################
+bin/
+build/
 *.exe
-*.out
 *.test
+*.out
 
-# Go modules
-/go.sum
-/go.work
-/go.work.sum
+############################################
+# Go workspace files
+############################################
+go.sum
+*.log
 
-# Editor and IDE files
+############################################
+# IDE/editor configs
+############################################
 .vscode/
 .idea/
-*.iml
-
-# Logs and temporary files
-*.log
-*.tmp
 *.swp
 *.swo
-*.bak
 
-# MacOS system files
+############################################
+# OS junk
+############################################
 .DS_Store
+Thumbs.db
 
-# Coverage and test reports
-*.cover
-*.prof
-*.cov
-/testdata/
+############################################
+# Env and cert files (sensitive or test-only)
+############################################
+config/.env
+config/*.pem
 
-# Local Go dependencies
+############################################
+# Dependency vendors (if used with vendoring)
+############################################
 vendor/
+
+############################################
+# Dist output
+############################################
+/dist/
