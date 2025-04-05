@@ -30,7 +30,6 @@ defmodule VertexCacheConsole do
   defp print_banner(config_path) do
     IO.puts("""
     VertexCache Elixir Client Console:
-      Version: 1.0.0
       Host: #{System.get_env("server_host")}
       Port: #{System.get_env("server_port")}
       Message Layer Encryption Enabled: #{yes_no("enable_encrypt_message")}
