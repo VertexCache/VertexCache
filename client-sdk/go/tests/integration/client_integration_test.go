@@ -3,44 +3,53 @@ package integration_test
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/joho/godotenv"
-	"github.com/vertexcache/vertexcache/client-sdk/go/sdk/core"
-	"github.com/vertexcache/vertexcache/client-sdk/go/sdk/transport"
+	"github.com/vertexcache/client-sdk/go/sdk/core"
+	"github.com/vertexcache/client-sdk/go/sdk/transport"
 )
 
-func loadTLSConfig(t *testing.T) *transport.Connection {
+func connectToServer(t *testing.T) *transport.Connection {
 	t.Helper()
 
-	envPath := filepath.Join("config", ".env")
-	err := godotenv.Load(envPath)
-	if err != nil {
-		t.Fatalf("Failed to load .env: %v", err)
+	_, filename, _, _ := runtime.Caller(0)
+	base := filepath.Dir(filename)
+	envPath := filepath.Join(base, "..", "..", "config", ".env")
+
+	if err := godotenv.Load(envPath); err != nil {
+		t.Skipf("Skipping integration test, missing .env: %v", err)
 	}
 
-	tlsCert := os.Getenv("tls_certificate")
-	if tlsCert == "" {
-		t.Fatal("tls_certificate not set in .env")
-	}
-	tlsConfig, err := transport.LoadTLSConfigFromString(tlsCert)
-	if err != nil {
-		t.Fatalf("Failed to load TLS config: %v", err)
+	address := os.Getenv("server_host") + ":" + os.Getenv("server_port")
+	useTLS := os.Getenv("transport_tls_enabled") == "true"
+
+	var conn *transport.Connection
+	var err error
+
+	if useTLS {
+		tlsCert := os.Getenv("tls_certificate")
+		tlsConfig, err := transport.LoadTLSConfigFromString(tlsCert, host)
+		if err != nil {
+			t.Fatalf("Failed to load TLS config: %v", err)
+		}
+		conn, err = transport.NewTLSConnection(address, tlsConfig)
+		if err != nil {
+			t.Fatalf("Failed to connect (TLS): %v", err)
+		}
+	} else {
+		conn, err = transport.NewTCPConnection(address)
+		if err != nil {
+			t.Fatalf("Failed to connect (TCP): %v", err)
+		}
 	}
 
-	host := os.Getenv("server_host")
-	port := os.Getenv("server_port")
-	address := host + ":" + port
-
-	conn, err := transport.NewTLSConnection(address, tlsConfig)
-	if err != nil {
-		t.Fatalf("Failed to connect: %v", err)
-	}
 	return conn
 }
 
 func TestRunCommandSequence(t *testing.T) {
-	conn := loadTLSConfig(t)
+	conn := connectToServer(t)
 	defer conn.Close()
 
 	client := core.NewClient(conn)
@@ -55,7 +64,8 @@ func TestRunCommandSequence(t *testing.T) {
 	if !res.Success {
 		t.Fatalf("Get failed: %v", res.Error)
 	}
-	if res.Data != "hello" {
-		t.Errorf("Expected value 'hello', got '%s'", res.Data)
+	expected := "+hello\r\n"
+	if res.Data != expected {
+		t.Errorf("Expected value %q, got %q", expected, res.Data)
 	}
 }

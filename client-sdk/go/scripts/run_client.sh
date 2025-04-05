@@ -3,12 +3,24 @@ set -euo pipefail
 
 clear
 
-HOST="127.0.0.1"
-PORT=9443
-TIMEOUT=2
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$SCRIPT_DIR/.."
+ENV_FILE="$ROOT_DIR/config/.env"
+
+# Default values
+HOST="127.0.0.1"
+PORT="50505"
+TIMEOUT=2
+
+# Load .env values manually (safe for PEMs)
+if [[ -f "$ENV_FILE" ]]; then
+  while IFS='=' read -r key value; do
+    case "$key" in
+      server_host) HOST="$value" ;;
+      server_port) PORT="$value" ;;
+    esac
+  done < <(grep -v '^#' "$ENV_FILE" | grep '=')
+fi
 
 ARCH=$(uname -m)
 OS=$(uname -s)

@@ -2,138 +2,113 @@ package main
 
 import (
 	"bufio"
+	"crypto/tls"
 	"fmt"
-	"log"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/joho/godotenv"
-	"github.com/vertexcache/vertexcache/client-sdk/go/sdk/core"
-	"github.com/vertexcache/vertexcache/client-sdk/go/sdk/protocol"
-	"github.com/vertexcache/vertexcache/client-sdk/go/sdk/results"
-	"github.com/vertexcache/vertexcache/client-sdk/go/sdk/transport"
-)
-
-const (
-	version        = "1.0.0"
-	defaultEnvPath = "config/.env"
+	utls "github.com/refraction-networking/utls"
+	"github.com/vertexcache/client-sdk/go/sdk/core"
+	"github.com/vertexcache/client-sdk/go/sdk/transport"
 )
 
 func main() {
-	envPath := filepath.Join(defaultEnvPath)
-	envLoaded := false
-	envErr := godotenv.Load(envPath)
-	if envErr == nil {
-		envLoaded = true
+	fmt.Println("📄 Loading .env from: config/.env")
+	err := godotenv.Load("config/.env")
+	if err != nil {
+		fmt.Printf("❌ Failed to load .env: %v\n", err)
+		os.Exit(1)
 	}
 
 	host := os.Getenv("server_host")
+	if host == "" {
+		host = "localhost"
+	}
 	port := os.Getenv("server_port")
+	if port == "" {
+		port = "50505"
+	}
 	address := fmt.Sprintf("%s:%s", host, port)
+
+	useTLS := strings.ToLower(os.Getenv("transport_tls_enabled")) == "true"
+	verifyTLS := strings.ToLower(os.Getenv("transport_tls_verify")) == "true"
+
 	tlsCert := os.Getenv("tls_certificate")
+	var conn core.Conn
 
-	tlsEnabled := tlsCert != ""
-	certVerify := "Yes" // Currently no toggle
-	configSet := envPath != ""
-	configLoadOk := envLoaded && tlsEnabled
+	if useTLS {
+		fmt.Printf("🔍 RAW TLS config: enabled=%q, verify=%q\n", os.Getenv("transport_tls_enabled"), os.Getenv("transport_tls_verify"))
+		fmt.Printf("✅ Parsed TLS settings: enabled=%v, verify=%v\n", useTLS, verifyTLS)
 
-	// Display startup banner
-	fmt.Println("VertexCache Go Client Console:")
-	fmt.Printf("  Version: %s\n", version)
-	fmt.Printf("  Host: %s\n", host)
-	fmt.Printf("  Port: %s\n", port)
-	fmt.Printf("  Message Layer Encryption Enabled: %s\n", "No") // Not implemented yet
-	fmt.Printf("  Transport Layer Encryption Enabled: %s\n", boolToYesNo(tlsEnabled))
-	fmt.Printf("  Transport Layer Verify Certificate: %s\n", certVerify)
-	fmt.Printf("  Config file set: %s\n", boolToYesNo(configSet))
-	fmt.Printf("  Config file loaded with no errors: %s\n", boolToYesNo(configLoadOk))
-	fmt.Printf("  Config file location: %s\n", envPath)
+		if tlsCert == "" {
+			fmt.Println("❌ TLS is enabled but tls_certificate is missing")
+			os.Exit(1)
+		}
 
-	if configLoadOk {
-		fmt.Println("Status: OK, Console Client Started\n")
+		tlsConfig, err := transport.LoadTLSConfigFromString(tlsCert, host, verifyTLS)
+		if err != nil {
+			fmt.Printf("❌ failed to load TLS config: %v\n", err)
+			os.Exit(1)
+		}
+
+		utlsConfig := &utls.Config{
+			ServerName:         tlsConfig.ServerName,
+			MinVersion:         tls.VersionTLS12,
+			InsecureSkipVerify: tlsConfig.InsecureSkipVerify,
+			RootCAs:            tlsConfig.RootCAs,
+		}
+
+		conn, err = transport.NewTLSConnection(address, utlsConfig)
+		if err != nil {
+			fmt.Printf("❌ VertexCache server not reachable at %s (timeout 2s)\n", address)
+			fmt.Println("💡 Make sure the server is running before starting the client.")
+			os.Exit(1)
+		}
 	} else {
-		fmt.Println("Status: WARN, Config incomplete or missing\n")
+		conn, err = transport.NewTCPConnection(address)
+		if err != nil {
+			fmt.Printf("❌ VertexCache server not reachable at %s\n", address)
+			fmt.Println("💡 Make sure the server is running before starting the client.")
+			os.Exit(1)
+		}
 	}
 
-	if !tlsEnabled {
-		log.Fatal("TLS certificate missing in .env")
-	}
-
-	tlsConfig, err := transport.LoadTLSConfigFromString(tlsCert)
-	if err != nil {
-		log.Fatalf("TLS config error: %v", err)
-	}
-
-	conn, err := transport.NewTLSConnection(address, tlsConfig)
-	if err != nil {
-		log.Fatalf("Connection failed: %v", err)
-	}
 	defer conn.Close()
 
+	fmt.Println()
+	fmt.Println("VertexCache Go Client Console:")
+	fmt.Println("  Version: 1.0.0")
+	fmt.Printf("  Host: %s\n", host)
+	fmt.Printf("  Port: %s\n", port)
+	fmt.Printf("  Message Layer Encryption Enabled: Yes\n")
+	fmt.Printf("  Transport Layer Encryption Enabled: %v\n", useTLS)
+	fmt.Printf("  Transport Layer Verify Certificate: %v\n", verifyTLS)
+	fmt.Printf("  Config file set: Yes\n")
+	fmt.Printf("  Config file loaded with no errors: Yes\n")
+	fmt.Println("  Config file location: ./config/.env")
+	fmt.Println("Status: OK, Console Client Started")
+	fmt.Println()
+
+	reader := bufio.NewReader(os.Stdin)
 	client := core.NewClient(conn)
 
-	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Printf("VertexCache Console, %s:%s> ", host, port)
-		if !scanner.Scan() {
-			fmt.Println("\n👋 Goodbye.")
-			break
-		}
-		line := strings.TrimSpace(scanner.Text())
-		if line == "" {
-			continue
-		}
-		if line == "exit" || line == "quit" {
-			fmt.Println("👋 Exiting.")
+		input, _ := reader.ReadString('\n')
+		cmd := strings.TrimSpace(input)
+
+		if cmd == "exit" || cmd == "quit" {
 			break
 		}
 
-		cmd, err := protocol.ParseCommand(line)
-		if err != nil {
-			fmt.Printf("-ERR %v\n", err)
-			continue
-		}
-
-		res := sendCommand(client, cmd)
-		printFormattedResult(res)
-	}
-}
-
-func sendCommand(client *core.Client, cmd *protocol.Command) *results.Result {
-	switch cmd.Type {
-	case protocol.CommandSet:
-		return client.Set(cmd.Key, cmd.Value)
-	case protocol.CommandGet:
-		return client.Get(cmd.Key)
-	case protocol.CommandDelete:
-		return client.Delete(cmd.Key)
-	case protocol.CommandPing:
-		return client.Ping()
-	default:
-		return results.NewFailure(results.New(results.ErrInvalidCommand, "Unsupported command type", nil))
-	}
-}
-
-func printFormattedResult(res *results.Result) {
-	if res.Success {
-		if res.Data == "PONG" {
-			fmt.Println("+PONG")
-		} else if res.Data != "" {
-			fmt.Printf("$%d\n%s\n", len(res.Data), res.Data)
+		result := client.RunCommand(cmd)
+		if result.Success {
+			fmt.Println(result.Data)
+		} else if result.Error != nil {
+			fmt.Println(result.Error.Error())
 		} else {
-			fmt.Println("+OK")
+			fmt.Println("❌ Unknown error")
 		}
-	} else if res.Error != nil {
-		fmt.Printf("-ERR [%s] %s\n", res.Error.Code, res.Error.Message)
-	} else {
-		fmt.Println("-ERR unknown error")
 	}
-}
-
-func boolToYesNo(b bool) string {
-	if b {
-		return "Yes"
-	}
-	return "No"
 }

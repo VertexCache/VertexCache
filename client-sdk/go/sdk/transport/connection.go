@@ -1,45 +1,57 @@
 package transport
 
 import (
-	"bufio"
-	"crypto/tls"
+	"fmt"
 	"net"
+	"time"
+
+	utls "github.com/refraction-networking/utls"
 )
 
-// Connection wraps a secure network connection.
 type Connection struct {
-	conn   net.Conn
-	reader *bufio.Reader
+	conn net.Conn
 }
 
-// NewTLSConnection establishes a TLS connection to the given address.
-func NewTLSConnection(address string, tlsConfig *tls.Config) (*Connection, error) {
-	conn, err := tls.Dial("tcp", address, tlsConfig)
-	if err != nil {
-		return nil, err
-	}
-	return &Connection{
-		conn:   conn,
-		reader: bufio.NewReader(conn),
-	}, nil
-}
-
-// Send writes a raw line of data to the connection.
-func (c *Connection) Send(data string) error {
-	_, err := c.conn.Write([]byte(data))
+func (c *Connection) Send(data []byte) error {
+	_, err := c.conn.Write(data)
 	return err
 }
 
-// ReceiveLine reads a full line from the connection.
-func (c *Connection) ReceiveLine() (string, error) {
-	line, err := c.reader.ReadString('\n')
-	if err != nil {
-		return "", err
-	}
-	return line[:len(line)-1], nil // trim newline
+func (c *Connection) Receive(buffer []byte) (int, error) {
+	return c.conn.Read(buffer)
 }
 
-// Close gracefully closes the connection.
 func (c *Connection) Close() error {
 	return c.conn.Close()
+}
+
+func NewTCPConnection(address string) (*Connection, error) {
+	conn, err := net.DialTimeout("tcp", address, 2*time.Second)
+	if err != nil {
+		return nil, err
+	}
+	return &Connection{conn: conn}, nil
+}
+
+func NewTLSConnection(address string, config *utls.Config) (*Connection, error) {
+	fmt.Printf("🔌 Dialing TLS via uTLS: %s\n", address)
+
+	rawConn, err := net.DialTimeout("tcp", address, 2*time.Second)
+	if err != nil {
+		return nil, fmt.Errorf("TCP dial failed: %v", err)
+	}
+
+	// uTLS client with Firefox-compatible ClientHello
+	uconn := utls.UClient(rawConn, config, utls.HelloFirefox_Auto)
+
+	if err := uconn.Handshake(); err != nil {
+		return nil, fmt.Errorf("TLS handshake failed: %v", err)
+	}
+
+	state := uconn.ConnectionState()
+	fmt.Println("✅ uTLS handshake succeeded")
+	fmt.Printf("   Cipher Suite: 0x%x\n", state.CipherSuite)
+	fmt.Printf("   TLS Version: 0x%x\n", state.Version)
+
+	return &Connection{conn: uconn}, nil
 }

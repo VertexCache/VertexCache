@@ -1,76 +1,48 @@
 package core
 
 import (
-	"github.com/vertexcache/vertexcache/client-sdk/go/sdk/protocol"
-	"github.com/vertexcache/vertexcache/client-sdk/go/sdk/results"
-	"github.com/vertexcache/vertexcache/client-sdk/go/sdk/transport"
+	"strings"
+
+	"github.com/vertexcache/client-sdk/go/sdk/protocol"
+	"github.com/vertexcache/client-sdk/go/sdk/results"
 )
 
-// Client provides a high-level API to interact with a VertexCache server over TLS.
-type Client struct {
-	conn *transport.Connection
+type Conn interface {
+	Send([]byte) error
+	Receive([]byte) (int, error)
+	Close() error
 }
 
-// NewClient creates a new VertexCache SDK client using an established transport connection.
-func NewClient(conn *transport.Connection) *Client {
+type Client struct {
+	conn Conn
+}
+
+func NewClient(conn Conn) *Client {
 	return &Client{conn: conn}
 }
 
-// sendCommand serializes a command, sends it, and reads the response line.
-func (c *Client) sendCommand(cmd *protocol.Command) *results.Result {
-	err := c.conn.Send(cmd.Serialize())
+func (c *Client) RunCommand(command string) *results.Result {
+	if strings.TrimSpace(command) == "" {
+		err := results.New(results.ErrInvalidCommand, "key cannot be empty", nil)
+		return results.NewFailure(err)
+	}
+
+	cmd := &protocol.Command{
+		Type: protocol.CommandType(strings.ToUpper(strings.Fields(command)[0])),
+	}
+	raw := cmd.Serialize()
+
+	if err := c.conn.Send([]byte(raw)); err != nil {
+		sdkErr := results.New(results.ErrConnection, "failed to send command", err)
+		return results.NewFailure(sdkErr)
+	}
+
+	buffer := make([]byte, 4096)
+	n, err := c.conn.Receive(buffer)
 	if err != nil {
-		return results.NewFailure(results.New(results.ErrConnection, "failed to send command", err))
+		sdkErr := results.New(results.ErrConnection, "failed to receive response", err)
+		return results.NewFailure(sdkErr)
 	}
 
-	line, err := c.conn.ReceiveLine()
-	if err != nil {
-		return results.NewFailure(results.New(results.ErrConnection, "failed to receive response", err))
-	}
-
-	return results.NewSuccess(line)
-}
-
-// Set stores a key-value pair in VertexCache.
-func (c *Client) Set(key, value string) *results.Result {
-	cmd := &protocol.Command{
-		Type:  protocol.CommandSet,
-		Key:   key,
-		Value: value,
-	}
-	return c.sendCommand(cmd)
-}
-
-// Get retrieves the value associated with a key from VertexCache.
-func (c *Client) Get(key string) *results.Result {
-	cmd := &protocol.Command{
-		Type: protocol.CommandGet,
-		Key:  key,
-	}
-	return c.sendCommand(cmd)
-}
-
-// Delete removes a key and its associated value from VertexCache.
-func (c *Client) Delete(key string) *results.Result {
-	cmd := &protocol.Command{
-		Type: protocol.CommandDelete,
-		Key:  key,
-	}
-	return c.sendCommand(cmd)
-}
-
-// Ping verifies the connection is alive by sending a ping.
-func (c *Client) Ping() *results.Result {
-	cmd := &protocol.Command{
-		Type: protocol.CommandPing,
-	}
-	return c.sendCommand(cmd)
-}
-
-// Close gracefully closes the connection to the server.
-func (c *Client) Close() error {
-	if c.conn != nil {
-		return c.conn.Close()
-	}
-	return nil
+	return results.NewSuccess(string(buffer[:n]))
 }

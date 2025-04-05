@@ -3,20 +3,20 @@ package core_test
 import (
 	"testing"
 
-	"github.com/vertexcache/vertexcache/client-sdk/go/sdk/core"
-	"github.com/vertexcache/vertexcache/client-sdk/go/sdk/protocol"
-	"github.com/vertexcache/vertexcache/client-sdk/go/sdk/results"
+	"github.com/vertexcache/client-sdk/go/sdk/core"
+	"github.com/vertexcache/client-sdk/go/sdk/results"
 )
 
+// Create a mock type that implements the Connection interface used by core.Client
 type mockConnection struct {
 	SendFunc        func(string) error
 	ReceiveLineFunc func() (string, error)
 	CloseFunc       func() error
 }
 
-func (m *mockConnection) Send(data string) error               { return m.SendFunc(data) }
-func (m *mockConnection) ReceiveLine() (string, error)         { return m.ReceiveLineFunc() }
-func (m *mockConnection) Close() error                         { return m.CloseFunc() }
+func (m *mockConnection) Send(data string) error       { return m.SendFunc(data) }
+func (m *mockConnection) ReceiveLine() (string, error) { return m.ReceiveLineFunc() }
+func (m *mockConnection) Close() error                 { return m.CloseFunc() }
 
 func TestEmptyCommand_ShouldReturnFailure(t *testing.T) {
 	conn := &mockConnection{
@@ -27,13 +27,11 @@ func TestEmptyCommand_ShouldReturnFailure(t *testing.T) {
 
 	client := core.NewClient(conn)
 
-	cmd := &protocol.Command{}
 	result := client.Set("", "")
-
 	if result.Success {
 		t.Fatal("expected failure on empty key")
 	}
-	if result.Error == nil || result.Error.Code != results.ErrConnection {
-		t.Errorf("expected connection error, got %v", result.Error)
-	}
+    if result.Error == nil || result.Error.Code != results.ErrInvalidCommand {
+        t.Errorf("expected invalid command error, got %v", result.Error)
+    }
 }
