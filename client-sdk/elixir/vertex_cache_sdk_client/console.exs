@@ -35,10 +35,6 @@ defmodule VertexCacheConsole do
       Message Layer Encryption Enabled: #{yes_no("enable_encrypt_message")}
       Transport Layer Encryption Enabled: #{yes_no("enable_encrypt_transport")}
       Transport Layer Verify Certificate: #{yes_no("enable_verify_certificate")}
-      Config file set: Yes
-      Config file loaded with no errors: Yes
-      Config file location: #{config_path}
-    Status: OK, Console Client Started
     """)
   end
 

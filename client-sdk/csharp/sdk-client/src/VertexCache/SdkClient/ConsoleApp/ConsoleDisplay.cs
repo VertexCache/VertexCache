@@ -13,10 +13,6 @@ namespace VertexCache.SdkClient.ConsoleApp
             System.Console.WriteLine($"  Message Layer Encryption Enabled: {(options.EnableEncryption ? "Yes" : "No")}");
             System.Console.WriteLine($"  Transport Layer Encryption Enabled: {(options.EnableEncryptionTransport ? "Yes" : "No")}");
             System.Console.WriteLine($"  Transport Layer Verify Certificate: {(options.EnableVerifyCertificate ? "Yes" : "No")}");
-            System.Console.WriteLine($"  Config file set: Yes");
-            System.Console.WriteLine($"  Config file loaded with no errors: Yes");
-            System.Console.WriteLine($"  Config file location: ./config/.env");
-            System.Console.WriteLine("Status: OK, Console Client Started");
             System.Console.WriteLine();
         }
 
