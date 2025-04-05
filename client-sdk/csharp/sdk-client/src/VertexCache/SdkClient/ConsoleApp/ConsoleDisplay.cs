@@ -8,7 +8,6 @@ namespace VertexCache.SdkClient.ConsoleApp
         {
             System.Console.Clear();
             System.Console.WriteLine("VertexCache C# Client Console:");
-            System.Console.WriteLine("  Version: 1.0.0");
             System.Console.WriteLine($"  Host: {options.ServerHost}");
             System.Console.WriteLine($"  Port: {options.ServerPort}");
             System.Console.WriteLine($"  Message Layer Encryption Enabled: {(options.EnableEncryption ? "Yes" : "No")}");
