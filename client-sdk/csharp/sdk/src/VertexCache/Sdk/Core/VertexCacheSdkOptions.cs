@@ -11,7 +11,7 @@ namespace VertexCache.Sdk.Core
         public string? PublicKey { get; set; }
 
         public bool EnableEncryptionTransport { get; set; } = false;
-        public bool EnableVerifyCertificate { get; set; } = true;
+        public bool EnableVerifyCertificate { get; set; } = false;
         public string? CertificatePem { get; set; }
     }
 }
