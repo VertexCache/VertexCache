@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/joho/godotenv"
-	"github.com/vertexcache/client-sdk/go/sdk/core"
-	"github.com/vertexcache/client-sdk/go/sdk/transport"
+	"sdk/core"
+	"sdk/transport"
 )
 
 func connectToServer(t *testing.T) *transport.Connection {

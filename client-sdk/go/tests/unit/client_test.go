@@ -3,8 +3,8 @@ package core_test
 import (
 	"testing"
 
-	"github.com/vertexcache/client-sdk/go/sdk/core"
-	"github.com/vertexcache/client-sdk/go/sdk/results"
+	"sdk/core"
+	"sdk/results"
 )
 
 // Create a mock type that implements the Connection interface used by core.Client
@@ -31,7 +31,7 @@ func TestEmptyCommand_ShouldReturnFailure(t *testing.T) {
 	if result.Success {
 		t.Fatal("expected failure on empty key")
 	}
-    if result.Error == nil || result.Error.Code != results.ErrInvalidCommand {
-        t.Errorf("expected invalid command error, got %v", result.Error)
-    }
+	if result.Error == nil || result.Error.Code != results.ErrInvalidCommand {
+		t.Errorf("expected invalid command error, got %v", result.Error)
+	}
 }
