@@ -7,5 +7,6 @@ public interface Command {
     boolean isSuccess();                  // check success after
     String getResponse();                // parsed or raw string
     String getError();                   // error message if failed
+    String getStatusMessage(); // ← add this
 }
 

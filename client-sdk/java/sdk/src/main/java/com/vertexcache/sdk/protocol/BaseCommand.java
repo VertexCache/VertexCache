@@ -49,6 +49,11 @@ public abstract class BaseCommand implements Command {
     }
 
     @Override
+    public String getStatusMessage() {
+        return isSuccess() ? getResponse() : getError();
+    }
+
+    @Override
     public boolean isSuccess() {
         return success;
     }

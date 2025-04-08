@@ -3,6 +3,7 @@ package com.vertexcache.sdk.protocol;
 public enum CommandType {
     PING("PING"),
     SET("SET"),
+    DEL("DEL"),
     IDX1("idx1"),
     IDX2("idx2");
 

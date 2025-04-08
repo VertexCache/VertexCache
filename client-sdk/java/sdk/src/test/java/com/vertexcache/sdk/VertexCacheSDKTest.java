@@ -1,5 +1,7 @@
 package com.vertexcache.sdk;
 
+import com.vertexcache.sdk.protocol.command.SetCommand;
+import com.vertexcache.sdk.result.CommandResult;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -10,7 +12,7 @@ class VertexCacheSDKTest {
     // will remove, this is just wip
 
     @Test
-    void testGetMessage() throws Exception {
+    void test() throws Exception {
 
         VertexCacheSDKOptions vertexCacheSDKOptions = new VertexCacheSDKOptions();
         vertexCacheSDKOptions.setServerHost("localhost");
@@ -26,10 +28,24 @@ class VertexCacheSDKTest {
 
         assertTrue(sdk.isConnected());
 
-        assertTrue(sdk.isPingable());
+        assertTrue(sdk.ping().isSuccess());
 
-        assertTrue(sdk.setKey("my-key","my-value"));
+        CommandResult commandResult = sdk.set("my-key","my-value");
 
-        assertEquals("VertexCache SDK!", sdk.getMessage());
+        assertTrue(commandResult.isSuccess());
+
+        /*
+        assertTrue(sdk.setValueByKey("my-key","my-value"));
+
+        assertTrue(sdk.setValueByKey("my-key-1","my-value-1"));
+
+        assertTrue(sdk.setValueByKey("my-key-2","my-value-2"));
+
+        assertTrue(sdk.setValueByKey("my-key-3","my-value-3"));
+
+        assertTrue(sdk.deleteValueByKey("my-key-1"));
+
+         */
+
     }
 }

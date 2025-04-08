@@ -32,15 +32,14 @@ public class SetCommand extends BaseCommand {
                 .append(primaryKey).append(BaseCommand.COMMAND_SPACER)
                 .append(value);
 
-        if (secondaryKey != null && !secondaryKey.isEmpty()) {
+        if (secondaryKey != null && !secondaryKey.isBlank()) {
             sb.append(" ").append(CommandType.IDX1).append(" ").append(secondaryKey);
         }
 
-        if (tertiaryKey != null && !tertiaryKey.isEmpty()) {
+        if (tertiaryKey != null && !tertiaryKey.isBlank()) {
             sb.append(" ").append(CommandType.IDX2).append(" ").append(tertiaryKey);
         }
 
-       // sb.append("\n");
         return sb.toString();
     }
 
