@@ -22,7 +22,7 @@ Visit the GitHub repository to download the latest **[release](https://github.co
 ---
    
 ## Getting Started
-- [Installation](https://github.com/jasonlam604/VertexCache/wiki/Installation)
+- [Installation](https://github.com/vertexcache/VertexCache/wiki/Installation)
   - [Prerequisites](https://github.com/jasonlam604/VertexCache/wiki/Installation#Prerequisites)
   - [Download](https://github.com/jasonlam604/VertexCache/wiki/Installation#Download)
   - [What's Inside](https://github.com/jasonlam604/VertexCache/wiki/Installation#Whats-Inside)
