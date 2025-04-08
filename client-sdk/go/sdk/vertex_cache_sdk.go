@@ -21,7 +21,31 @@ func NewVertexCacheSdk(options *core.VertexCacheSdkOptions) *VertexCacheSdk {
 	return &VertexCacheSdk{Options: options}
 }
 
-func (sdk *VertexCacheSdk) RunCommand(ctx context.Context, command string, args []string) *results.VCacheResult {
+//
+// ✅ Simple public helper methods
+//
+
+func (sdk *VertexCacheSdk) Ping(ctx context.Context) *results.VCacheResult {
+	return sdk.runCommand(ctx, "PING", nil)
+}
+
+func (sdk *VertexCacheSdk) Set(ctx context.Context, key, value string) *results.VCacheResult {
+	return sdk.runCommand(ctx, "SET", []string{key, value})
+}
+
+func (sdk *VertexCacheSdk) Get(ctx context.Context, key string) *results.VCacheResult {
+	return sdk.runCommand(ctx, "GET", []string{key})
+}
+
+func (sdk *VertexCacheSdk) Del(ctx context.Context, key string) *results.VCacheResult {
+	return sdk.runCommand(ctx, "DEL", []string{key})
+}
+
+//
+// 🔒 Internal engine (was RunCommand)
+//
+
+func (sdk *VertexCacheSdk) runCommand(ctx context.Context, command string, args []string) *results.VCacheResult {
 	if strings.TrimSpace(command) == "" {
 		return results.Failure(results.InvalidCommand, "Command cannot be empty.")
 	}
