@@ -1,20 +1,21 @@
 package com.vertexcache.sdk;
 
-import com.vertexcache.sdk.protocol.command.SetCommand;
 import com.vertexcache.sdk.result.CommandResult;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class VertexCacheSDKTest {
 
-
     // Yes some hard code certs, these are test certs that supplied in the .env-example nothing that is prod anyways
     // will remove, this is just wip
-
     @Test
     void test() throws Exception {
 
         VertexCacheSDKOptions vertexCacheSDKOptions = new VertexCacheSDKOptions();
+
+        vertexCacheSDKOptions.setClientId("SDK Client");
+        vertexCacheSDKOptions.setTenantId("SDK Tenant 1");
+
         vertexCacheSDKOptions.setServerHost("localhost");
         vertexCacheSDKOptions.setServerPort(50505);
 

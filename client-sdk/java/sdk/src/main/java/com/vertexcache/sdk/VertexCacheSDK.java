@@ -8,6 +8,8 @@ import com.vertexcache.sdk.result.CommandResult;
 import com.vertexcache.sdk.result.GetResult;
 import com.vertexcache.sdk.transport.TcpClient;
 
+import java.util.List;
+
 public class VertexCacheSDK {
 
     private final VertexCacheSDKOptions vertexCacheSDKOptions;
@@ -25,7 +27,8 @@ public class VertexCacheSDK {
                 vertexCacheSDKOptions.getConnectTimeout(),
                 vertexCacheSDKOptions.getReadTimeout(),
                 vertexCacheSDKOptions.isEnablePublicKeyEncryption(),
-                vertexCacheSDKOptions.getPublicKey()
+                vertexCacheSDKOptions.getPublicKey(),
+                vertexCacheSDKOptions.getClientId()
         );
     }
 
@@ -40,7 +43,12 @@ public class VertexCacheSDK {
     }
 
     public CommandResult del(String key) {
-        DelCommand cmd = (DelCommand) new DelCommand(key).execute(tcpClient);
+        DelCommand cmd = (DelCommand) DelCommand.of(key).execute(tcpClient);
+        return new CommandResult(cmd.isSuccess(), cmd.getStatusMessage());
+    }
+
+    public CommandResult del(List<String> keys) {
+        DelCommand cmd = (DelCommand) new DelCommand(keys).execute(tcpClient);
         return new CommandResult(cmd.isSuccess(), cmd.getStatusMessage());
     }
 

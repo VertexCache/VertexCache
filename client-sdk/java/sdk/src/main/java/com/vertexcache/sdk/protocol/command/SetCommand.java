@@ -2,23 +2,33 @@ package com.vertexcache.sdk.protocol.command;
 
 import com.vertexcache.sdk.protocol.BaseCommand;
 import com.vertexcache.sdk.protocol.CommandType;
+import com.vertexcache.sdk.result.VertexCacheSdkException;
 
-public class SetCommand extends BaseCommand {
+public class SetCommand extends BaseCommand<SetCommand> {
 
     private final String primaryKey;
     private final String value;
     private final String secondaryKey;
     private final String tertiaryKey;
 
-    public SetCommand(String primaryKey, String value) {
+    public SetCommand(String primaryKey, String value) throws VertexCacheSdkException {
         this(primaryKey, value, null, null);
     }
 
-    public SetCommand(String primaryKey, String value, String secondaryKey) {
+    public SetCommand(String primaryKey, String value, String secondaryKey) throws VertexCacheSdkException {
         this(primaryKey, value, secondaryKey, null);
     }
 
-    public SetCommand(String primaryKey, String value, String secondaryKey, String tertiaryKey) {
+    public SetCommand(String primaryKey, String value, String secondaryKey, String tertiaryKey) throws VertexCacheSdkException {
+
+        if(primaryKey == null || primaryKey.isBlank()) {
+            throw new VertexCacheSdkException("Missing Primary Key");
+        }
+
+        if(value == null || value.isBlank()) {
+            throw new VertexCacheSdkException("Missing Value");
+        }
+
         this.primaryKey = primaryKey;
         this.value = value;
         this.secondaryKey = secondaryKey;
@@ -46,6 +56,8 @@ public class SetCommand extends BaseCommand {
     protected void parseResponse(String responseBody) {
         if(!responseBody.equalsIgnoreCase("OK")) {
             this.setFailure("OK Not received");
+        } else {
+            this.setSuccess();
         }
     }
 }

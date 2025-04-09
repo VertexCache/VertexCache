@@ -8,6 +8,18 @@
 # Full Documentation available at the VertexCache Wiki https://github.com/jasonlam604/VertexCache/wiki
 ########################################################################################################################
 
+########################################################################################################################
+# Client Id - This identifies a unique instance. If none is provided, the system will default to using the IP address.
+# If used across multiple systems, there may be conflicts — so please ensure this value is unique. You’ll see this
+# identifier appear in the server logs.
+########################################################################################################################
+client_id=client-console
+
+########################################################################################################################
+# Tenant ID - This represents a system that interacts with VertexCache. You can think of it as a group identifier.
+# For example, in a microservices environment with three systems, where the third system is VertexCache, the other two systems may each have multiple instances. You’ll need a way to distinguish between them — and this group helps you do that.
+########################################################################################################################
+tenant_id=client-console-group
 
 ########################################################################################################################
 # Server Host

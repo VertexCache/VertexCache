@@ -27,6 +27,7 @@ public class Config extends ConfigBase {
     private boolean encryptTransport = false;
     private String tlsCertificate;
     private String tlsPrivateKey;
+    private String tlsKeyStorePassword;
 
     private EvictionPolicy cacheEvictionPolicy = EvictionPolicy.NONE;
     private static int DEFAULT_CACHE_SIZE=1000000;
@@ -85,8 +86,8 @@ public class Config extends ConfigBase {
                         if (configLoader.isExist(ConfigKey.TLS_CERTIFICATE) && configLoader.isExist(ConfigKey.TLS_PRIVATE_KEY)) {
                             this.tlsCertificate = configLoader.getProperty(ConfigKey.TLS_CERTIFICATE);
                             this.tlsPrivateKey = configLoader.getProperty(ConfigKey.TLS_PRIVATE_KEY);
+                            this.tlsKeyStorePassword = configLoader.getProperty(ConfigKey.TLS_KEY_STORE_PASSWORD);
                             this.encryptTransport = true;
-
                         }
                     }
 
@@ -171,6 +172,8 @@ public class Config extends ConfigBase {
     }
 
     public String getTlsPrivateKey() { return tlsPrivateKey; }
+
+    public String getTlsKeyStorePassword() { return tlsKeyStorePassword; }
 
     public EvictionPolicy getCacheEvictionPolicy() {
         return cacheEvictionPolicy;

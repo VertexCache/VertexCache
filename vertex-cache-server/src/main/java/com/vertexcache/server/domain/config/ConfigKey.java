@@ -19,6 +19,7 @@ public class ConfigKey {
     public static final String ENABLE_ENCRYPT_TRANSPORT = "enable_encrypt_transport";
     public static final String TLS_CERTIFICATE = "tls_certificate";
     public static final String TLS_PRIVATE_KEY = "tls_private_key";
+    public static final String TLS_KEY_STORE_PASSWORD = "tls_keystore_password";
 
     public static final String CACHE_EVICTION = "cache_eviction";
     public static final String CACHE_SIZE = "cache_size";

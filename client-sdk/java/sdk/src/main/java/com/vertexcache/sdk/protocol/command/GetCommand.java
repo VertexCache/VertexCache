@@ -1,15 +1,16 @@
 package com.vertexcache.sdk.protocol.command;
 
 import com.vertexcache.sdk.protocol.BaseCommand;
+import com.vertexcache.sdk.result.VertexCacheSdkException;
 
-public class GetCommand extends BaseCommand {
+public class GetCommand extends BaseCommand<GetCommand> {
 
     private final String key;
     private String value;
 
     public GetCommand(String key) {
         if (key == null || key.isBlank()) {
-            throw new IllegalArgumentException("GET command requires a non-empty key");
+            throw new VertexCacheSdkException("GET command requires a non-empty key");
         }
         this.key = key;
     }
@@ -21,12 +22,18 @@ public class GetCommand extends BaseCommand {
 
     @Override
     protected void parseResponse(String responseBody) {
-        if (responseBody.equalsIgnoreCase("nil") || responseBody.isEmpty()) {
-            this.setFailure("Key not found or empty");
+        if ("(nil)".equalsIgnoreCase(responseBody)) {
+            this.setSuccess("No matching key found, +(nil)");
+            return;
+        }
+
+        if (responseBody.startsWith("ERR")) {
+            setFailure("GET failed: " + responseBody);
         } else {
             this.value = responseBody;
         }
     }
+
 
     public String getValue() {
         return value;

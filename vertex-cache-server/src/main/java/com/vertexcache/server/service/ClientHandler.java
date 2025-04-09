@@ -1,26 +1,23 @@
 package com.vertexcache.server.service;
 
 import com.vertexcache.common.log.LogHelper;
-import com.vertexcache.server.domain.config.Config;
+import com.vertexcache.common.protocol.MessageCodec;
 import com.vertexcache.server.domain.command.CommandService;
+import com.vertexcache.server.domain.config.Config;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 
 public class ClientHandler implements Runnable {
 
-    private Socket clientSocket;
-    private Config config;
-    private CommandService commandProcessor;
+    private final Socket clientSocket;
+    private final Config config;
+    private final CommandService commandProcessor;
+    private String clientName = null;
 
     public ClientHandler(Socket clientSocket, Config config, CommandService commandProcessor) {
         this.clientSocket = clientSocket;
@@ -30,57 +27,55 @@ public class ClientHandler implements Runnable {
 
     @Override
     public void run() {
-        try (InputStream inputStream = clientSocket.getInputStream(); OutputStream outputStream = clientSocket.getOutputStream()) {
-            byte[] buffer = new byte[1024];
-            int bytesRead;
+        try (InputStream inputStream = clientSocket.getInputStream();
+             OutputStream outputStream = clientSocket.getOutputStream()) {
+
             Cipher cipher = config.isEncryptMessage() ? Cipher.getInstance("RSA/ECB/PKCS1Padding") : null;
 
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                byte[] processedData = processInputData(buffer, bytesRead, cipher);
-                outputStream.write(processedData);
+            while (true) {
+                byte[] framedRequest = MessageCodec.readFramedMessage(inputStream);
+                if (framedRequest == null) break;
+
+                byte[] processedData = processInputData(framedRequest, cipher);
+                MessageCodec.writeFramedMessage(outputStream, processedData);
             }
 
-        } catch (IOException e) {
-            // Log or handle the exception appropriately
-            LogHelper.getInstance().logFatal(e.getMessage());
-        } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
-                 BadPaddingException | InvalidKeyException e) {
-            LogHelper.getInstance().logFatal(e.getMessage());
+        } catch (Exception e) {
+            LogHelper.getInstance().logFatal("Client error: " + e.getMessage());
         } finally {
             try {
                 clientSocket.close();
             } catch (IOException e) {
-                // Log or handle the exception appropriately
-                LogHelper.getInstance().logFatal(e.getMessage());
+                LogHelper.getInstance().logFatal("Socket close error: " + e.getMessage());
             }
         }
     }
 
-    private byte[] processInputData(byte[] buffer, int bytesRead, Cipher cipher) throws InvalidKeyException,
-            IllegalBlockSizeException, BadPaddingException {
-        if(this.config.isEncryptMessage()) {
-            cipher.init(Cipher.DECRYPT_MODE, this.config.getPrivateKey());
-            byte[] decryptedBytes = cipher.doFinal(buffer, 0, bytesRead);
-            String decryptedMessage = new String(decryptedBytes, StandardCharsets.UTF_8);
-            if(this.config.isEnableVerbose()) {
-                LogHelper.getInstance().logInfo("Request: " + decryptedMessage);
-            }
-            byte[] response = commandProcessor.execute(decryptedBytes);
-            if(this.config.isEnableVerbose()) {
-                LogHelper.getInstance().logInfo("Response: " + new String(response));
-            }
-            return response;
-        } else {
-            byte[] unencryptedData = new byte[bytesRead];
-            if(this.config.isEnableVerbose()) {
-                LogHelper.getInstance().logInfo("Request: " + new String(buffer, 0, bytesRead));
-            }
-            System.arraycopy(buffer, 0, unencryptedData, 0, bytesRead);
-            byte[] response = commandProcessor.execute(unencryptedData);
-            if(this.config.isEnableVerbose()) {
-                LogHelper.getInstance().logInfo("Response: " + new String(response));
-            }
-            return response;
+    private byte[] processInputData(byte[] data, Cipher cipher) throws Exception {
+        byte[] response;
+
+        if (config.isEncryptMessage()) {
+            cipher.init(Cipher.DECRYPT_MODE, config.getPrivateKey());
+            data = cipher.doFinal(data);
         }
+
+        String input = new String(data, StandardCharsets.UTF_8).trim();
+        String logTag = "[client:" + (clientName != null ? clientName : clientSocket.getRemoteSocketAddress()) + "]";
+
+        if (input.startsWith("IDENT ")) {
+            this.clientName = input.substring(6).trim();
+            response = ("+OK identified as " + this.clientName).getBytes(StandardCharsets.UTF_8);
+            if (config.isEnableVerbose()) {
+                LogHelper.getInstance().logInfo(logTag + " IDENT received: " + this.clientName);
+            }
+        } else {
+            response = commandProcessor.execute(data);
+            if (config.isEnableVerbose()) {
+                LogHelper.getInstance().logInfo(logTag + " Request: " + input);
+                LogHelper.getInstance().logInfo(logTag + " Response: " + new String(response, StandardCharsets.UTF_8));
+            }
+        }
+
+        return response;
     }
 }

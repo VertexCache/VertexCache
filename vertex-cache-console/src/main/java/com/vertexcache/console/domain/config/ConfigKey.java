@@ -4,6 +4,12 @@ public class ConfigKey {
 
     public static final String LOG_FILEPATH = "log_filepath";
 
+    public static final String CLIENT_ID_DEFAULT = "client_id_default";
+    public static final String CLIENT_ID = "client_id";
+
+    public static final String TENANT_ID_DEFAULT = "tenant_id_default";
+    public static final String TENANT_ID = "tenant_id";
+
     public static final String SERVER_HOST_DEFAULT = "localhost";
     public static final String SERVER_HOST = "server_host";
 

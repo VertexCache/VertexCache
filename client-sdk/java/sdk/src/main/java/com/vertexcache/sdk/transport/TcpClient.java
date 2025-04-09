@@ -15,7 +15,7 @@ import java.security.cert.X509Certificate;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
-public class TcpClient {
+public class TcpClient implements TcpClientInterface {
 
     private final String host;
     private final int port;
@@ -26,6 +26,7 @@ public class TcpClient {
     private final int readTimeoutMs;
     private final boolean encryptMessages;
     private final PublicKey publicKey;
+    private final String clientId;
 
     private Socket socket;
     private OutputStream out;
@@ -39,7 +40,8 @@ public class TcpClient {
                      int connectTimeoutMs,
                      int readTimeoutMs,
                      boolean encryptMessages,
-                     String publicKeyPem) {
+                     String publicKeyPem,
+                     String clientId) {
 
         this.host = host;
         this.port = port;
@@ -49,6 +51,7 @@ public class TcpClient {
         this.connectTimeoutMs = connectTimeoutMs;
         this.readTimeoutMs = readTimeoutMs;
         this.encryptMessages = encryptMessages;
+        this.clientId = clientId != null ? clientId : "sdk-client";
 
         try {
             this.publicKey = encryptMessages ? loadPublicKey(publicKeyPem) : null;
@@ -80,6 +83,19 @@ public class TcpClient {
             this.out = new BufferedOutputStream(socket.getOutputStream());
             this.in = new BufferedInputStream(socket.getInputStream());
 
+            // Send IDENT command immediately
+            String identCommand = "IDENT " + clientId;
+            byte[] identBytes = encryptMessages ? encrypt(identCommand.getBytes()) : identCommand.getBytes();
+            MessageCodec.writeFramedMessage(out, identBytes);
+            out.flush();
+
+            // Read IDENT response immediately to avoid it leaking into next command
+            byte[] identResponse = MessageCodec.readFramedMessage(in);
+            if (identResponse != null) {
+                String response = new String(identResponse);
+                System.out.println("[SDK] Server IDENT response: " + response);
+            }
+
         } catch (Exception e) {
             throw new VertexCacheSdkException("Failed to connect to " + host + ":" + port, e);
         }
@@ -93,32 +109,30 @@ public class TcpClient {
         try {
             byte[] toSend = encryptMessages ? encrypt(rawBytes) : rawBytes;
 
-            out.write(toSend);
+            MessageCodec.writeFramedMessage(out, toSend);
             out.flush();
 
-            byte[] buffer = new byte[4096];
-            int read = in.read(buffer);
-            if (read == -1) {
+            byte[] response = MessageCodec.readFramedMessage(in);
+            if (response == null) {
                 throw new VertexCacheSdkException("Connection closed by server");
             }
 
-            return new String(buffer, 0, read);
+            return new String(response);
 
         } catch (IOException e) {
             try {
                 reconnect();
                 byte[] toSend = encryptMessages ? encrypt(rawBytes) : rawBytes;
 
-                out.write(toSend);
+                MessageCodec.writeFramedMessage(out, toSend);
                 out.flush();
 
-                byte[] buffer = new byte[4096];
-                int read = in.read(buffer);
-                if (read == -1) {
+                byte[] response = MessageCodec.readFramedMessage(in);
+                if (response == null) {
                     throw new VertexCacheSdkException("Connection closed after retry");
                 }
 
-                return new String(buffer, 0, read);
+                return new String(response);
 
             } catch (Exception retryEx) {
                 throw new VertexCacheSdkException("Failed after reconnect attempt", retryEx);

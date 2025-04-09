@@ -1,10 +1,11 @@
 package com.vertexcache.sdk.protocol;
 
 import com.vertexcache.sdk.result.VertexCacheSdkException;
-import com.vertexcache.sdk.transport.TcpClient;
+import com.vertexcache.sdk.transport.TcpClientInterface;
 
-public abstract class BaseCommand implements Command {
+public abstract class BaseCommand<T extends BaseCommand<T>> implements Command {
 
+    private static String RESPONSE_OK = "OK";
     protected static final String COMMAND_SPACER = " ";
 
     private boolean success;
@@ -12,7 +13,7 @@ public abstract class BaseCommand implements Command {
     private String error;
 
     @Override
-    public Command execute(TcpClient client) {
+    public Command execute(TcpClientInterface client) {
         try {
             String raw = client.send(buildCommand()).trim();
 
@@ -46,6 +47,18 @@ public abstract class BaseCommand implements Command {
     public void setFailure(String response) {
         this.success = false;
         this.error = response;
+    }
+
+    public void setSuccess() {
+        this.success = true;
+        this.response = BaseCommand.RESPONSE_OK;
+        this.error = null;
+    }
+
+    public void setSuccess(String response) {
+        this.success = true;
+        this.response = response;
+        this.error = null;
     }
 
     @Override

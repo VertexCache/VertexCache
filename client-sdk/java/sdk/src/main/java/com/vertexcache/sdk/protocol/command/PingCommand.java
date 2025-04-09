@@ -1,12 +1,18 @@
 package com.vertexcache.sdk.protocol.command;
 
 import com.vertexcache.sdk.protocol.BaseCommand;
-import com.vertexcache.sdk.protocol.CommandType;
 
-public class PingCommand extends BaseCommand {
+public class PingCommand extends BaseCommand<PingCommand> {
 
     @Override
     protected String buildCommand() {
-        return CommandType.PING.toString();
+        return "PING";
+    }
+
+    @Override
+    protected void parseResponse(String responseBody) {
+        if (responseBody == null || responseBody.isBlank() || !responseBody.equalsIgnoreCase("PONG")) {
+            setFailure("PONG not received");
+        }
     }
 }
