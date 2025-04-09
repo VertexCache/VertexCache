@@ -38,7 +38,12 @@ server_port=50505
 #
 #   *** WARNING ***
 #
-#   This are test Private/Public keys, DO NOT USE IN PRODUCTION
+#   This are test Private/Public and share AES keys, DO NOT USE IN PRODUCTION
+#
+#   When enable_encrypt_message=true, then you can have the option to ONLY use RSA or AES
+#   RSA is public/private key and AES is AES symmetric encryption (shared key)
+#
+#   If both are set an error will happen, if neither are set an error will happen.
 ########################################################################################################################
 enable_encrypt_message=true
 
@@ -54,6 +59,12 @@ enable_encrypt_message=true
 # --> Option 2 - Embed Public Key as single line (must include literal \n for newlines)
 ########################################################################################################################
 public_key="-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnwwKN2M7niJj+Vd0+w9Q\nbw5gw5TzAWw2PUBl5rnepgn5QrLmvQ0s4aoDL6JGsnyx+GpSo6UmkrvXknObW+AI\nUzsHLc7bFe9qe/urSvgLKzThl9kb/KN4NueDVJ+s33sDA9z+rRA9+sjp8Pc2Ycmm\nGzN1lC22KM+oPSxHQvRcT5dQ7u6NGg7pX81DJ1ZsCXReE3vGoCQRyJoRPdLA54oR\nNwC82/xKm9cRfghjRKqvnkmpS3FfCj0sLPy4W7ARBWU+RbhU0UmdUutB3Ce1LfIo\n6DpmfhgHJ1P1yd/0ic8qfkqjvwUoxRUhR5+dWIakA8KZYQ95gP6oawmXiu2PcPeV\nEwIDAQAB\n-----END PUBLIC KEY-----"
+
+########################################################################################################################
+# AES Encryption - Base64 Encoded, 256bit-key / 32 bytes
+########################################################################################################################
+#shared_encryption_key=w3XrVjPlksmFw6MZt2nYcF6hE3RrpAjXwHuGxNCDRM4=
+
 
 ########################################################################################################################
 # Encrypt Transport layer using TLS
