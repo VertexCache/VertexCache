@@ -5,7 +5,7 @@ import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.common.protocol.MessageCodec;
 import com.vertexcache.common.security.GcmCryptoHelper;
 import com.vertexcache.core.command.CommandService;
-import com.vertexcache.core.settings.Config;
+import com.vertexcache.core.setting.Config;
 
 import javax.crypto.Cipher;
 import java.io.IOException;

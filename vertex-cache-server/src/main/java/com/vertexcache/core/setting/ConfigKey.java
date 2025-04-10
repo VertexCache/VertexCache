@@ -1,4 +1,4 @@
-package com.vertexcache.core.settings;
+package com.vertexcache.core.setting;
 
 public class ConfigKey {
 

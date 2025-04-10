@@ -2,7 +2,7 @@ package com.vertexcache.server;
 
 import com.vertexcache.server.socket.SocketServer;
 import com.vertexcache.common.cli.CommandLineArgsParser;
-import com.vertexcache.core.settings.Config;
+import com.vertexcache.core.setting.Config;
 
 public class VertexCacheServer {
     public static void main(String[] args) throws Exception {

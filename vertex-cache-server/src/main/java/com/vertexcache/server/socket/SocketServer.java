@@ -4,7 +4,7 @@ import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.common.version.VersionUtil;
 import com.vertexcache.core.cache.Cache;
-import com.vertexcache.core.settings.Config;
+import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.command.CommandService;
 import com.vertexcache.core.exception.VertexCacheSSLServerSocketException;
 

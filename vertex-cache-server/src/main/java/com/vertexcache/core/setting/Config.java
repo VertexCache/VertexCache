@@ -1,4 +1,4 @@
-package com.vertexcache.core.settings;
+package com.vertexcache.core.setting;
 
 import com.vertexcache.common.config.ConfigBase;
 import com.vertexcache.common.config.reader.ConfigLoader;
