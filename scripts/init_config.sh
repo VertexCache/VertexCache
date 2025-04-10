@@ -30,7 +30,9 @@ copy_file "./etc/config/test_tls_certificate.pem" "./vertex-cache-config/console
 copy_file "./etc/config/test_private_key.pem" "./vertex-cache-config/server/test_private_key.pem"
 copy_file "./etc/config/test_public_key.pem" "./vertex-cache-config/console/test_public_key.pem"
 
-
 # Copy over the Log4J Configuration Files
 copy_file "./etc/config/log4j2-vertexcache-server.xml" "./vertex-cache-config/server/log4j2-vertexcache-server.xml"
 copy_file "./etc/config/log4j2-vertexcache-console.xml" "./vertex-cache-config/console/log4j2-vertexcache-console.xml"
+
+# Copy over the auth_seed.json file, seed file for auth M2M - which server instances are allow to use VertexCache
+copy_file "./etc/config/server/auth/test_auth_seed.json" "./vertex-cache-config/server/auth/auth_seed.json"
