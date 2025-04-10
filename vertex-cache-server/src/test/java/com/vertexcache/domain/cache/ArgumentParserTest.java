@@ -1,6 +1,6 @@
 package com.vertexcache.domain.cache;
 
-import com.vertexcache.server.domain.command.argument.ArgumentParser;
+import com.vertexcache.core.command.argument.ArgumentParser;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 

@@ -1,8 +1,8 @@
 package com.vertexcache.server;
 
-import com.vertexcache.server.service.SocketServer;
+import com.vertexcache.server.socket.SocketServer;
 import com.vertexcache.common.cli.CommandLineArgsParser;
-import com.vertexcache.server.domain.config.Config;
+import com.vertexcache.core.settings.Config;
 
 public class VertexCacheServer {
     public static void main(String[] args) throws Exception {

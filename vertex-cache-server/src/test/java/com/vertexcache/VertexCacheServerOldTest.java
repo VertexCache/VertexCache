@@ -1,6 +1,6 @@
 package com.vertexcache;
 
-import com.vertexcache.server.service.SocketServer;
+import com.vertexcache.server.socket.SocketServer;
 
 import com.vertexcache.common.security.CertificateTrustManager.ServerCertificateTrustManagerNoVerification;
 import com.vertexcache.common.security.CertificateTrustManager.ServerCertificateTrustManagerVerification;
