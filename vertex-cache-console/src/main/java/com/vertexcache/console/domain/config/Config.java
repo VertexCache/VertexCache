@@ -2,8 +2,11 @@ package com.vertexcache.console.domain.config;
 
 import com.vertexcache.common.cli.CommandLineArgsParser;
 import com.vertexcache.common.config.ConfigBase;
+import com.vertexcache.common.config.VertexCacheConfigException;
 import com.vertexcache.common.config.reader.ConfigLoader;
 import com.vertexcache.common.config.reader.ConfigLoaderFactory;
+import com.vertexcache.common.log.LogHelper;
+import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.common.security.KeyPairHelper;
 
 import java.security.PublicKey;
@@ -21,8 +24,12 @@ public class Config extends ConfigBase {
     private String serverHost = ConfigKey.SERVER_HOST_DEFAULT;
     private int serverPort = ConfigKey.SERVER_PORT_DEFAULT;
 
-    private boolean encryptMessage = false;
+    private EncryptionMode encryptionMode = EncryptionMode.NONE;
+    private boolean encryptWithPublicKey = false;
+    private boolean encryptWithSharedKey = false;
     private PublicKey publicKey;
+    private String sharedEncryptionKey;
+    private String encryptNote = "";
 
     private boolean encryptTransport = false;
     private boolean verifyTLSCertificate = false;
@@ -80,13 +87,42 @@ public class Config extends ConfigBase {
                 if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_MESSAGE)
                         && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_MESSAGE))) {
                     try {
-                        this.publicKey = KeyPairHelper.loadPublicKey(configLoader.getProperty(ConfigKey.PUBLIC_KEY));
-                        if (this.publicKey != null) {
-                            this.encryptMessage = true;
+
+                        String publicKeyString =  configLoader.getProperty(ConfigKey.PUBLIC_KEY);
+                        this.sharedEncryptionKey = configLoader.getProperty(ConfigKey.SHARED_ENCRYPTION_KEY);
+
+                        boolean hasPublicKey = publicKeyString != null && !publicKeyString.isBlank();
+                        boolean hasSharedKey = sharedEncryptionKey != null && !sharedEncryptionKey.isBlank();
+
+                        if (hasPublicKey && hasSharedKey) {
+                            this.encryptNote = ", Only one of 'public_key' or 'shared_encryption_key' may be set when 'enable_encrypt_message=true'";
+                            LogHelper.getInstance().logWarn("Only one of 'public_key' or 'shared_encryption_key' may be set when 'enable_encrypt_message=true'");
+                            throw new VertexCacheConfigException("Only one of 'public_key' or 'shared_encryption_key' may be set when 'enable_encrypt_message=true'");
                         }
+
+                        if (!hasPublicKey && !hasSharedKey) {
+                            this.encryptNote = ", Missing encryption configuration: you must set either 'public_key' or 'shared_encryption_key' when 'enable_encrypt_message=true'";
+                            LogHelper.getInstance().logWarn("Missing encryption configuration: you must set either 'public_key' or 'shared_encryption_key' when 'enable_encrypt_message=true'");
+                            throw new VertexCacheConfigException("Missing encryption configuration: you must set either 'public_key' or 'shared_encryption_key' when 'enable_encrypt_message=true'");
+                        }
+
+
+                        if(hasPublicKey) {
+                            this.publicKey = KeyPairHelper.loadPublicKey(configLoader.getProperty(ConfigKey.PUBLIC_KEY));
+                            this.sharedEncryptionKey = null;
+                            this.encryptWithPublicKey = true;
+                            this.encryptionMode = EncryptionMode.ASYMMETRIC;
+                        }
+
+                        if(hasSharedKey) {
+                            this.publicKey = null;
+                            this.encryptWithSharedKey = true;
+                            this.encryptionMode = EncryptionMode.SYMMETRIC;
+                        }
+
                     } catch (Exception e) {
                         // should be already false
-                        this.encryptMessage = false;
+                        this.encryptionMode = EncryptionMode.NONE;
                     }
                 }
 
@@ -135,12 +171,28 @@ public class Config extends ConfigBase {
         return serverPort;
     }
 
-    public boolean isEncryptMessage() {
-        return encryptMessage;
+    public EncryptionMode getEncryptionMode() {
+        return encryptionMode;
     }
 
     public PublicKey getPublicKey() {
         return publicKey;
+    }
+
+    public String getSharedEncryptionKey() {
+        return sharedEncryptionKey;
+    }
+
+    public boolean isEncryptWithPublicKey() {
+        return encryptWithPublicKey;
+    }
+
+    public boolean isEncryptWithSharedKey() {
+        return encryptWithSharedKey;
+    }
+
+    public String getEncryptNote() {
+        return this.encryptNote;
     }
 
     public boolean isEncryptTransport() {

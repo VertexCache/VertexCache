@@ -1,12 +1,12 @@
 package com.vertexcache.server.domain.cache.impl;
 
-import com.vertexcache.server.exception.VertexCacheException;
+import com.vertexcache.server.exception.VertexCacheTypeException;
 
 public class CacheNoEviction<K, V> extends CacheBase<K, V> {
 
 
     @Override
-    public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheException {
+    public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheTypeException {
         this.putDefaultImpl(primaryKey,value,secondaryKeys);
     }
 

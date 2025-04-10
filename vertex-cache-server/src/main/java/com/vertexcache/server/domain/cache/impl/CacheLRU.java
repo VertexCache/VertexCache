@@ -1,6 +1,6 @@
 package com.vertexcache.server.domain.cache.impl;
 
-import com.vertexcache.server.exception.VertexCacheException;
+import com.vertexcache.server.exception.VertexCacheTypeException;
 import org.apache.commons.collections4.map.LRUMap;
 
 import java.util.Collections;
@@ -27,7 +27,7 @@ public class CacheLRU<K, V> extends CacheBase<K, V> {
     }
 
     @Override
-    public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheException {
+    public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheTypeException {
         this.putDefaultImpl(primaryKey,value,secondaryKeys);
     }
 

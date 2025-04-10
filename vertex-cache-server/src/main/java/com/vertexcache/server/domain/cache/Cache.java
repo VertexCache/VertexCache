@@ -1,8 +1,7 @@
 package com.vertexcache.server.domain.cache;
 
 import com.vertexcache.server.domain.cache.impl.*;
-import com.vertexcache.server.domain.cache.impl.*;
-import com.vertexcache.server.exception.VertexCacheException;
+import com.vertexcache.server.exception.VertexCacheTypeException;
 
 public class Cache<K, V> {
 
@@ -78,7 +77,7 @@ public class Cache<K, V> {
         return (Cache<K, V>) instance;
     }
 
-    public void put(K primaryKey, V value, String... secondaryKeys) throws VertexCacheException {
+    public void put(K primaryKey, V value, String... secondaryKeys) throws VertexCacheTypeException {
         cache.put(primaryKey, value, secondaryKeys);
     }
 

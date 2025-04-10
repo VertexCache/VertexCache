@@ -5,10 +5,12 @@ import com.vertexcache.common.config.reader.ConfigLoader;
 import com.vertexcache.common.config.reader.ConfigLoaderFactory;
 import com.vertexcache.common.cli.CommandLineArgsParser;
 import com.vertexcache.common.log.LogHelper;
+import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.common.security.KeyPairHelper;
 import com.vertexcache.server.domain.cache.impl.EvictionPolicy;
-import java.security.PrivateKey;
+import com.vertexcache.common.config.VertexCacheConfigException;
 
+import java.security.PrivateKey;
 
 public class Config extends ConfigBase {
 
@@ -21,8 +23,13 @@ public class Config extends ConfigBase {
 
     private boolean enableVerbose = ConfigKey.ENABLE_VERBOSE_DEFAULT;
 
-    private boolean encryptMessage = false;
+    private EncryptionMode encryptionMode = EncryptionMode.NONE;
+    private boolean encryptWithPrivateKey = false;
+    private boolean encryptWithSharedKey = false;
     private PrivateKey privateKey;
+
+    private String sharedEncryptionKey;
+    private String encryptNote = "";
 
     private boolean encryptTransport = false;
     private String tlsCertificate;
@@ -74,10 +81,40 @@ public class Config extends ConfigBase {
                     // Encrypt Message Layer
                     if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_MESSAGE) && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_MESSAGE))) {
                         try {
-                            this.privateKey = KeyPairHelper.loadPrivateKey(configLoader.getProperty(ConfigKey.PRIVATE_KEY));
-                            this.encryptMessage = true;
+
+                            String privateKeyString =  configLoader.getProperty(ConfigKey.PRIVATE_KEY);
+                            this.sharedEncryptionKey = configLoader.getProperty(ConfigKey.SHARED_ENCRYPTION_KEY);
+
+                            boolean hasPrivateKey = privateKeyString != null && !privateKeyString.isBlank();
+                            boolean hasSharedKey = sharedEncryptionKey != null && !sharedEncryptionKey.isBlank();
+
+                            if (hasPrivateKey && hasSharedKey) {
+                                this.encryptNote = ", Only one of 'private_key' or 'shared_encryption_key' may be set when 'enable_encrypt_message=true'";
+                                LogHelper.getInstance().logWarn("Only one of 'private_key' or 'shared_encryption_key' may be set when 'enable_encrypt_message=true'");
+                                throw new VertexCacheConfigException("Only one of 'private_key' or 'shared_encryption_key' may be set when 'enable_encrypt_message=true'");
+                            }
+
+                            if (!hasPrivateKey && !hasSharedKey) {
+                                this.encryptNote = ", Missing encryption configuration: you must set either 'private_key' or 'shared_encryption_key' when 'enable_encrypt_message=true'";
+                                LogHelper.getInstance().logWarn("Missing encryption configuration: you must set either 'private_key' or 'shared_encryption_key' when 'enable_encrypt_message=true'");
+                                throw new VertexCacheConfigException("Missing encryption configuration: you must set either 'private_key' or 'shared_encryption_key' when 'enable_encrypt_message=true'");
+                            }
+
+                            if(hasPrivateKey) {
+                                this.privateKey = KeyPairHelper.loadPrivateKey(privateKeyString);
+                                this.sharedEncryptionKey = null;
+                                this.encryptWithPrivateKey = true;
+                                this.encryptionMode = EncryptionMode.ASYMMETRIC;
+                            }
+
+                            if(hasSharedKey) {
+                                this.privateKey = null;
+                                this.encryptWithSharedKey = true;
+                                this.encryptionMode = EncryptionMode.SYMMETRIC;
+                            }
+
                         } catch (Exception e) {
-                            this.encryptMessage = false;
+                            this.encryptionMode = EncryptionMode.NONE;
                         }
                     }
 
@@ -127,59 +164,59 @@ public class Config extends ConfigBase {
             }
 
         } catch (Exception exception) {
-            System.out.println(exception.getMessage());
+            LogHelper.getInstance().logFatal(exception.getMessage());
             this.configLoaded = false;
             this.configError = true;
         }
     }
 
-    public boolean isConfigLoaded() {
-        return configLoaded;
+    public boolean isConfigLoaded() { return configLoaded; }
+
+    public boolean isConfigError() { return configError; }
+
+    public String getConfigFilePath() { return configFilePath; }
+
+    public String getAppName() { return Config.APP_NAME; }
+
+    public int getServerPort() { return serverPort; }
+
+    public boolean isEnableVerbose() {
+        return enableVerbose;
     }
 
-    public boolean isConfigError() {
-        return configError;
+    public boolean isEncryptTransport() { return encryptTransport; }
+
+    public EncryptionMode getEncryptionMode() { return encryptionMode; }
+
+    public boolean isEncryptWithPrivateKey() {
+        return encryptWithPrivateKey;
     }
 
-    public String getConfigFilePath() {
-        return configFilePath;
+    public boolean isEncryptWithSharedKey() {
+        return encryptWithSharedKey;
     }
 
-    public String getAppName() {
-        return Config.APP_NAME;
+    public String getEncryptNote() {
+        return this.encryptNote;
     }
 
-    public int getServerPort() {
-        return serverPort;
+    public PrivateKey getPrivateKey() { return privateKey; }
+
+    public String getSharedEncryptionKey() {
+        return sharedEncryptionKey;
     }
 
-    public boolean isEnableVerbose() { return enableVerbose; }
+    public String getTlsCertificate() { return tlsCertificate; }
 
-    public boolean isEncryptTransport() {
-        return encryptTransport;
+    public String getTlsPrivateKey() {
+        return tlsPrivateKey;
     }
 
-    public boolean isEncryptMessage() {
-        return encryptMessage;
+    public String getTlsKeyStorePassword() {
+        return tlsKeyStorePassword;
     }
 
-    public PrivateKey getPrivateKey() {
-        return privateKey;
-    }
+    public EvictionPolicy getCacheEvictionPolicy() { return cacheEvictionPolicy;}
 
-    public String getTlsCertificate() {
-        return tlsCertificate;
-    }
-
-    public String getTlsPrivateKey() { return tlsPrivateKey; }
-
-    public String getTlsKeyStorePassword() { return tlsKeyStorePassword; }
-
-    public EvictionPolicy getCacheEvictionPolicy() {
-        return cacheEvictionPolicy;
-    }
-
-    public int getCacheSize() {
-        return cacheSize;
-    }
+    public int getCacheSize() { return cacheSize; }
 }

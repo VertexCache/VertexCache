@@ -1,7 +1,9 @@
 package com.vertexcache.server.service;
 
 import com.vertexcache.common.log.LogHelper;
+import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.common.protocol.MessageCodec;
+import com.vertexcache.common.security.GcmCryptoHelper;
 import com.vertexcache.server.domain.command.CommandService;
 import com.vertexcache.server.domain.config.Config;
 
@@ -30,13 +32,20 @@ public class ClientHandler implements Runnable {
         try (InputStream inputStream = clientSocket.getInputStream();
              OutputStream outputStream = clientSocket.getOutputStream()) {
 
-            Cipher cipher = config.isEncryptMessage() ? Cipher.getInstance("RSA/ECB/PKCS1Padding") : null;
+            Cipher rsaCipher = config.getEncryptionMode() == EncryptionMode.ASYMMETRIC
+                    ? Cipher.getInstance("RSA/ECB/PKCS1Padding")
+                    : null;
+
+            byte[] aesKeyBytes = null;
+            if (config.getEncryptionMode() == EncryptionMode.SYMMETRIC) {
+                aesKeyBytes = GcmCryptoHelper.decodeBase64Key(config.getSharedEncryptionKey());
+            }
 
             while (true) {
                 byte[] framedRequest = MessageCodec.readFramedMessage(inputStream);
                 if (framedRequest == null) break;
 
-                byte[] processedData = processInputData(framedRequest, cipher);
+                byte[] processedData = processInputData(framedRequest, rsaCipher, aesKeyBytes);
                 MessageCodec.writeFramedMessage(outputStream, processedData);
             }
 
@@ -51,12 +60,15 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private byte[] processInputData(byte[] data, Cipher cipher) throws Exception {
+    private byte[] processInputData(byte[] data, Cipher rsaCipher, byte[] aesKeyBytes) throws Exception {
         byte[] response;
 
-        if (config.isEncryptMessage()) {
-            cipher.init(Cipher.DECRYPT_MODE, config.getPrivateKey());
-            data = cipher.doFinal(data);
+        // Handle encryption based on mode
+        if (config.getEncryptionMode() == EncryptionMode.ASYMMETRIC) {
+            rsaCipher.init(Cipher.DECRYPT_MODE, config.getPrivateKey());
+            data = rsaCipher.doFinal(data);
+        } else if (config.getEncryptionMode() == EncryptionMode.SYMMETRIC) {
+            data = GcmCryptoHelper.decrypt(data, aesKeyBytes);
         }
 
         String input = new String(data, StandardCharsets.UTF_8).trim();
@@ -79,3 +91,4 @@ public class ClientHandler implements Runnable {
         return response;
     }
 }
+

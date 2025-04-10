@@ -1,11 +1,13 @@
 package com.vertexcache.console.domain.terminal;
 
 import com.vertexcache.common.log.LogHelper;
+import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.common.protocol.MessageCodec;
 import com.vertexcache.common.version.VersionUtil;
 import com.vertexcache.console.domain.config.Config;
 import com.vertexcache.common.security.CertificateTrustManager.ServerCertificateTrustManagerNoVerification;
 import com.vertexcache.common.security.CertificateTrustManager.ServerCertificateTrustManagerVerification;
+import com.vertexcache.common.security.GcmCryptoHelper;
 import com.vertexcache.common.security.KeyPairHelper;
 
 import javax.crypto.Cipher;
@@ -16,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.Base64;
 import java.util.Scanner;
 
 public class ConsoleTerminal {
@@ -57,14 +60,7 @@ public class ConsoleTerminal {
             // Send IDENT on connect
             String clientId = config.getClientId() != null ? config.getClientId() : "console-client";
             String ident = "IDENT " + clientId;
-            byte[] identBytes;
-            if (config.isEncryptMessage()) {
-                Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-                cipher.init(Cipher.ENCRYPT_MODE, KeyPairHelper.decodePublicKey(KeyPairHelper.publicKeyToString(this.config.getPublicKey())));
-                identBytes = cipher.doFinal(ident.getBytes());
-            } else {
-                identBytes = ident.getBytes();
-            }
+            byte[] identBytes = encryptPayload(ident.getBytes(StandardCharsets.UTF_8));
             MessageCodec.writeFramedMessage(outputStream, identBytes);
 
             // 🔧 Immediately read IDENT response to avoid leaking it into user commands
@@ -81,28 +77,20 @@ public class ConsoleTerminal {
 
                 String userInput = scanner.nextLine();
 
-                if (userInput.equalsIgnoreCase(ConsoleTerminal.CMD_EXIT) || userInput.equalsIgnoreCase(ConsoleTerminal.CMD_QUIT)) {
-                    System.out.println(ConsoleTerminal.DISPLAY_EXIT);
+                if (userInput.equalsIgnoreCase(CMD_EXIT) || userInput.equalsIgnoreCase(CMD_QUIT)) {
+                    System.out.println(DISPLAY_EXIT);
                     break;
                 }
 
-                byte[] bytesToSend;
-                if (config.isEncryptMessage()) {
-                    Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-                    cipher.init(Cipher.ENCRYPT_MODE, KeyPairHelper.decodePublicKey(KeyPairHelper.publicKeyToString(this.config.getPublicKey())));
-                    bytesToSend = cipher.doFinal(userInput.getBytes());
-                } else {
-                    bytesToSend = userInput.getBytes();
-                }
-
-                MessageCodec.writeFramedMessage(outputStream, bytesToSend);
+                byte[] encryptedCommand = encryptPayload(userInput.getBytes(StandardCharsets.UTF_8));
+                MessageCodec.writeFramedMessage(outputStream, encryptedCommand);
 
                 byte[] responseBytes = MessageCodec.readFramedMessage(inputStream);
                 if (responseBytes != null) {
                     String receivedMessage = new String(responseBytes);
                     LogHelper.getInstance().logInfo(receivedMessage);
                 } else {
-                    LogHelper.getInstance().logInfo(ConsoleTerminal.DISPLAY_NO_RESPONSE);
+                    LogHelper.getInstance().logInfo(DISPLAY_NO_RESPONSE);
                 }
             }
         } catch (Exception e) {
@@ -112,8 +100,21 @@ public class ConsoleTerminal {
         }
     }
 
+    private byte[] encryptPayload(byte[] plainText) throws Exception {
+        if (config.getEncryptionMode() == EncryptionMode.ASYMMETRIC) {
+            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, config.getPublicKey());
+            return cipher.doFinal(plainText);
+        } else if (config.getEncryptionMode() == EncryptionMode.SYMMETRIC) {
+            byte[] keyBytes = Base64.getDecoder().decode(config.getSharedEncryptionKey());
+            return GcmCryptoHelper.encrypt(plainText, keyBytes);
+        } else {
+            return plainText;
+        }
+    }
+
     private SSLSocket buildSecureSocket() throws NoSuchAlgorithmException, KeyManagementException, IOException, CertificateException {
-        SSLContext sslContext = SSLContext.getInstance(ConsoleTerminal.SOCKET_PROTOCOL);
+        SSLContext sslContext = SSLContext.getInstance(SOCKET_PROTOCOL);
 
         if (config.isVerifyTLSCertificate()) {
             sslContext.init(null, new X509TrustManager[]{new ServerCertificateTrustManagerVerification(config.getTlsCertificate())}, null);
@@ -122,7 +123,7 @@ public class ConsoleTerminal {
         }
 
         SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-        SSLSocket socket = (SSLSocket) sslSocketFactory.createSocket(this.config.getServerHost(), this.config.getServerPort());
+        SSLSocket socket = (SSLSocket) sslSocketFactory.createSocket(config.getServerHost(), config.getServerPort());
         socket.startHandshake();
 
         return socket;
@@ -140,9 +141,11 @@ public class ConsoleTerminal {
                 .append("  Version: ").append(VersionUtil.getAppVersion()).append(System.lineSeparator())
                 .append("  Host: ").append(config.getServerHost()).append(System.lineSeparator())
                 .append("  Port: ").append(config.getServerPort()).append(System.lineSeparator())
-                .append("  Message Layer Encryption Enabled: ").append(config.isEncryptMessage() ? "Yes" : "No").append(System.lineSeparator())
-                .append("  Transport Layer Encryption Enabled: ").append(config.isEncryptTransport() ? "Yes" : "No").append(System.lineSeparator())
-                .append("  Transport Layer Verify Certificate: ").append(config.isVerifyTLSCertificate() ? "Yes" : "No").append(System.lineSeparator())
+                .append("  Encryption: ").append(System.lineSeparator())
+                .append("    TLS Enabled (Transport): ").append(config.isEncryptTransport() ? "Yes" : "No").append(System.lineSeparator())
+                .append("    Message Layer Encrypted: ").append(config.getEncryptionMode() != EncryptionMode.NONE ? "Yes" : "No").append(config.getEncryptNote()).append(System.lineSeparator())
+                .append("      Private/Public Key (RSA) Enabled: ").append(config.isEncryptWithPublicKey() ? "Yes" : "No").append(System.lineSeparator())
+                .append("      Shared Key (AES) Enabled: ").append(config.isEncryptWithSharedKey() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Config file set: ").append(config.isConfigLoaded() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Config file loaded with no errors: ").append(!config.isConfigError() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Config file location: ").append(config.getConfigFilePath() != null ? config.getConfigFilePath() : "n/a").append(System.lineSeparator())

@@ -1,7 +1,7 @@
 package com.vertexcache.server.domain.cache.impl;
 
 
-import com.vertexcache.server.exception.VertexCacheException;
+import com.vertexcache.server.exception.VertexCacheTypeException;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -64,7 +64,7 @@ public class CacheClock<K, V> extends CacheBase<K, V> {
     }
 
     @Override
-    public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheException {
+    public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheTypeException {
         lock.writeLock().lock();
         try {
             if (this.getPrimaryCache().containsKey(primaryKey)) {

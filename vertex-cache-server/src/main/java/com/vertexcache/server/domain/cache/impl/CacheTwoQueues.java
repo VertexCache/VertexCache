@@ -1,6 +1,6 @@
 package com.vertexcache.server.domain.cache.impl;
 
-import com.vertexcache.server.exception.VertexCacheException;
+import com.vertexcache.server.exception.VertexCacheTypeException;
 
 import java.util.*;
 
@@ -46,7 +46,7 @@ public class CacheTwoQueues<K, V> extends CacheBase<K, V> {
     }
 
     @Override
-    public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheException {
+    public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheTypeException {
         synchronized (this.getPrimaryCache()) {
             if (this.getPrimaryCache().containsKey(primaryKey)) {
                 // Move the key to the front of the inQueue

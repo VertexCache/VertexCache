@@ -1,6 +1,6 @@
 package com.vertexcache.server.domain.cache.impl;
 
-import com.vertexcache.server.exception.VertexCacheException;
+import com.vertexcache.server.exception.VertexCacheTypeException;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -56,7 +56,7 @@ public class CacheARC<K, V> extends CacheBase<K, V> {
         this.setSecondaryIndexTwo(Collections.synchronizedMap(new LinkedHashMap<Object, K>()));
     }
 
-    public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheException {
+    public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheTypeException {
         synchronized (this) {
             if (this.getPrimaryCache().containsKey(primaryKey) || ghostCache.containsKey(primaryKey)) {
                 return; // Key already in cache, no need to add

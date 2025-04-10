@@ -1,6 +1,6 @@
 package com.vertexcache.server.domain.cache.impl;
 
-import com.vertexcache.server.exception.VertexCacheException;
+import com.vertexcache.server.exception.VertexCacheTypeException;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,11 +13,11 @@ abstract public class CacheBase<K, V> {
     private Map<Object, K> secondaryIndexOne = new ConcurrentHashMap<>();
     private Map<Object, K> secondaryIndexTwo = new ConcurrentHashMap<>();
 
-    abstract public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheException;
+    abstract public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheTypeException;
     abstract public V get(K primaryKey);
     abstract public void remove(K primaryKey);
 
-    protected void putDefaultImpl(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheException {
+    protected void putDefaultImpl(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheTypeException {
         if(secondaryKeys.length <= MAX_SECONDARY_INDEXES) {
             try {
                 synchronized (this.getPrimaryCache()) {
@@ -35,10 +35,10 @@ abstract public class CacheBase<K, V> {
                 }
             } catch (OutOfMemoryError e) {
                 // This still potentially can occur even with LRU
-                throw new VertexCacheException("Out of memory, increase memory or use eviction policy other than none.");
+                throw new VertexCacheTypeException("Out of memory, increase memory or use eviction policy other than none.");
             }
         } else {
-            throw new VertexCacheException("Too many secondary index, maximum 2 allowed.");
+            throw new VertexCacheTypeException("Too many secondary index, maximum 2 allowed.");
         }
     }
 

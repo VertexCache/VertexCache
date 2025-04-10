@@ -1,4 +1,4 @@
-package com.vertexcache.sdk.transport;
+package com.vertexcache.sdk.transport.protocol;
 
 import java.io.IOException;
 import java.io.InputStream;

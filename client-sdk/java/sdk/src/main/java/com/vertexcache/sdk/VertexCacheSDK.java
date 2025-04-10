@@ -26,8 +26,9 @@ public class VertexCacheSDK {
                 vertexCacheSDKOptions.getTlsCertificate(),
                 vertexCacheSDKOptions.getConnectTimeout(),
                 vertexCacheSDKOptions.getReadTimeout(),
-                vertexCacheSDKOptions.isEnablePublicKeyEncryption(),
+                vertexCacheSDKOptions.getEncryptionMode(),
                 vertexCacheSDKOptions.getPublicKey(),
+                vertexCacheSDKOptions.getSharedEncryptionKey(),
                 vertexCacheSDKOptions.getClientId()
         );
     }

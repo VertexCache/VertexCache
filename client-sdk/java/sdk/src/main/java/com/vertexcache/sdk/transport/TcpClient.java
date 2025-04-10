@@ -1,6 +1,9 @@
 package com.vertexcache.sdk.transport;
 
 import com.vertexcache.sdk.result.VertexCacheSdkException;
+import com.vertexcache.sdk.transport.crypto.GcmCryptoHelper;
+import com.vertexcache.sdk.transport.protocol.MessageCodec;
+import com.vertexcache.sdk.transport.crypto.EncryptionMode;
 
 import javax.crypto.Cipher;
 import javax.net.ssl.*;
@@ -24,8 +27,9 @@ public class TcpClient implements TcpClientInterface {
     private final String serverCertPem;
     private final int connectTimeoutMs;
     private final int readTimeoutMs;
-    private final boolean encryptMessages;
+    private final EncryptionMode encryptionMode;
     private final PublicKey publicKey;
+    private final byte[] sharedKeyBytes;
     private final String clientId;
 
     private Socket socket;
@@ -39,8 +43,9 @@ public class TcpClient implements TcpClientInterface {
                      String serverCertPem,
                      int connectTimeoutMs,
                      int readTimeoutMs,
-                     boolean encryptMessages,
+                     EncryptionMode encryptionMode,
                      String publicKeyPem,
+                     String sharedEncryptionKey,
                      String clientId) {
 
         this.host = host;
@@ -50,11 +55,14 @@ public class TcpClient implements TcpClientInterface {
         this.serverCertPem = serverCertPem;
         this.connectTimeoutMs = connectTimeoutMs;
         this.readTimeoutMs = readTimeoutMs;
-        this.encryptMessages = encryptMessages;
+        this.encryptionMode = encryptionMode;
         this.clientId = clientId != null ? clientId : "sdk-client";
 
         try {
-            this.publicKey = encryptMessages ? loadPublicKey(publicKeyPem) : null;
+            this.publicKey = encryptionMode == EncryptionMode.ASYMMETRIC ? loadPublicKey(publicKeyPem) : null;
+            this.sharedKeyBytes = encryptionMode == EncryptionMode.SYMMETRIC
+                    ? Base64.getDecoder().decode(sharedEncryptionKey)
+                    : null;
             connect();
         } catch (Exception e) {
             throw new VertexCacheSdkException("Failed to initialize TcpClient", e);
@@ -85,7 +93,7 @@ public class TcpClient implements TcpClientInterface {
 
             // Send IDENT command immediately
             String identCommand = "IDENT " + clientId;
-            byte[] identBytes = encryptMessages ? encrypt(identCommand.getBytes()) : identCommand.getBytes();
+            byte[] identBytes = encrypt(identCommand.getBytes());
             MessageCodec.writeFramedMessage(out, identBytes);
             out.flush();
 
@@ -107,8 +115,7 @@ public class TcpClient implements TcpClientInterface {
 
     public synchronized String send(byte[] rawBytes) {
         try {
-            byte[] toSend = encryptMessages ? encrypt(rawBytes) : rawBytes;
-
+            byte[] toSend = encrypt(rawBytes);
             MessageCodec.writeFramedMessage(out, toSend);
             out.flush();
 
@@ -122,8 +129,7 @@ public class TcpClient implements TcpClientInterface {
         } catch (IOException e) {
             try {
                 reconnect();
-                byte[] toSend = encryptMessages ? encrypt(rawBytes) : rawBytes;
-
+                byte[] toSend = encrypt(rawBytes);
                 MessageCodec.writeFramedMessage(out, toSend);
                 out.flush();
 
@@ -153,11 +159,19 @@ public class TcpClient implements TcpClientInterface {
 
     private byte[] encrypt(byte[] plainText) {
         try {
-            Cipher cipher = Cipher.getInstance("RSA");
-            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-            return cipher.doFinal(plainText);
+            switch (encryptionMode) {
+                case ASYMMETRIC:
+                    Cipher cipher = Cipher.getInstance("RSA");
+                    cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+                    return cipher.doFinal(plainText);
+                case SYMMETRIC:
+                    return GcmCryptoHelper.encrypt(plainText, sharedKeyBytes);
+                case NONE:
+                default:
+                    return plainText;
+            }
         } catch (Exception e) {
-            throw new VertexCacheSdkException("Failed to encrypt message", e);
+            throw new VertexCacheSdkException("Encryption failed", e);
         }
     }
 

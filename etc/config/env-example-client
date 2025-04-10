@@ -63,7 +63,7 @@ public_key="-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
 ########################################################################################################################
 # AES Encryption - Base64 Encoded, 256bit-key / 32 bytes
 ########################################################################################################################
-#shared_encryption_key=w3XrVjPlksmFw6MZt2nYcF6hE3RrpAjXwHuGxNCDRM4=
+#shared_encryption_key=neEvmCDMRdEgive402Taji9I/vrrpqrjJ+qeAF4QRNc=
 
 
 ########################################################################################################################

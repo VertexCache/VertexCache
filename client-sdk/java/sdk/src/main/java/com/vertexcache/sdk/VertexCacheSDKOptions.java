@@ -1,5 +1,7 @@
 package com.vertexcache.sdk;
 
+import com.vertexcache.sdk.transport.crypto.EncryptionMode;
+
 public class VertexCacheSDKOptions {
 
     public static String DEFAULT_CLIENT_ID = "sdk-client";
@@ -19,8 +21,11 @@ public class VertexCacheSDKOptions {
     private String tlsCertificate = null;
     private boolean verifyCertificate = false;
 
-    private boolean enablePublicKeyEncryption = false;
+    private EncryptionMode encryptionMode = EncryptionMode.NONE;
+    private boolean encryptWithPublicKey = false;
+    private boolean encryptWithSharedKey = false;
     private String publicKey = null;
+    private String sharedEncryptionKey;
 
     private int readTimeout = VertexCacheSDKOptions.DEFAULT_READ_TIMEOUT;
     private int connectTimeout = VertexCacheSDKOptions.DEFAULT_CONNECT_TIMEOUT;
@@ -73,14 +78,6 @@ public class VertexCacheSDKOptions {
         this.verifyCertificate = verifyCertificate;
     }
 
-    public boolean isEnablePublicKeyEncryption() {
-        return enablePublicKeyEncryption;
-    }
-
-    public void setEnablePublicKeyEncryption(boolean enablePublicKeyEncryption) {
-        this.enablePublicKeyEncryption = enablePublicKeyEncryption;
-    }
-
     public String getPublicKey() {
         return publicKey;
     }
@@ -104,4 +101,13 @@ public class VertexCacheSDKOptions {
     public void setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
     }
+
+    public EncryptionMode getEncryptionMode() { return encryptionMode; }
+
+    public void setEncryptionMode(EncryptionMode encryptionMode) {this.encryptionMode = encryptionMode; }
+
+    public String getSharedEncryptionKey() { return sharedEncryptionKey; }
+
+    public void setSharedEncryptionKey(String sharedEncryptionKey) { this.sharedEncryptionKey = sharedEncryptionKey; }
+
 }

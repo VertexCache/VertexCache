@@ -1,6 +1,6 @@
 package com.vertexcache.server.domain.cache.impl;
 
-import com.vertexcache.server.exception.VertexCacheException;
+import com.vertexcache.server.exception.VertexCacheTypeException;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -21,7 +21,7 @@ public class CacheLFU <K, V> extends CacheBase<K, V> {
     }
 
     @Override
-    public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheException {
+    public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheTypeException {
         if(secondaryKeys.length <= MAX_SECONDARY_INDEXES) {
             try {
 
@@ -42,13 +42,13 @@ public class CacheLFU <K, V> extends CacheBase<K, V> {
                 }
             } catch (OutOfMemoryError e) {
                 // This still potentially can occur even with LRU
-                throw new VertexCacheException("Out of memory, increase memory or use eviction policy other than none.");
+                throw new VertexCacheTypeException("Out of memory, increase memory or use eviction policy other than none.");
             }
 
             evictIfNecessary();
 
         } else {
-            throw new VertexCacheException("Too many secondary index, maximum 2 allowed.");
+            throw new VertexCacheTypeException("Too many secondary index, maximum 2 allowed.");
         }
     }
 

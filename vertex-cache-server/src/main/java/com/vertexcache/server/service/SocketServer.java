@@ -1,6 +1,7 @@
 package com.vertexcache.server.service;
 
 import com.vertexcache.common.log.LogHelper;
+import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.common.version.VersionUtil;
 import com.vertexcache.server.domain.cache.Cache;
 import com.vertexcache.server.domain.config.Config;
@@ -70,7 +71,7 @@ public class SocketServer {
                 String address = clientSocket.getInetAddress().getHostAddress();
                 int port = clientSocket.getPort();
                 String transport = (clientSocket instanceof SSLSocket) ? "TLS" : "Plain";
-                String messageEncryption = config.isEncryptMessage() ? "Yes" : "No";
+                String messageEncryption = config.getEncryptionMode() != EncryptionMode.NONE ? "Yes" : "No";
 
                 outputInfo(transport + " client connected from " + address + ":" + port +
                         " (Encrypted Messages: " + messageEncryption + ")");
@@ -153,8 +154,11 @@ public class SocketServer {
                 .append("  Verbose: ").append(config.isEnableVerbose() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Cache Eviction Policy: ").append(config.getCacheEvictionPolicy().toString()).append(System.lineSeparator())
                 .append("  Cache Size: ").append(config.getCacheSize()).append(System.lineSeparator())
-                .append("  TLS Encryption Enabled: ").append(config.isEncryptTransport() ? "Yes" : "No").append(System.lineSeparator())
-                .append("  Private/Public Key Encryption Enabled: ").append(config.isEncryptMessage() ? "Yes" : "No").append(System.lineSeparator())
+                .append("  Encryption: ").append(System.lineSeparator())
+                .append("    TLS Enabled (Transport): ").append(config.isEncryptTransport() ? "Yes" : "No").append(System.lineSeparator())
+                .append("    Message Layer Encrypted: ").append(config.getEncryptionMode() != EncryptionMode.NONE ? "Yes" : "No").append(config.getEncryptNote()).append(System.lineSeparator())
+                .append("      Private/Public Key (RSA) Enabled: ").append(config.isEncryptWithPrivateKey() ? "Yes" : "No").append(System.lineSeparator())
+                .append("      Shared Key (AES) Enabled: ").append(config.isEncryptWithSharedKey() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Config file set: ").append(config.isConfigLoaded() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Config file loaded with no errors: ").append(!config.isConfigError() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Config file location: ").append(config.getConfigFilePath() != null ? config.getConfigFilePath() : "n/a").append(System.lineSeparator())
