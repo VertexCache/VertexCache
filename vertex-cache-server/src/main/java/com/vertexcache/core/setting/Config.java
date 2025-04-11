@@ -40,6 +40,16 @@ public class Config extends ConfigBase {
     private static int DEFAULT_CACHE_SIZE=1000000;
     private int cacheSize;
 
+    private boolean enableAuth;
+    private boolean enableRateLimit;
+    private boolean enableMetric;
+    private boolean enableRestApi;
+    private boolean enableClustering;
+    private boolean enableAdminCommands;
+    private boolean enableAlerting;
+    private boolean enableIntelligence;
+    private boolean enableExporter;
+
     private static volatile Config instance;
 
     private Config() {
@@ -154,6 +164,60 @@ public class Config extends ConfigBase {
                         LogHelper.getInstance().logWarn("Non-existent cache size, defaulting to " + DEFAULT_CACHE_SIZE);
                     }
 
+                    // Auth
+                    this.enableAuth = false;
+                    if (configLoader.isExist(ConfigKey.ENABLE_AUTH)) {
+                        this.enableAuth = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_AUTH));
+                    }
+
+                    // Rate Limiting
+                    this.enableRateLimit = false;
+                    if (configLoader.isExist(ConfigKey.ENABLE_RATE_LIMIT)) {
+                        this.enableRateLimit = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_RATE_LIMIT));
+                    }
+
+                    // Metric
+                    this.enableMetric = false;
+                    if (configLoader.isExist(ConfigKey.ENABLE_METRIC)) {
+                        this.enableMetric = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_METRIC));
+                    }
+
+                    // REST API
+                    this.enableRestApi = false;
+                    if (configLoader.isExist(ConfigKey.ENABLE_REST_API)) {
+                        this.enableRestApi = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_REST_API));
+                    }
+
+                    // Clustering
+                    this.enableClustering = false;
+                    if (configLoader.isExist(ConfigKey.ENABLE_CLUSTERING)) {
+                        this.enableClustering = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_CLUSTERING));
+                    }
+
+                    // Admin Commands
+                    this.enableAdminCommands = false;
+                    if (configLoader.isExist(ConfigKey.ENABLE_ADMIN_COMMANDS)) {
+                        this.enableAdminCommands = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ADMIN_COMMANDS));
+                    }
+
+                    // Alerting
+                    this.enableAlerting = false;
+                    if (configLoader.isExist(ConfigKey.ENABLE_ALERTING)) {
+                        this.enableAlerting = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ALERTING));
+                    }
+
+                    // Intelligence
+                    this.enableIntelligence = false;
+                    if (configLoader.isExist(ConfigKey.ENABLE_INTELLIGENCE)) {
+                        this.enableIntelligence = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_INTELLIGENCE));
+                    }
+
+                    // Exporter
+                    this.enableExporter = false;
+                    if (configLoader.isExist(ConfigKey.ENABLE_EXPORTER)) {
+                        this.enableExporter = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_EXPORTER));
+                    }
+
                 } else {
                     LogHelper.getInstance().logFatal("Properties file failed to load");
                     System.exit(0);
@@ -219,4 +283,22 @@ public class Config extends ConfigBase {
     public EvictionPolicy getCacheEvictionPolicy() { return cacheEvictionPolicy;}
 
     public int getCacheSize() { return cacheSize; }
+
+    public boolean isAuthEnabled() { return enableAuth; }
+
+    public boolean isRateLimitEnabled() { return enableRateLimit; }
+
+    public boolean isMetricEnabled() { return enableMetric; }
+
+    public boolean isRestApiEnabled() { return enableRestApi; }
+
+    public boolean isClusteringEnabled() { return enableClustering; }
+
+    public boolean isAdminCommandsEnabled() { return enableAdminCommands; }
+
+    public boolean isAlertingEnabled() { return enableAlerting; }
+
+    public boolean isIntelligenceEnabled() { return enableIntelligence; }
+
+    public boolean isExporterEnabled() { return enableExporter; }
 }

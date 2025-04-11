@@ -24,4 +24,36 @@ public class ConfigKey {
 
     public static final String CACHE_EVICTION = "cache_eviction";
     public static final String CACHE_SIZE = "cache_size";
+
+    // MapDB - Embedded, hydration ie: Auth
+    //public static final String AUTH_HYDRATE_FILE = "auth_hydrate_file";
+    //public static final String AUTH_DB_FILE = "auth_db_file";
+
+    // Auth Module Related
+    public static final String ENABLE_AUTH = "enable_auth";
+
+    // Rate Limiting
+    public static final String ENABLE_RATE_LIMIT = "enable_rate_limit";
+
+    // Metrics
+    public static final String ENABLE_METRIC = "enable_metric";
+
+    // REST API
+    public static final String ENABLE_REST_API = "enable_rest_api";
+
+    // Clustering
+    public static final String ENABLE_CLUSTERING = "enable_clustering";
+
+    // Admin Commands
+    public static final String ENABLE_ADMIN_COMMANDS = "enable_admin_commands";
+
+    // Alerting
+    public static final String ENABLE_ALERTING = "enable_alerting";
+
+    // Intelligence
+    public static final String ENABLE_INTELLIGENCE = "enable_intelligence";
+
+    // Exporter
+    public static final String ENABLE_EXPORTER = "enable_exporter";
+
 }

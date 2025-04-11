@@ -1,4 +1,4 @@
-package com.vertexcache.core.auth;
+package com.vertexcache.module.auth;
 
 import org.mapdb.*;
 import java.util.concurrent.ConcurrentMap;

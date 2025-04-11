@@ -4,6 +4,7 @@ import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.common.version.VersionUtil;
 import com.vertexcache.core.cache.Cache;
+import com.vertexcache.core.module.ModuleRegistry;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.command.CommandService;
 import com.vertexcache.core.exception.VertexCacheSSLServerSocketException;
@@ -162,6 +163,7 @@ public class SocketServer {
                 .append("  Config file set: ").append(config.isConfigLoaded() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Config file loaded with no errors: ").append(!config.isConfigError() ? "Yes" : "No").append(System.lineSeparator())
                 .append("  Config file location: ").append(config.getConfigFilePath() != null ? config.getConfigFilePath() : "n/a").append(System.lineSeparator())
+                .append(ModuleRegistry.getLoadedModulesDisplay()).append(System.lineSeparator())
                 .append("  Status: ").append(ANSI_GREEN).append(message).append(ANSI_RESET).append(System.lineSeparator());
         LogHelper.getInstance().logInfo(stringBuilder.toString());
     }

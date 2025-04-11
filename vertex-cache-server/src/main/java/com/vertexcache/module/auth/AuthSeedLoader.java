@@ -1,4 +1,4 @@
-package com.vertexcache.core.auth;
+package com.vertexcache.module.auth;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

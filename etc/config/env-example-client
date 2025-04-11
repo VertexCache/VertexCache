@@ -5,96 +5,46 @@
 # environment; it is solely intended to help you get up and running as quickly as possible. The server is
 # configured the same way, allowing both to communicate with each other out of the box.
 #
-# Full Documentation available at the VertexCache Wiki https://github.com/jasonlam604/VertexCache/wiki
+# Full Documentation available at the VertexCache Wiki https://github.com/vertexcache/VertexCache/wiki
 ########################################################################################################################
 
-########################################################################################################################
-# Client Id - This identifies a unique instance. If none is provided, the system will default to using the IP address.
-# If used across multiple systems, there may be conflicts — so please ensure this value is unique. You’ll see this
-# identifier appear in the server logs.
-########################################################################################################################
+#######################################
+# Client Identification
+#######################################
 client_id=client-console
-
-########################################################################################################################
-# Tenant ID - This represents a system that interacts with VertexCache. You can think of it as a group identifier.
-# For example, in a microservices environment with three systems, where the third system is VertexCache, the other two systems may each have multiple instances. You’ll need a way to distinguish between them — and this group helps you do that.
-########################################################################################################################
 tenant_id=client-console-group
 
-########################################################################################################################
-# Server Host
-########################################################################################################################
+
+#######################################
+# Connection Settings
+#######################################
 server_host=localhost
-
-
-########################################################################################################################
-# Server Port, default 50505, port for the console to connect on
-########################################################################################################################
 server_port=50505
 
 
-########################################################################################################################
-# Encrypt Message Layer via Public/Private keys
-#
-#   *** WARNING ***
-#
-#   This are test Private/Public and share AES keys, DO NOT USE IN PRODUCTION
-#
-#   When enable_encrypt_message=true, then you can have the option to ONLY use RSA or AES
-#   RSA is public/private key and AES is AES symmetric encryption (shared key)
-#
-#   If both are set an error will happen, if neither are set an error will happen.
-########################################################################################################################
+#######################################
+# Message Encryption (RSA/AES)
+#######################################
 enable_encrypt_message=true
 
-
-########################################################################################################################
-# There are two supported methods for providing the Public Key. Currently, option 2 is active.
-########################################################################################################################
-
-# --> Option 1 - Set Filepath to Public Key, currently commented out
-########################################################################################################################
+# Public Key (RSA) - File Path (Option 1)
 #public_key=./vertex-cache-config/console/test_public_key.pem
 
-# --> Option 2 - Embed Public Key as single line (must include literal \n for newlines)
-########################################################################################################################
+# Public Key (RSA) - Embedded Single Line (Option 2)
 public_key="-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnwwKN2M7niJj+Vd0+w9Q\nbw5gw5TzAWw2PUBl5rnepgn5QrLmvQ0s4aoDL6JGsnyx+GpSo6UmkrvXknObW+AI\nUzsHLc7bFe9qe/urSvgLKzThl9kb/KN4NueDVJ+s33sDA9z+rRA9+sjp8Pc2Ycmm\nGzN1lC22KM+oPSxHQvRcT5dQ7u6NGg7pX81DJ1ZsCXReE3vGoCQRyJoRPdLA54oR\nNwC82/xKm9cRfghjRKqvnkmpS3FfCj0sLPy4W7ARBWU+RbhU0UmdUutB3Ce1LfIo\n6DpmfhgHJ1P1yd/0ic8qfkqjvwUoxRUhR5+dWIakA8KZYQ95gP6oawmXiu2PcPeV\nEwIDAQAB\n-----END PUBLIC KEY-----"
 
-########################################################################################################################
-# AES Encryption - Base64 Encoded, 256bit-key / 32 bytes
-########################################################################################################################
+# AES Key (256-bit, Base64 encoded) — use instead of RSA
 #shared_encryption_key=neEvmCDMRdEgive402Taji9I/vrrpqrjJ+qeAF4QRNc=
 
 
-########################################################################################################################
-# Encrypt Transport layer using TLS
-#
-#   *** WARNING ***
-#
-#   This is test certificate, DO NOT USE IN PRODUCTION
-#
-# There are 3 settings related to this below, refer to their respective comments
-#  - enable_encrypt_transport
-#  - enable_verify_certificate
-#  - tls_certificate (note be sure to use the client certificate not the server certificate)
-#
-########################################################################################################################
+#######################################
+# TLS Transport Encryption
+#######################################
 enable_encrypt_transport=true
-
-########################################################################################################################
-# Verify the TLS/SSL cert or just accept any, set 'true' then indicate the server certificate to be verified
-########################################################################################################################
 enable_verify_certificate=false
 
-########################################################################################################################
-# There are two supported methods for providing the TLS CERT. Currently, option 2 is active.
-########################################################################################################################
-
-# --> Option 1 - Set Filepath to TLS Cert, currently commented out
-########################################################################################################################
+# TLS Certificate - File Path (Option 1)
 #tls_certificate=./vertex-cache-config/console/test_tls_certificate.pem
 
-# --> Option 2 - Embed TLS Cert as single line (must include literal \n for newlines)
-########################################################################################################################
+# TLS Certificate - Embedded Single Line (Option 2)
 tls_certificate="-----BEGIN CERTIFICATE-----\nMIIDiTCCAnGgAwIBAgIITq/F/pEVepgwDQYJKoZIhvcNAQEMBQAwcjELMAkGA1UE\nBhMCQkMxCzAJBgNVBAgTAlZDMRQwEgYDVQQHEwtWZXJ0ZXhDYWNoZTEUMBIGA1UE\nChMLVmVydGV4Q2FjaGUxFDASBgNVBAsTC1ZlcnRleENhY2hlMRQwEgYDVQQDEwtW\nZXJ0ZXhDYWNoZTAgFw0yNTAzMTYxNTIwMjVaGA8yMTI1MDIyMDE1MjAyNVowcjEL\nMAkGA1UEBhMCQkMxCzAJBgNVBAgTAlZDMRQwEgYDVQQHEwtWZXJ0ZXhDYWNoZTEU\nMBIGA1UEChMLVmVydGV4Q2FjaGUxFDASBgNVBAsTC1ZlcnRleENhY2hlMRQwEgYD\nVQQDEwtWZXJ0ZXhDYWNoZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB\nAJAkANp/l5iPScBSDhRu3iGPfvoAkmbJMDTnxP3i6hdOx3999b1C0yKdVJJClMGO\naywKboa414SUvzfRXx2/7WTgkjdOTL/m2kNNUc0FHtqUpIjR2eCkyXh9DM+2GpF+\nfUMtHjClhOA8eolImcI6xYJynpejGV3YmBd9HQxOGOWJmzrptrPpZP/tdPwjqrxt\nMa1/luTp2JIsrQpzfvdiats0WE3JhvyA1SX2+Tx0O6ri3q9hqLBsdPChgF5hiGYU\nUdIikX9MMCkzWa8gbBp2QipgwKlk+qgc+aw2A/yVJGGkYB4vLkDQ4GKRcXUNnc5c\njlR8ExYMWdAC55giRL9zdm0CAwEAAaMhMB8wHQYDVR0OBBYEFAwCU6xaQHRkZdw4\nMeoHybhSMfnnMA0GCSqGSIb3DQEBDAUAA4IBAQB7gzu5nV5c+76ZjVgdGgi/DeIP\nVAKYvPxxiIIJuZl5ySryyri2W/k0vmUm8LGbcNCNtOOXnpunKem7Nzk6EfzR1Ckl\n9CALIDg6NXmwoFaortP0O3QsAOKjmXmrPNJ6zomqdBOTbUxnGgqrEWqpMClc5gvP\nvqeUyEtJLNROUSqC4tuXO5IDSE3s1bYMfSQj69nThPzTyX+u9vXahi3IDi7aBPU/\nds1ltqVzU8tqMk9bGfgyUt5n6g0W/Q98MAEbE2yRnWUV4SncSevyzl87JCk2Zm/z\nFnVvyxc63ee/dspYo4m5e3AKrFLcPO4DR+YzIoregc6FiQCTo0W0RjPskrGZ\n-----END CERTIFICATE-----"
-

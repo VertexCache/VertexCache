@@ -1,4 +1,4 @@
-package com.vertexcache.core.auth;
+package com.vertexcache.module.auth;
 
 public enum Role {
     READ_ONLY,
