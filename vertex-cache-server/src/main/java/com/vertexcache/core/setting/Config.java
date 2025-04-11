@@ -40,6 +40,8 @@ public class Config extends ConfigBase {
     private static int DEFAULT_CACHE_SIZE=1000000;
     private int cacheSize;
 
+    private String dataStoreType;
+
     private boolean enableAuth;
     private boolean enableRateLimit;
     private boolean enableMetric;
@@ -164,6 +166,12 @@ public class Config extends ConfigBase {
                         LogHelper.getInstance().logWarn("Non-existent cache size, defaulting to " + DEFAULT_CACHE_SIZE);
                     }
 
+                    // Data Store Type - Currently NOT expose as an option in the .env, we need to be selective
+                    // for this, currently going with MapDB
+
+                    // For now setting MapDB as default
+                    this.dataStoreType = ConfigKey.DATA_STORE_TYPE_DEFAULT;
+
                     // Auth
                     this.enableAuth = false;
                     if (configLoader.isExist(ConfigKey.ENABLE_AUTH)) {
@@ -244,45 +252,33 @@ public class Config extends ConfigBase {
 
     public int getServerPort() { return serverPort; }
 
-    public boolean isEnableVerbose() {
-        return enableVerbose;
-    }
+    public boolean isEnableVerbose() { return enableVerbose; }
 
     public boolean isEncryptTransport() { return encryptTransport; }
 
     public EncryptionMode getEncryptionMode() { return encryptionMode; }
 
-    public boolean isEncryptWithPrivateKey() {
-        return encryptWithPrivateKey;
-    }
+    public boolean isEncryptWithPrivateKey() { return encryptWithPrivateKey; }
 
-    public boolean isEncryptWithSharedKey() {
-        return encryptWithSharedKey;
-    }
+    public boolean isEncryptWithSharedKey() { return encryptWithSharedKey; }
 
-    public String getEncryptNote() {
-        return this.encryptNote;
-    }
+    public String getEncryptNote() { return this.encryptNote; }
 
     public PrivateKey getPrivateKey() { return privateKey; }
 
-    public String getSharedEncryptionKey() {
-        return sharedEncryptionKey;
-    }
+    public String getSharedEncryptionKey() { return sharedEncryptionKey; }
 
     public String getTlsCertificate() { return tlsCertificate; }
 
-    public String getTlsPrivateKey() {
-        return tlsPrivateKey;
-    }
+    public String getTlsPrivateKey() { return tlsPrivateKey; }
 
-    public String getTlsKeyStorePassword() {
-        return tlsKeyStorePassword;
-    }
+    public String getTlsKeyStorePassword() { return tlsKeyStorePassword; }
 
     public EvictionPolicy getCacheEvictionPolicy() { return cacheEvictionPolicy;}
 
     public int getCacheSize() { return cacheSize; }
+
+    public String getDataStoreType()  { return dataStoreType; }
 
     public boolean isAuthEnabled() { return enableAuth; }
 

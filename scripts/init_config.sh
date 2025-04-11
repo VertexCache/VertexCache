@@ -35,4 +35,4 @@ copy_file "./etc/config/log4j2-vertexcache-server.xml" "./vertex-cache-config/se
 copy_file "./etc/config/log4j2-vertexcache-console.xml" "./vertex-cache-config/console/log4j2-vertexcache-console.xml"
 
 # Copy over the auth_seed.json file, seed file for auth M2M - which server instances are allow to use VertexCache
-copy_file "./etc/config/server/auth/test_auth_seed.json" "./vertex-cache-config/server/auth/auth_seed.json"
+copy_file "./etc/config/server/auth/test_auth_clients.json" "./vertex-cache-config/server/auth/auth_clients.json"

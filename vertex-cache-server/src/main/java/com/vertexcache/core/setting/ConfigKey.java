@@ -29,8 +29,13 @@ public class ConfigKey {
     //public static final String AUTH_HYDRATE_FILE = "auth_hydrate_file";
     //public static final String AUTH_DB_FILE = "auth_db_file";
 
+    public static final String DATA_STORE_TYPE_DEFAULT = "mapdb";
+    public static final String DATA_STORE_TYPE = "data_store_type";
+
     // Auth Module Related
     public static final String ENABLE_AUTH = "enable_auth";
+    //public static final String DATA_STORE_AUTH LOCATION_DEFAULT = "./vertex-cache-config/server/auth/auth_seed.json";
+    //public static final String DATA_STORE_LOCATION = "data_store";
 
     // Rate Limiting
     public static final String ENABLE_RATE_LIMIT = "enable_rate_limit";
