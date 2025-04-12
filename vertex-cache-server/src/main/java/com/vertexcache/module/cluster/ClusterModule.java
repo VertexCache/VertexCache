@@ -1,16 +1,24 @@
 package com.vertexcache.module.cluster;
 
 import com.vertexcache.core.module.Module;
+import com.vertexcache.core.module.ModuleStatus;
 
 public class ClusterModule  extends Module {
 
     @Override
     protected void onStart() {
-        System.out.println("Cluster module started");
+        this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
     }
 
     @Override
     protected void onStop() {
-        System.out.println("Cluster module stopped");
+        this.setModuleStatus(ModuleStatus.SHUTDOWN_SUCCESSFUL);
     }
+
+    @Override
+    protected void onError() {
+        this.setModuleStatus(ModuleStatus.ERROR_RUNTIME);
+    }
+
+
 }

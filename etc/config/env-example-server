@@ -58,7 +58,7 @@ tls_keystore_password="hx8blPjyiBRF/DxNjEVIU7mVk2GzfT2KjxF9hPcT/JE="
 
 # Authentication / Authorization
 enable_auth=true
-auth_clients=./vertex-cache-config/server/auth/auth_clients.json
+auth_data_store=./vertex-cache-config/server/auth/auth_data_store.json
 
 # Rate Limiting
 enable_rate_limit=true

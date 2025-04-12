@@ -9,6 +9,8 @@ import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.common.security.KeyPairHelper;
 import com.vertexcache.core.cache.impl.EvictionPolicy;
 import com.vertexcache.common.config.VertexCacheConfigException;
+import com.vertexcache.core.module.ModuleRegistry;
+import com.vertexcache.module.auth.AuthModule;
 
 import java.security.PrivateKey;
 
@@ -42,7 +44,10 @@ public class Config extends ConfigBase {
 
     private String dataStoreType;
 
+    // Auth
     private boolean enableAuth;
+    private String authDataStore;
+
     private boolean enableRateLimit;
     private boolean enableMetric;
     private boolean enableRestApi;
@@ -176,6 +181,12 @@ public class Config extends ConfigBase {
                     this.enableAuth = false;
                     if (configLoader.isExist(ConfigKey.ENABLE_AUTH)) {
                         this.enableAuth = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_AUTH));
+
+                        if (configLoader.isExist(ConfigKey.AUTH_DATA_STORE)) {
+                            this.authDataStore = configLoader.getProperty(ConfigKey.AUTH_DATA_STORE);
+                        } else {
+                            ModuleRegistry.getInstance().reportError(AuthModule.class,"auth_data_store attribute missing.");
+                        }
                     }
 
                     // Rate Limiting
@@ -279,6 +290,8 @@ public class Config extends ConfigBase {
     public int getCacheSize() { return cacheSize; }
 
     public String getDataStoreType()  { return dataStoreType; }
+
+    public String getAuthDataStore() { return authDataStore; }
 
     public boolean isAuthEnabled() { return enableAuth; }
 

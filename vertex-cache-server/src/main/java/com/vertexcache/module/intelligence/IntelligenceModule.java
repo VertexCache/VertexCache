@@ -1,16 +1,22 @@
 package com.vertexcache.module.intelligence;
 
 import com.vertexcache.core.module.Module;
+import com.vertexcache.core.module.ModuleStatus;
 
 public class IntelligenceModule  extends Module {
 
     @Override
     protected void onStart() {
-        System.out.println("Intelligence module started");
+        this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
     }
 
     @Override
     protected void onStop() {
-        System.out.println("Intelligence module stopped");
+        this.setModuleStatus(ModuleStatus.SHUTDOWN_SUCCESSFUL);
+    }
+
+    @Override
+    protected void onError() {
+        this.setModuleStatus(ModuleStatus.ERROR_RUNTIME);
     }
 }

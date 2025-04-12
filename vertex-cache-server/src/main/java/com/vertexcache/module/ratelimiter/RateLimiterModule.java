@@ -1,16 +1,22 @@
 package com.vertexcache.module.ratelimiter;
 
 import com.vertexcache.core.module.Module;
+import com.vertexcache.core.module.ModuleStatus;
 
 public class RateLimiterModule  extends Module {
 
     @Override
     protected void onStart() {
-        System.out.println("Rate Limiter module started");
+        this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
     }
 
     @Override
     protected void onStop() {
-        System.out.println("Rate Limiter module stopped");
+        this.setModuleStatus(ModuleStatus.SHUTDOWN_SUCCESSFUL);
+    }
+
+    @Override
+    protected void onError() {
+        this.setModuleStatus(ModuleStatus.ERROR_RUNTIME);
     }
 }

@@ -12,91 +12,137 @@ import com.vertexcache.module.alert.AlertModule;
 import com.vertexcache.module.intelligence.IntelligenceModule;
 import com.vertexcache.module.exporter.MetricExporterModule;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.Instant;
+import java.util.*;
+import java.util.function.Supplier;
 
 public class ModuleRegistry {
 
-    private static final List<ModuleHandler> activeModules = new ArrayList<>();
+    private static final ModuleRegistry instance = new ModuleRegistry();
+    public static ModuleRegistry getInstance() {
+        return instance;
+    }
+
+    private static class ModuleInfo {
+        final String name;
+        ModuleStatus status;
+        String message;
+        Instant timestamp;
+
+        ModuleInfo(String name, ModuleStatus status, String message) {
+            this.name = name;
+            this.status = status;
+            this.message = message;
+            this.timestamp = Instant.now();
+        }
+    }
+
+    private static final List<ModuleInfo> moduleResults = new ArrayList<>();
+    private static final Map<String, ModuleHandler> activeModules = new HashMap<>();
 
     public void loadModules() {
         Config config = Config.getInstance();
 
-        if (config.isAuthEnabled()) {
-            register(new AuthModule());
+        register("AuthModule", config.isAuthEnabled(), AuthModule::new);
+        register("RateLimiterModule", config.isRateLimitEnabled(), RateLimiterModule::new);
+        register("MetricModule", config.isMetricEnabled(), MetricModule::new);
+        register("RestApiModule", config.isRestApiEnabled(), RestApiModule::new);
+        register("ClusterModule", config.isClusteringEnabled(), ClusterModule::new);
+        register("AdminModule", config.isAdminCommandsEnabled(), AdminModule::new);
+        register("AlertModule", config.isAlertingEnabled(), AlertModule::new);
+        register("IntelligenceModule", config.isIntelligenceEnabled(), IntelligenceModule::new);
+        register("MetricExporterModule", config.isExporterEnabled(), MetricExporterModule::new);
+    }
+
+    private void register(String name, boolean enabled, Supplier<ModuleHandler> factory) {
+        if (!enabled) {
+            moduleResults.add(new ModuleInfo(name, ModuleStatus.DISABLED, null));
+            return;
         }
 
-        if (config.isRateLimitEnabled()) {
-            register(new RateLimiterModule());
-        }
-
-        if (config.isMetricEnabled()) {
-            register(new MetricModule());
-        }
-
-        if (config.isRestApiEnabled()) {
-            register(new RestApiModule());
-        }
-
-        if (config.isClusteringEnabled()) {
-            register(new ClusterModule());
-        }
-
-        if (config.isAdminCommandsEnabled()) {
-            register(new AdminModule());
-        }
-
-        if (config.isAlertingEnabled()) {
-            register(new AlertModule());
-        }
-
-        if (config.isIntelligenceEnabled()) {
-            register(new IntelligenceModule());
-        }
-
-        if (config.isExporterEnabled()) {
-            register(new MetricExporterModule());
+        try {
+            ModuleHandler module = factory.get();
+            module.start();
+            activeModules.put(name, module);
+            moduleResults.add(new ModuleInfo(name, ModuleStatus.ENABLED, null));
+        } catch (Exception e) {
+            reportError(name, ModuleStatus.ERROR_LOAD, e.getMessage());
         }
     }
 
-    private void register(ModuleHandler module) {
-        module.start();
-        activeModules.add(module);
+    public void reportError(Class<? extends ModuleHandler> moduleClass, String message) {
+        reportError(moduleClass.getSimpleName(), ModuleStatus.ERROR_LOAD, message);
+    }
+
+    public void reportRuntimeError(Class<? extends ModuleHandler> moduleClass, String message) {
+        reportError(moduleClass.getSimpleName(), ModuleStatus.ERROR_RUNTIME, message);
+    }
+
+    private void reportError(String name, ModuleStatus status, String message) {
+        moduleResults.add(new ModuleInfo(name, status, message));
+        activeModules.remove(name);
+        LogHelper.getInstance().logError("[MODULES] " + name + " reported " + status + ": " + message);
     }
 
     public void stopModules() {
-        for (ModuleHandler module : activeModules) {
-            module.stop();
+        for (ModuleHandler module : activeModules.values()) {
+            try {
+                module.stop();
+            } catch (Exception e) {
+                LogHelper.getInstance().logError("[MODULES] Error stopping module: " + module.getClass().getSimpleName());
+            }
         }
     }
 
-    public List<String> getLoadedModuleNames() {
-        List<String> names = new ArrayList<>();
-        for (ModuleHandler module : activeModules) {
-            names.add(module.getClass().getSimpleName());
+    public String getLoadedModulesDisplay() {
+        StringBuilder sb = new StringBuilder("  Modules Loaded:").append(System.lineSeparator());
+        for (ModuleSnapshot snapshot : getModuleSnapshots()) {
+            sb.append("    ")
+                    .append(snapshot.name()).append(": ")
+                    .append(snapshot.status());
+            if (snapshot.runtimeStatus() != null && !snapshot.runtimeStatus().isBlank()) {
+                sb.append(" | ").append(snapshot.runtimeStatus());
+            }
+            if (snapshot.message() != null && !snapshot.message().isBlank()) {
+                sb.append(" | ").append(snapshot.message());
+            }
+            sb.append(System.lineSeparator());
         }
-        return names;
+        return sb.toString();
+    }
+
+    public List<ModuleSnapshot> getModuleSnapshots() {
+        List<ModuleSnapshot> snapshots = new ArrayList<>();
+        for (ModuleInfo info : moduleResults) {
+            ModuleHandler handler = activeModules.get(info.name);
+            String runtimeStatus = handler != null ? handler.getStatusSummary() : "N/A";
+            snapshots.add(new ModuleSnapshot(
+                    info.name,
+                    info.status,
+                    runtimeStatus,
+                    info.message,
+                    info.timestamp
+            ));
+        }
+        return snapshots;
     }
 
     public boolean isModuleLoaded(Class<? extends ModuleHandler> moduleClass) {
-        return activeModules.stream().anyMatch(m -> m.getClass().equals(moduleClass));
+        return activeModules.values().stream().anyMatch(m -> m.getClass().equals(moduleClass));
     }
 
     public <T extends ModuleHandler> Optional<T> getModule(Class<T> moduleClass) {
-        return activeModules.stream()
+        return activeModules.values().stream()
                 .filter(m -> m.getClass().equals(moduleClass))
                 .map(moduleClass::cast)
                 .findFirst();
     }
 
-    public static String getLoadedModulesDisplay() {
-        //LogHelper.getInstance().logInfo("[MODULES] Loaded modules:");
-        StringBuilder sb = new StringBuilder("Modules Loaded:").append(System.lineSeparator());
-        for (ModuleHandler module : activeModules) {
-            //System.out.println(" - " + module.getClass().getSimpleName());
-            sb.append("  - " + module.getClass().getSimpleName()).append(System.lineSeparator());
-        }
-        return sb.toString();
+    public List<String> getActiveModuleNames() {
+        return new ArrayList<>(activeModules.keySet());
+    }
+
+    public Optional<ModuleHandler> getModuleByName(String name) {
+        return Optional.ofNullable(activeModules.get(name));
     }
 }

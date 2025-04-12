@@ -11,8 +11,8 @@ public class MapDbProvider implements DatastoreProvider {
     @Override
     public void connect() {
         if (!connected) {
-            //String filePath = Config.getInstance().getAuthDbFile(); // Or other appropriate file path
-           // db = MapDbManager.getOrOpen(filePath);
+            String filePath = Config.getInstance().getAuthDataStore();
+            //db = MapDbManager.getOrOpen(filePath);
             connected = true;
         }
     }

@@ -34,8 +34,7 @@ public class ConfigKey {
 
     // Auth Module Related
     public static final String ENABLE_AUTH = "enable_auth";
-    //public static final String DATA_STORE_AUTH LOCATION_DEFAULT = "./vertex-cache-config/server/auth/auth_seed.json";
-    //public static final String DATA_STORE_LOCATION = "data_store";
+    public static final String AUTH_DATA_STORE = "auth_data_store";
 
     // Rate Limiting
     public static final String ENABLE_RATE_LIMIT = "enable_rate_limit";

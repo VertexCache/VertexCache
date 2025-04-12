@@ -4,10 +4,10 @@ import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.common.version.VersionUtil;
 import com.vertexcache.core.cache.Cache;
-import com.vertexcache.core.module.ModuleRegistry;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.command.CommandService;
 import com.vertexcache.core.exception.VertexCacheSSLServerSocketException;
+import com.vertexcache.core.status.SystemStatusReport;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -33,26 +33,28 @@ public class SocketServer {
 
     private ExecutorService executor;
     private ServerSocket serverSocket = null;
-    private Config config;
 
-    final String ANSI_RED = "\u001B[31m";
-    final String ANSI_GREEN = "\u001B[32m";
-    final String ANSI_RESET = "\u001B[0m";
+    private static boolean isRunning = false;
+    private static String statusMessage = "";
+
+    static final String ANSI_RED = "\u001B[31m";
+    static final String ANSI_GREEN = "\u001B[32m";
+    static final String ANSI_RESET = "\u001B[0m";
 
     public SocketServer() {
-        this.config = Config.getInstance();
+
     }
 
     public void execute() throws Exception {
         try {
             CommandService commandService = new CommandService();
-            Cache.getInstance(config.getCacheEvictionPolicy(), config.getCacheSize());
+            Cache.getInstance(Config.getInstance().getCacheEvictionPolicy(), Config.getInstance().getCacheSize());
 
             ServerSocket serverSocket;
-            if (config.isEncryptTransport()) {
+            if (Config.getInstance().isEncryptTransport()) {
                 serverSocket = secureSocket();
             } else {
-                serverSocket = new ServerSocket(config.getServerPort());
+                serverSocket = new ServerSocket(Config.getInstance().getServerPort());
             }
 
             outputStartupOK();
@@ -72,12 +74,12 @@ public class SocketServer {
                 String address = clientSocket.getInetAddress().getHostAddress();
                 int port = clientSocket.getPort();
                 String transport = (clientSocket instanceof SSLSocket) ? "TLS" : "Plain";
-                String messageEncryption = config.getEncryptionMode() != EncryptionMode.NONE ? "Yes" : "No";
+                String messageEncryption = Config.getInstance().getEncryptionMode() != EncryptionMode.NONE ? "Yes" : "No";
 
                 outputInfo(transport + " client connected from " + address + ":" + port +
                         " (Encrypted Messages: " + messageEncryption + ")");
 
-                this.executor.execute(new ClientHandler(clientSocket, config, commandService));
+                this.executor.execute(new ClientHandler(clientSocket, Config.getInstance(), commandService));
             }
         } catch (BindException e) {
             outputStartUpError("Error, Port already in use", e);
@@ -107,18 +109,18 @@ public class SocketServer {
 
     private SSLServerSocket secureSocket() throws VertexCacheSSLServerSocketException {
         try {
-            String certPem = this.config.getTlsCertificate();
-            String keyPem = this.config.getTlsPrivateKey();
+            String certPem = Config.getInstance().getTlsCertificate();
+            String keyPem = Config.getInstance().getTlsPrivateKey();
 
             X509Certificate certificate = loadCertificate(certPem);
             PrivateKey privateKey = loadPrivateKey(keyPem);
 
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null, null);
-            keyStore.setKeyEntry("server", privateKey, this.config.getTlsKeyStorePassword().toCharArray(), new X509Certificate[]{certificate});
+            keyStore.setKeyEntry("server", privateKey, Config.getInstance().getTlsKeyStorePassword().toCharArray(), new X509Certificate[]{certificate});
 
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-            kmf.init(keyStore, this.config.getTlsKeyStorePassword().toCharArray());
+            kmf.init(keyStore, Config.getInstance().getTlsKeyStorePassword().toCharArray());
 
             TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
             tmf.init(keyStore);
@@ -127,7 +129,7 @@ public class SocketServer {
             sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 
             SSLServerSocketFactory factory = sslContext.getServerSocketFactory();
-            SSLServerSocket serverSocket = (SSLServerSocket) factory.createServerSocket(config.getServerPort());
+            SSLServerSocket serverSocket = (SSLServerSocket) factory.createServerSocket(Config.getInstance().getServerPort());
 
             serverSocket.setEnabledProtocols(new String[]{"TLSv1.2"});
             serverSocket.setEnabledCipherSuites(new String[]{"TLS_RSA_WITH_AES_256_CBC_SHA256"});
@@ -135,46 +137,30 @@ public class SocketServer {
             return serverSocket;
 
         } catch (Exception e) {
-            System.err.println("Secure socket initialization failed:");
-            e.printStackTrace();
+            LogHelper.getInstance().logError(e.getMessage());
             throw new VertexCacheSSLServerSocketException(e);
         }
     }
 
     private void outputStartupOK() {
-        this.outputStartup("Server Started");
+        statusMessage = "Server Started";
+        isRunning = true;
+        this.outputStartup();
     }
 
-    private void outputStartup(String message) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder
-                .append(System.lineSeparator()).append(System.lineSeparator())
-                .append(this.config.getAppName()).append(":").append(System.lineSeparator())
-                .append("  Version: ").append(VersionUtil.getAppVersion()).append(System.lineSeparator())
-                .append("  Port: ").append(config.getServerPort()).append(System.lineSeparator())
-                .append("  Verbose: ").append(config.isEnableVerbose() ? "Yes" : "No").append(System.lineSeparator())
-                .append("  Cache Eviction Policy: ").append(config.getCacheEvictionPolicy().toString()).append(System.lineSeparator())
-                .append("  Cache Size: ").append(config.getCacheSize()).append(System.lineSeparator())
-                .append("  Encryption: ").append(System.lineSeparator())
-                .append("    TLS Enabled (Transport): ").append(config.isEncryptTransport() ? "Yes" : "No").append(System.lineSeparator())
-                .append("    Message Layer Encrypted: ").append(config.getEncryptionMode() != EncryptionMode.NONE ? "Yes" : "No").append(config.getEncryptNote()).append(System.lineSeparator())
-                .append("      Private/Public Key (RSA) Enabled: ").append(config.isEncryptWithPrivateKey() ? "Yes" : "No").append(System.lineSeparator())
-                .append("      Shared Key (AES) Enabled: ").append(config.isEncryptWithSharedKey() ? "Yes" : "No").append(System.lineSeparator())
-                .append("  Config file set: ").append(config.isConfigLoaded() ? "Yes" : "No").append(System.lineSeparator())
-                .append("  Config file loaded with no errors: ").append(!config.isConfigError() ? "Yes" : "No").append(System.lineSeparator())
-                .append("  Config file location: ").append(config.getConfigFilePath() != null ? config.getConfigFilePath() : "n/a").append(System.lineSeparator())
-                .append(ModuleRegistry.getLoadedModulesDisplay()).append(System.lineSeparator())
-                .append("  Status: ").append(ANSI_GREEN).append(message).append(ANSI_RESET).append(System.lineSeparator());
-        LogHelper.getInstance().logInfo(stringBuilder.toString());
+    private void outputStartup() {
+        LogHelper.getInstance().logInfo(SystemStatusReport.getFullSystemReport());
     }
 
     private void outputStartUpError(String message, Exception exception) {
-        this.outputStartup(message);
+        statusMessage = message;
+        isRunning = false;
+        this.outputStartup();
         LogHelper.getInstance().logError(exception.getMessage());
     }
 
     private void outputInfo(String message) {
-        if (this.config.isEnableVerbose()) {
+        if (Config.getInstance().isEnableVerbose()) {
             LogHelper.getInstance().logInfo(message);
         }
     }
@@ -209,5 +195,33 @@ public class SocketServer {
         } else {
             return input.replace("\\n", "\n").trim();
         }
+    }
+
+    public static String getStatusSummary() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(System.lineSeparator()).append(System.lineSeparator())
+                .append(Config.getInstance().getAppName()).append(" Server Startup Report:").append(System.lineSeparator())
+                .append("  Status: ").append(ANSI_GREEN).append(statusMessage).append(ANSI_RESET).append(System.lineSeparator())
+                .append("  Version: ").append(VersionUtil.getAppVersion()).append(System.lineSeparator())
+                .append("  Port: ").append(Config.getInstance().getServerPort()).append(System.lineSeparator())
+                .append("  Verbose: ").append(Config.getInstance().isEnableVerbose() ? "ENABLED" : "DISABLED").append(System.lineSeparator())
+                .append("  Cache Eviction Policy: ").append(Config.getInstance().getCacheEvictionPolicy().toString()).append(System.lineSeparator())
+                .append("  Cache Size: ").append(Config.getInstance().getCacheSize()).append(System.lineSeparator())
+                .append("  Config file set: ").append(Config.getInstance().isConfigLoaded() ? "Yes" : "No").append(System.lineSeparator())
+                .append("  Config file loaded with no errors: ").append(!Config.getInstance().isConfigError() ? "Yes" : "No").append(System.lineSeparator())
+                .append("  Config file location: ").append(Config.getInstance().getConfigFilePath() != null ? Config.getInstance().getConfigFilePath() : "n/a").append(System.lineSeparator());
+        return sb.toString();
+    }
+
+    public static String getMemoryStatusSummary() {
+        Runtime runtime = Runtime.getRuntime();
+        long maxMem = runtime.maxMemory() / (1024 * 1024);
+        long usedMem = (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024);
+        StringBuilder sb = new StringBuilder();
+        sb
+         .append("  Memory Status: ").append(System.lineSeparator())
+         .append("    Used Memory: ").append(usedMem).append(" MB").append(System.lineSeparator())
+         .append("    Max Memory: ").append(maxMem).append(" MB").append(System.lineSeparator());
+        return sb.toString();
     }
 }
