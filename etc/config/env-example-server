@@ -58,7 +58,24 @@ tls_keystore_password="hx8blPjyiBRF/DxNjEVIU7mVk2GzfT2KjxF9hPcT/JE="
 
 # Authentication / Authorization
 enable_auth=true
-auth_data_store=./vertex-cache-config/server/auth/auth_data_store.json
+
+auth_client_1=console-client:tenant-system:ADMIN:fd8e2160-e55e-4e7e-9845-2d6f73f5349f
+
+# SDK clients (Tenant A)
+auth_client_2=sdk-client-java:tenant-a:READ_WRITE:ea143c4a-1426-4d43-b5be-f0ecffe4a6c7
+auth_client_3=sdk-client-cplusplus:tenant-a:READ_WRITE:5cf685d2-f30d-4425-8fa4-90cf39c8d7ed
+auth_client_4=sdk-client-csharp:tenant-a:READ_WRITE:78116067-0200-4838-8718-31ab574bfa5c
+auth_client_5=sdk-client-elixir:tenant-a:READ_WRITE:c4466a14-fd53-44a4-9dbb-730bb3b16274
+auth_client_6=sdk-client-go:tenant-a:READ_WRITE:6612f3e2-c7ef-4d7f-a0d6-eb665af84f0c
+
+# SDK clients (Tenant B)
+auth_client_7=sdk-client-kotlin:tenant-b:READ_WRITE:5f38c3a4-753b-4339-a2a5-06b2446b7ae1
+auth_client_8=sdk-client-node:tenant-b:READ_WRITE:2c9962b5-559f-450a-a411-71859055fdc0
+auth_client_9=sdk-client-php:tenant-b:READ_WRITE:cb7d114f-dfab-4acb-b3ab-634638abb3f6
+auth_client_10=sdk-client-ruby:tenant-b:READ_WRITE:abf024d1-f3fb-4cc8-ae92-549e87988155
+auth_client_11=sdk-client-rust:tenant-b:READ_WRITE:635006e5-65d4-4cff-a0d4-197ecf2b3be3
+auth_client_12=sdk-client-python:tenant-b:READ:21d88d95-7c82-48c6-95a9-830648f3c28c
+
 
 # Rate Limiting
 enable_rate_limit=true

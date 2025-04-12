@@ -12,8 +12,6 @@
 # Client Identification
 #######################################
 client_id=client-console
-tenant_id=client-console-group
-
 
 #######################################
 # Connection Settings

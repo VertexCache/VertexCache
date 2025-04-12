@@ -171,22 +171,10 @@ public class Config extends ConfigBase {
                         LogHelper.getInstance().logWarn("Non-existent cache size, defaulting to " + DEFAULT_CACHE_SIZE);
                     }
 
-                    // Data Store Type - Currently NOT expose as an option in the .env, we need to be selective
-                    // for this, currently going with MapDB
-
-                    // For now setting MapDB as default
-                    this.dataStoreType = ConfigKey.DATA_STORE_TYPE_DEFAULT;
-
                     // Auth
                     this.enableAuth = false;
                     if (configLoader.isExist(ConfigKey.ENABLE_AUTH)) {
                         this.enableAuth = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_AUTH));
-
-                        if (configLoader.isExist(ConfigKey.AUTH_DATA_STORE)) {
-                            this.authDataStore = configLoader.getProperty(ConfigKey.AUTH_DATA_STORE);
-                        } else {
-                            ModuleRegistry.getInstance().reportError(AuthModule.class,"auth_data_store attribute missing.");
-                        }
                     }
 
                     // Rate Limiting

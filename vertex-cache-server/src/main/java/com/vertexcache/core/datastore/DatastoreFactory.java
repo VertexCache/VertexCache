@@ -1,21 +1,22 @@
 package com.vertexcache.core.datastore;
 
+import com.vertexcache.core.datastore.mapdb.MapDbProvider;
+import com.vertexcache.core.exception.VertexCacheDataStoreTypeException;
+import com.vertexcache.core.module.ModuleType;
 import com.vertexcache.core.setting.Config;
 
 public class DatastoreFactory {
 
-    public static DatastoreProvider create() {
-        String type = Config.getInstance().getDataStoreType().toLowerCase();
+    public static DatastoreProvider create(ModuleType moduleType) throws VertexCacheDataStoreTypeException {
+        DatastoreType type = DatastoreType.fromString(Config.getInstance().getDataStoreType());
 
-        switch (type) {
-            case "mapdb":
-                return new MapDbProvider();
-            // Future support for other providers:
-            // case "postgres": return new PostgresProvider();
-            // case "mongo": return new MongoProvider();
-            // case "mysql": return new MySqlProvider();
-            default:
-                throw new IllegalArgumentException("Unsupported datastore type: " + type);
-        }
+        return switch (type) {
+            case MAPDB ->  new MapDbProvider(moduleType);
+            // Future support:
+            // case POSTGRES -> new PostgresProvider(moduleType);
+            // case MONGO -> new MongoProvider(moduleType);
+            // case MYSQL -> new MySqlProvider(moduleType);
+            default -> throw new VertexCacheDataStoreTypeException("Unsupported datastore type: " + type);
+        };
     }
 }

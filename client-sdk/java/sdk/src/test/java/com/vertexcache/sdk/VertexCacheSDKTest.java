@@ -15,7 +15,6 @@ class VertexCacheSDKTest {
         VertexCacheSDKOptions vertexCacheSDKOptions = new VertexCacheSDKOptions();
 
         vertexCacheSDKOptions.setClientId("SDK Client");
-        vertexCacheSDKOptions.setTenantId("SDK Tenant 1");
 
         vertexCacheSDKOptions.setServerHost("localhost");
         vertexCacheSDKOptions.setServerPort(50505);
