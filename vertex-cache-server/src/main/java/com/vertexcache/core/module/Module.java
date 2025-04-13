@@ -31,7 +31,6 @@ public abstract class Module implements ModuleHandler {
 
     protected abstract void onStart();
     protected abstract void onStop();
-    protected abstract void onError();
 
     public String getStatusSummary() {
         return moduleStatus +
@@ -55,6 +54,14 @@ public abstract class Module implements ModuleHandler {
 
     protected void reportHealth(ModuleStatus status) {
         reportHealth(status, "");
+    }
+
+    public ModuleStatus getModuleStatus() {
+        return this.moduleStatus;
+    }
+
+    public String getStatusMessage() {
+        return this.message;
     }
 
 }

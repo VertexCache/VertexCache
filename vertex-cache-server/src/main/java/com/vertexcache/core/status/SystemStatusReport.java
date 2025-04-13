@@ -2,6 +2,7 @@ package com.vertexcache.core.status;
 
 import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.core.module.ModuleRegistry;
+import com.vertexcache.core.module.ModuleSnapshot;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.server.socket.SocketServer;
 
@@ -25,11 +26,9 @@ public class SystemStatusReport {
 
     public static String getModuleStatus() {
         StringBuilder sb = new StringBuilder("  Modules Loaded:").append(System.lineSeparator());
-        for (var snapshot : ModuleRegistry.getInstance().getModuleSnapshots()) {
-            sb.append("    ")
-                    .append(snapshot.name()).append(": ")
-                    .append(snapshot.status());
 
+        for (ModuleSnapshot snapshot : ModuleRegistry.getInstance().getModuleSnapshots()) {
+            sb.append("    ").append(snapshot.name()).append(": ").append(snapshot.status());
             if (snapshot.runtimeStatus() != null && !snapshot.runtimeStatus().isBlank()) {
                 sb.append(" | ").append(snapshot.runtimeStatus());
             }
@@ -38,8 +37,10 @@ public class SystemStatusReport {
             }
             sb.append(System.lineSeparator());
         }
+
         return sb.toString();
     }
+
 
     public static String getFullSystemReport() {
         return String.join(System.lineSeparator(),

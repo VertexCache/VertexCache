@@ -93,4 +93,8 @@ public class EnvLoader implements ConfigLoader {
                 .replace("\\r", "\r")
                 .replace("\\t", "\t");
     }
+
+    public Map<String, String> getEnvVariables() {
+        return envVariables;
+    }
 }

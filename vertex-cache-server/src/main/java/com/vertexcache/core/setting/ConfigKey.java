@@ -34,6 +34,7 @@ public class ConfigKey {
 
     // Auth Module Related
     public static final String ENABLE_AUTH = "enable_auth";
+    public static final String AUTH_CLIENTS_PREFIX = "auth_client_";
 
 
     // Rate Limiting

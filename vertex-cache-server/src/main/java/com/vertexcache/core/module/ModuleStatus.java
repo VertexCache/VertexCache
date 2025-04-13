@@ -8,7 +8,9 @@ public enum ModuleStatus {
     // Running State
     NOT_STARTED,
     STARTUP_SUCCESSFUL,
+    STARTUP_FAILED,
     SHUTDOWN_SUCCESSFUL,
+    SHuTDOWN_FAILED,
     ERROR_LOAD,
     ERROR_RUNTIME
 }

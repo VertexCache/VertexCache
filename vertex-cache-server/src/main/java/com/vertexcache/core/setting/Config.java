@@ -4,6 +4,7 @@ import com.vertexcache.common.config.ConfigBase;
 import com.vertexcache.common.config.reader.ConfigLoader;
 import com.vertexcache.common.config.reader.ConfigLoaderFactory;
 import com.vertexcache.common.cli.CommandLineArgsParser;
+import com.vertexcache.common.config.reader.EnvLoader;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.common.security.KeyPairHelper;
@@ -13,6 +14,9 @@ import com.vertexcache.core.module.ModuleRegistry;
 import com.vertexcache.module.auth.AuthModule;
 
 import java.security.PrivateKey;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class Config extends ConfigBase {
 
@@ -57,6 +61,8 @@ public class Config extends ConfigBase {
     private boolean enableIntelligence;
     private boolean enableExporter;
 
+    private ConfigLoader configLoader;
+
     private static volatile Config instance;
 
     private Config() {
@@ -81,7 +87,7 @@ public class Config extends ConfigBase {
             if(commandLineArgsParser.isExist("--config")) {
                 this.configFilePath = commandLineArgsParser.getValue("--config");
 
-                ConfigLoader configLoader = ConfigLoaderFactory.getLoader(this.configFilePath);
+                this.configLoader = ConfigLoaderFactory.getLoader(this.configFilePath);
                 if (configLoader.loadFromPath(this.configFilePath)) {
                     this.configLoaded = true;
 
@@ -281,7 +287,20 @@ public class Config extends ConfigBase {
 
     public String getAuthDataStore() { return authDataStore; }
 
+
+    // Auth Related
     public boolean isAuthEnabled() { return enableAuth; }
+    public List<String> getRawAuthClientEntries() {
+        // TODO - Update PropertiesLoader, if want this supported in PropertiesLoader
+        if (!(configLoader instanceof EnvLoader env)) return Collections.emptyList();
+
+        return env.getEnvVariables().entrySet().stream()
+                .filter(e -> e.getKey().startsWith(ConfigKey.AUTH_CLIENTS_PREFIX))
+                .map(Map.Entry::getValue)
+                .filter(val -> val != null && !val.isBlank())
+                .toList();
+    }
+
 
     public boolean isRateLimitEnabled() { return enableRateLimit; }
 

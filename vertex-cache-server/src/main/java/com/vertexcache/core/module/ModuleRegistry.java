@@ -113,17 +113,29 @@ public class ModuleRegistry {
 
     public List<ModuleSnapshot> getModuleSnapshots() {
         List<ModuleSnapshot> snapshots = new ArrayList<>();
+
         for (ModuleInfo info : moduleResults) {
             ModuleHandler handler = activeModules.get(info.name);
-            String runtimeStatus = handler != null ? handler.getStatusSummary() : "N/A";
+
+            ModuleStatus currentStatus = info.status;
+            String runtimeStatus = "N/A";
+            String message = info.message;
+
+            if (handler instanceof Module module) {
+                currentStatus = module.getModuleStatus();
+                runtimeStatus = module.getStatusSummary();
+                message = module.getStatusMessage();
+            }
+
             snapshots.add(new ModuleSnapshot(
                     info.name,
-                    info.status,
+                    currentStatus,
                     runtimeStatus,
-                    info.message,
+                    message,
                     info.timestamp
             ));
         }
+
         return snapshots;
     }
 

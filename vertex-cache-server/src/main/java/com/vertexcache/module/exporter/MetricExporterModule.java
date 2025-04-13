@@ -18,11 +18,6 @@ public class MetricExporterModule  extends Module {
         this.setModuleStatus(ModuleStatus.SHUTDOWN_SUCCESSFUL);
     }
 
-    @Override
-    protected void onError() {
-        this.setModuleStatus(ModuleStatus.ERROR_RUNTIME);
-    }
-
     public PrometheusExporter getPrometheusExporter() {
         return prometheusExporter.get();
     }

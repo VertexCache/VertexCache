@@ -14,9 +14,4 @@ public class RestApiModule  extends Module {
     protected void onStop() {
         this.setModuleStatus(ModuleStatus.SHUTDOWN_SUCCESSFUL);
     }
-
-    @Override
-    protected void onError() {
-        this.setModuleStatus(ModuleStatus.ERROR_RUNTIME);
-    }
 }

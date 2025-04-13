@@ -2,9 +2,8 @@ package com.vertexcache.module.auth;
 
 import com.vertexcache.core.module.Module;
 import com.vertexcache.core.module.ModuleStatus;
-import com.vertexcache.module.auth.AuthService;
-import com.vertexcache.module.auth.AuthInitializer;
 import com.vertexcache.core.setting.Config;
+import com.vertexcache.core.exception.VertexCacheAuthInitializationException;
 
 public class AuthModule extends Module {
 
@@ -12,24 +11,23 @@ public class AuthModule extends Module {
 
     @Override
     protected void onStart() {
-        Config config = Config.getInstance();
-        //this.authService = AuthInitializer.initialize(
-                //config.getAuthHydrateFile(),
-               // config.getAuthDbFile()
-        //);
-        this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
+        try {
+            if (Config.getInstance().getRawAuthClientEntries().isEmpty()) {
+                throw new VertexCacheAuthInitializationException("Require at least one client defined when auth is enabled.");
+            }
+
+            this.authService = AuthInitializer.initializeFromEnv();
+            setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
+
+        } catch (VertexCacheAuthInitializationException e) {
+            reportHealth(ModuleStatus.STARTUP_FAILED, e.getMessage());
+        }
     }
 
     @Override
     protected void onStop() {
-        // cleanup logic
-        this.setModuleStatus(ModuleStatus.SHUTDOWN_SUCCESSFUL);
-    }
-
-    @Override
-    protected void onError() {
-        // cleanup
-        this.setModuleStatus(ModuleStatus.ERROR_RUNTIME,"Generic Error, to be updated, the real reason");
+        this.authService = null;
+        setModuleStatus(ModuleStatus.SHUTDOWN_SUCCESSFUL);
     }
 
     public AuthService getAuthService() {
