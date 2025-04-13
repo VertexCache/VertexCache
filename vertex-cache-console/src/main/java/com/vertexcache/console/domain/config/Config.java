@@ -19,6 +19,7 @@ public class Config extends ConfigBase {
     private String configFilePath;
 
     private String clientId = ConfigKey.CLIENT_ID_DEFAULT;
+    private String clientToken = null;
 
     private String serverHost = ConfigKey.SERVER_HOST_DEFAULT;
     private int serverPort = ConfigKey.SERVER_PORT_DEFAULT;
@@ -65,6 +66,11 @@ public class Config extends ConfigBase {
                 // Client ID
                 if (configLoader.isExist(ConfigKey.CLIENT_ID)) {
                     this.clientId = configLoader.getProperty(ConfigKey.CLIENT_ID);
+                }
+
+                // Client Token
+                if (configLoader.isExist(ConfigKey.CLIENT_TOKEN)) {
+                    this.clientToken = configLoader.getProperty(ConfigKey.CLIENT_TOKEN);
                 }
 
                 // Host
@@ -154,6 +160,8 @@ public class Config extends ConfigBase {
     }
 
     public String getClientId() { return clientId; }
+
+    public String getClientToken() { return clientToken; }
 
     public String getServerHost() {
         return serverHost;

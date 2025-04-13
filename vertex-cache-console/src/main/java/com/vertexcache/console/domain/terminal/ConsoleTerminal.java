@@ -33,7 +33,6 @@ public class ConsoleTerminal {
     private static final String SOCKET_PROTOCOL = "TLS";
 
     private Config config;
-
     private static String consolePrompt;
 
     public ConsoleTerminal() {
@@ -57,13 +56,16 @@ public class ConsoleTerminal {
                 inputStream = socket.getInputStream();
             }
 
-            // Send IDENT on connect
-            String clientId = config.getClientId() != null ? config.getClientId() : "console-client";
-            String ident = "IDENT " + clientId;
-            byte[] identBytes = encryptPayload(ident.getBytes(StandardCharsets.UTF_8));
+            // Send IDENT with client_id and token
+            String clientId = config.getClientId() != null ? config.getClientId() : "";
+            String token = config.getClientToken() != null ? config.getClientToken() : "";
+            String identPayload = String.format("{\"client_id\":\"%s\", \"token\":\"%s\"}", clientId, token);
+            String identMessage = "IDENT " + identPayload;
+
+            byte[] identBytes = encryptPayload(identMessage.getBytes(StandardCharsets.UTF_8));
             MessageCodec.writeFramedMessage(outputStream, identBytes);
 
-            // 🔧 Immediately read IDENT response to avoid leaking it into user commands
+            // Read IDENT response
             byte[] identResponse = MessageCodec.readFramedMessage(inputStream);
             if (identResponse != null) {
                 String identReply = new String(identResponse, StandardCharsets.UTF_8);

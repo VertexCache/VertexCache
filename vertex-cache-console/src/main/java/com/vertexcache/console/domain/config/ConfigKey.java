@@ -6,6 +6,7 @@ public class ConfigKey {
 
     public static final String CLIENT_ID_DEFAULT = "client-console";
     public static final String CLIENT_ID = "client_id";
+    public static final String CLIENT_TOKEN = "client_token";
 
     public static final String SERVER_HOST_DEFAULT = "localhost";
     public static final String SERVER_HOST = "server_host";

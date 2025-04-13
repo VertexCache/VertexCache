@@ -29,7 +29,8 @@ public class VertexCacheSDK {
                 vertexCacheSDKOptions.getEncryptionMode(),
                 vertexCacheSDKOptions.getPublicKey(),
                 vertexCacheSDKOptions.getSharedEncryptionKey(),
-                vertexCacheSDKOptions.getClientId()
+                vertexCacheSDKOptions.getClientId(),
+                vertexCacheSDKOptions.getClientToken()
         );
     }
 

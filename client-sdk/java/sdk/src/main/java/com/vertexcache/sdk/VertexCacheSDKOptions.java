@@ -11,6 +11,7 @@ public class VertexCacheSDKOptions {
     public static int DEFAULT_CONNECT_TIMEOUT = 3000;
 
     private String clientId = VertexCacheSDKOptions.DEFAULT_CLIENT_ID;
+    private String clientToken = null;
 
     private String serverHost = VertexCacheSDKOptions.DEFAULT_HOST;
     private int serverPort = VertexCacheSDKOptions.DEFAULT_PORT;
@@ -35,6 +36,10 @@ public class VertexCacheSDKOptions {
     public void setClientId(String clientId) { this.clientId = clientId; }
 
     public String getClientId() { return clientId; }
+
+    public void setClientToken(String clientToken) { this.clientToken = clientToken; }
+
+    public String getClientToken() { return clientToken; }
 
     public void setServerHost(String serverHost) {
         this.serverHost = serverHost;

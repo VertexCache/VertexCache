@@ -31,6 +31,7 @@ public class TcpClient implements TcpClientInterface {
     private final PublicKey publicKey;
     private final byte[] sharedKeyBytes;
     private final String clientId;
+    private final String clientToken;
 
     private Socket socket;
     private OutputStream out;
@@ -46,7 +47,9 @@ public class TcpClient implements TcpClientInterface {
                      EncryptionMode encryptionMode,
                      String publicKeyPem,
                      String sharedEncryptionKey,
-                     String clientId) {
+                     String clientId,
+                     String clientToken
+                    ) {
 
         this.host = host;
         this.port = port;
@@ -56,7 +59,8 @@ public class TcpClient implements TcpClientInterface {
         this.connectTimeoutMs = connectTimeoutMs;
         this.readTimeoutMs = readTimeoutMs;
         this.encryptionMode = encryptionMode;
-        this.clientId = clientId != null ? clientId : "sdk-client";
+        this.clientId = clientId != null ? clientId : "";
+        this.clientToken = clientToken != null ? clientToken : "";
 
         try {
             this.publicKey = encryptionMode == EncryptionMode.ASYMMETRIC ? loadPublicKey(publicKeyPem) : null;
@@ -92,7 +96,10 @@ public class TcpClient implements TcpClientInterface {
             this.in = new BufferedInputStream(socket.getInputStream());
 
             // Send IDENT command immediately
-            String identCommand = "IDENT " + clientId;
+            String safeClientId = clientId != null ? clientId : "";
+            String safeToken = clientToken != null ? clientToken : "";
+            String identPayload = String.format("{\"client_id\":\"%s\", \"token\":\"%s\"}", safeClientId, safeToken);
+            String identCommand = "IDENT " + identPayload;
             byte[] identBytes = encrypt(identCommand.getBytes());
             MessageCodec.writeFramedMessage(out, identBytes);
             out.flush();
