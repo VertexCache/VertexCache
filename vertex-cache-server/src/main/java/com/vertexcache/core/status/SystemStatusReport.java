@@ -1,10 +1,14 @@
 package com.vertexcache.core.status;
 
 import com.vertexcache.common.protocol.EncryptionMode;
+import com.vertexcache.core.module.ModuleHandler;
 import com.vertexcache.core.module.ModuleRegistry;
-import com.vertexcache.core.module.ModuleSnapshot;
+import com.vertexcache.core.module.ModuleStatus;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.server.socket.SocketServer;
+import com.vertexcache.core.module.Module;
+
+import java.util.Map;
 
 public class SystemStatusReport {
 
@@ -27,13 +31,28 @@ public class SystemStatusReport {
     public static String getModuleStatus() {
         StringBuilder sb = new StringBuilder("  Modules Loaded:").append(System.lineSeparator());
 
-        for (ModuleSnapshot snapshot : ModuleRegistry.getInstance().getModuleSnapshots()) {
-            sb.append("    ").append(snapshot.name()).append(": ").append(snapshot.status());
-            if (snapshot.runtimeStatus() != null && !snapshot.runtimeStatus().isBlank()) {
-                sb.append(" | ").append(snapshot.runtimeStatus());
+        Map<String, ModuleHandler> modules = ModuleRegistry.getInstance().getAllModules();
+        for (Map.Entry<String, ModuleHandler> entry : modules.entrySet()) {
+            String name = entry.getKey();
+            ModuleHandler module = entry.getValue();
+
+            ModuleStatus status = ModuleStatus.ENABLED;
+            String runtimeStatus = "";
+            String message = "";
+
+            if (module instanceof Module) {
+                Module m = (Module) module;
+                status = m.getModuleStatus();
+                runtimeStatus = m.getStatusSummary();
+                message = m.getStatusMessage();
             }
-            if (snapshot.message() != null && !snapshot.message().isBlank()) {
-                sb.append(" | ").append(snapshot.message());
+
+            sb.append("    ").append(name).append(": ").append(status);
+            if (runtimeStatus != null && !runtimeStatus.isEmpty()) {
+                sb.append(" | ").append(runtimeStatus);
+            }
+            if (message != null && !message.isEmpty()) {
+                sb.append(" | ").append(message);
             }
             sb.append(System.lineSeparator());
         }

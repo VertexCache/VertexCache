@@ -17,7 +17,8 @@ public class AuthModule extends Module {
             }
 
             this.authService = AuthInitializer.initializeFromEnv();
-            setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
+
+            reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Auth clients loaded");
 
         } catch (VertexCacheAuthInitializationException e) {
             reportHealth(ModuleStatus.STARTUP_FAILED, e.getMessage());

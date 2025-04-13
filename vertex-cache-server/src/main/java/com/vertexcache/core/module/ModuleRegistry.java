@@ -12,33 +12,22 @@ import com.vertexcache.module.alert.AlertModule;
 import com.vertexcache.module.intelligence.IntelligenceModule;
 import com.vertexcache.module.exporter.MetricExporterModule;
 
-import java.time.Instant;
 import java.util.*;
 import java.util.function.Supplier;
 
 public class ModuleRegistry {
 
     private static final ModuleRegistry instance = new ModuleRegistry();
+
+    private ModuleRegistry() {
+        System.out.println("[DEBUG] ModuleRegistry initialized → " + System.identityHashCode(this));
+    }
+
     public static ModuleRegistry getInstance() {
         return instance;
     }
 
-    private static class ModuleInfo {
-        final String name;
-        ModuleStatus status;
-        String message;
-        Instant timestamp;
-
-        ModuleInfo(String name, ModuleStatus status, String message) {
-            this.name = name;
-            this.status = status;
-            this.message = message;
-            this.timestamp = Instant.now();
-        }
-    }
-
-    private static final List<ModuleInfo> moduleResults = new ArrayList<>();
-    private static final Map<String, ModuleHandler> activeModules = new HashMap<>();
+    private final Map<String, ModuleHandler> allModules = new LinkedHashMap<>();
 
     public void loadModules() {
         Config config = Config.getInstance();
@@ -55,37 +44,31 @@ public class ModuleRegistry {
     }
 
     private void register(String name, boolean enabled, Supplier<ModuleHandler> factory) {
-        if (!enabled) {
-            moduleResults.add(new ModuleInfo(name, ModuleStatus.DISABLED, null));
-            return;
+        ModuleHandler module = factory.get();
+
+        if (!enabled && module instanceof Module m) {
+            m.setModuleStatus(ModuleStatus.DISABLED);
         }
 
         try {
-            ModuleHandler module = factory.get();
-            module.start();
-            activeModules.put(name, module);
-            moduleResults.add(new ModuleInfo(name, ModuleStatus.ENABLED, null));
+            if (enabled) {
+                module.start();
+                if (module instanceof Module m) {
+                   // m.setModuleStatus(ModuleStatus.ENABLED);
+                }
+            }
         } catch (Exception e) {
-            reportError(name, ModuleStatus.ERROR_LOAD, e.getMessage());
+            LogHelper.getInstance().logError("[MODULES] " + name + " failed to start: " + e.getMessage());
+            if (module instanceof Module m) {
+                m.reportHealth(ModuleStatus.ERROR_LOAD, e.getMessage());
+            }
         }
-    }
 
-    public void reportError(Class<? extends ModuleHandler> moduleClass, String message) {
-        reportError(moduleClass.getSimpleName(), ModuleStatus.ERROR_LOAD, message);
-    }
-
-    public void reportRuntimeError(Class<? extends ModuleHandler> moduleClass, String message) {
-        reportError(moduleClass.getSimpleName(), ModuleStatus.ERROR_RUNTIME, message);
-    }
-
-    private void reportError(String name, ModuleStatus status, String message) {
-        moduleResults.add(new ModuleInfo(name, status, message));
-        activeModules.remove(name);
-        LogHelper.getInstance().logError("[MODULES] " + name + " reported " + status + ": " + message);
+        allModules.put(name, module);
     }
 
     public void stopModules() {
-        for (ModuleHandler module : activeModules.values()) {
+        for (ModuleHandler module : allModules.values()) {
             try {
                 module.stop();
             } catch (Exception e) {
@@ -96,65 +79,50 @@ public class ModuleRegistry {
 
     public String getLoadedModulesDisplay() {
         StringBuilder sb = new StringBuilder("  Modules Loaded:").append(System.lineSeparator());
-        for (ModuleSnapshot snapshot : getModuleSnapshots()) {
-            sb.append("    ")
-                    .append(snapshot.name()).append(": ")
-                    .append(snapshot.status());
-            if (snapshot.runtimeStatus() != null && !snapshot.runtimeStatus().isBlank()) {
-                sb.append(" | ").append(snapshot.runtimeStatus());
+
+        for (Map.Entry<String, ModuleHandler> entry : allModules.entrySet()) {
+            String name = entry.getKey();
+            ModuleHandler module = entry.getValue();
+
+            ModuleStatus status = ModuleStatus.ENABLED;
+            String runtimeStatus = "";
+            String message = "";
+
+            if (module instanceof Module m) {
+                status = m.getModuleStatus();
+                runtimeStatus = m.getStatusSummary();
+                message = m.getStatusMessage();
             }
-            if (snapshot.message() != null && !snapshot.message().isBlank()) {
-                sb.append(" | ").append(snapshot.message());
-            }
+
+            sb.append("    ").append(name).append(": ").append(status);
+            if (!runtimeStatus.isBlank()) sb.append(" | ").append(runtimeStatus);
+            if (!message.isBlank()) sb.append(" | ").append(message);
             sb.append(System.lineSeparator());
         }
+
         return sb.toString();
     }
 
-    public List<ModuleSnapshot> getModuleSnapshots() {
-        List<ModuleSnapshot> snapshots = new ArrayList<>();
-
-        for (ModuleInfo info : moduleResults) {
-            ModuleHandler handler = activeModules.get(info.name);
-
-            ModuleStatus currentStatus = info.status;
-            String runtimeStatus = "N/A";
-            String message = info.message;
-
-            if (handler instanceof Module module) {
-                currentStatus = module.getModuleStatus();
-                runtimeStatus = module.getStatusSummary();
-                message = module.getStatusMessage();
-            }
-
-            snapshots.add(new ModuleSnapshot(
-                    info.name,
-                    currentStatus,
-                    runtimeStatus,
-                    message,
-                    info.timestamp
-            ));
-        }
-
-        return snapshots;
-    }
-
     public boolean isModuleLoaded(Class<? extends ModuleHandler> moduleClass) {
-        return activeModules.values().stream().anyMatch(m -> m.getClass().equals(moduleClass));
+        return allModules.values().stream().anyMatch(m -> m.getClass().equals(moduleClass));
     }
 
     public <T extends ModuleHandler> Optional<T> getModule(Class<T> moduleClass) {
-        return activeModules.values().stream()
+        return allModules.values().stream()
                 .filter(m -> m.getClass().equals(moduleClass))
                 .map(moduleClass::cast)
                 .findFirst();
     }
 
-    public List<String> getActiveModuleNames() {
-        return new ArrayList<>(activeModules.keySet());
+    public List<String> getAllModuleNames() {
+        return new ArrayList<>(allModules.keySet());
     }
 
     public Optional<ModuleHandler> getModuleByName(String name) {
-        return Optional.ofNullable(activeModules.get(name));
+        return Optional.ofNullable(allModules.get(name));
+    }
+
+    public Map<String, ModuleHandler> getAllModules() {
+        return allModules;
     }
 }

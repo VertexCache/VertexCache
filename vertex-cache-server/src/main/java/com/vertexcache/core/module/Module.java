@@ -11,7 +11,9 @@ public abstract class Module implements ModuleHandler {
     public final void start() {
         try {
             onStart();
-            setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL, null);
+            if (this.moduleStatus == ModuleStatus.NOT_STARTED) {
+                setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL, null);
+            }
         } catch (Exception e) {
             setModuleStatus(ModuleStatus.ERROR_LOAD, e.getMessage());
             throw e;
@@ -32,9 +34,16 @@ public abstract class Module implements ModuleHandler {
     protected abstract void onStart();
     protected abstract void onStop();
 
+    @Override
     public String getStatusSummary() {
-        return moduleStatus +
-                (message != null && !message.isBlank() ? " - " + message : "");
+        return switch (moduleStatus) {
+            case STARTUP_SUCCESSFUL -> "Running";
+            case STARTUP_FAILED -> "Startup failed";
+            case ERROR_LOAD -> "Load error";
+            case ERROR_RUNTIME -> "Runtime error";
+            case DISABLED -> "Disabled";
+            default -> moduleStatus.name();
+        };
     }
 
     protected void setModuleStatus(ModuleStatus status) {

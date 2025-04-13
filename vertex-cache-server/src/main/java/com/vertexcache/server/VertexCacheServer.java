@@ -10,15 +10,15 @@ public class VertexCacheServer {
         Config.getInstance().loadPropertiesFromArgs(new CommandLineArgsParser(args));
 
         // Load all enabled modules
-        ModuleRegistry moduleRegistry = new ModuleRegistry();
-        moduleRegistry.loadModules();
-
+        ModuleRegistry.getInstance().loadModules();
 
         // Start the socket server
         SocketServer vertexCacheServer = new SocketServer();
         vertexCacheServer.execute();
 
         // Shutdown hook to stop modules gracefully
-        Runtime.getRuntime().addShutdownHook(new Thread(moduleRegistry::stopModules));
+        Runtime.getRuntime().addShutdownHook(new Thread(() ->
+                ModuleRegistry.getInstance().stopModules()
+        ));
     }
 }
