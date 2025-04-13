@@ -8,7 +8,7 @@ import com.vertexcache.core.command.argument.ArgumentParser;
 
 public class DelCommand implements Command<String> {
 
-    public static final String COMMAND_KEY = "del";
+    public static final String COMMAND_KEY = "DEL";
 
     public CommandResponse execute(ArgumentParser argumentParser) {
         CommandResponse commandResponse = new CommandResponse();

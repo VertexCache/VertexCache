@@ -6,7 +6,7 @@ import com.vertexcache.core.command.CommandResponse;
 
 public class PingCommand implements Command<String> {
 
-    public static final String COMMAND_KEY = "ping";
+    public static final String COMMAND_KEY = "PING";
 
     public CommandResponse execute(ArgumentParser argumentParser) {
         CommandResponse commandResponse = new CommandResponse();

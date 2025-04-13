@@ -1,7 +1,6 @@
 package com.vertexcache.core.datastore;
 
 import com.vertexcache.core.datastore.mapdb.MapDbProvider;
-import com.vertexcache.core.exception.VertexCacheDataStoreTypeException;
 import com.vertexcache.core.module.ModuleType;
 import com.vertexcache.core.setting.Config;
 

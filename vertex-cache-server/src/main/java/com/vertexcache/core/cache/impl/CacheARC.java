@@ -1,6 +1,6 @@
 package com.vertexcache.core.cache.impl;
 
-import com.vertexcache.core.exception.VertexCacheTypeException;
+import com.vertexcache.core.cache.VertexCacheTypeException;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

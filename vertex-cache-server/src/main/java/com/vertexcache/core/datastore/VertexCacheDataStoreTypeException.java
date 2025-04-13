@@ -1,4 +1,4 @@
-package com.vertexcache.core.exception;
+package com.vertexcache.core.datastore;
 
 public class VertexCacheDataStoreTypeException extends Exception {
     public VertexCacheDataStoreTypeException() {

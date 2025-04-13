@@ -11,10 +11,10 @@ import java.util.ArrayList;
 
 public class SetCommand implements Command<String> {
 
-    private static final String SUB_ARG_SECONDARY_INDEX_ONE = "idx1";
-    private static final String SUB_ARG_SECONDARY_INDEX_TWO = "idx2";
+    private static final String SUB_ARG_SECONDARY_INDEX_ONE = "IDX1";
+    private static final String SUB_ARG_SECONDARY_INDEX_TWO = "IDX2";
 
-    public static final String COMMAND_KEY = "set";
+    public static final String COMMAND_KEY = "SET";
     private ArrayList<String> subArguments;
 
     public SetCommand() {

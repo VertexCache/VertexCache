@@ -9,7 +9,7 @@ import com.vertexcache.core.command.CommandResponse;
 
 public class GetCommand implements Command<String> {
 
-    public static final String COMMAND_KEY = "get";
+    public static final String COMMAND_KEY = "GET";
 
     public CommandResponse execute(ArgumentParser argumentParser) {
         CommandResponse commandResponse = new CommandResponse();

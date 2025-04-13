@@ -1,7 +1,5 @@
 package com.vertexcache.core.datastore;
 
-import com.vertexcache.core.exception.VertexCacheDataStoreTypeException;
-
 public enum DatastoreType {
     MAPDB;
     //POSTGRES,

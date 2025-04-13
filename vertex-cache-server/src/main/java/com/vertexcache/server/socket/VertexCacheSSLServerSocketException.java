@@ -1,4 +1,4 @@
-package com.vertexcache.core.exception;
+package com.vertexcache.server.socket;
 
 public class VertexCacheSSLServerSocketException extends Exception {
     public VertexCacheSSLServerSocketException() {

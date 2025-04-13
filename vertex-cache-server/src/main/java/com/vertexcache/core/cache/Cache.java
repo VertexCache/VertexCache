@@ -1,7 +1,6 @@
 package com.vertexcache.core.cache;
 
 import com.vertexcache.core.cache.impl.*;
-import com.vertexcache.core.exception.VertexCacheTypeException;
 
 public class Cache<K, V> {
 

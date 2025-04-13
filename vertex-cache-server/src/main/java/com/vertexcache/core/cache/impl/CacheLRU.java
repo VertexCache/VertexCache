@@ -1,6 +1,6 @@
 package com.vertexcache.core.cache.impl;
 
-import com.vertexcache.core.exception.VertexCacheTypeException;
+import com.vertexcache.core.cache.VertexCacheTypeException;
 import org.apache.commons.collections4.map.LRUMap;
 
 import java.util.Collections;
