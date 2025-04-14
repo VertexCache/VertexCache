@@ -11,7 +11,10 @@
 #######################################
 # Client Identification
 #######################################
-client_id=client-console
+client_id=console-client
+
+# Note this matches up with the test UUID in evn-example-server, assuming 'enable_auth=true' is activated
+client_token=fd8e2160-e55e-4e7e-9845-2d6f73f5349f
 
 #######################################
 # Connection Settings

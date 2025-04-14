@@ -32,18 +32,19 @@ public class ModuleRegistry {
     public void loadModules() {
         Config config = Config.getInstance();
 
-        register("AuthModule", config.isAuthEnabled(), AuthModule::new);
-        register("RateLimiterModule", config.isRateLimitEnabled(), RateLimiterModule::new);
-        register("MetricModule", config.isMetricEnabled(), MetricModule::new);
-        register("RestApiModule", config.isRestApiEnabled(), RestApiModule::new);
-        register("ClusterModule", config.isClusteringEnabled(), ClusterModule::new);
-        register("AdminModule", config.isAdminCommandsEnabled(), AdminModule::new);
-        register("AlertModule", config.isAlertingEnabled(), AlertModule::new);
-        register("IntelligenceModule", config.isIntelligenceEnabled(), IntelligenceModule::new);
-        register("MetricExporterModule", config.isExporterEnabled(), MetricExporterModule::new);
+        register(ModuleName.AUTH, config.isAuthEnabled(), AuthModule::new);
+        register(ModuleName.RATELIMITER, config.isRateLimitEnabled(), RateLimiterModule::new);
+        register(ModuleName.METRIC, config.isMetricEnabled(), MetricModule::new);
+        register(ModuleName.REST_API, config.isRestApiEnabled(), RestApiModule::new);
+        register(ModuleName.CLUSTER, config.isClusteringEnabled(), ClusterModule::new);
+        register(ModuleName.ADMIN, config.isAdminCommandsEnabled(), AdminModule::new);
+        register(ModuleName.ALERT, config.isAlertingEnabled(), AlertModule::new);
+        register(ModuleName.INTELLIGENCE, config.isIntelligenceEnabled(), IntelligenceModule::new);
+        register(ModuleName.METRIC_EXPORTER, config.isExporterEnabled(), MetricExporterModule::new);
     }
 
-    private void register(String name, boolean enabled, Supplier<ModuleHandler> factory) {
+    private void register(ModuleName moduleName, boolean enabled, Supplier<ModuleHandler> factory) {
+        String name = moduleName.getValue();
         ModuleHandler module = factory.get();
 
         if (!enabled && module instanceof Module m) {
@@ -53,9 +54,6 @@ public class ModuleRegistry {
         try {
             if (enabled) {
                 module.start();
-                if (module instanceof Module m) {
-                   // m.setModuleStatus(ModuleStatus.ENABLED);
-                }
             }
         } catch (Exception e) {
             LogHelper.getInstance().logError("[MODULES] " + name + " failed to start: " + e.getMessage());
@@ -114,15 +112,19 @@ public class ModuleRegistry {
                 .findFirst();
     }
 
-    public List<String> getAllModuleNames() {
-        return new ArrayList<>(allModules.keySet());
-    }
-
     public Optional<ModuleHandler> getModuleByName(String name) {
         return Optional.ofNullable(allModules.get(name));
     }
 
+    public Optional<ModuleHandler> getModuleByEnum(ModuleName moduleName) {
+        return getModuleByName(moduleName.getValue());
+    }
+
     public Map<String, ModuleHandler> getAllModules() {
         return allModules;
+    }
+
+    public List<String> getAllModuleNames() {
+        return new ArrayList<>(allModules.keySet());
     }
 }

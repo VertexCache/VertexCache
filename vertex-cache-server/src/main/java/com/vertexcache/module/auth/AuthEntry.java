@@ -1,24 +1,20 @@
 package com.vertexcache.module.auth;
 
 public class AuthEntry {
-    private String clientId;
-    private String token;
-    private String tenantId;
-    private Role role;
+    private final String clientId;
+    private final TenantId tenantId;
+    private final Role role;
+    private final String token;
 
-    public AuthEntry() {}
-
-    public AuthEntry(String clientId, String token, String tenantId, Role role) {
+    public AuthEntry(String clientId, TenantId tenantId, Role role, String token) {
         this.clientId = clientId;
-        this.token = token;
         this.tenantId = tenantId;
         this.role = role;
+        this.token = token;
     }
 
     public String getClientId() { return clientId; }
-    public String getToken() { return token; }
-    public String getTenantId() { return tenantId; }
+    public TenantId getTenantId() { return tenantId; }
     public Role getRole() { return role; }
+    public String getToken() { return token; }
 }
-
-

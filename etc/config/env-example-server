@@ -74,7 +74,7 @@ auth_client_8=sdk-client-node:tenant-b:READ_WRITE:2c9962b5-559f-450a-a411-718590
 auth_client_9=sdk-client-php:tenant-b:READ_WRITE:cb7d114f-dfab-4acb-b3ab-634638abb3f6
 auth_client_10=sdk-client-ruby:tenant-b:READ_WRITE:abf024d1-f3fb-4cc8-ae92-549e87988155
 auth_client_11=sdk-client-rust:tenant-b:READ_WRITE:635006e5-65d4-4cff-a0d4-197ecf2b3be3
-auth_client_12=sdk-client-python:tenant-b:READ:21d88d95-7c82-48c6-95a9-830648f3c28c
+auth_client_12=sdk-client-python:tenant-b:READ_ONLY:21d88d95-7c82-48c6-95a9-830648f3c28c
 
 
 # Rate Limiting

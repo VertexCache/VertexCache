@@ -38,7 +38,7 @@ public class AuthInitializer {
 
             try {
                 Role role = Role.valueOf(roleRaw.toUpperCase());
-                store.put(new AuthEntry(clientId, token, tenantId, role));
+                store.put(new AuthEntry(clientId, TenantId.fromString(tenantId), Role.fromString(roleRaw), token));
             } catch (Exception e) {
                 throw new VertexCacheAuthInitializationException("Failed to register auth_client: " + line);
             }

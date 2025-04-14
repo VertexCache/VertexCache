@@ -50,4 +50,14 @@ public enum Role {
                     );
         };
     }
+
+    public static Role fromString(String input) {
+        if (input == null) return READ_ONLY;
+        try {
+            return Role.valueOf(input.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return READ_ONLY;
+        }
+    }
+
 }
