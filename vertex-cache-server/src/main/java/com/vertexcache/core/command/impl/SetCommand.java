@@ -3,13 +3,14 @@ package com.vertexcache.core.command.impl;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.core.cache.Cache;
 
+import com.vertexcache.core.command.BaseCommand;
 import com.vertexcache.core.command.argument.ArgumentParser;
 import com.vertexcache.core.command.Command;
 import com.vertexcache.core.command.CommandResponse;
 
 import java.util.ArrayList;
 
-public class SetCommand implements Command<String> {
+public class SetCommand extends BaseCommand<String> {
 
     private static final String SUB_ARG_SECONDARY_INDEX_ONE = "IDX1";
     private static final String SUB_ARG_SECONDARY_INDEX_TWO = "IDX2";
@@ -81,5 +82,10 @@ public class SetCommand implements Command<String> {
             LogHelper.getInstance().logFatal(ex.getMessage());
         }
         return commandResponse;
+    }
+
+    @Override
+    protected String getCommandKey() {
+        return COMMAND_KEY;
     }
 }

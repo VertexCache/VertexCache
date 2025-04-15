@@ -1,10 +1,11 @@
 package com.vertexcache.core.command.impl;
 
+import com.vertexcache.core.command.BaseCommand;
 import com.vertexcache.core.command.argument.ArgumentParser;
 import com.vertexcache.core.command.Command;
 import com.vertexcache.core.command.CommandResponse;
 
-public class PingCommand implements Command<String> {
+public class PingCommand extends BaseCommand<String> {
 
     public static final String COMMAND_KEY = "PING";
 
@@ -17,5 +18,8 @@ public class PingCommand implements Command<String> {
         return commandResponse;
     }
 
-
+    @Override
+    protected String getCommandKey() {
+        return COMMAND_KEY;
+    }
 }

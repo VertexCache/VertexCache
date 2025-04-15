@@ -3,11 +3,12 @@ package com.vertexcache.core.command.impl;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.util.StringUtil;
 import com.vertexcache.core.cache.Cache;
+import com.vertexcache.core.command.BaseCommand;
 import com.vertexcache.core.command.Command;
 import com.vertexcache.core.command.CommandResponse;
 import com.vertexcache.core.command.argument.ArgumentParser;
 
-public class GetSecondaryIdxOneCommand implements Command<String> {
+public class GetSecondaryIdxOneCommand extends BaseCommand<String> {
 
     public static final String COMMAND_KEY = "GETIDX1";
 
@@ -30,5 +31,10 @@ public class GetSecondaryIdxOneCommand implements Command<String> {
             LogHelper.getInstance().logFatal(ex.getMessage());
         }
         return commandResponse;
+    }
+
+    @Override
+    protected String getCommandKey() {
+        return COMMAND_KEY;
     }
 }

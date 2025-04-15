@@ -10,6 +10,7 @@ import com.vertexcache.core.setting.Config;
 import com.vertexcache.module.auth.*;
 import com.vertexcache.server.session.ClientSessionContext;
 import com.vertexcache.server.session.IdentPayload;
+import com.vertexcache.server.session.SessionRegistry;
 
 import javax.crypto.Cipher;
 import java.io.InputStream;
@@ -25,14 +26,16 @@ public class ClientHandler implements Runnable {
     private final Config config;
     private final CommandService commandProcessor;
 
-    private String clientName = null;
     private final ClientSessionContext session = new ClientSessionContext();
     private boolean isIdentified = false;
+    private String clientName = null;
+    private String connectionId;
 
     public ClientHandler(Socket clientSocket, Config config, CommandService commandProcessor) {
         this.clientSocket = clientSocket;
         this.config = config;
         this.commandProcessor = commandProcessor;
+        this.connectionId = clientSocket.getRemoteSocketAddress().toString();
     }
 
     @Override
@@ -60,6 +63,7 @@ public class ClientHandler implements Runnable {
         } catch (Exception e) {
             LogHelper.getInstance().logFatal("Client error: " + e.getMessage());
         } finally {
+            SessionRegistry.unregister(connectionId);
             try {
                 clientSocket.close();
             } catch (IOException e) {
@@ -115,6 +119,8 @@ public class ClientHandler implements Runnable {
 
                     this.clientName = clientId;
                     this.isIdentified = true;
+                    SessionRegistry.register(connectionId, session);
+
                     return "+OK IDENT successful".getBytes(StandardCharsets.UTF_8);
                 } else {
                     session.setClientId(clientId);
@@ -123,17 +129,19 @@ public class ClientHandler implements Runnable {
 
                     this.clientName = clientId;
                     this.isIdentified = true;
+                    SessionRegistry.register(connectionId, session);
+
                     return "+OK IDENT (auth disabled)".getBytes(StandardCharsets.UTF_8);
                 }
 
             } else {
                 this.clientName = payload;
                 this.isIdentified = true;
+                SessionRegistry.register(connectionId, session);
                 return ("+OK IDENT (legacy): " + this.clientName).getBytes(StandardCharsets.UTF_8);
             }
         }
 
-        // 🔐 Prevent unauthorized command execution
         if (!isIdentified && config.isAuthEnabled()) {
             return "-ERR Unauthorized: IDENT required".getBytes(StandardCharsets.UTF_8);
         }
@@ -142,7 +150,7 @@ public class ClientHandler implements Runnable {
             LogHelper.getInstance().logInfo(logTag + " Request: " + input);
         }
 
-        byte[] response = commandProcessor.execute(decrypted);
+        byte[] response = commandProcessor.execute(decrypted, this.session);
 
         if (config.isEnableVerbose()) {
             LogHelper.getInstance().logInfo(logTag + " Response: " + new String(response, StandardCharsets.UTF_8));

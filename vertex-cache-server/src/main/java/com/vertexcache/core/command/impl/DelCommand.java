@@ -2,13 +2,19 @@ package com.vertexcache.core.command.impl;
 
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.core.cache.Cache;
+import com.vertexcache.core.command.BaseCommand;
 import com.vertexcache.core.command.Command;
 import com.vertexcache.core.command.CommandResponse;
 import com.vertexcache.core.command.argument.ArgumentParser;
 
-public class DelCommand implements Command<String> {
+public class DelCommand extends BaseCommand<String> {
 
     public static final String COMMAND_KEY = "DEL";
+
+    @Override
+    protected String getCommandKey() {
+        return COMMAND_KEY;
+    }
 
     public CommandResponse execute(ArgumentParser argumentParser) {
         CommandResponse commandResponse = new CommandResponse();
