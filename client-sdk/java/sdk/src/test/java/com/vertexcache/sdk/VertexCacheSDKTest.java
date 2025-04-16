@@ -39,7 +39,10 @@ class VertexCacheSDKTest {
 
         CommandResult commandResult = sdk.set("my-key","my-value");
 
+
         assertTrue(commandResult.isSuccess());
+
+        sdk.get("my-key");
 
         /*
         assertTrue(sdk.setValueByKey("my-key","my-value"));

@@ -2,11 +2,11 @@ package com.vertexcache.core.command.impl;
 
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.core.cache.Cache;
-
+import com.vertexcache.core.cache.KeyPrefixer;
 import com.vertexcache.core.command.BaseCommand;
 import com.vertexcache.core.command.argument.ArgumentParser;
-import com.vertexcache.core.command.Command;
 import com.vertexcache.core.command.CommandResponse;
+import com.vertexcache.server.session.ClientSessionContext;
 
 import java.util.ArrayList;
 
@@ -24,7 +24,7 @@ public class SetCommand extends BaseCommand<String> {
         this.subArguments.add(SUB_ARG_SECONDARY_INDEX_TWO);
     }
 
-    public CommandResponse execute(ArgumentParser argumentParser) {
+    public CommandResponse execute(ArgumentParser argumentParser, ClientSessionContext session) {
         CommandResponse commandResponse = new CommandResponse();
         try {
             argumentParser.setSubArguments(this.subArguments);
@@ -37,40 +37,29 @@ public class SetCommand extends BaseCommand<String> {
             if(isPrimaryOK) {
                 Cache<Object, Object> cache = Cache.getInstance();
 
-                if (isPrimaryOK &&
-                        argumentParser.subArgumentExists(SUB_ARG_SECONDARY_INDEX_ONE) &&
+                String primaryKey = KeyPrefixer.prefixKey(argumentParser.getPrimaryArgument().getArgs().get(0), session);
+                String value = argumentParser.getPrimaryArgument().getArgs().get(1).replace("\"", "\\\"");
+
+                if (argumentParser.subArgumentExists(SUB_ARG_SECONDARY_INDEX_ONE) &&
                         argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_ONE).getArgs().size() == 1 &&
                         argumentParser.subArgumentExists(SUB_ARG_SECONDARY_INDEX_TWO) &&
-                        argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_TWO).getArgs().size() == 1
-                ) {
-                    // 2 Secondary Indexes
-                    cache.put(
-                            argumentParser.getPrimaryArgument().getArgs().get(0),
-                            argumentParser.getPrimaryArgument().getArgs().get(1).replace("\"", "\\\""),
-                            argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_ONE).getArgs().getFirst(),
-                            argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_TWO).getArgs().getFirst()
-                    );
+                        argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_TWO).getArgs().size() == 1) {
+
+                    String idx1 = KeyPrefixer.prefixKey(argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_ONE).getArgs().getFirst(), session);
+                    String idx2 = KeyPrefixer.prefixKey(argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_TWO).getArgs().getFirst(), session);
+                    cache.put(primaryKey, value, idx1, idx2);
                     commandResponse.setResponseOK();
-                } else if (isPrimaryOK &&
-                        argumentParser.subArgumentExists(SUB_ARG_SECONDARY_INDEX_ONE) &&
+
+                } else if (argumentParser.subArgumentExists(SUB_ARG_SECONDARY_INDEX_ONE) &&
                         argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_ONE).getArgs().size() == 1 &&
                         !argumentParser.subArgumentExists(SUB_ARG_SECONDARY_INDEX_TWO)) {
-                    // 1 Secondary Index
-                    cache.put(
-                            argumentParser.getPrimaryArgument().getArgs().get(0),
-                            argumentParser.getPrimaryArgument().getArgs().get(1).replace("\"", "\\\""),
-                            argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_ONE).getArgs().getFirst()
-                    );
-                    commandResponse.setResponseOK();
-                } else if (isPrimaryOK) {
-                    // No Secondary Indexes
-                    cache.put(
-                            argumentParser.getPrimaryArgument().getArgs().get(0),
-                            argumentParser.getPrimaryArgument().getArgs().get(1).replace("\"", "\\\"")
-                    );
+
+                    String idx1 = KeyPrefixer.prefixKey(argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_ONE).getArgs().getFirst(), session);
+                    cache.put(primaryKey, value, idx1);
                     commandResponse.setResponseOK();
                 } else {
-                    commandResponse.setResponseError("SET command requires two arguments: key-name and key-value [IDX1] <optional-secondary-index-1> [IDX2] <optional-secondary-index-2>");
+                    cache.put(primaryKey, value);
+                    commandResponse.setResponseOK();
                 }
 
             } else {
@@ -78,7 +67,7 @@ public class SetCommand extends BaseCommand<String> {
             }
 
         } catch (Exception ex) {
-            commandResponse.setResponseError("GET command failed, fatal error, check logs.");
+            commandResponse.setResponseError("SET command failed, fatal error, check logs.");
             LogHelper.getInstance().logFatal(ex.getMessage());
         }
         return commandResponse;

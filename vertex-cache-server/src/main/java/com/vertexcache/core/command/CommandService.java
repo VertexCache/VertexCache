@@ -50,6 +50,6 @@ public class CommandService {
             }
         }
 
-        return command.execute(argumentParser);
+        return command.execute(argumentParser,session);
     }
 }
