@@ -25,17 +25,11 @@ public class ConfigKey {
     public static final String CACHE_EVICTION = "cache_eviction";
     public static final String CACHE_SIZE = "cache_size";
 
-    // MapDB - Embedded, hydration ie: Auth
-    //public static final String AUTH_HYDRATE_FILE = "auth_hydrate_file";
-    //public static final String AUTH_DB_FILE = "auth_db_file";
-
-   // public static final String DATA_STORE_TYPE_DEFAULT = "mapdb";
-//    public static final String DATA_STORE_TYPE = "data_store_type";
-
-    // Auth Module Related
+    // Auth Module & Mutli-Tenant Related
     public static final String ENABLE_AUTH = "enable_auth";
     public static final String AUTH_CLIENTS_PREFIX = "auth_client_";
-
+    public static final boolean ENABLE_TENANT_KEY_PREFIX_DEFAULT = true;
+    public static final String ENABLE_TENANT_KEY_PREFIX = "enable_tenant_key_prefix";
 
     // Rate Limiting
     public static final String ENABLE_RATE_LIMIT = "enable_rate_limit";

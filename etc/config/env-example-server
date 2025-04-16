@@ -59,6 +59,8 @@ tls_keystore_password="hx8blPjyiBRF/DxNjEVIU7mVk2GzfT2KjxF9hPcT/JE="
 # Authentication / Authorization
 enable_auth=true
 
+enable_tenant_key_prefix=true
+
 auth_client_1=console-client:tenant-system:ADMIN:fd8e2160-e55e-4e7e-9845-2d6f73f5349f
 
 # SDK clients (Tenant A)

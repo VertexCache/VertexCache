@@ -48,9 +48,10 @@ public class Config extends ConfigBase {
 
     private String dataStoreType;
 
-    // Auth
+    // Auth & Multi-Tenant
     private boolean enableAuth;
     private String authDataStore;
+    private boolean enableTenantKeyPrefix = ConfigKey.ENABLE_TENANT_KEY_PREFIX_DEFAULT;
 
     private boolean enableRateLimit;
     private boolean enableMetric;
@@ -179,8 +180,13 @@ public class Config extends ConfigBase {
 
                     // Auth
                     this.enableAuth = false;
+                    this.enableTenantKeyPrefix = false;
                     if (configLoader.isExist(ConfigKey.ENABLE_AUTH)) {
                         this.enableAuth = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_AUTH));
+
+                        if(this.enableAuth) {
+                            this.enableTenantKeyPrefix = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_TENANT_KEY_PREFIX));
+                        }
                     }
 
                     // Rate Limiting
@@ -300,7 +306,7 @@ public class Config extends ConfigBase {
                 .filter(val -> val != null && !val.isBlank())
                 .toList();
     }
-
+    public boolean isTenantKeyPrefixingEnabled() { return enableTenantKeyPrefix; }
 
     public boolean isRateLimitEnabled() { return enableRateLimit; }
 
