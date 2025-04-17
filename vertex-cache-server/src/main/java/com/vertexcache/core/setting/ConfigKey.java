@@ -33,6 +33,10 @@ public class ConfigKey {
 
     // Rate Limiting
     public static final String ENABLE_RATE_LIMIT = "enable_rate_limit";
+    public static final int RATE_LIMIT_TOKENS_PER_SECOND_DEFAULT = 1000;
+    public static final String RATE_LIMIT_TOKENS_PER_SECOND = "rate_limit_tokens_per_second";
+    public static final int RATE_LIMIT_BURST_DEFAULT = 2000;
+    public static final String RATE_LIMIT_BURST = "rate_limit_burst";
 
     // Metrics
     public static final String ENABLE_METRIC = "enable_metric";

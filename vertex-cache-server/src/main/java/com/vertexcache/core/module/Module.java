@@ -57,8 +57,8 @@ public abstract class Module implements ModuleHandler {
 
     protected void reportHealth(ModuleStatus status, String message) {
         setModuleStatus(status, message);
-        LogHelper.getInstance().logInfo("[MODULE] " + getClass().getSimpleName() +
-                " reported " + status + (message != null && !message.isBlank() ? " - " + message : ""));
+       // LogHelper.getInstance().logInfo("[MODULE] " + getClass().getSimpleName() +
+               // " reported " + status + (message != null && !message.isBlank() ? " - " + message : ""));
     }
 
     protected void reportHealth(ModuleStatus status) {

@@ -10,13 +10,12 @@ import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.common.security.KeyPairHelper;
 import com.vertexcache.core.cache.impl.EvictionPolicy;
 import com.vertexcache.common.config.VertexCacheConfigException;
-import com.vertexcache.core.module.ModuleRegistry;
-import com.vertexcache.module.auth.AuthModule;
 
 import java.security.PrivateKey;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 
 public class Config extends ConfigBase {
 
@@ -53,7 +52,12 @@ public class Config extends ConfigBase {
     private String authDataStore;
     private boolean enableTenantKeyPrefix = ConfigKey.ENABLE_TENANT_KEY_PREFIX_DEFAULT;
 
+    // Rate Limiting
     private boolean enableRateLimit;
+    private String rateLimitTokensTerSecond;
+    private String rateLimitBurst;
+
+    // Metric
     private boolean enableMetric;
     private boolean enableRestApi;
     private boolean enableClustering;
@@ -193,6 +197,12 @@ public class Config extends ConfigBase {
                     this.enableRateLimit = false;
                     if (configLoader.isExist(ConfigKey.ENABLE_RATE_LIMIT)) {
                         this.enableRateLimit = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_RATE_LIMIT));
+                        if (configLoader.isExist(ConfigKey.RATE_LIMIT_TOKENS_PER_SECOND)) {
+                            this.rateLimitTokensTerSecond = configLoader.getProperty(ConfigKey.RATE_LIMIT_TOKENS_PER_SECOND);
+                        }
+                        if (configLoader.isExist(ConfigKey.RATE_LIMIT_BURST)) {
+                            this.rateLimitBurst = configLoader.getProperty(ConfigKey.RATE_LIMIT_BURST);
+                        }
                     }
 
                     // Metric
@@ -294,7 +304,7 @@ public class Config extends ConfigBase {
     public String getAuthDataStore() { return authDataStore; }
 
 
-    // Auth Related
+    // Auth and Multi-Tenant
     public boolean isAuthEnabled() { return enableAuth; }
     public List<String> getRawAuthClientEntries() {
         // TODO - Update PropertiesLoader, if want this supported in PropertiesLoader
@@ -308,7 +318,10 @@ public class Config extends ConfigBase {
     }
     public boolean isTenantKeyPrefixingEnabled() { return enableTenantKeyPrefix; }
 
+    // Rate Limiting
     public boolean isRateLimitEnabled() { return enableRateLimit; }
+    public String getRateLimitTokensTerSecond() { return rateLimitTokensTerSecond; }
+    public String getRateLimitBurst() { return rateLimitBurst; }
 
     public boolean isMetricEnabled() { return enableMetric; }
 

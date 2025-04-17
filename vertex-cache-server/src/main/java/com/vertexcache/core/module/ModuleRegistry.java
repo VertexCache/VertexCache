@@ -20,7 +20,6 @@ public class ModuleRegistry {
     private static final ModuleRegistry instance = new ModuleRegistry();
 
     private ModuleRegistry() {
-        System.out.println("[DEBUG] ModuleRegistry initialized → " + System.identityHashCode(this));
     }
 
     public static ModuleRegistry getInstance() {
