@@ -17,7 +17,7 @@ public class ConfigCommand extends AdminCommand<String> {
     }
 
     @Override
-    public CommandResponse execute(ArgumentParser argumentParser, ClientSessionContext session) {
+    public CommandResponse executeAdminCommand(ArgumentParser argumentParser, ClientSessionContext session) {
         if (!isAdminAccessAllowed()) return rejectIfAdminAccessNotAllowed();
 
         Config config = Config.getInstance();

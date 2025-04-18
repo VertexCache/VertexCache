@@ -31,36 +31,45 @@ public class CommandService {
     }
 
     private CommandResponse processCommand(Command<String> command, ArgumentParser argumentParser, ClientSessionContext session) {
-        String commandName = command.getCommandName().toUpperCase();
 
-        // Auth check
-        if (Config.getInstance().isAuthEnabled() &&
-                !UNSECURED_COMMANDS.contains(commandName)) {
+        try {
 
-            if (session == null) {
-                CommandResponse commandResponse = new CommandResponse();
-                commandResponse.setResponseError("Authentication required");
-                return commandResponse;
+            String commandName = command.getCommandName().toUpperCase();
+
+            // Auth check
+            if (Config.getInstance().isAuthEnabled() &&
+                    !UNSECURED_COMMANDS.contains(commandName)) {
+
+                if (session == null) {
+                    CommandResponse commandResponse = new CommandResponse();
+                    commandResponse.setResponseError("Authentication required");
+                    return commandResponse;
+                }
+
+                try {
+                    new RoleCommandValidator(session.getRole()).validate(commandName);
+                } catch (VertexCacheValidationException e) {
+                    CommandResponse commandResponse = new CommandResponse();
+                    commandResponse.setResponseError("Authorization failed, invalid role.");
+                    return commandResponse;
+                }
             }
 
-            try {
-                new RoleCommandValidator(session.getRole()).validate(commandName);
-            } catch (VertexCacheValidationException e) {
-                CommandResponse commandResponse = new CommandResponse();
-                commandResponse.setResponseError("Authorization failed, invalid role.");
-                return commandResponse;
+            // Global Rate Limiting
+            if (Config.getInstance().isRateLimitEnabled()) {
+                if (!RateLimiterManager.getInstance().allowCommand()) {
+                    CommandResponse rateLimitResponse = new CommandResponse();
+                    rateLimitResponse.setResponseError("Rate Limit exceeded, too many requests. Please try again later.");
+                    return rateLimitResponse;
+                }
             }
+
+            return command.execute(argumentParser, session);
+
+        } catch (Exception e) {
+            CommandResponse commandResponse = new CommandResponse();
+            commandResponse.setResponseError("Unexpected command execution " + e.getMessage());
+            return commandResponse;
         }
-
-        // Global Rate Limiting
-        if (Config.getInstance().isRateLimitEnabled()) {
-            if (!RateLimiterManager.getInstance().allowCommand()) {
-                CommandResponse rateLimitResponse = new CommandResponse();
-                rateLimitResponse.setResponseError("Rate Limit exceeded, too many requests. Please try again later.");
-                return rateLimitResponse;
-            }
-        }
-
-        return command.execute(argumentParser, session);
     }
 }

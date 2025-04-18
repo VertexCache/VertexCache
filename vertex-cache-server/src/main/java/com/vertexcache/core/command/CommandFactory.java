@@ -4,10 +4,7 @@ import com.vertexcache.core.command.impl.*;
 
 import java.util.Map;
 
-import com.vertexcache.core.command.impl.admin.ConfigCommand;
-import com.vertexcache.core.command.impl.admin.ReloadCommand;
-import com.vertexcache.core.command.impl.admin.ShutdownCommand;
-import com.vertexcache.core.command.impl.admin.StatusCommand;
+import com.vertexcache.core.command.impl.admin.*;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
 /**
@@ -40,6 +37,7 @@ public class CommandFactory {
         commandMap.put(ShutdownCommand.COMMAND_KEY, new ShutdownCommand());
         commandMap.put(ReloadCommand.COMMAND_KEY, new ReloadCommand());
         commandMap.put(ConfigCommand.COMMAND_KEY, new ConfigCommand());
+        commandMap.put(ResetCommand.COMMAND_KEY, new ResetCommand());
     }
 
     public Command<String> getCommand(String commandName) {
