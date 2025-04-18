@@ -1,0 +1,37 @@
+package com.vertexcache.core.command.impl.admin;
+
+import com.vertexcache.core.command.CommandResponse;
+import com.vertexcache.core.command.argument.ArgumentParser;
+import com.vertexcache.server.session.ClientSessionContext;
+
+public class ShutdownCommand extends AdminCommand<String> {
+
+    public static final String COMMAND_KEY = "SHUTDOWN";
+
+    @Override
+    protected String getCommandKey() {
+        return COMMAND_KEY;
+    }
+
+    @Override
+    public CommandResponse execute(ArgumentParser argumentParser, ClientSessionContext session) {
+        if (!isAdminAccessAllowed()) return rejectIfAdminAccessNotAllowed();
+
+        CommandResponse response = new CommandResponse();
+        response.setResponse("OK: Shutdown initiated");
+
+        // Optional: log the triggering client
+        String who = session != null ? session.getClientId() : "unknown";
+        System.out.println("[ADMIN] Shutdown triggered by client: " + who);
+
+        // Delay to allow the response to be sent before exit
+        new Thread(() -> {
+            try {
+                Thread.sleep(100); // slight delay
+            } catch (InterruptedException ignored) {}
+            System.exit(0);
+        }).start();
+
+        return response;
+    }
+}

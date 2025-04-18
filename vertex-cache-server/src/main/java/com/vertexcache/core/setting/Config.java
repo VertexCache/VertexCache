@@ -172,7 +172,7 @@ public class Config extends ConfigBase {
                     // Cache Size, applied when Eviction Policy is not set to NONE
                     this.cacheSize = DEFAULT_CACHE_SIZE;
                     if (configLoader.isExist(ConfigKey.CACHE_SIZE)) {
-                       long cacheSize = Long.parseLong(configLoader.getProperty(ConfigKey.CACHE_SIZE));
+                        long cacheSize = Long.parseLong(configLoader.getProperty(ConfigKey.CACHE_SIZE));
                         if (cacheSize <= Integer.MAX_VALUE) {
                             this.cacheSize = (int) cacheSize;
                         } else {
@@ -336,4 +336,155 @@ public class Config extends ConfigBase {
     public boolean isIntelligenceEnabled() { return enableIntelligence; }
 
     public boolean isExporterEnabled() { return enableExporter; }
+
+    public void reloadFromDisk() {
+        try {
+            ConfigLoader loader = ConfigLoaderFactory.getLoader(this.configFilePath);
+            if (loader.loadFromPath(this.configFilePath)) {
+                this.configLoader = loader;
+                loadPropertiesFromLoader();
+                LogHelper.getInstance().logInfo("Configuration reloaded from: " + this.configFilePath);
+            } else {
+                throw new VertexCacheConfigException("Failed to reload .env from: " + this.configFilePath);
+            }
+        } catch (Exception e) {
+            throw new VertexCacheConfigException("Config reload failed: " + e.getMessage(), e);
+        }
+    }
+
+    private void loadPropertiesFromLoader() {
+        loadCoreSettings();
+        loadEncryptionSettings();
+        loadTransportSettings();
+        loadCacheSettings();
+        loadAuthSettings();
+        loadRateLimitSettings();
+        loadModuleEnableFlags();
+    }
+
+    private void loadCoreSettings() {
+        if (configLoader.isExist(ConfigKey.SERVER_PORT)) {
+            this.serverPort = Integer.parseInt(configLoader.getProperty(ConfigKey.SERVER_PORT));
+        }
+
+        if (configLoader.isExist(ConfigKey.ENABLE_VERBOSE)) {
+            this.enableVerbose = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_VERBOSE));
+        }
+    }
+
+    private void loadEncryptionSettings() {
+        if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_MESSAGE) &&
+                Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_MESSAGE))) {
+            try {
+                String privateKeyString = configLoader.getProperty(ConfigKey.PRIVATE_KEY);
+                this.sharedEncryptionKey = configLoader.getProperty(ConfigKey.SHARED_ENCRYPTION_KEY);
+
+                boolean hasPrivateKey = privateKeyString != null && !privateKeyString.isBlank();
+                boolean hasSharedKey = sharedEncryptionKey != null && !sharedEncryptionKey.isBlank();
+
+                if (hasPrivateKey && hasSharedKey) {
+                    this.encryptNote = ", Only one of 'private_key' or 'shared_encryption_key' may be set when 'enable_encrypt_message=true'";
+                    throw new VertexCacheConfigException("Only one of 'private_key' or 'shared_encryption_key' may be set when 'enable_encrypt_message=true'");
+                }
+
+                if (!hasPrivateKey && !hasSharedKey) {
+                    this.encryptNote = ", Missing encryption configuration";
+                    throw new VertexCacheConfigException("Missing encryption configuration");
+                }
+
+                if (hasPrivateKey) {
+                    this.privateKey = KeyPairHelper.loadPrivateKey(privateKeyString);
+                    this.sharedEncryptionKey = null;
+                    this.encryptWithPrivateKey = true;
+                    this.encryptionMode = EncryptionMode.ASYMMETRIC;
+                }
+
+                if (hasSharedKey) {
+                    this.privateKey = null;
+                    this.encryptWithSharedKey = true;
+                    this.encryptionMode = EncryptionMode.SYMMETRIC;
+                }
+
+            } catch (Exception e) {
+                this.encryptionMode = EncryptionMode.NONE;
+            }
+        }
+    }
+
+    private void loadTransportSettings() {
+        if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_TRANSPORT) &&
+                Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_TRANSPORT))) {
+            if (configLoader.isExist(ConfigKey.TLS_CERTIFICATE) && configLoader.isExist(ConfigKey.TLS_PRIVATE_KEY)) {
+                this.tlsCertificate = configLoader.getProperty(ConfigKey.TLS_CERTIFICATE);
+                this.tlsPrivateKey = configLoader.getProperty(ConfigKey.TLS_PRIVATE_KEY);
+                this.tlsKeyStorePassword = configLoader.getProperty(ConfigKey.TLS_KEY_STORE_PASSWORD);
+                this.encryptTransport = true;
+            }
+        }
+    }
+
+    private void loadCacheSettings() {
+        this.cacheEvictionPolicy = EvictionPolicy.NONE;
+        if (configLoader.isExist(ConfigKey.CACHE_EVICTION)) {
+            try {
+                this.cacheEvictionPolicy = EvictionPolicy.fromString(configLoader.getProperty(ConfigKey.CACHE_EVICTION));
+            } catch (IllegalArgumentException ignored) {}
+        }
+
+        this.cacheSize = DEFAULT_CACHE_SIZE;
+        if (configLoader.isExist(ConfigKey.CACHE_SIZE)) {
+            long cacheSize = Long.parseLong(configLoader.getProperty(ConfigKey.CACHE_SIZE));
+            if (cacheSize <= Integer.MAX_VALUE) {
+                this.cacheSize = (int) cacheSize;
+            }
+        }
+    }
+
+    private void loadAuthSettings() {
+        this.enableAuth = false;
+        this.enableTenantKeyPrefix = false;
+        if (configLoader.isExist(ConfigKey.ENABLE_AUTH)) {
+            this.enableAuth = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_AUTH));
+            if (this.enableAuth && configLoader.isExist(ConfigKey.ENABLE_TENANT_KEY_PREFIX)) {
+                this.enableTenantKeyPrefix = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_TENANT_KEY_PREFIX));
+            }
+        }
+    }
+
+    private void loadRateLimitSettings() {
+        this.enableRateLimit = false;
+        if (configLoader.isExist(ConfigKey.ENABLE_RATE_LIMIT)) {
+            this.enableRateLimit = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_RATE_LIMIT));
+            if (configLoader.isExist(ConfigKey.RATE_LIMIT_TOKENS_PER_SECOND)) {
+                this.rateLimitTokensTerSecond = configLoader.getProperty(ConfigKey.RATE_LIMIT_TOKENS_PER_SECOND);
+            }
+            if (configLoader.isExist(ConfigKey.RATE_LIMIT_BURST)) {
+                this.rateLimitBurst = configLoader.getProperty(ConfigKey.RATE_LIMIT_BURST);
+            }
+        }
+    }
+
+    private void loadModuleEnableFlags() {
+        if (configLoader.isExist(ConfigKey.ENABLE_METRIC)) {
+            this.enableMetric = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_METRIC));
+        }
+        if (configLoader.isExist(ConfigKey.ENABLE_REST_API)) {
+            this.enableRestApi = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_REST_API));
+        }
+        if (configLoader.isExist(ConfigKey.ENABLE_CLUSTERING)) {
+            this.enableClustering = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_CLUSTERING));
+        }
+        if (configLoader.isExist(ConfigKey.ENABLE_ADMIN_COMMANDS)) {
+            this.enableAdminCommands = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ADMIN_COMMANDS));
+        }
+        if (configLoader.isExist(ConfigKey.ENABLE_ALERTING)) {
+            this.enableAlerting = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ALERTING));
+        }
+        if (configLoader.isExist(ConfigKey.ENABLE_INTELLIGENCE)) {
+            this.enableIntelligence = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_INTELLIGENCE));
+        }
+        if (configLoader.isExist(ConfigKey.ENABLE_EXPORTER)) {
+            this.enableExporter = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_EXPORTER));
+        }
+    }
 }

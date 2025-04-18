@@ -198,8 +198,7 @@ public class SocketServer {
 
     public static String getStatusSummary() {
         StringBuilder sb = new StringBuilder();
-        sb.append(System.lineSeparator()).append(System.lineSeparator())
-                .append(Config.getInstance().getAppName()).append(" Server Startup Report:").append(System.lineSeparator())
+                sb.append(Config.getInstance().getAppName()).append(" Server Startup Report:").append(System.lineSeparator())
                 .append("  Status: ").append(ANSI_GREEN).append(statusMessage).append(ANSI_RESET).append(System.lineSeparator())
                 .append("  Version: ").append(VersionUtil.getAppVersion()).append(System.lineSeparator())
                 .append("  Port: ").append(Config.getInstance().getServerPort()).append(System.lineSeparator())

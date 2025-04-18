@@ -4,12 +4,18 @@ import com.vertexcache.core.command.impl.*;
 
 import java.util.Map;
 
+import com.vertexcache.core.command.impl.admin.ReloadCommand;
+import com.vertexcache.core.command.impl.admin.ShutdownCommand;
 import com.vertexcache.core.command.impl.admin.StatusCommand;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
 /**
- * Registr Commands, note commands are not entirely accessible to everyone, if Auth is enabled, then client
+ * Register Commands, note commands are not entirely accessible to everyone, if Auth is enabled, then client
  * role matters
+ *
+ * Manual at the moment, maybe revisit if list of commands get unfeasible to manage to dynamically load
+ * but do need to consider performance and do want added behaviour for disabling a command at
+ * run-time - Command Registry similar to the ModuleRegistry
  *
  * @see com.vertexcache.module.auth.Role
  */
@@ -30,6 +36,8 @@ public class CommandFactory {
 
         // Intended for Admin Only
         commandMap.put(StatusCommand.COMMAND_KEY, new StatusCommand());
+        commandMap.put(ShutdownCommand.COMMAND_KEY, new ShutdownCommand());
+        commandMap.put(ReloadCommand.COMMAND_KEY, new ReloadCommand());
     }
 
     public Command<String> getCommand(String commandName) {
