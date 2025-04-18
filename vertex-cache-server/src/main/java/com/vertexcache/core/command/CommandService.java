@@ -2,11 +2,12 @@ package com.vertexcache.core.command;
 
 import com.vertexcache.common.protocol.VertexCacheMessageProtocol;
 import com.vertexcache.core.command.argument.ArgumentParser;
+import com.vertexcache.core.command.impl.PingCommand;
 import com.vertexcache.core.command.impl.UnknownCommand;
-
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.validation.VertexCacheValidationException;
 import com.vertexcache.core.validation.validators.RoleCommandValidator;
+import com.vertexcache.module.ratelimiter.RateLimiterManager;
 import com.vertexcache.server.session.ClientSessionContext;
 
 import java.util.Set;
@@ -14,7 +15,7 @@ import java.util.Set;
 public class CommandService {
 
     private static final Set<String> UNSECURED_COMMANDS = Set.of(
-            "PING", "HELP", "VERSION", "AUTH"
+            PingCommand.COMMAND_KEY
     );
 
     private CommandFactory commandFactory = new CommandFactory();
@@ -32,6 +33,7 @@ public class CommandService {
     private CommandResponse processCommand(Command<String> command, ArgumentParser argumentParser, ClientSessionContext session) {
         String commandName = command.getCommandName().toUpperCase();
 
+        // Auth check
         if (Config.getInstance().isAuthEnabled() &&
                 !UNSECURED_COMMANDS.contains(commandName)) {
 
@@ -50,6 +52,15 @@ public class CommandService {
             }
         }
 
-        return command.execute(argumentParser,session);
+        // Global Rate Limiting
+        if (Config.getInstance().isRateLimitEnabled()) {
+            if (!RateLimiterManager.getInstance().allowCommand()) {
+                CommandResponse rateLimitResponse = new CommandResponse();
+                rateLimitResponse.setResponseError("Rate Limit exceeded, too many requests. Please try again later.");
+                return rateLimitResponse;
+            }
+        }
+
+        return command.execute(argumentParser, session);
     }
 }
