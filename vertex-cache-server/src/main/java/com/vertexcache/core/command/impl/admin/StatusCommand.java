@@ -17,7 +17,7 @@ public class StatusCommand extends AdminCommand<String> {
     @Override
     public CommandResponse executeAdminCommand(ArgumentParser argumentParser, ClientSessionContext session) {
         CommandResponse response = new CommandResponse();
-        response.setResponse(SystemStatusReport.getFullSystemReport());
+        response.setResponseFromArray(SystemStatusReport.getFullSystemReportAsFlat());
         return response;
     }
 }
