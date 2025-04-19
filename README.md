@@ -13,7 +13,7 @@ Developed in Java, VertexCache is powered by the Vertex Cache Message Protocol (
 
 VertexCache is designed for seamless integration and customization, leveraging simple property-based configuration that allows users to enable, disable, or fine-tune features effortlessly. No need to reinvent the wheel—VertexCache adopts industry best practices for logging, indexing, and caching, ensuring a production-ready, developer-friendly experience.
 
-As an MIT-licensed, fully open-source project, VertexCache is available for anyone to use, modify, and extend freely. The Easy-to-Use Client SDKs allow developers to interact with VertexCache in their preferred programming language without needing to write custom VCMP clients.
+VertexCache is a fully open-source project licensed under the Apache License 2.0, allowing anyone to use, modify, and extend it freely. The intuitive Client SDKs make it easy for developers to integrate VertexCache into their preferred programming language without writing custom VCMP clients.
 
 🚀 Get Started in 60 Seconds!
 Visit the GitHub repository to download the latest **[release](https://github.com/jasonlam604/VertexCache/releases)**, check out the **[quick start guide](https://github.com/jasonlam604/VertexCache/wiki/Quick-Start-Guide)**, and explore the **[Wiki](https://github.com/jasonlam604/VertexCache/wiki)** for in-depth configuration details.
