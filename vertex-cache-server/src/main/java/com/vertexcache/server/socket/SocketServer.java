@@ -2,8 +2,8 @@ package com.vertexcache.server.socket;
 
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.protocol.EncryptionMode;
-import com.vertexcache.common.version.VersionUtil;
 import com.vertexcache.core.cache.Cache;
+import com.vertexcache.core.module.ModuleStatus;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.command.CommandService;
 import com.vertexcache.core.status.SystemStatusReport;
@@ -33,12 +33,8 @@ public class SocketServer {
     private ExecutorService executor;
     private ServerSocket serverSocket = null;
 
-    private static boolean isRunning = false;
-    private static String statusMessage = "";
+    private static ModuleStatus status = ModuleStatus.NOT_STARTED;
 
-    static final String ANSI_RED = "\u001B[31m";
-    static final String ANSI_GREEN = "\u001B[32m";
-    static final String ANSI_RESET = "\u001B[0m";
 
     public SocketServer() {
 
@@ -46,6 +42,8 @@ public class SocketServer {
 
     public void execute() throws Exception {
         try {
+            status = ModuleStatus.STARTUP_IN_PROGRESS;
+
             CommandService commandService = new CommandService();
             Cache.getInstance(Config.getInstance().getCacheEvictionPolicy(), Config.getInstance().getCacheSize());
 
@@ -106,6 +104,10 @@ public class SocketServer {
         }
     }
 
+    public static ModuleStatus getStartupStatus() {
+        return SocketServer.status;
+    }
+
     private SSLServerSocket secureSocket() throws VertexCacheSSLServerSocketException {
         try {
             String certPem = Config.getInstance().getTlsCertificate();
@@ -142,8 +144,7 @@ public class SocketServer {
     }
 
     private void outputStartupOK() {
-        statusMessage = "Server Started";
-        isRunning = true;
+        status = ModuleStatus.STARTUP_SUCCESSFUL;
         this.outputStartup();
     }
 
@@ -152,8 +153,7 @@ public class SocketServer {
     }
 
     private void outputStartUpError(String message, Exception exception) {
-        statusMessage = message;
-        isRunning = false;
+        status = ModuleStatus.STARTUP_FAILED;
         this.outputStartup();
         LogHelper.getInstance().logError(exception.getMessage());
     }
@@ -196,30 +196,4 @@ public class SocketServer {
         }
     }
 
-    public static String getStatusSummary() {
-        StringBuilder sb = new StringBuilder();
-                sb.append(Config.getInstance().getAppName()).append(" Server Startup Report:").append(System.lineSeparator())
-                .append("  Status: ").append(ANSI_GREEN).append(statusMessage).append(ANSI_RESET).append(System.lineSeparator())
-                .append("  Version: ").append(VersionUtil.getAppVersion()).append(System.lineSeparator())
-                .append("  Port: ").append(Config.getInstance().getServerPort()).append(System.lineSeparator())
-                .append("  Verbose: ").append(Config.getInstance().isEnableVerbose() ? "ENABLED" : "DISABLED").append(System.lineSeparator())
-                .append("  Cache Eviction Policy: ").append(Config.getInstance().getCacheEvictionPolicy().toString()).append(System.lineSeparator())
-                .append("  Cache Size: ").append(Config.getInstance().getCacheSize()).append(System.lineSeparator())
-                .append("  Config file set: ").append(Config.getInstance().isConfigLoaded() ? "Yes" : "No").append(System.lineSeparator())
-                .append("  Config file loaded with no errors: ").append(!Config.getInstance().isConfigError() ? "Yes" : "No").append(System.lineSeparator())
-                .append("  Config file location: ").append(Config.getInstance().getConfigFilePath() != null ? Config.getInstance().getConfigFilePath() : "n/a").append(System.lineSeparator());
-        return sb.toString();
-    }
-
-    public static String getMemoryStatusSummary() {
-        Runtime runtime = Runtime.getRuntime();
-        long maxMem = runtime.maxMemory() / (1024 * 1024);
-        long usedMem = (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024);
-        StringBuilder sb = new StringBuilder();
-        sb
-         .append("  Memory Status: ").append(System.lineSeparator())
-         .append("    Used Memory: ").append(usedMem).append(" MB").append(System.lineSeparator())
-         .append("    Max Memory: ").append(maxMem).append(" MB").append(System.lineSeparator());
-        return sb.toString();
-    }
 }
