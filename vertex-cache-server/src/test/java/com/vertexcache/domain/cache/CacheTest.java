@@ -1,7 +1,7 @@
 package com.vertexcache.domain.cache;
 
 import com.vertexcache.core.cache.Cache;
-import com.vertexcache.core.cache.impl.EvictionPolicy;
+import com.vertexcache.core.cache.EvictionPolicy;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

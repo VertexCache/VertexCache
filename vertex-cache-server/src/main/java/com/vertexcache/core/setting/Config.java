@@ -8,7 +8,7 @@ import com.vertexcache.common.config.reader.EnvLoader;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.common.security.KeyPairHelper;
-import com.vertexcache.core.cache.impl.EvictionPolicy;
+import com.vertexcache.core.cache.EvictionPolicy;
 import com.vertexcache.common.config.VertexCacheConfigException;
 
 import java.security.PrivateKey;
