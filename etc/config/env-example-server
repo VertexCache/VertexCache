@@ -6,23 +6,23 @@
 ###################################################################################################
 
 
-#######################################
+#####################################################
 # General Server Settings
-#######################################
+#####################################################
 enable_verbose=true
 server_port=50505
 
 
-#######################################
+#####################################################
 # Cache Settings
-#######################################
+#####################################################
 cache_eviction=LRU
 cache_size=100000
 
 
-#######################################
+#####################################################
 # Message Encryption (RSA/AES)
-#######################################
+#####################################################
 enable_encrypt_message=true
 
 # RSA Private Key (RSA) - File Path (Option 1)
@@ -35,9 +35,9 @@ private_key="-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwgg
 #shared_encryption_key=neEvmCDMRdEgive402Taji9I/vrrpqrjJ+qeAF4QRNc=
 
 
-#######################################
+#####################################################
 # TLS Transport Encryption
-#######################################
+#####################################################
 enable_encrypt_transport=true
 
 # TLS Certificate - File Path (Option 1)
@@ -52,13 +52,26 @@ tls_private_key="-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBK
 tls_keystore_password="hx8blPjyiBRF/DxNjEVIU7mVk2GzfT2KjxF9hPcT/JE="
 
 
-#######################################
-# Optional Modules
-#######################################
-
-# Authentication / Authorization
+#####################################################
+# Optional Modules, underneath this section are the
+#  specific settings for each of the Modules
+#####################################################
 enable_auth=true
+enable_rate_limit=true
+enable_metric=true
+enable_rest_api=true
+enable_clustering=true
+enable_admin_commands=true
+enable_alerting=true
+enable_intelligence=true
+enable_exporter=true
 
+
+
+
+#####################################################
+# Auth Clients, when enable_auth=true
+#####################################################
 enable_tenant_key_prefix=true
 
 auth_client_1=console-client:tenant-system:ADMIN:fd8e2160-e55e-4e7e-9845-2d6f73f5349f
@@ -79,30 +92,8 @@ auth_client_11=sdk-client-rust:tenant-b:READ_WRITE:635006e5-65d4-4cff-a0d4-197ec
 auth_client_12=sdk-client-python:tenant-b:READ_ONLY:21d88d95-7c82-48c6-95a9-830648f3c28c
 
 
-# Rate Limiting
-enable_rate_limit=true
+#####################################################
+# Rate Limiting, when enable_rate_limit=true
+#####################################################
 rate_limit_tokens_per_second=1000
 rate_limit_burst=2000
-
-# Metrics
-enable_metric=true
-
-# REST API Service
-enable_rest_api=true
-
-# Clustering
-enable_clustering=true
-
-# Admin Commands and Access
-enable_admin_commands=true
-
-# Alerting
-enable_alerting=true
-
-# Intelligence
-enable_intelligence=true
-
-# Exporter
-enable_exporter=true
-
-
