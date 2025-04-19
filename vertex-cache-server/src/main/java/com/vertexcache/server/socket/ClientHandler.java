@@ -22,6 +22,9 @@ import java.util.Optional;
 
 public class ClientHandler implements Runnable {
 
+    private static final long DEFAULT_IDLE_TIMEOUT_MS = 30_000;
+    private static final long ADMIN_IDLE_TIMEOUT_MS = 300_000;
+
     private final Socket clientSocket;
     private final Config config;
     private final CommandService commandProcessor;
@@ -40,6 +43,9 @@ public class ClientHandler implements Runnable {
 
     @Override
     public void run() {
+        long lastActivityTime = System.currentTimeMillis();
+        long maxIdle = DEFAULT_IDLE_TIMEOUT_MS;
+
         try (InputStream inputStream = clientSocket.getInputStream();
              OutputStream outputStream = clientSocket.getOutputStream()) {
 
@@ -53,8 +59,26 @@ public class ClientHandler implements Runnable {
             }
 
             while (true) {
-                byte[] framedRequest = MessageCodec.readFramedMessage(inputStream);
-                if (framedRequest == null) break;
+                if ((System.currentTimeMillis() - lastActivityTime) > maxIdle) {
+                    LogHelper.getInstance().logInfo("Idle timeout: " + clientSocket.getRemoteSocketAddress());
+                    break;
+                }
+
+                clientSocket.setSoTimeout(1000); // short poll window
+                byte[] framedRequest;
+
+                try {
+                    framedRequest = MessageCodec.readFramedMessage(inputStream);
+                    if (framedRequest == null) break;
+                    lastActivityTime = System.currentTimeMillis();
+                } catch (IOException e) {
+                    continue; // likely timeout, re-check idle
+                }
+
+                // Check for ADMIN role and extend idle timeout
+                if (isIdentified && session.getRole() == Role.ADMIN) {
+                    maxIdle = ADMIN_IDLE_TIMEOUT_MS;
+                }
 
                 byte[] response = processInputData(framedRequest, rsaCipher, aesKeyBytes);
                 MessageCodec.writeFramedMessage(outputStream, response);
