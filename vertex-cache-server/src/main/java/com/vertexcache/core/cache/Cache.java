@@ -2,6 +2,8 @@ package com.vertexcache.core.cache;
 
 import com.vertexcache.core.cache.impl.*;
 
+import java.util.Set;
+
 public class Cache<K, V> {
 
     private static volatile Cache<?, ?> instance;
@@ -109,5 +111,7 @@ public class Cache<K, V> {
     public void clear() {
         cache.clear();
     }
+
+    public Set<String> keySet() { return (Set<String>) cache.keySet(); }
 }
 

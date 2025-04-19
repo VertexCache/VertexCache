@@ -3,6 +3,7 @@ package com.vertexcache.core.cache.impl;
 import com.vertexcache.core.cache.VertexCacheTypeException;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 abstract public class CacheBase<K, V> {
@@ -146,13 +147,9 @@ abstract public class CacheBase<K, V> {
                 }
             }
         }
-        /*
-              if (secondaryKeys.length > 0 && secondaryKeys[0] != null) {
-                this.getSecondaryIndexOne().put((K) secondaryKeys[0], primaryKey);
-            }
-            if (secondaryKeys.length > 1 && secondaryKeys[1] != null) {
-                this.getSecondaryIndexTwo().put((K) secondaryKeys[1], primaryKey);
-            }
-         */
+    }
+
+    public synchronized Set<K> keySet() {
+        return this.getPrimaryCache().keySet();
     }
 }

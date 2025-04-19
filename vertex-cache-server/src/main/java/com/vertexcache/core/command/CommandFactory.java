@@ -39,6 +39,7 @@ public class CommandFactory {
         commandMap.put(ConfigCommand.COMMAND_KEY, new ConfigCommand());
         commandMap.put(ResetCommand.COMMAND_KEY, new ResetCommand());
         commandMap.put(SessionCommand.COMMAND_KEY, new SessionCommand());
+        commandMap.put(PurgeCommand.COMMAND_KEY, new PurgeCommand());
     }
 
     public Command<String> getCommand(String commandName) {
