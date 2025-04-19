@@ -1,4 +1,3 @@
-
 package com.vertexcache.core.command.impl.admin;
 
 import com.vertexcache.core.command.CommandResponse;
@@ -6,6 +5,8 @@ import com.vertexcache.core.command.argument.ArgumentParser;
 import com.vertexcache.server.session.ClientSessionContext;
 import com.vertexcache.server.session.SessionRegistry;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class SessionCommand extends AdminCommand<String> {
@@ -20,7 +21,6 @@ public class SessionCommand extends AdminCommand<String> {
     @Override
     public CommandResponse executeAdminCommand(ArgumentParser argumentParser, ClientSessionContext session) {
         CommandResponse response = new CommandResponse();
-
         Map<String, ClientSessionContext> sessions = SessionRegistry.listAll();
 
         if (sessions.isEmpty()) {
@@ -28,17 +28,18 @@ public class SessionCommand extends AdminCommand<String> {
             return response;
         }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("Active Sessions (").append(sessions.size()).append("):\n");
+        List<String> lines = new ArrayList<>();
+        for (Map.Entry<String, ClientSessionContext> entry : sessions.entrySet()) {
+            ClientSessionContext ctx = entry.getValue();
+            String connectionId = entry.getKey();
 
-        sessions.forEach((connectionId, ctx) -> {
-            sb.append("  Connection ID: ").append(connectionId).append("\n");
-            sb.append("    Client ID: ").append(ctx.getClientId()).append("\n");
-            sb.append("    Tenant ID: ").append(ctx.getTenantId()).append("\n");
-            sb.append("    Role: ").append(ctx.getRole()).append("\n\n");
-        });
+            lines.add("connection_id=" + connectionId);
+            lines.add("client_id=" + ctx.getClientId());
+            lines.add("tenant_id=" + ctx.getTenantId());
+            lines.add("role=" + ctx.getRole());
+        }
 
-        response.setResponse(sb.toString().trim());
+        response.setResponseFromArray(lines);
         return response;
     }
 }

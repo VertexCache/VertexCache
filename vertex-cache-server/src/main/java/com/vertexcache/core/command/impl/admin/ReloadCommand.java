@@ -17,8 +17,6 @@ public class ReloadCommand extends AdminCommand<String> {
 
     @Override
     public CommandResponse executeAdminCommand(ArgumentParser argumentParser, ClientSessionContext session) {
-        if (!isAdminAccessAllowed()) return rejectIfAdminAccessNotAllowed();
-
         CommandResponse response = new CommandResponse();
 
         try {

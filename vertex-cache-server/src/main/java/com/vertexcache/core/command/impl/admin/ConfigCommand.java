@@ -1,4 +1,3 @@
-
 package com.vertexcache.core.command.impl.admin;
 
 import com.vertexcache.core.command.CommandResponse;
@@ -6,6 +5,8 @@ import com.vertexcache.core.command.argument.ArgumentParser;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.server.session.ClientSessionContext;
+
+import java.util.List;
 
 public class ConfigCommand extends AdminCommand<String> {
 
@@ -18,47 +19,33 @@ public class ConfigCommand extends AdminCommand<String> {
 
     @Override
     public CommandResponse executeAdminCommand(ArgumentParser argumentParser, ClientSessionContext session) {
-        if (!isAdminAccessAllowed()) return rejectIfAdminAccessNotAllowed();
+        Config cfg = Config.getInstance();
+        EncryptionMode mode = cfg.getEncryptionMode();
 
-        Config config = Config.getInstance();
+        List<String> fields = List.of(
+                "config_path=" + cfg.getConfigFilePath(),
+                "port=" + cfg.getServerPort(),
+                "verbose=" + cfg.isEnableVerbose(),
+                "encryption_mode=" + mode,
+                "tls_enabled=" + cfg.isEncryptTransport(),
+                "private_key=" + (mode == EncryptionMode.ASYMMETRIC ? "ENABLED" : "DISABLED"),
+                "shared_key=" + (mode == EncryptionMode.SYMMETRIC ? "ENABLED" : "DISABLED"),
+                "auth_enabled=" + cfg.isAuthEnabled(),
+                "tenant_key_prefixing=" + cfg.isTenantKeyPrefixingEnabled(),
+                "rate_limit_enabled=" + cfg.isRateLimitEnabled(),
+                "rate_limit_tokens_per_sec=" + cfg.getRateLimitTokensTerSecond(),
+                "rate_limit_burst=" + cfg.getRateLimitBurst(),
+                "module_metric=" + cfg.isMetricEnabled(),
+                "module_clustering=" + cfg.isClusteringEnabled(),
+                "module_exporter=" + cfg.isExporterEnabled(),
+                "module_intelligence=" + cfg.isIntelligenceEnabled(),
+                "module_admin=" + cfg.isAdminCommandsEnabled(),
+                "module_alerting=" + cfg.isAlertingEnabled(),
+                "module_rest_api=" + cfg.isRestApiEnabled()
+        );
+
         CommandResponse response = new CommandResponse();
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("CONFIG\nOK\n");
-
-        sb.append("\nCore Settings:\n");
-        sb.append("  Config Path: ").append(config.getConfigFilePath()).append("\n");
-        sb.append("  Port: ").append(config.getServerPort()).append("\n");
-        sb.append("  Verbose: ").append(config.isEnableVerbose()).append("\n");
-
-        sb.append("\nEncryption:\n");
-        EncryptionMode mode = config.getEncryptionMode();
-        sb.append("  Mode: ").append(mode).append("\n");
-        sb.append("  TLS Enabled: ").append(config.isEncryptTransport()).append("\n");
-        sb.append("  Private Key: ").append(mode == EncryptionMode.ASYMMETRIC ? "ENABLED" : "DISABLED").append("\n");
-        sb.append("  Shared Key: ").append(mode == EncryptionMode.SYMMETRIC ? "ENABLED" : "DISABLED").append("\n");
-
-        sb.append("\nAuth:\n");
-        sb.append("  Enabled: ").append(config.isAuthEnabled()).append("\n");
-        sb.append("  Tenant Key Prefixing: ").append(config.isTenantKeyPrefixingEnabled()).append("\n");
-
-        sb.append("\nRate Limiting:\n");
-        sb.append("  Enabled: ").append(config.isRateLimitEnabled()).append("\n");
-        if (config.isRateLimitEnabled()) {
-            sb.append("  Tokens/sec: ").append(config.getRateLimitTokensTerSecond()).append("\n");
-            sb.append("  Burst: ").append(config.getRateLimitBurst()).append("\n");
-        }
-
-        sb.append("\nModule Flags:\n");
-        sb.append("  Metric: ").append(config.isMetricEnabled()).append("\n");
-        sb.append("  Clustering: ").append(config.isClusteringEnabled()).append("\n");
-        sb.append("  Exporter: ").append(config.isExporterEnabled()).append("\n");
-        sb.append("  Intelligence: ").append(config.isIntelligenceEnabled()).append("\n");
-        sb.append("  Admin Commands: ").append(config.isAdminCommandsEnabled()).append("\n");
-        sb.append("  Alerting: ").append(config.isAlertingEnabled()).append("\n");
-        sb.append("  REST API: ").append(config.isRestApiEnabled()).append("\n");
-
-        response.setResponse(sb.toString().trim());
+        response.setResponseFromArray(fields);
         return response;
     }
 }

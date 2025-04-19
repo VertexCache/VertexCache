@@ -1,9 +1,11 @@
-
 package com.vertexcache.core.command.impl.admin;
 
 import com.vertexcache.core.command.CommandResponse;
 import com.vertexcache.core.command.argument.ArgumentParser;
 import com.vertexcache.server.session.ClientSessionContext;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class StatCommand extends AdminCommand<String> {
 
@@ -18,28 +20,24 @@ public class StatCommand extends AdminCommand<String> {
     @Override
     public CommandResponse executeAdminCommand(ArgumentParser argumentParser, ClientSessionContext session) {
         CommandResponse response = new CommandResponse();
-        StringBuilder sb = new StringBuilder();
 
         long uptimeMillis = System.currentTimeMillis() - START_TIME;
         long uptimeSeconds = uptimeMillis / 1000;
-        long uptimeMinutes = uptimeSeconds / 60;
-        long uptimeHours = uptimeMinutes / 60;
 
         long usedMemory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024 * 1024);
         long maxMemory = Runtime.getRuntime().maxMemory() / (1024 * 1024);
 
-        sb.append("STATS\n");
-        sb.append("Uptime: ").append(uptimeHours).append("h ")
-                .append(uptimeMinutes % 60).append("m ")
-                .append(uptimeSeconds % 60).append("s\n");
-        sb.append("Memory Usage: ").append(usedMemory).append(" MB used / ")
-                .append(maxMemory).append(" MB max\n");
+        List<String> stats = new ArrayList<>();
+        stats.add("uptime_seconds=" + uptimeSeconds);
+        stats.add("memory_used_mb=" + usedMemory);
+        stats.add("memory_max_mb=" + maxMemory);
 
-        // Add placeholder for future stats like command count, hit/miss, etc.
-        //sb.append("Command Count: (placeholder)\n");
-        //sb.append("Cache Hit/Miss: (placeholder)\n");
+        // Placeholder for future:
+        // stats.add("command_count=" + ...);
+        // stats.add("cache_hits=" + ...);
+        // stats.add("cache_misses=" + ...);
 
-        response.setResponse(sb.toString().trim());
+        response.setResponseFromArray(stats);
         return response;
     }
 }
