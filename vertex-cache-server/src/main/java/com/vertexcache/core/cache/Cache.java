@@ -7,41 +7,21 @@ import java.util.Set;
 public class Cache<K, V> {
 
     private static volatile Cache<?, ?> instance;
-    private final CacheBase<K, V> cache;
+    private final CacheBase<K, CacheEntry<V>> cache;
 
     private Cache(EvictionPolicy evictionPolicy, int sizeCapacity) {
         switch (evictionPolicy) {
-            case LRU:
-                cache = new CacheLRU<>(sizeCapacity);
-                break;
-            case MRU:
-                cache = new CacheMRU<>(sizeCapacity);
-                break;
-            case FIFO:
-                cache = new CacheFIFO<>(sizeCapacity);
-                break;
-            case LFU:
-                cache = new CacheLFU<>(sizeCapacity);
-                break;
-            case RANDOM:
-                cache = new CacheRandom<>(sizeCapacity);
-                break;
-            case ARC:
-                cache = new CacheARC<>(sizeCapacity);
-                break;
-            case TwoQueues:
-                cache = new CacheTwoQueues<>(sizeCapacity);
-                break;
-            case Clock:
-                cache = new CacheClock<>(sizeCapacity);
-                break;
-            case TinyLFU:
-                cache = new CacheTinyLFU<>(sizeCapacity);
-                break;
+            case LRU: cache = new CacheLRU<>(sizeCapacity); break;
+            case MRU: cache = new CacheMRU<>(sizeCapacity); break;
+            case FIFO: cache = new CacheFIFO<>(sizeCapacity); break;
+            case LFU: cache = new CacheLFU<>(sizeCapacity); break;
+            case RANDOM: cache = new CacheRandom<>(sizeCapacity); break;
+            case ARC: cache = new CacheARC<>(sizeCapacity); break;
+            case TwoQueues: cache = new CacheTwoQueues<>(sizeCapacity); break;
+            case Clock: cache = new CacheClock<>(sizeCapacity); break;
+            case TinyLFU: cache = new CacheTinyLFU<>(sizeCapacity); break;
             case NONE:
-            default:
-                cache = new CacheNoEviction<>();
-                break;
+            default: cache = new CacheNoEviction<>(); break;
         }
     }
 
@@ -57,41 +37,42 @@ public class Cache<K, V> {
     }
 
     public static <K, V> Cache<K, V> getInstance(EvictionPolicy evictionPolicy) {
-        if (instance == null) {
-            synchronized (Cache.class) {
-                if (instance == null) {
-                    instance = new Cache<>(evictionPolicy, 0);
-                }
-            }
-        }
-        return (Cache<K, V>) instance;
+        return getInstance(evictionPolicy, 0);
     }
 
     public static <K, V> Cache<K, V> getInstance() throws Exception {
         if (instance == null) {
-            synchronized (Cache.class) {
-                if (instance == null) {
-                    throw new Exception("Cache not yet initialized with eviction policy");
-                }
-            }
+            throw new Exception("Cache not yet initialized with eviction policy");
         }
         return (Cache<K, V>) instance;
     }
 
     public void put(K primaryKey, V value, String... secondaryKeys) throws VertexCacheTypeException {
-        cache.put(primaryKey, value, secondaryKeys);
+        cache.put(primaryKey, new CacheEntry<>(value, false), secondaryKeys);
+    }
+
+    public void upsert(K key, V value, String... secondaryKeys) throws VertexCacheTypeException {
+        CacheEntry<V> existing = cache.get(key);
+        if (existing != null) {
+            existing.updateValue(value);
+        } else {
+            put(key, value, secondaryKeys);
+        }
     }
 
     public V get(K primaryKey) {
-        return cache.get(primaryKey);
+        CacheEntry<V> entry = cache.get(primaryKey);
+        return entry != null ? entry.getValue() : null;
     }
 
     public V getBySecondaryKeyIndexOne(Object secondaryKey) {
-        return cache.getBySecondaryKeyIndexOne(secondaryKey);
+        CacheEntry<V> entry = cache.getBySecondaryKeyIndexOne(secondaryKey);
+        return entry != null ? entry.getValue() : null;
     }
 
     public V getBySecondaryKeyIndexTwo(Object secondaryKey) {
-        return cache.getBySecondaryKeyIndexTwo(secondaryKey);
+        CacheEntry<V> entry = cache.getBySecondaryKeyIndexTwo(secondaryKey);
+        return entry != null ? entry.getValue() : null;
     }
 
     public boolean containsKey(K key) {
@@ -99,10 +80,14 @@ public class Cache<K, V> {
     }
 
     public boolean containsValue(V value) {
-        return cache.containsValue(value);
+        return cache.keySet().stream()
+                .map(k -> cache.get(k))
+                .anyMatch(e -> e != null && e.getValue().equals(value));
     }
 
-    public void remove(K primaryKey) { cache.remove(primaryKey);}
+    public void remove(K primaryKey) {
+        cache.remove(primaryKey);
+    }
 
     public int size() {
         return cache.size();
@@ -112,6 +97,21 @@ public class Cache<K, V> {
         cache.clear();
     }
 
-    public Set<String> keySet() { return (Set<String>) cache.keySet(); }
-}
+    public Set<String> keySet() {
+        return (Set<String>) cache.keySet();
+    }
 
+    // Optional inspection utility
+    public String inspect(K key) {
+        CacheEntry<V> entry = cache.get(key);
+        if (entry == null) return "Key not found";
+        return String.format(
+                "createdAt=%d, lastAccessed=%d, lastUpdatedAt=%d, hitCount=%d, remote=%s",
+                entry.getCreatedAt(),
+                entry.getLastAccessed(),
+                entry.getLastUpdatedAt(),
+                entry.getHitCount(),
+                entry.isRemote()
+        );
+    }
+}

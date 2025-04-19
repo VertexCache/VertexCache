@@ -17,23 +17,13 @@ abstract public class CacheBase<K, V> {
     abstract public void remove(K primaryKey);
 
     protected void putDefaultImpl(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheTypeException {
-        if(secondaryKeys.length <= MAX_SECONDARY_INDEXES) {
+        if (secondaryKeys.length <= MAX_SECONDARY_INDEXES) {
             try {
                 synchronized (this.getPrimaryCache()) {
                     this.getPrimaryCache().put(primaryKey, value);
                 }
-                synchronized (this.getSecondaryIndexOne()) {
-                    if (secondaryKeys.length > 0 && secondaryKeys[0] != null) {
-                        this.getSecondaryIndexOne().put(secondaryKeys[0], primaryKey);
-                    }
-                }
-                synchronized (this.getSecondaryIndexTwo()) {
-                    if (secondaryKeys.length > 1 && secondaryKeys[1] != null) {
-                        this.getSecondaryIndexTwo().put(secondaryKeys[1], primaryKey);
-                    }
-                }
+                updateSecondaryKeys(primaryKey, secondaryKeys);
             } catch (OutOfMemoryError e) {
-                // This still potentially can occur even with LRU
                 throw new VertexCacheTypeException("Out of memory, increase memory or use eviction policy other than none.");
             }
         } else {
@@ -92,11 +82,7 @@ abstract public class CacheBase<K, V> {
     }
 
     public synchronized int size() {
-        if(!this.getPrimaryCache().isEmpty()) {
-            return this.getPrimaryCache().size();
-        }  else {
-            return 0;
-        }
+        return this.getPrimaryCache().size();
     }
 
     public void clear() {
