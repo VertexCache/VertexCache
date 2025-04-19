@@ -7,6 +7,8 @@ import com.vertexcache.core.module.ModuleRegistry;
 
 public class VertexCacheServer {
     public static void main(String[] args) throws Exception {
+
+        // TODO - Modify so this loadable to support Embeddable Java use
         Config.getInstance().loadPropertiesFromArgs(new CommandLineArgsParser(args));
 
         // Load all enabled modules
