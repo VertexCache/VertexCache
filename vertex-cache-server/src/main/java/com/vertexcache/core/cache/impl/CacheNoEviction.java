@@ -1,5 +1,6 @@
 package com.vertexcache.core.cache.impl;
 
+import com.vertexcache.core.cache.CacheBase;
 import com.vertexcache.core.cache.VertexCacheTypeException;
 
 public class CacheNoEviction<K, V> extends CacheBase<K, V> {
