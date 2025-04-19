@@ -5,6 +5,36 @@
 # Documentation: https://github.com/vertexcache/VertexCache/wiki
 ###################################################################################################
 
+###################################################################################################
+# VertexCache Cluster Configuration (Single File - All Nodes)
+# Each node uses this same file and sets `CLUSTER_NODE_ID=node-a|node-b|node-c` at launch.
+#
+#  The REPLACE_ME below indicates which node are we starting: node-a, node-b, or node-c
+#
+###################################################################################################
+cluster_enabled=true
+cluster_node_id=REPLACE_ME  # Set this per node: node-a, node-b, or node-c
+
+#######################################
+# Cluster Topology
+#######################################
+
+# Primary node (always active, no status needed)
+cluster_node.node-a.role=primary
+cluster_node.node-a.host=localhost
+cluster_node.node-a.port=50505
+
+# Secondary 1 (eligible for auto-promotion)
+cluster_node.node-b.role=secondary
+cluster_node.node-b.host=localhost
+cluster_node.node-b.port=50506
+cluster_node.node-b.status=active
+
+# Secondary 2 (replicates but not auto-promoted unless toggled manually)
+cluster_node.node-c.role=secondary
+cluster_node.node-c.host=localhost
+cluster_node.node-c.port=50507
+cluster_node.node-c.status=standby
 
 #####################################################
 # General Server Settings
@@ -15,9 +45,21 @@ server_port=50505
 
 #####################################################
 # Cache Settings
+#
+#  Cache Types
+#    NONE - No Eviction applied, unbound your limit will be the available memory
+#    LRU - Least Recently Used
+#    MRU - Most Recently Used
+#    FIFO - First In and First Out
+#    LFU - Least Frequently Used
+#    RANDOM - Random
+#    ARC - Adaptive Replacement Cache
+#    2Queue - Two Queues
+#    Clock - Clock (or Clock-Pro)
+#    TinyLFU - Tiny Least Frequently Used
 #####################################################
 cache_eviction=LRU
-cache_size=100000
+cache_size=1000000
 
 
 #####################################################
@@ -60,7 +102,7 @@ enable_auth=true
 enable_rate_limit=true
 enable_metric=true
 enable_rest_api=true
-enable_clustering=true
+#enable_clustering=true
 enable_admin_commands=true
 enable_alerting=true
 enable_intelligence=true

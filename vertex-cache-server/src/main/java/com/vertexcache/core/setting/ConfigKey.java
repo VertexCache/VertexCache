@@ -44,8 +44,8 @@ public class ConfigKey {
     // REST API
     public static final String ENABLE_REST_API = "enable_rest_api";
 
-    // Clustering
-    public static final String ENABLE_CLUSTERING = "enable_clustering";
+    // Clustering - Not this follows the clustering convention prefix
+    public static final String ENABLE_CLUSTERING = "cluster_enabled";
 
     // Admin Commands
     public static final String ENABLE_ADMIN_COMMANDS = "enable_admin_commands";
