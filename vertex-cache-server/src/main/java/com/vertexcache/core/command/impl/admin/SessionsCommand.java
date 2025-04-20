@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SessionCommand extends AdminCommand<String> {
+public class SessionsCommand extends AdminCommand<String> {
 
     public static final String COMMAND_KEY = "SESSIONS";
 
