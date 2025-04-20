@@ -6,6 +6,7 @@ import com.vertexcache.core.setting.Config;
 import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.server.session.ClientSessionContext;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,36 +24,75 @@ public class ConfigCommand extends AdminCommand<String> {
         Config cfg = Config.getInstance();
         EncryptionMode mode = cfg.getEncryptionMode();
 
-        List<String> fields = List.of(
-                "config_path=" + cfg.getConfigFilePath(),
-                "port=" + cfg.getServerPort(),
-                "verbose=" + cfg.isEnableVerbose(),
-                "encryption_mode=" + mode,
-                "tls_enabled=" + cfg.isEncryptTransport(),
-                "private_key=" + (mode == EncryptionMode.ASYMMETRIC ? "ENABLED" : "DISABLED"),
-                "shared_key=" + (mode == EncryptionMode.SYMMETRIC ? "ENABLED" : "DISABLED"),
-                "auth_enabled=" + cfg.isAuthEnabled(),
-                "tenant_key_prefixing=" + cfg.isTenantKeyPrefixingEnabled(),
-                "rate_limit_enabled=" + cfg.isRateLimitEnabled(),
-                "rate_limit_tokens_per_sec=" + cfg.getRateLimitTokensTerSecond(),
-                "rate_limit_burst=" + cfg.getRateLimitBurst(),
-                "module_metric=" + cfg.isMetricEnabled(),
-                "module_clustering=" + cfg.isClusteringEnabled(),
-                "module_exporter=" + cfg.isExporterEnabled(),
-                "module_intelligence=" + cfg.isIntelligenceEnabled(),
-                "module_admin=" + cfg.isAdminCommandsEnabled(),
-                "module_alerting=" + cfg.isAlertingEnabled(),
-                "module_rest_api=" + cfg.isRestApiEnabled()
-        );
-
-       // if (cfg.isClusteringEnabled()) {
-         //   cfg.getClusterFlatSummary().forEach((k, v) -> fields.add(k + "=" + v));
-          //  cfg.getClusterConfig().getCoordinationSettings().forEach((k, v) -> fields.add(k + "=" + v));
-        //}
-
+        boolean pretty = argumentParser.getPrimaryArgument().getArgs().size() == 1
+                && argumentParser.getPrimaryArgument().getArgs().getFirst().equalsIgnoreCase(COMMAND_PRETTY);
 
         CommandResponse response = new CommandResponse();
-        response.setResponseFromArray(fields);
+
+        if (pretty) {
+            List<String> lines = new ArrayList<>();
+            lines.add("Configuration Summary:");
+            lines.add("----------------------");
+            lines.add("Config Path:           " + cfg.getConfigFilePath());
+            lines.add("Port:                  " + cfg.getServerPort());
+            lines.add("Verbose Logging:       " + cfg.isEnableVerbose());
+            lines.add("Encryption Mode:       " + mode);
+            lines.add("  TLS Enabled:         " + cfg.isEncryptTransport());
+            lines.add("  RSA Key Enabled:     " + (mode == EncryptionMode.ASYMMETRIC));
+            lines.add("  AES Key Enabled:     " + (mode == EncryptionMode.SYMMETRIC));
+            lines.add("Auth Enabled:          " + cfg.isAuthEnabled());
+            lines.add("Tenant Key Prefixing:  " + cfg.isTenantKeyPrefixingEnabled());
+            lines.add("Rate Limiting:         " + cfg.isRateLimitEnabled());
+            lines.add("  Tokens/sec:          " + cfg.getRateLimitTokensTerSecond());
+            lines.add("  Burst Size:          " + cfg.getRateLimitBurst());
+            lines.add("Modules:");
+            lines.add("  Metric:              " + cfg.isMetricEnabled());
+            lines.add("  Clustering:          " + cfg.isClusteringEnabled());
+            lines.add("  Exporter:            " + cfg.isExporterEnabled());
+            lines.add("  Intelligence:        " + cfg.isIntelligenceEnabled());
+            lines.add("  Admin:               " + cfg.isAdminCommandsEnabled());
+            lines.add("  Alerting:            " + cfg.isAlertingEnabled());
+            lines.add("  REST API:            " + cfg.isRestApiEnabled());
+
+            if (cfg.isClusteringEnabled()) {
+                lines.add("");
+                lines.add("Cluster Config:");
+                lines.add("---------------");
+                cfg.getClusterFlatSummary().forEach((k, v) -> lines.add("  " + k + ": " + v));
+            }
+
+            response.setResponse(String.join(System.lineSeparator(), lines));
+        } else {
+            List<String> fields = new ArrayList<>(List.of(
+                    "config_path=" + cfg.getConfigFilePath(),
+                    "port=" + cfg.getServerPort(),
+                    "verbose=" + cfg.isEnableVerbose(),
+                    "encryption_mode=" + mode,
+                    "tls_enabled=" + cfg.isEncryptTransport(),
+                    "private_key=" + (mode == EncryptionMode.ASYMMETRIC ? "ENABLED" : "DISABLED"),
+                    "shared_key=" + (mode == EncryptionMode.SYMMETRIC ? "ENABLED" : "DISABLED"),
+                    "auth_enabled=" + cfg.isAuthEnabled(),
+                    "tenant_key_prefixing=" + cfg.isTenantKeyPrefixingEnabled(),
+                    "rate_limit_enabled=" + cfg.isRateLimitEnabled(),
+                    "rate_limit_tokens_per_sec=" + cfg.getRateLimitTokensTerSecond(),
+                    "rate_limit_burst=" + cfg.getRateLimitBurst(),
+                    "module_metric=" + cfg.isMetricEnabled(),
+                    "module_clustering=" + cfg.isClusteringEnabled(),
+                    "module_exporter=" + cfg.isExporterEnabled(),
+                    "module_intelligence=" + cfg.isIntelligenceEnabled(),
+                    "module_admin=" + cfg.isAdminCommandsEnabled(),
+                    "module_alerting=" + cfg.isAlertingEnabled(),
+                    "module_rest_api=" + cfg.isRestApiEnabled()
+            ));
+
+            if (cfg.isClusteringEnabled()) {
+                cfg.getClusterFlatSummary().forEach((k, v) -> fields.add(k + "=" + v));
+            }
+
+            response.setResponseFromArray(fields);
+        }
+
         return response;
     }
+
 }
