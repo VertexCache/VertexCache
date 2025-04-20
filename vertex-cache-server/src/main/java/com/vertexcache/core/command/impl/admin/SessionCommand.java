@@ -28,18 +28,41 @@ public class SessionCommand extends AdminCommand<String> {
             return response;
         }
 
-        List<String> lines = new ArrayList<>();
-        for (Map.Entry<String, ClientSessionContext> entry : sessions.entrySet()) {
-            ClientSessionContext ctx = entry.getValue();
-            String connectionId = entry.getKey();
+        boolean pretty = argumentParser.getPrimaryArgument().getArgs().size() == 1
+                && argumentParser.getPrimaryArgument().getArgs().getFirst().equalsIgnoreCase(COMMAND_PRETTY);
 
-            lines.add("connection_id=" + connectionId);
-            lines.add("client_id=" + ctx.getClientId());
-            lines.add("tenant_id=" + ctx.getTenantId());
-            lines.add("role=" + ctx.getRole());
+        if (pretty) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Active Sessions:").append(System.lineSeparator());
+            sb.append("----------------").append(System.lineSeparator());
+
+            for (Map.Entry<String, ClientSessionContext> entry : sessions.entrySet()) {
+                ClientSessionContext ctx = entry.getValue();
+                sb.append("Connection ID: ").append(entry.getKey()).append(System.lineSeparator());
+                sb.append("  Client ID:   ").append(ctx.getClientId()).append(System.lineSeparator());
+                sb.append("  Tenant ID:   ").append(ctx.getTenantId()).append(System.lineSeparator());
+                sb.append("  Role:        ").append(ctx.getRole()).append(System.lineSeparator());
+                sb.append(System.lineSeparator());
+            }
+
+            response.setResponse(sb.toString());
+        } else {
+            List<String> lines = new ArrayList<>();
+            for (Map.Entry<String, ClientSessionContext> entry : sessions.entrySet()) {
+                ClientSessionContext ctx = entry.getValue();
+                String connectionId = entry.getKey();
+
+                lines.add("connection_id=" + connectionId);
+                lines.add("client_id=" + ctx.getClientId());
+                lines.add("tenant_id=" + ctx.getTenantId());
+                lines.add("role=" + ctx.getRole());
+            }
+
+            response.setResponseFromArray(lines);
         }
 
-        response.setResponseFromArray(lines);
         return response;
     }
+
+
 }
