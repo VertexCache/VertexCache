@@ -188,4 +188,15 @@ public class SystemStatusReport {
                 "    Used Memory: " + usedMem + " MB" + System.lineSeparator() +
                 "    Max Memory: " + maxMem + " MB" + System.lineSeparator();
     }
+
+    public static String getStatusSummaryAsPretty() {
+        return String.join(System.lineSeparator(),
+                getServerStatus(),
+                getSecuritySummary(),
+                getModuleStatus(),
+                getClusterSummary(),
+                getServerMemoryStatus()
+        );
+    }
+
 }

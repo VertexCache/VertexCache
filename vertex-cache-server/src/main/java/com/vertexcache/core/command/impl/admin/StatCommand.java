@@ -2,6 +2,7 @@ package com.vertexcache.core.command.impl.admin;
 
 import com.vertexcache.core.command.CommandResponse;
 import com.vertexcache.core.command.argument.ArgumentParser;
+import com.vertexcache.core.status.SystemStatusReport;
 import com.vertexcache.server.session.ClientSessionContext;
 
 import java.util.ArrayList;
@@ -21,23 +22,13 @@ public class StatCommand extends AdminCommand<String> {
     public CommandResponse executeAdminCommand(ArgumentParser argumentParser, ClientSessionContext session) {
         CommandResponse response = new CommandResponse();
 
-        long uptimeMillis = System.currentTimeMillis() - START_TIME;
-        long uptimeSeconds = uptimeMillis / 1000;
+        if (argumentParser.getPrimaryArgument().getArgs().size() == 1 && argumentParser.getPrimaryArgument().getArgs().getFirst().equalsIgnoreCase(COMMAND_PRETTY)) {
+            response.setResponse(SystemStatusReport.getStatusSummaryAsPretty());
+        } else {
+            response.setResponseFromArray(SystemStatusReport.getFullSystemReportAsFlat());
+        }
 
-        long usedMemory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024 * 1024);
-        long maxMemory = Runtime.getRuntime().maxMemory() / (1024 * 1024);
-
-        List<String> stats = new ArrayList<>();
-        stats.add("uptime_seconds=" + uptimeSeconds);
-        stats.add("memory_used_mb=" + usedMemory);
-        stats.add("memory_max_mb=" + maxMemory);
-
-        // Placeholder for future:
-        // stats.add("command_count=" + ...);
-        // stats.add("cache_hits=" + ...);
-        // stats.add("cache_misses=" + ...);
-
-        response.setResponseFromArray(stats);
         return response;
     }
+
 }
