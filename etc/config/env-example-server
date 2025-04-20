@@ -1,40 +1,86 @@
 ###################################################################################################
-# VertexCache Server - Default Property File
+# VertexCache Server
 #
-# NOTE: This file is for development/testing only. DO NOT use in production.
-# Documentation: https://github.com/vertexcache/VertexCache/wiki
-###################################################################################################
-
-###################################################################################################
-# VertexCache Cluster Configuration (Single File - All Nodes)
-# Each node uses this same file and sets `CLUSTER_NODE_ID=node-a|node-b|node-c` at launch.
+# WHAT IS THIS:
+#   - Default ENV file (one 1 file)
 #
-#  The REPLACE_ME below indicates which node are we starting: node-a, node-b, or node-c
+# NOTE:
+#   - This file is for development/testing only.
+#   - Below you will see clustering settings first because it makes a key difference if clustering is enabled or not
+#   - If cluster_enabled=false, then you can IGNORE all the clustering configurations and scroll down to
+#     "General Server Settings"
+#
+# WARNING:
+#   - DO NOT use default settings in production, specifically referring to the Public/Private
+#     Keys and certificates. This her for ease so one can get VertexCache up an running
+#     fast as possible.
+#
+# MORE DOCUMENTATION:
+#   - https://github.com/vertexcache/VertexCache/wiki
+#
+#
+# CLUSTER CONFIGURATION:
+#   - Each node uses this same file and sets `CLUSTER_NODE_ID=node-a|node-b|node-c` at launch.
+#   - The REPLACE_ME below indicates which node are we starting: node-a, node-b, or node-c
 #
 ###################################################################################################
 cluster_enabled=true
 cluster_node_id=REPLACE_ME  # Set this per node: node-a, node-b, or node-c
 
 #######################################
-# Cluster Topology
+# Cluster Topology Declaration
 #######################################
 
-# Primary node (always active, no status needed)
+# PRIMARY
 cluster_node.node-a.role=primary
 cluster_node.node-a.host=localhost
 cluster_node.node-a.port=50505
 
-# Secondary 1 (eligible for auto-promotion)
+# ACTIVE SECONDARY (auto-promotable)
 cluster_node.node-b.role=secondary
 cluster_node.node-b.host=localhost
 cluster_node.node-b.port=50506
 cluster_node.node-b.status=active
 
-# Secondary 2 (replicates but not auto-promoted unless toggled manually)
+# STANDBY SECONDARY (manual failover only)
 cluster_node.node-c.role=secondary
 cluster_node.node-c.host=localhost
 cluster_node.node-c.port=50507
 cluster_node.node-c.status=standby
+
+#######################################
+# Cluster Coordination Settings (Shared)
+#######################################
+
+cluster_failover_enabled=true
+cluster_failover_check_interval_ms=2000
+cluster_failover_backoff_jitter_ms=500
+
+cluster_replication_retry_attempts=3
+cluster_replication_retry_interval_ms=100
+cluster_replication_queue_ttl_ms=3000
+
+# Optional: Tie-breaker (lower = higher priority)
+# cluster_failover_priority=1
+
+# Optional: Enforce config hash consistency
+# cluster_config_strict=true
+
+# Optional: Custom host/port for peer advertisement (e.g. Docker, NAT)
+# cluster_advertise_host=10.0.0.5
+# cluster_advertise_port=60420
+
+# Optional: Max number of secondaries that can be active
+# cluster_max_standbys=2
+
+# Optional: Heartbeat expiration before marking node unreachable
+# cluster_heartbeat_timeout_ms=6000
+
+# Optional: If true, a promoted node will demote itself if the original primary returns
+# cluster_auto_rejoin_role=secondary
+
+
+
 
 #####################################################
 # General Server Settings
@@ -44,10 +90,16 @@ server_port=50505
 
 
 #####################################################
+# Runtime Shared Settings (Must Match/Exact same
+# config for all Nodes for clustering to work.
+#####################################################
+
+#####################################################
 # Cache Settings
 #
 #  Cache Types
-#    NONE - No Eviction applied, unbound your limit will be the available memory
+#    NONE - No Eviction applied, unbound your limit
+#           will be the available memory
 #    LRU - Least Recently Used
 #    MRU - Most Recently Used
 #    FIFO - First In and First Out

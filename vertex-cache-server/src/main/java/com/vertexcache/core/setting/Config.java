@@ -10,6 +10,7 @@ import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.common.security.KeyPairHelper;
 import com.vertexcache.core.cache.EvictionPolicy;
 import com.vertexcache.common.config.VertexCacheConfigException;
+import com.vertexcache.module.cluster.ClusterConfigLoader;
 
 import java.security.PrivateKey;
 import java.util.Collections;
@@ -57,10 +58,13 @@ public class Config extends ConfigBase {
     private String rateLimitTokensTerSecond;
     private String rateLimitBurst;
 
+    // Clustering
+    private boolean enableClustering;
+    private ClusterConfigLoader clusterConfigLoader;
+
     // Metric
     private boolean enableMetric;
     private boolean enableRestApi;
-    private boolean enableClustering;
     private boolean enableAdminCommands;
     private boolean enableAlerting;
     private boolean enableIntelligence;
@@ -221,6 +225,10 @@ public class Config extends ConfigBase {
                     this.enableClustering = false;
                     if (configLoader.isExist(ConfigKey.ENABLE_CLUSTERING)) {
                         this.enableClustering = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_CLUSTERING));
+
+                        if (this.enableClustering) {
+                            this.clusterConfigLoader = new ClusterConfigLoader(configLoader);
+                        }
                     }
 
                     // Admin Commands
@@ -486,5 +494,13 @@ public class Config extends ConfigBase {
         if (configLoader.isExist(ConfigKey.ENABLE_EXPORTER)) {
             this.enableExporter = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_EXPORTER));
         }
+    }
+
+    public Map<String, String> getClusterFlatSummary() {
+        return clusterConfigLoader != null ? clusterConfigLoader.getFlatSummary() : Map.of();
+    }
+
+    public List<String> getClusterTextSummary() {
+        return clusterConfigLoader != null ? clusterConfigLoader.getTextSummary() : List.of();
     }
 }

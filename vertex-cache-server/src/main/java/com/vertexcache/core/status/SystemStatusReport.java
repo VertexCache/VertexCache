@@ -15,6 +15,27 @@ import java.util.Map;
 
 public class SystemStatusReport {
 
+    public static List<String> getFullSystemReportAsFlat() {
+        List<String> result = new ArrayList<>();
+        result.addAll(getStatusSummaryAsFlat());
+        result.addAll(getSecuritySummaryAsFlat());
+        result.addAll(getModuleStatusAsFlat());
+        result.addAll(getClusterSummaryAsFlat());
+        result.addAll(getMemoryStatusSummaryAsFlat());
+        return result;
+    }
+
+    // Legacy methods for string-based output still exist if needed
+    public static String getFullSystemReport() {
+        return String.join(System.lineSeparator(),
+                getServerStatus(),
+                getSecuritySummary(),
+                getModuleStatus(),
+                getClusterSummary(),
+                getServerMemoryStatus()
+        );
+    }
+
     public static List<String> getStatusSummaryAsFlat() {
         Config config = Config.getInstance();
         List<String> flat = new ArrayList<>();
@@ -80,23 +101,16 @@ public class SystemStatusReport {
         return flat;
     }
 
-    public static List<String> getFullSystemReportAsFlat() {
-        List<String> result = new ArrayList<>();
-        result.addAll(getStatusSummaryAsFlat());
-        result.addAll(getSecuritySummaryAsFlat());
-        result.addAll(getModuleStatusAsFlat());
-        result.addAll(getMemoryStatusSummaryAsFlat());
-        return result;
-    }
+    public static List<String> getClusterSummaryAsFlat() {
+        List<String> flat = new ArrayList<>();
+        Config config = Config.getInstance();
+        if (config.isClusteringEnabled()) {
+            flat.addAll(config.getClusterFlatSummary().entrySet().stream()
+                    .map(e -> e.getKey() + "=" + e.getValue())
+                    .toList());
+        }
 
-    // Legacy methods for string-based output still exist if needed
-    public static String getFullSystemReport() {
-        return String.join(System.lineSeparator(),
-                getServerStatus(),
-                getSecuritySummary(),
-                getModuleStatus(),
-                getServerMemoryStatus()
-        );
+        return flat;
     }
 
     public static String getServerStatus() {
@@ -142,6 +156,25 @@ public class SystemStatusReport {
             if (!runtimeStatus.isEmpty()) sb.append(" | ").append(runtimeStatus);
             if (!message.isEmpty()) sb.append(" | ").append(message);
             sb.append(System.lineSeparator());
+        }
+
+        return sb.toString();
+    }
+
+    public static String getClusterSummary() {
+        Config config = Config.getInstance();
+        StringBuilder sb = new StringBuilder();
+
+        if (config.isClusteringEnabled()) {
+            List<String> clusterLines = config.getClusterTextSummary();
+            if (!clusterLines.isEmpty()) {
+                sb.append("  Cluster Summary:").append(System.lineSeparator());
+                for (String line : clusterLines) {
+                    sb.append("    ").append(line).append(System.lineSeparator());
+                }
+            }
+        } else {
+            sb.append("  Cluster Summary: N/A").append(System.lineSeparator());
         }
 
         return sb.toString();

@@ -7,6 +7,7 @@ import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.server.session.ClientSessionContext;
 
 import java.util.List;
+import java.util.Map;
 
 public class ConfigCommand extends AdminCommand<String> {
 
@@ -43,6 +44,12 @@ public class ConfigCommand extends AdminCommand<String> {
                 "module_alerting=" + cfg.isAlertingEnabled(),
                 "module_rest_api=" + cfg.isRestApiEnabled()
         );
+
+       // if (cfg.isClusteringEnabled()) {
+         //   cfg.getClusterFlatSummary().forEach((k, v) -> fields.add(k + "=" + v));
+          //  cfg.getClusterConfig().getCoordinationSettings().forEach((k, v) -> fields.add(k + "=" + v));
+        //}
+
 
         CommandResponse response = new CommandResponse();
         response.setResponseFromArray(fields);
