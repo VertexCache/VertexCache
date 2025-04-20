@@ -2,6 +2,7 @@ package com.vertexcache.common.config.reader;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
 
 public class PropertiesLoader implements ConfigLoader {
@@ -27,6 +28,38 @@ public class PropertiesLoader implements ConfigLoader {
 
     public String getProperty(String key) {
         return this.properties.getProperty(key);
+    }
+
+    @Override
+    public String getProperty(String key, String defaultValue) {
+        return properties.getProperty(key, defaultValue);
+    }
+
+    @Override
+    public Map<String, String> getAllProperties() {
+        Map<String, String> map = new java.util.LinkedHashMap<>();
+        for (String name : properties.stringPropertyNames()) {
+            map.put(name, properties.getProperty(name));
+        }
+        return map;
+    }
+
+    @Override
+    public int getIntProperty(String key, int defaultValue) {
+        String value = getProperty(key);
+        if (value != null) {
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return defaultValue;
+    }
+
+    @Override
+    public boolean getBooleanProperty(String key, boolean defaultValue) {
+        String value = getProperty(key);
+        return (value != null) ? Boolean.parseBoolean(value) : defaultValue;
     }
 
 }

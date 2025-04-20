@@ -82,6 +82,35 @@ public class EnvLoader implements ConfigLoader {
         return envVariables.get(key);
     }
 
+    @Override
+    public String getProperty(String key, String defaultValue) {
+        return envVariables.getOrDefault(key, defaultValue);
+    }
+
+    @Override
+    public Map<String, String> getAllProperties() {
+        return new LinkedHashMap<>(envVariables); // Preserve order
+    }
+
+    @Override
+    public int getIntProperty(String key, int defaultValue) {
+        String value = getProperty(key);
+        if (value != null) {
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return defaultValue;
+    }
+
+    @Override
+    public boolean getBooleanProperty(String key, boolean defaultValue) {
+        String value = getProperty(key);
+        return (value != null) ? Boolean.parseBoolean(value) : defaultValue;
+    }
+
+
     private String removeSurroundingQuotes(String input) {
         if ((input.startsWith("\"") && input.endsWith("\"")) ||
                 (input.startsWith("'") && input.endsWith("'"))) {
