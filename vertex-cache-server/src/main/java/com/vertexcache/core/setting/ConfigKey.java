@@ -7,7 +7,7 @@ public class ConfigKey {
     public static final int SERVER_PORT_DEFAULT = 50505;
     public static final String SERVER_PORT = "server_port";
 
-    public static final boolean ENABLE_VERBOSE_DEFAULT = false;
+    public static final boolean ENABLE_VERBOSE_DEFAULT = true;
     public static final String ENABLE_VERBOSE = "enable_verbose";
 
     // Encrypt Message Layer, Private/Public Key RSA (no use for the public key that's for the client), Shared Key AES

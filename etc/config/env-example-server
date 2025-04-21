@@ -146,26 +146,19 @@ tls_private_key="-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBK
 tls_keystore_password="hx8blPjyiBRF/DxNjEVIU7mVk2GzfT2KjxF9hPcT/JE="
 
 
+
+
 #####################################################
 # Optional Modules, underneath this section are the
 #  specific settings for each of the Modules
 #####################################################
-enable_auth=true
-enable_rate_limit=true
-enable_metric=true
-enable_rest_api=true
-#enable_clustering=true
-enable_admin_commands=true
-enable_alerting=true
-enable_intelligence=true
-enable_exporter=true
-
-
 
 
 #####################################################
 # Auth Clients, when enable_auth=true
 #####################################################
+enable_auth=true
+
 enable_tenant_key_prefix=true
 
 auth_client_1=console-client:tenant-system:ADMIN:fd8e2160-e55e-4e7e-9845-2d6f73f5349f
@@ -189,5 +182,47 @@ auth_client_12=sdk-client-python:tenant-b:READ_ONLY:21d88d95-7c82-48c6-95a9-8306
 #####################################################
 # Rate Limiting, when enable_rate_limit=true
 #####################################################
+enable_rate_limit=true
+
 rate_limit_tokens_per_second=1000
 rate_limit_burst=2000
+
+
+
+#####################################################
+# Metics, when enable_metric=true
+#####################################################
+enable_metric=true
+
+
+#####################################################
+# REST API, when enable_rest_api=true
+#####################################################
+enable_rest_api=true
+
+
+
+#####################################################
+# Admin Commands, when enable_admin_commands=true
+#####################################################
+enable_admin_commands=true
+
+
+
+#####################################################
+# Alerting, when enable_alerting=true
+#####################################################
+enable_alerting=true
+
+
+#####################################################
+# Integlligence, when enable_intelligence=true
+#####################################################
+enable_intelligence=true
+
+
+
+#####################################################
+# Exporter, when enable_exporter=true
+#####################################################
+enable_exporter=true

@@ -102,12 +102,12 @@ public class Config extends ConfigBase {
 
                     // Port
                     if (configLoader.isExist(ConfigKey.SERVER_PORT)) {
-                        this.serverPort = Integer.parseInt(configLoader.getProperty(ConfigKey.SERVER_PORT));
+                        this.serverPort = configLoader.getIntProperty(ConfigKey.SERVER_PORT,ConfigKey.SERVER_PORT_DEFAULT);
                     }
 
                     // Enable Verbose
                     if (configLoader.isExist(ConfigKey.ENABLE_VERBOSE)) {
-                        this.enableVerbose = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_VERBOSE));
+                        this.enableVerbose = configLoader.getBooleanProperty(ConfigKey.ENABLE_VERBOSE,ConfigKey.ENABLE_VERBOSE_DEFAULT);
                     }
 
                     // Encrypt Message Layer
