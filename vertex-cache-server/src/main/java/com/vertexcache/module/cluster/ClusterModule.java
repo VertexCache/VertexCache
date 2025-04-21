@@ -9,11 +9,6 @@ public class ClusterModule extends Module {
     private ClusterConfigLoader clusterConfig;
 
     @Override
-    protected void onInitialize() {
-
-    }
-
-    @Override
     protected void onValidate() {
 
     }

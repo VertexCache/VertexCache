@@ -8,7 +8,6 @@ public abstract class Module implements ModuleHandler {
     @Override
     public final void start() {
         try {
-            onInitialize();
             onValidate();
             onStart();
             if (this.moduleStatus == ModuleStatus.NOT_STARTED) {
@@ -31,7 +30,6 @@ public abstract class Module implements ModuleHandler {
         }
     }
 
-    protected abstract void onInitialize();
     protected abstract void onValidate();
     protected abstract void onStart();
     protected abstract void onStop();

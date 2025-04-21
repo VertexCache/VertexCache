@@ -9,11 +9,6 @@ public class AuthModule extends Module {
     private AuthService authService;
 
     @Override
-    protected void onInitialize() {
-
-    }
-
-    @Override
     protected void onValidate() {
 
     }

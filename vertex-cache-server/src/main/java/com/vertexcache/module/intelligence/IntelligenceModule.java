@@ -6,11 +6,6 @@ import com.vertexcache.core.module.ModuleStatus;
 public class IntelligenceModule  extends Module {
 
     @Override
-    protected void onInitialize() {
-
-    }
-
-    @Override
     protected void onValidate() {
 
     }
