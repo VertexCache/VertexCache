@@ -18,7 +18,7 @@ public class CommandService {
             PingCommand.COMMAND_KEY
     );
 
-    private CommandFactory commandFactory = new CommandFactory();
+    private final CommandFactory commandFactory = new CommandFactory();
 
     public byte[] execute(byte[] requestAsBytes, ClientSessionContext session) {
         if (requestAsBytes != null && requestAsBytes.length > 0) {
@@ -33,7 +33,6 @@ public class CommandService {
     private CommandResponse processCommand(Command<String> command, ArgumentParser argumentParser, ClientSessionContext session) {
 
         try {
-
             String commandName = command.getCommandName().toUpperCase();
 
             // Auth check
@@ -47,7 +46,7 @@ public class CommandService {
                 }
 
                 try {
-                    new RoleCommandValidator(session.getRole()).validate(commandName);
+                    new RoleCommandValidator(session.getRole(), commandName).validate();
                 } catch (VertexCacheValidationException e) {
                     CommandResponse commandResponse = new CommandResponse();
                     commandResponse.setResponseError("Authorization failed, invalid role.");

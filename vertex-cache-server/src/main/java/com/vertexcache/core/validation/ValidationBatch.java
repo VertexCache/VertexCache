@@ -5,33 +5,28 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Valiation Use
+ * ValidationBatch Use
  *
- *   Non-Batch Use Single use is, simple use the Validator directly:
+ *   Non-Batch Use: just call .validate() directly on a Validator
+ *     new UUIDValidator("abc").validate(); // throws immediately
  *
- *     new UUIDValidator().validate("abc"); // throws immediately
- *
- *   Batch use when you want to process more then on validator:
- *
- *
+ *   Batch use:
  *     ValidationBatch batch = new ValidationBatch();
  *
- *     batch.check("clientId", new ClientIdValidator(), "console-client");
- *     batch.check("token", new UUIDValidator(), "bad-uuid");
- *     batch.check("role", new RoleValidator(), "READER");
+ *     batch.check("clientId", new ClientIdValidator("console-client"));
+ *     batch.check("token", new UUIDValidator("bad-uuid"));
+ *     batch.check("role", new RoleValidator("READER"));
  *
  *     if (batch.hasErrors()) {
- *       // Handle correctly here, System.out is just an example
- *       System.out.println("Validation errors: " + batch.getSummary());
+ *         System.out.println("Validation errors: " + batch.getSummary());
  *     }
- *
  */
 public class ValidationBatch {
     private final List<String> errors = new ArrayList<>();
 
-    public <T> void check(String fieldName, ValidatorHandler<T> validator, T value) {
+    public void check(String fieldName, Validator validator) {
         try {
-            validator.validate(value);
+            validator.validate();
         } catch (VertexCacheValidationException e) {
             errors.add(fieldName + ": " + e.getMessage());
         }

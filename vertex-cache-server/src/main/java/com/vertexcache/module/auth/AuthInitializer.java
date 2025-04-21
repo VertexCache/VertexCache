@@ -27,18 +27,22 @@ public class AuthInitializer {
             String token = parts[3].trim();
 
             ValidationBatch batch = new ValidationBatch();
-            batch.check("clientId", new ClientIdValidator(), clientId);
-            batch.check("tenantId", new TenantIdValidator(), tenantId);
-            batch.check("role", new RoleValidator(), roleRaw);
-            batch.check("token", new UUIDValidator(), token);
+            batch.check("clientId", new ClientIdValidator(clientId));
+            batch.check("tenantId", new TenantIdValidator(tenantId));
+            batch.check("role", new RoleValidator(roleRaw));
+            batch.check("token", new UUIDValidator(token));
 
             if (batch.hasErrors()) {
                 throw new VertexCacheAuthModuleException("Invalid auth_client [" + line + "]: " + batch.getSummary());
             }
 
             try {
-                Role role = Role.valueOf(roleRaw.toUpperCase());
-                store.put(new AuthEntry(clientId, TenantId.fromString(tenantId), Role.fromString(roleRaw), token));
+                store.put(new AuthEntry(
+                        clientId,
+                        TenantId.fromString(tenantId),
+                        Role.fromString(roleRaw),
+                        token
+                ));
             } catch (Exception e) {
                 throw new VertexCacheAuthModuleException("Failed to register auth_client: " + line);
             }
