@@ -9,6 +9,16 @@ public class MetricExporterModule  extends Module {
     private Lazy<PrometheusExporter> prometheusExporter = new Lazy<>(PrometheusExporter::new);
 
     @Override
+    protected void onInitialize() {
+
+    }
+
+    @Override
+    protected void onValidate() {
+
+    }
+
+    @Override
     protected void onStart() {
         this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
     }

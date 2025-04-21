@@ -11,6 +11,16 @@ public class RateLimiterModule extends Module {
     private static final int MIN_BURST_LIMIT = 0;
 
     @Override
+    protected void onInitialize() {
+
+    }
+
+    @Override
+    protected void onValidate() {
+
+    }
+
+    @Override
     protected void onStart() {
         try {
             String rateStr = Config.getInstance().getRateLimitTokensTerSecond();

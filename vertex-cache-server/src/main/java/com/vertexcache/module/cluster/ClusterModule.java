@@ -2,19 +2,27 @@ package com.vertexcache.module.cluster;
 
 import com.vertexcache.core.module.Module;
 import com.vertexcache.core.module.ModuleStatus;
-import com.vertexcache.common.config.reader.ConfigLoader;
-import com.vertexcache.core.setting.Config;
-import com.vertexcache.core.validation.validators.ClusterTopologyValidator;
+
 
 public class ClusterModule extends Module {
 
     private ClusterConfigLoader clusterConfig;
 
     @Override
+    protected void onInitialize() {
+
+    }
+
+    @Override
+    protected void onValidate() {
+
+    }
+
+    @Override
     protected void onStart() {
         try {
 
-            validate();
+            //validate();
 
             //this.clusterConfig = Config.getInstance().getClusterConfigLoader();
 
@@ -28,7 +36,7 @@ public class ClusterModule extends Module {
 
              */
 
-            //reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Cluster nodes loaded successfully");
+            reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Cluster nodes loaded successfully");
 
         } catch (Exception e) {
             reportHealth(ModuleStatus.STARTUP_FAILED, "Exception during cluster initialization: " + e.getMessage());
@@ -43,9 +51,9 @@ public class ClusterModule extends Module {
 
     //@Override
     protected void validate() {
-        System.out.println("validate failed here");
-        reportHealth(ModuleStatus.STARTUP_FAILED, "Cluster Validation failed");
-        throw new VertexCacheClusterModuleException("the error message");
+       // System.out.println("validate failed here");
+        //reportHealth(ModuleStatus.STARTUP_FAILED, "Cluster Validation failed");
+        //throw new VertexCacheClusterModuleException("the error message");
     }
 
     public ClusterConfigLoader getClusterConfig() {

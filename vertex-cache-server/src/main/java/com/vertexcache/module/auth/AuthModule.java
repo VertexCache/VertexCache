@@ -9,6 +9,16 @@ public class AuthModule extends Module {
     private AuthService authService;
 
     @Override
+    protected void onInitialize() {
+
+    }
+
+    @Override
+    protected void onValidate() {
+
+    }
+
+    @Override
     protected void onStart() {
         try {
             if (Config.getInstance().getRawAuthClientEntries().isEmpty()) {

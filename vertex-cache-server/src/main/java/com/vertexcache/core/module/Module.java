@@ -1,7 +1,5 @@
 package com.vertexcache.core.module;
 
-import com.vertexcache.common.log.LogHelper;
-
 public abstract class Module implements ModuleHandler {
 
     private ModuleStatus moduleStatus = ModuleStatus.NOT_STARTED;
@@ -10,9 +8,11 @@ public abstract class Module implements ModuleHandler {
     @Override
     public final void start() {
         try {
+            onInitialize();
+            onValidate();
             onStart();
             if (this.moduleStatus == ModuleStatus.NOT_STARTED) {
-                setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL, null);
+                setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
             }
         } catch (Exception e) {
             setModuleStatus(ModuleStatus.ERROR_LOAD, e.getMessage());
@@ -24,16 +24,18 @@ public abstract class Module implements ModuleHandler {
     public final void stop() {
         try {
             onStop();
-            setModuleStatus(ModuleStatus.SHUTDOWN_SUCCESSFUL, null);
+            setModuleStatus(ModuleStatus.SHUTDOWN_SUCCESSFUL);
         } catch (Exception e) {
             setModuleStatus(ModuleStatus.ERROR_RUNTIME, e.getMessage());
             throw e;
         }
     }
 
+    protected abstract void onInitialize();
+    protected abstract void onValidate();
     protected abstract void onStart();
     protected abstract void onStop();
-    //protected abstract void validate();
+
 
     @Override
     public String getStatusSummary() {
@@ -56,11 +58,7 @@ public abstract class Module implements ModuleHandler {
         this.message = message;
     }
 
-    protected void reportHealth(ModuleStatus status, String message) {
-        setModuleStatus(status, message);
-       // LogHelper.getInstance().logInfo("[MODULE] " + getClass().getSimpleName() +
-               // " reported " + status + (message != null && !message.isBlank() ? " - " + message : ""));
-    }
+    protected void reportHealth(ModuleStatus status, String message) { setModuleStatus(status, message);}
 
     protected void reportHealth(ModuleStatus status) {
         reportHealth(status, "");
