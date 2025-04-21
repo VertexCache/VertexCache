@@ -25,7 +25,7 @@
 #
 ###################################################################################################
 cluster_enabled=true
-cluster_node_id=REPLACE_ME  # Set this per node: node-a, node-b, or node-c
+cluster_node_id=node-a
 
 #######################################
 # Cluster Topology Declaration
