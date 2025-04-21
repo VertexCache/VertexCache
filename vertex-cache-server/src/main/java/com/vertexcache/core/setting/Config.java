@@ -335,7 +335,9 @@ public class Config extends ConfigBase {
 
     public boolean isRestApiEnabled() { return enableRestApi; }
 
+    // Clustering
     public boolean isClusteringEnabled() { return enableClustering; }
+    public ClusterConfigLoader getClusterConfigLoader() { return clusterConfigLoader; }
 
     public boolean isAdminCommandsEnabled() { return enableAdminCommands; }
 

@@ -18,7 +18,7 @@ public class AuthInitializer {
         for (String line : rawEntries) {
             String[] parts = line.split(":");
             if (parts.length != 4) {
-                throw new VertexCacheAuthInitializationException("Invalid auth_client entry (must have 4 parts): " + line);
+                throw new VertexCacheAuthModuleException("Invalid auth_client entry (must have 4 parts): " + line);
             }
 
             String clientId = parts[0].trim();
@@ -33,19 +33,19 @@ public class AuthInitializer {
             batch.check("token", new UUIDValidator(), token);
 
             if (batch.hasErrors()) {
-                throw new VertexCacheAuthInitializationException("Invalid auth_client [" + line + "]: " + batch.getSummary());
+                throw new VertexCacheAuthModuleException("Invalid auth_client [" + line + "]: " + batch.getSummary());
             }
 
             try {
                 Role role = Role.valueOf(roleRaw.toUpperCase());
                 store.put(new AuthEntry(clientId, TenantId.fromString(tenantId), Role.fromString(roleRaw), token));
             } catch (Exception e) {
-                throw new VertexCacheAuthInitializationException("Failed to register auth_client: " + line);
+                throw new VertexCacheAuthModuleException("Failed to register auth_client: " + line);
             }
         }
 
         if (store.list().isEmpty()) {
-            throw new VertexCacheAuthInitializationException("No valid auth clients found in .env (auth_client_*)");
+            throw new VertexCacheAuthModuleException("No valid auth clients found in .env (auth_client_*)");
         }
 
         return new AuthService(store);

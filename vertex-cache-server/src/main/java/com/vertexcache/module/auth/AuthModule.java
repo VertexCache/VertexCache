@@ -12,14 +12,14 @@ public class AuthModule extends Module {
     protected void onStart() {
         try {
             if (Config.getInstance().getRawAuthClientEntries().isEmpty()) {
-                throw new VertexCacheAuthInitializationException("Require at least one client defined when auth is enabled.");
+                throw new VertexCacheAuthModuleException("Require at least one client defined when auth is enabled.");
             }
 
             this.authService = AuthInitializer.initializeFromEnv();
 
             reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Auth clients loaded");
 
-        } catch (VertexCacheAuthInitializationException e) {
+        } catch (VertexCacheAuthModuleException e) {
             reportHealth(ModuleStatus.STARTUP_FAILED, e.getMessage());
         }
     }

@@ -20,7 +20,7 @@ public class RateLimiterModule extends Module {
             int burst = Integer.parseInt(burstStr);
 
             if (rate <= MIN_RATE_LIMIT || burst <= MIN_BURST_LIMIT) {
-                throw new VertexCacheRateLimitInitializationException("Rating limiting values must be positive for 'rate_limit_tokens_per_second' and 'rate_limit_burst'.");
+                throw new VertexCacheRateLimitModuleException("Rating limiting values must be positive for 'rate_limit_tokens_per_second' and 'rate_limit_burst'.");
             }
 
             TokenBucketRateLimiter limiter = new TokenBucketRateLimiter(burst, rate);
@@ -28,7 +28,7 @@ public class RateLimiterModule extends Module {
 
             reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Rate limiter initialized with " + rate + "/sec and burst " + burst);
 
-        } catch (VertexCacheRateLimitInitializationException e) {
+        } catch (VertexCacheRateLimitModuleException e) {
             reportHealth(ModuleStatus.STARTUP_FAILED, e.getMessage());
         } catch (Exception e) {
             reportHealth(ModuleStatus.STARTUP_FAILED, "Unexpected error: " + e.getMessage());

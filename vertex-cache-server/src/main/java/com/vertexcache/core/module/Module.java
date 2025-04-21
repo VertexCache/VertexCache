@@ -33,6 +33,7 @@ public abstract class Module implements ModuleHandler {
 
     protected abstract void onStart();
     protected abstract void onStop();
+    //protected abstract void validate();
 
     @Override
     public String getStatusSummary() {
