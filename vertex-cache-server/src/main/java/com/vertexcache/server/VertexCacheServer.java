@@ -16,7 +16,7 @@ public class VertexCacheServer {
 
         // Start the socket server
         SocketServer vertexCacheServer = new SocketServer();
-        vertexCacheServer.execute();
+        vertexCacheServer.start();
 
         // Shutdown hook to stop modules gracefully
         Runtime.getRuntime().addShutdownHook(new Thread(() ->

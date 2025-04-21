@@ -3,6 +3,7 @@ package com.vertexcache.server.socket;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.core.cache.Cache;
+import com.vertexcache.core.module.Module;
 import com.vertexcache.core.module.ModuleStatus;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.command.CommandService;
@@ -24,7 +25,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 import java.util.concurrent.*;
 
-public class SocketServer {
+public class SocketServer extends Module {
 
     private static final int MAX_THREADS = Runtime.getRuntime().availableProcessors() * 2;
     private static final int QUEUE_SIZE = 1000;
@@ -40,7 +41,10 @@ public class SocketServer {
 
     }
 
-    public void execute() throws Exception {
+    //public void execute() throws Exception {
+    @Override
+    protected void onStart() {
+
         try {
             status = ModuleStatus.STARTUP_IN_PROGRESS;
 
@@ -86,21 +90,12 @@ public class SocketServer {
             outputStartUpError("Error with Transport Layer Encryption configuration.", e);
         } finally {
             if (serverSocket != null) {
-                serverSocket.close();
+                try {
+                    serverSocket.close();
+                } catch(Exception e) {
+                    // do something here
+                }
             }
-        }
-    }
-
-    public void shutdown() {
-        try {
-            if (this.executor != null) {
-                this.executor.shutdown();
-            }
-            if (this.serverSocket != null) {
-                this.serverSocket.close();
-            }
-        } catch (IOException exception) {
-            LogHelper.getInstance().logError(exception.getMessage());
         }
     }
 
@@ -193,6 +188,25 @@ public class SocketServer {
             return Files.readString(path, StandardCharsets.UTF_8).trim();
         } else {
             return input.replace("\\n", "\n").trim();
+        }
+    }
+
+    @Override
+    protected void onValidate() {
+
+    }
+
+    @Override
+    protected void onStop() {
+        try {
+            if (this.executor != null) {
+                this.executor.shutdown();
+            }
+            if (this.serverSocket != null) {
+                this.serverSocket.close();
+            }
+        } catch (IOException exception) {
+            LogHelper.getInstance().logError(exception.getMessage());
         }
     }
 
