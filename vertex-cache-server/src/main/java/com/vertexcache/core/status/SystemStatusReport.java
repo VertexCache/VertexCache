@@ -49,8 +49,8 @@ public class SystemStatusReport {
         flat.add("version=" + VersionUtil.getAppVersion());
         flat.add("port=" + config.getServerPort());
         flat.add("verbose=" + config.isEnableVerbose());
-        flat.add("cache_eviction_policy=" + config.getCacheEvictionPolicy());
-        flat.add("cache_size=" + config.getCacheSize());
+        flat.add("cache_eviction_policy=" + config.getConfigCache().getCacheEvictionPolicy());
+        flat.add("cache_size=" + config.getConfigCache().getCacheSize());
         flat.add("config_file_set=" + config.isConfigLoaded());
         flat.add("config_file_error=" + config.isConfigError());
         flat.add("config_file_path=" + (config.getConfigFilePath() != null ? config.getConfigFilePath() : "n/a"));
@@ -70,10 +70,10 @@ public class SystemStatusReport {
     public static List<String> getSecuritySummaryAsFlat() {
         Config config = Config.getInstance();
         List<String> flat = new ArrayList<>();
-        flat.add("tls_enabled=" + config.isEncryptTransport());
-        flat.add("message_encryption=" + (config.getEncryptionMode() != EncryptionMode.NONE));
-        flat.add("private_key=" + config.isEncryptWithPrivateKey());
-        flat.add("shared_key=" + config.isEncryptWithSharedKey());
+        flat.add("tls_enabled=" + config.getConfigSecurity().isEncryptTransport());
+        flat.add("message_encryption=" + (config.getConfigSecurity().getEncryptionMode() != EncryptionMode.NONE));
+        flat.add("private_key=" + config.getConfigSecurity().isEncryptWithPrivateKey());
+        flat.add("shared_key=" + config.getConfigSecurity().isEncryptWithSharedKey());
         return flat;
     }
 
@@ -126,8 +126,8 @@ public class SystemStatusReport {
                 "  Version: " + VersionUtil.getAppVersion() + System.lineSeparator() +
                 "  Port: " + config.getServerPort() + System.lineSeparator() +
                 "  Verbose: " + (config.isEnableVerbose() ? "ENABLED" : "DISABLED") + System.lineSeparator() +
-                "  Cache Eviction Policy: " + config.getCacheEvictionPolicy() + System.lineSeparator() +
-                "  Cache Size: " + config.getCacheSize() + System.lineSeparator() +
+                "  Cache Eviction Policy: " + config.getConfigCache().getCacheEvictionPolicy() + System.lineSeparator() +
+                "  Cache Size: " + config.getConfigCache().getCacheSize() + System.lineSeparator() +
                 "  Config file set: " + (config.isConfigLoaded() ? "Yes" : "No") + System.lineSeparator() +
                 "  Config file loaded with no errors: " + (!config.isConfigError() ? "Yes" : "No") + System.lineSeparator() +
                 "  Config file location: " + (config.getConfigFilePath() != null ? config.getConfigFilePath() : "n/a") + System.lineSeparator();
@@ -136,10 +136,10 @@ public class SystemStatusReport {
     public static String getSecuritySummary() {
         Config config = Config.getInstance();
         return "  Encryption Summary: " + System.lineSeparator() +
-                "    TLS Enabled (Transport): " + (config.isEncryptTransport() ? "ENABLED" : "DISABLED") + System.lineSeparator() +
-                "    Message Layer Encrypted: " + (config.getEncryptionMode() != EncryptionMode.NONE ? "ENABLED" : "DISABLED") + config.getEncryptNote() + System.lineSeparator() +
-                "      Private/Public Key (RSA): " + (config.isEncryptWithPrivateKey() ? "ENABLED" : "DISABLED") + System.lineSeparator() +
-                "      Shared Key (AES): " + (config.isEncryptWithSharedKey() ? "ENABLED" : "DISABLED") + System.lineSeparator();
+                "    TLS Enabled (Transport): " + (config.getConfigSecurity().isEncryptTransport() ? "ENABLED" : "DISABLED") + System.lineSeparator() +
+                "    Message Layer Encrypted: " + (config.getConfigSecurity().getEncryptionMode() != EncryptionMode.NONE ? "ENABLED" : "DISABLED") + config.getConfigSecurity().getEncryptNote() + System.lineSeparator() +
+                "      Private/Public Key (RSA): " + (config.getConfigSecurity().isEncryptWithPrivateKey() ? "ENABLED" : "DISABLED") + System.lineSeparator() +
+                "      Shared Key (AES): " + (config.getConfigSecurity().isEncryptWithSharedKey() ? "ENABLED" : "DISABLED") + System.lineSeparator();
     }
 
     public static String getModuleStatus() {

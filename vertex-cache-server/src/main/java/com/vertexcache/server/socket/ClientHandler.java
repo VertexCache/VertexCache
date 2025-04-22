@@ -49,13 +49,13 @@ public class ClientHandler implements Runnable {
         try (InputStream inputStream = clientSocket.getInputStream();
              OutputStream outputStream = clientSocket.getOutputStream()) {
 
-            Cipher rsaCipher = config.getEncryptionMode() == EncryptionMode.ASYMMETRIC
+            Cipher rsaCipher = config.getConfigSecurity().getEncryptionMode() == EncryptionMode.ASYMMETRIC
                     ? Cipher.getInstance("RSA/ECB/PKCS1Padding")
                     : null;
 
             byte[] aesKeyBytes = null;
-            if (config.getEncryptionMode() == EncryptionMode.SYMMETRIC) {
-                aesKeyBytes = GcmCryptoHelper.decodeBase64Key(config.getSharedEncryptionKey());
+            if (config.getConfigSecurity().getEncryptionMode() == EncryptionMode.SYMMETRIC) {
+                aesKeyBytes = GcmCryptoHelper.decodeBase64Key(config.getConfigSecurity().getSharedEncryptionKey());
             }
 
             while (true) {
@@ -99,10 +99,10 @@ public class ClientHandler implements Runnable {
     private byte[] processInputData(byte[] data, Cipher rsaCipher, byte[] aesKeyBytes) throws Exception {
         byte[] decrypted;
 
-        if (config.getEncryptionMode() == EncryptionMode.ASYMMETRIC) {
-            rsaCipher.init(Cipher.DECRYPT_MODE, config.getPrivateKey());
+        if (config.getConfigSecurity().getEncryptionMode() == EncryptionMode.ASYMMETRIC) {
+            rsaCipher.init(Cipher.DECRYPT_MODE, config.getConfigSecurity().getPrivateKey());
             decrypted = rsaCipher.doFinal(data);
-        } else if (config.getEncryptionMode() == EncryptionMode.SYMMETRIC) {
+        } else if (config.getConfigSecurity().getEncryptionMode() == EncryptionMode.SYMMETRIC) {
             decrypted = GcmCryptoHelper.decrypt(data, aesKeyBytes);
         } else {
             decrypted = data;

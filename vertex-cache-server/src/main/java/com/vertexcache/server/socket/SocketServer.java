@@ -38,10 +38,11 @@ public class SocketServer extends Module {
             status = ModuleStatus.STARTUP_IN_PROGRESS;
 
             CommandService commandService = new CommandService();
-            Cache.getInstance(Config.getInstance().getCacheEvictionPolicy(), Config.getInstance().getCacheSize());
+            //Cache.getInstance(Config.getInstance().getCacheEvictionPolicy(), Config.getInstance().getCacheSize());
+            Cache.getInstance(Config.getInstance().getConfigCache().getCacheEvictionPolicy(), Config.getInstance().getConfigCache().getCacheSize());
 
             ServerSocket serverSocket;
-            if (Config.getInstance().isEncryptTransport()) {
+            if (Config.getInstance().getConfigSecurity().isEncryptTransport()) {
                 serverSocket = ServerSecurityHelper.createSecureSocket();
             } else {
                 serverSocket = new ServerSocket(Config.getInstance().getServerPort());
@@ -65,7 +66,7 @@ public class SocketServer extends Module {
                 String address = clientSocket.getInetAddress().getHostAddress();
                 int port = clientSocket.getPort();
                 String transport = (clientSocket instanceof SSLSocket) ? "TLS" : "Plain";
-                String messageEncryption = Config.getInstance().getEncryptionMode() != EncryptionMode.NONE ? "Yes" : "No";
+                String messageEncryption = Config.getInstance().getConfigSecurity().getEncryptionMode() != EncryptionMode.NONE ? "Yes" : "No";
                 outputInfo(transport + " client connected from " + address + ":" + port + " (Encrypted Messages: " + messageEncryption + ")");
                 this.executor.execute(new ClientHandler(clientSocket, Config.getInstance(), commandService));
             }

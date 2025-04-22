@@ -22,7 +22,7 @@ public class ConfigCommand extends AdminCommand<String> {
     @Override
     public CommandResponse executeAdminCommand(ArgumentParser argumentParser, ClientSessionContext session) {
         Config cfg = Config.getInstance();
-        EncryptionMode mode = cfg.getEncryptionMode();
+        EncryptionMode mode = cfg.getConfigSecurity().getEncryptionMode();
 
         boolean pretty = argumentParser.getPrimaryArgument().getArgs().size() == 1
                 && argumentParser.getPrimaryArgument().getArgs().getFirst().equalsIgnoreCase(COMMAND_PRETTY);
@@ -37,7 +37,7 @@ public class ConfigCommand extends AdminCommand<String> {
             lines.add("Port:                  " + cfg.getServerPort());
             lines.add("Verbose Logging:       " + cfg.isEnableVerbose());
             lines.add("Encryption Mode:       " + mode);
-            lines.add("  TLS Enabled:         " + cfg.isEncryptTransport());
+            lines.add("  TLS Enabled:         " + cfg.getConfigSecurity().isEncryptTransport());
             lines.add("  RSA Key Enabled:     " + (mode == EncryptionMode.ASYMMETRIC));
             lines.add("  AES Key Enabled:     " + (mode == EncryptionMode.SYMMETRIC));
             lines.add("Auth Enabled:          " + cfg.isAuthEnabled());
@@ -68,7 +68,7 @@ public class ConfigCommand extends AdminCommand<String> {
                     "port=" + cfg.getServerPort(),
                     "verbose=" + cfg.isEnableVerbose(),
                     "encryption_mode=" + mode,
-                    "tls_enabled=" + cfg.isEncryptTransport(),
+                    "tls_enabled=" + cfg.getConfigSecurity().isEncryptTransport(),
                     "private_key=" + (mode == EncryptionMode.ASYMMETRIC ? "ENABLED" : "DISABLED"),
                     "shared_key=" + (mode == EncryptionMode.SYMMETRIC ? "ENABLED" : "DISABLED"),
                     "auth_enabled=" + cfg.isAuthEnabled(),

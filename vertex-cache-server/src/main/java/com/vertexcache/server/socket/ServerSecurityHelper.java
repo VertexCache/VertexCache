@@ -13,18 +13,18 @@ public class ServerSecurityHelper {
 
     public static SSLServerSocket createSecureSocket() throws VertexCacheSSLServerSocketException {
         try {
-            String certPem = Config.getInstance().getTlsCertificate();
-            String keyPem = Config.getInstance().getTlsPrivateKey();
+            String certPem = Config.getInstance().getConfigSecurity().getTlsCertificate();
+            String keyPem = Config.getInstance().getConfigSecurity().getTlsPrivateKey();
 
             X509Certificate certificate = PemUtil.loadCertificate(certPem);
             PrivateKey privateKey = PemUtil.loadPrivateKey(keyPem);
 
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null, null);
-            keyStore.setKeyEntry("server", privateKey, Config.getInstance().getTlsKeyStorePassword().toCharArray(), new X509Certificate[]{certificate});
+            keyStore.setKeyEntry("server", privateKey, Config.getInstance().getConfigSecurity().getTlsKeyStorePassword().toCharArray(), new X509Certificate[]{certificate});
 
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-            kmf.init(keyStore, Config.getInstance().getTlsKeyStorePassword().toCharArray());
+            kmf.init(keyStore, Config.getInstance().getConfigSecurity().getTlsKeyStorePassword().toCharArray());
 
             TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
             tmf.init(keyStore);
