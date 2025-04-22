@@ -1,7 +1,5 @@
 package com.vertexcache.common.security;
 
-import com.vertexcache.common.util.PemUtils;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.security.*;

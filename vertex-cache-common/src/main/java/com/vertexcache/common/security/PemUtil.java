@@ -1,18 +1,22 @@
-package com.vertexcache.common.util;
+package com.vertexcache.common.security;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.security.cert.CertificateException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PemUtils {
+public class PemUtil {
 
     private static final Pattern PEM_PATTERN = Pattern.compile(
             "-----BEGIN ([A-Z ]+)-----(.*?)-----END \\1-----",
@@ -60,48 +64,35 @@ public class PemUtils {
         return normalized.toString();
     }
 
-    /**
-     * Extracts the base64 body from a PEM block, stripping headers and whitespace.
-     */
-    public static String extractBase64FromPem(String pem) {
-        Matcher matcher = PEM_PATTERN.matcher(pem.trim());
-        if (!matcher.find()) {
-            throw new IllegalArgumentException("PEM format invalid: BEGIN/END block not found");
-        }
-        return matcher.group(2).replaceAll("\\s+", "");
-    }
-
-    public static String extractBase64FromPem(String pem, String type) {
-        String begin = "-----BEGIN " + type + "-----";
-        String end = "-----END " + type + "-----";
-
-        if (!pem.contains(begin) || !pem.contains(end)) {
-            throw new IllegalArgumentException("PEM format invalid: missing BEGIN/END block");
-        }
-
-        return pem
-                .replace(begin, "")
-                .replace(end, "")
-                .replaceAll("\\s+", ""); // 🧼 Remove whitespace/newlines
-    }
-
-    public static X509Certificate parseCertificate(String certPem) throws CertificateException, IOException {
-        CertificateFactory factory = CertificateFactory.getInstance("X.509");
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(certPem.getBytes(StandardCharsets.UTF_8))) {
-            return (X509Certificate) factory.generateCertificate(inputStream);
+    public static X509Certificate loadCertificate(String input) throws Exception {
+        String content = loadPemContent(input);
+        try (InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))) {
+            CertificateFactory factory = CertificateFactory.getInstance("X.509");
+            return (X509Certificate) factory.generateCertificate(stream);
         }
     }
 
-    public static String loadPem(String value) throws IOException {
-        if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException("PEM source is null or empty");
+    public static PrivateKey loadPrivateKey(String input) throws Exception {
+        String content = loadPemContent(input);
+        if (!content.contains("-----BEGIN PRIVATE KEY-----")) {
+            throw new IllegalArgumentException("Invalid private key: missing BEGIN header");
         }
+        String base64 = content
+                .replace("-----BEGIN PRIVATE KEY-----", "")
+                .replace("-----END PRIVATE KEY-----", "")
+                .replaceAll("\\s+", "");
+        byte[] decoded = Base64.getDecoder().decode(base64);
+        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(decoded);
+        KeyFactory factory = KeyFactory.getInstance("RSA");
+        return factory.generatePrivate(spec);
+    }
 
-        File file = new File(value.trim());
-        if (file.exists() && file.isFile()) {
-            return Files.readString(file.toPath());
+    private static String loadPemContent(String input) throws IOException {
+        Path path = Paths.get(input);
+        if (Files.exists(path)) {
+            return Files.readString(path, StandardCharsets.UTF_8).trim();
         } else {
-            return value;
+            return input.replace("\\n", "\n").trim();
         }
     }
 

@@ -9,7 +9,9 @@ public abstract class Module implements ModuleHandler {
     public final void start() {
         try {
             onValidate();
-            onStart();
+            if (this.moduleStatus == ModuleStatus.NOT_STARTED) {
+                onStart();
+            }
             if (this.moduleStatus == ModuleStatus.NOT_STARTED) {
                 setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
             }

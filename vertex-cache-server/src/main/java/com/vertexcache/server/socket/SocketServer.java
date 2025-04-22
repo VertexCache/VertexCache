@@ -14,15 +14,6 @@ import java.io.*;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.*;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Base64;
 import java.util.concurrent.*;
 
 public class SocketServer extends Module {
@@ -35,13 +26,11 @@ public class SocketServer extends Module {
     private ServerSocket serverSocket = null;
 
     private static ModuleStatus status = ModuleStatus.NOT_STARTED;
-
+    private static String statusMessage = "";
 
     public SocketServer() {
-
     }
 
-    //public void execute() throws Exception {
     @Override
     protected void onStart() {
 
@@ -53,12 +42,14 @@ public class SocketServer extends Module {
 
             ServerSocket serverSocket;
             if (Config.getInstance().isEncryptTransport()) {
-                serverSocket = secureSocket();
+                serverSocket = ServerSecurityHelper.createSecureSocket();
             } else {
                 serverSocket = new ServerSocket(Config.getInstance().getServerPort());
             }
 
-            outputStartupOK();
+            status = ModuleStatus.STARTUP_SUCCESSFUL;
+            outputStartup();
+
             this.executor = new ThreadPoolExecutor(
                     MAX_THREADS,
                     MAX_THREADS,
@@ -71,29 +62,30 @@ public class SocketServer extends Module {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 clientSocket.setSoTimeout(SOCKET_IDLE_TIMEOUT_MS);
-
                 String address = clientSocket.getInetAddress().getHostAddress();
                 int port = clientSocket.getPort();
                 String transport = (clientSocket instanceof SSLSocket) ? "TLS" : "Plain";
                 String messageEncryption = Config.getInstance().getEncryptionMode() != EncryptionMode.NONE ? "Yes" : "No";
-
-                outputInfo(transport + " client connected from " + address + ":" + port +
-                        " (Encrypted Messages: " + messageEncryption + ")");
-
+                outputInfo(transport + " client connected from " + address + ":" + port + " (Encrypted Messages: " + messageEncryption + ")");
                 this.executor.execute(new ClientHandler(clientSocket, Config.getInstance(), commandService));
             }
         } catch (BindException e) {
-            outputStartUpError("Error, Port already in use", e);
+            status = ModuleStatus.STARTUP_FAILED;
+            statusMessage = "Error, Port already in used";
+            outputStartup();
         } catch (IOException e) {
-            outputStartUpError("Error, unexpected error, please try again.", e);
+            status = ModuleStatus.STARTUP_FAILED;
+            statusMessage = "FATAL, unexpected server error, please try again.";
+            outputStartup();
         } catch (VertexCacheSSLServerSocketException e) {
-            outputStartUpError("Error with Transport Layer Encryption configuration.", e);
+            status = ModuleStatus.STARTUP_FAILED;
+            statusMessage = e.getMessage();
+            outputStartup();
         } finally {
             if (serverSocket != null) {
                 try {
                     serverSocket.close();
                 } catch(Exception e) {
-                    // do something here
                 }
             }
         }
@@ -103,54 +95,12 @@ public class SocketServer extends Module {
         return SocketServer.status;
     }
 
-    private SSLServerSocket secureSocket() throws VertexCacheSSLServerSocketException {
-        try {
-            String certPem = Config.getInstance().getTlsCertificate();
-            String keyPem = Config.getInstance().getTlsPrivateKey();
-
-            X509Certificate certificate = loadCertificate(certPem);
-            PrivateKey privateKey = loadPrivateKey(keyPem);
-
-            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            keyStore.load(null, null);
-            keyStore.setKeyEntry("server", privateKey, Config.getInstance().getTlsKeyStorePassword().toCharArray(), new X509Certificate[]{certificate});
-
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-            kmf.init(keyStore, Config.getInstance().getTlsKeyStorePassword().toCharArray());
-
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-            tmf.init(keyStore);
-
-            SSLContext sslContext = SSLContext.getInstance("TLS");
-            sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-
-            SSLServerSocketFactory factory = sslContext.getServerSocketFactory();
-            SSLServerSocket serverSocket = (SSLServerSocket) factory.createServerSocket(Config.getInstance().getServerPort());
-
-            serverSocket.setEnabledProtocols(new String[]{"TLSv1.2"});
-            serverSocket.setEnabledCipherSuites(new String[]{"TLS_RSA_WITH_AES_256_CBC_SHA256"});
-
-            return serverSocket;
-
-        } catch (Exception e) {
-            LogHelper.getInstance().logError(e.getMessage());
-            throw new VertexCacheSSLServerSocketException(e);
-        }
-    }
-
-    private void outputStartupOK() {
-        status = ModuleStatus.STARTUP_SUCCESSFUL;
-        this.outputStartup();
+    public static String getStartupMessage() {
+        return statusMessage;
     }
 
     private void outputStartup() {
         LogHelper.getInstance().logInfo(SystemStatusReport.getFullSystemReport());
-    }
-
-    private void outputStartUpError(String message, Exception exception) {
-        status = ModuleStatus.STARTUP_FAILED;
-        this.outputStartup();
-        LogHelper.getInstance().logError(exception.getMessage());
     }
 
     private void outputInfo(String message) {
@@ -159,41 +109,14 @@ public class SocketServer extends Module {
         }
     }
 
-    private X509Certificate loadCertificate(String input) throws Exception {
-        String content = loadPemContent(input);
-        try (InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))) {
-            CertificateFactory factory = CertificateFactory.getInstance("X.509");
-            return (X509Certificate) factory.generateCertificate(stream);
-        }
-    }
-
-    private PrivateKey loadPrivateKey(String input) throws Exception {
-        String content = loadPemContent(input);
-        if (!content.contains("-----BEGIN PRIVATE KEY-----")) {
-            throw new IllegalArgumentException("Invalid private key: missing BEGIN header");
-        }
-        String base64 = content
-                .replace("-----BEGIN PRIVATE KEY-----", "")
-                .replace("-----END PRIVATE KEY-----", "")
-                .replaceAll("\\s+", "");
-        byte[] decoded = Base64.getDecoder().decode(base64);
-        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(decoded);
-        KeyFactory factory = KeyFactory.getInstance("RSA");
-        return factory.generatePrivate(spec);
-    }
-
-    private String loadPemContent(String input) throws IOException {
-        Path path = Paths.get(input);
-        if (Files.exists(path)) {
-            return Files.readString(path, StandardCharsets.UTF_8).trim();
-        } else {
-            return input.replace("\\n", "\n").trim();
-        }
-    }
-
     @Override
     protected void onValidate() {
-
+        //status = ModuleStatus.STARTUP_FAILED;
+        //statusMessage = "IT FAILEd";
+        if(status != ModuleStatus.NOT_STARTED) {
+            LogHelper.getInstance().logInfo(SystemStatusReport.getStartupSystemReport());
+            System.exit(0);
+        }
     }
 
     @Override

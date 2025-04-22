@@ -1,6 +1,6 @@
 package com.vertexcache.common.security.CertificateTrustManager;
 
-import com.vertexcache.common.util.PemUtils;
+import com.vertexcache.common.security.PemUtil;
 
 import javax.net.ssl.X509TrustManager;
 import java.io.*;
@@ -28,7 +28,7 @@ public class ServerCertificateTrustManagerVerification implements X509TrustManag
                 pemContent = certificateSource;
             }
 
-            String normalized = PemUtils.normalizePemBlock(pemContent);
+            String normalized = PemUtil.normalizePemBlock(pemContent);
             this.serverCertificate = loadServerCertificate(normalized);
         } catch (IOException e) {
             throw new CertificateException("Could not read certificate", e);
@@ -72,7 +72,7 @@ public class ServerCertificateTrustManagerVerification implements X509TrustManag
 
             String normalizedPem;
             try {
-                normalizedPem = PemUtils.normalizePemBlock(certSource);
+                normalizedPem = PemUtil.normalizePemBlock(certSource);
             } catch (Exception e) {
                 throw new CertificateException("Failed to load server certificate, malformed", e);
             }

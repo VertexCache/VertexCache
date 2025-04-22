@@ -25,7 +25,6 @@ public class SystemStatusReport {
         return result;
     }
 
-    // Legacy methods for string-based output still exist if needed
     public static String getFullSystemReport() {
         return String.join(System.lineSeparator(),
                 getServerStatus(),
@@ -33,6 +32,13 @@ public class SystemStatusReport {
                 getModuleStatus(),
                 getClusterSummary(),
                 getServerMemoryStatus()
+        );
+    }
+
+    public static String getStartupSystemReport() {
+        return String.join(System.lineSeparator(),
+                getServerStatus(),
+                getSecuritySummary()
         );
     }
 
@@ -116,7 +122,7 @@ public class SystemStatusReport {
     public static String getServerStatus() {
         Config config = Config.getInstance();
         return config.getAppName() + " Server Startup Report:" + System.lineSeparator() +
-                "  Status: " + SocketServer.getStartupStatus() + System.lineSeparator() +
+                "  Status: " + SocketServer.getStartupStatus() + (!SocketServer.getStartupMessage().isEmpty() ? " | " + SocketServer.getStartupMessage() : "")+ System.lineSeparator() +
                 "  Version: " + VersionUtil.getAppVersion() + System.lineSeparator() +
                 "  Port: " + config.getServerPort() + System.lineSeparator() +
                 "  Verbose: " + (config.isEnableVerbose() ? "ENABLED" : "DISABLED") + System.lineSeparator() +
