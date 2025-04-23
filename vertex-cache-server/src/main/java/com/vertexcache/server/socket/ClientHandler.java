@@ -123,7 +123,7 @@ public class ClientHandler implements Runnable {
                     return "-ERR IDENT Failed: missing client_id".getBytes(StandardCharsets.UTF_8);
                 }
 
-                if (config.isAuthEnabled()) {
+                if (config.getConfigAuthWithTenant().isAuthEnabled()) {
                     Optional<AuthService> optAuthService = AuthModuleHelper.getAuthService();
                     if (optAuthService.isEmpty()) {
                         return "-ERR IDENT Failed: Auth module not available".getBytes(StandardCharsets.UTF_8);
@@ -166,7 +166,7 @@ public class ClientHandler implements Runnable {
             }
         }
 
-        if (!isIdentified && config.isAuthEnabled()) {
+        if (!isIdentified && config.getConfigAuthWithTenant().isAuthEnabled()) {
             return "-ERR Unauthorized: IDENT required".getBytes(StandardCharsets.UTF_8);
         }
 

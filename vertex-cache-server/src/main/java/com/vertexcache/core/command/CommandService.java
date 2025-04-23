@@ -36,7 +36,7 @@ public class CommandService {
             String commandName = command.getCommandName().toUpperCase();
 
             // Auth check
-            if (Config.getInstance().isAuthEnabled() &&
+            if (Config.getInstance().getConfigAuthWithTenant().isAuthEnabled() &&
                     !UNSECURED_COMMANDS.contains(commandName)) {
 
                 if (session == null) {

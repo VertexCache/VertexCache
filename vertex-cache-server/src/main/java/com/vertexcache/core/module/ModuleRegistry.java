@@ -31,7 +31,7 @@ public class ModuleRegistry {
     public void loadModules() {
         Config config = Config.getInstance();
 
-        register(ModuleName.AUTH, config.isAuthEnabled(), AuthModule::new);
+        register(ModuleName.AUTH, config.getConfigAuthWithTenant().isAuthEnabled(), AuthModule::new);
         register(ModuleName.RATELIMITER, config.isRateLimitEnabled(), RateLimiterModule::new);
         register(ModuleName.METRIC, config.isMetricEnabled(), MetricModule::new);
         register(ModuleName.REST_API, config.isRestApiEnabled(), RestApiModule::new);

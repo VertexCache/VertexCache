@@ -4,12 +4,10 @@ import com.vertexcache.common.config.ConfigBase;
 import com.vertexcache.common.config.reader.ConfigLoader;
 import com.vertexcache.common.config.reader.ConfigLoaderFactory;
 import com.vertexcache.common.cli.CommandLineArgsParser;
-import com.vertexcache.common.config.reader.EnvLoader;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.config.VertexCacheConfigException;
 import com.vertexcache.module.cluster.ClusterConfigLoader;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -27,17 +25,13 @@ public class Config extends ConfigBase {
 
     private ConfigCache configCache;
     private ConfigSecurity configSecurity;
+    private ConfigAuthWithTenant configAuthWithTenant;
 
     private String authDataStore;
 
 
     private String dataStoreType;
 
-
-    // Auth & Multi-Tenant
-    private boolean enableAuth;
-
-    private boolean enableTenantKeyPrefix = ConfigKey.ENABLE_TENANT_KEY_PREFIX_DEFAULT;
 
     // Rate Limiting
     private boolean enableRateLimit;
@@ -65,6 +59,7 @@ public class Config extends ConfigBase {
     private Config() {
         this.configCache = new ConfigCache();
         this.configSecurity = new ConfigSecurity();
+        this.configAuthWithTenant = new ConfigAuthWithTenant();
     }
 
     public static Config getInstance() {
@@ -93,7 +88,7 @@ public class Config extends ConfigBase {
 
                     this.configSecurity.setConfigLoader(this.configLoader);
                     this.configCache.setConfigLoader(this.configLoader);
-
+                    this.configAuthWithTenant.setConfigLoader(this.configLoader);
 
                     // Port
                     if (configLoader.isExist(ConfigKey.SERVER_PORT)) {
@@ -109,17 +104,7 @@ public class Config extends ConfigBase {
 
                     configSecurity.loadFromConfigLoader();
                     configCache.loadFromConfigLoader();
-
-                    // Auth
-                    this.enableAuth = false;
-                    this.enableTenantKeyPrefix = false;
-                    if (configLoader.isExist(ConfigKey.ENABLE_AUTH)) {
-                        this.enableAuth = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_AUTH));
-
-                        if(this.enableAuth) {
-                            this.enableTenantKeyPrefix = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_TENANT_KEY_PREFIX));
-                        }
-                    }
+                    configAuthWithTenant.loadFromConfigLoader();
 
                     // Rate Limiting
                     this.enableRateLimit = false;
@@ -207,19 +192,6 @@ public class Config extends ConfigBase {
 
     public boolean isEnableVerbose() { return enableVerbose; }
 
-    // Auth and Multi-Tenant
-    public boolean isAuthEnabled() { return enableAuth; }
-    public List<String> getRawAuthClientEntries() {
-        // TODO - Update PropertiesLoader, if want this supported in PropertiesLoader
-        if (!(configLoader instanceof EnvLoader env)) return Collections.emptyList();
-
-        return env.getEnvVariables().entrySet().stream()
-                .filter(e -> e.getKey().startsWith(ConfigKey.AUTH_CLIENTS_PREFIX))
-                .map(Map.Entry::getValue)
-                .filter(val -> val != null && !val.isBlank())
-                .toList();
-    }
-    public boolean isTenantKeyPrefixingEnabled() { return enableTenantKeyPrefix; }
 
     // Rate Limiting
     public boolean isRateLimitEnabled() { return enableRateLimit; }
@@ -262,7 +234,7 @@ public class Config extends ConfigBase {
         configSecurity.loadEncryptionSettings();
         configSecurity.loadTransportSettings();
         configCache.loadCacheSettings();
-        loadAuthSettings();
+        configAuthWithTenant.loadAuthSettings();
         loadRateLimitSettings();
         loadModuleEnableFlags();
     }
@@ -274,17 +246,6 @@ public class Config extends ConfigBase {
 
         if (configLoader.isExist(ConfigKey.ENABLE_VERBOSE)) {
             this.enableVerbose = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_VERBOSE));
-        }
-    }
-
-    private void loadAuthSettings() {
-        this.enableAuth = false;
-        this.enableTenantKeyPrefix = false;
-        if (configLoader.isExist(ConfigKey.ENABLE_AUTH)) {
-            this.enableAuth = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_AUTH));
-            if (this.enableAuth && configLoader.isExist(ConfigKey.ENABLE_TENANT_KEY_PREFIX)) {
-                this.enableTenantKeyPrefix = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_TENANT_KEY_PREFIX));
-            }
         }
     }
 
@@ -343,6 +304,10 @@ public class Config extends ConfigBase {
 
     public ConfigSecurity getConfigSecurity() {
         return configSecurity;
+    }
+
+    public ConfigAuthWithTenant getConfigAuthWithTenant() {
+        return configAuthWithTenant;
     }
 }
 

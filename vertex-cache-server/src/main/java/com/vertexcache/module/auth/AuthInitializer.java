@@ -12,7 +12,7 @@ import java.util.List;
 public class AuthInitializer {
 
     public static AuthService initializeFromEnv() {
-        List<String> rawEntries = Config.getInstance().getRawAuthClientEntries();
+        List<String> rawEntries = Config.getInstance().getConfigAuthWithTenant().getRawAuthClientEntries();
         AuthStore store = new AuthStore();
 
         for (String line : rawEntries) {

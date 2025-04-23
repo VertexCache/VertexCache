@@ -30,7 +30,7 @@ public class PurgeCommand extends AdminCommand<String> {
         String inputPrefix = argumentParser.getPrimaryArgument().getArgs().getFirst();
         String targetPrefix;
 
-        if (Config.getInstance().isTenantKeyPrefixingEnabled()) {
+        if (Config.getInstance().getConfigAuthWithTenant().isTenantKeyPrefixingEnabled()) {
             targetPrefix = session.getTenantId() + "::" + inputPrefix;
         } else {
             targetPrefix = inputPrefix;

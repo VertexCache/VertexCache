@@ -16,7 +16,7 @@ public class AuthModule extends Module {
     @Override
     protected void onStart() {
         try {
-            if (Config.getInstance().getRawAuthClientEntries().isEmpty()) {
+            if (Config.getInstance().getConfigAuthWithTenant().getRawAuthClientEntries().isEmpty()) {
                 throw new VertexCacheAuthModuleException("Require at least one client defined when auth is enabled.");
             }
 

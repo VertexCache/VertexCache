@@ -40,8 +40,8 @@ public class ConfigCommand extends AdminCommand<String> {
             lines.add("  TLS Enabled:         " + cfg.getConfigSecurity().isEncryptTransport());
             lines.add("  RSA Key Enabled:     " + (mode == EncryptionMode.ASYMMETRIC));
             lines.add("  AES Key Enabled:     " + (mode == EncryptionMode.SYMMETRIC));
-            lines.add("Auth Enabled:          " + cfg.isAuthEnabled());
-            lines.add("Tenant Key Prefixing:  " + cfg.isTenantKeyPrefixingEnabled());
+            lines.add("Auth Enabled:          " + cfg.getConfigAuthWithTenant().isAuthEnabled());
+            lines.add("Tenant Key Prefixing:  " + cfg.getConfigAuthWithTenant().isTenantKeyPrefixingEnabled());
             lines.add("Rate Limiting:         " + cfg.isRateLimitEnabled());
             lines.add("  Tokens/sec:          " + cfg.getRateLimitTokensTerSecond());
             lines.add("  Burst Size:          " + cfg.getRateLimitBurst());
@@ -71,8 +71,8 @@ public class ConfigCommand extends AdminCommand<String> {
                     "tls_enabled=" + cfg.getConfigSecurity().isEncryptTransport(),
                     "private_key=" + (mode == EncryptionMode.ASYMMETRIC ? "ENABLED" : "DISABLED"),
                     "shared_key=" + (mode == EncryptionMode.SYMMETRIC ? "ENABLED" : "DISABLED"),
-                    "auth_enabled=" + cfg.isAuthEnabled(),
-                    "tenant_key_prefixing=" + cfg.isTenantKeyPrefixingEnabled(),
+                    "auth_enabled=" + cfg.getConfigAuthWithTenant().isAuthEnabled(),
+                    "tenant_key_prefixing=" + cfg.getConfigAuthWithTenant().isTenantKeyPrefixingEnabled(),
                     "rate_limit_enabled=" + cfg.isRateLimitEnabled(),
                     "rate_limit_tokens_per_sec=" + cfg.getRateLimitTokensTerSecond(),
                     "rate_limit_burst=" + cfg.getRateLimitBurst(),

@@ -8,8 +8,8 @@ public class KeyPrefixer {
     private static final String SEPARATOR = "::";
 
     public static String prefixKey(String key, ClientSessionContext context) {
-        if (!Config.getInstance().isAuthEnabled() ||
-                !Config.getInstance().isTenantKeyPrefixingEnabled() ||
+        if (!Config.getInstance().getConfigAuthWithTenant().isAuthEnabled() ||
+                !Config.getInstance().getConfigAuthWithTenant().isTenantKeyPrefixingEnabled() ||
                 context == null ||
                 context.getTenantId() == null) {
             return key;
@@ -18,8 +18,8 @@ public class KeyPrefixer {
     }
 
     public static String removePrefix(String fullKey, ClientSessionContext context) {
-        if (!Config.getInstance().isAuthEnabled() ||
-                !Config.getInstance().isTenantKeyPrefixingEnabled() ||
+        if (!Config.getInstance().getConfigAuthWithTenant().isAuthEnabled() ||
+                !Config.getInstance().getConfigAuthWithTenant().isTenantKeyPrefixingEnabled() ||
                 context == null ||
                 context.getTenantId() == null) {
             return fullKey;
