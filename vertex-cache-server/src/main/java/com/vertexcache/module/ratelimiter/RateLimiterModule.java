@@ -21,8 +21,8 @@ public class RateLimiterModule extends Module {
     @Override
     protected void onStart() {
         try {
-            int rate = Integer.parseInt(Config.getInstance().getRateLimitTokensTerSecond());
-            int burst = Integer.parseInt(Config.getInstance().getRateLimitBurst());
+            int rate = Integer.parseInt(Config.getInstance().getConfigRateLimiting().getRateLimitTokensTerSecond());
+            int burst = Integer.parseInt(Config.getInstance().getConfigRateLimiting().getRateLimitBurst());
 
             TokenBucketRateLimiter limiter = new TokenBucketRateLimiter(burst, rate);
             RateLimiterManager.getInstance().init(limiter);

@@ -42,9 +42,9 @@ public class ConfigCommand extends AdminCommand<String> {
             lines.add("  AES Key Enabled:     " + (mode == EncryptionMode.SYMMETRIC));
             lines.add("Auth Enabled:          " + cfg.getConfigAuthWithTenant().isAuthEnabled());
             lines.add("Tenant Key Prefixing:  " + cfg.getConfigAuthWithTenant().isTenantKeyPrefixingEnabled());
-            lines.add("Rate Limiting:         " + cfg.isRateLimitEnabled());
-            lines.add("  Tokens/sec:          " + cfg.getRateLimitTokensTerSecond());
-            lines.add("  Burst Size:          " + cfg.getRateLimitBurst());
+            lines.add("Rate Limiting:         " + cfg.getConfigRateLimiting().isRateLimitEnabled());
+            lines.add("  Tokens/sec:          " + cfg.getConfigRateLimiting().getRateLimitTokensTerSecond());
+            lines.add("  Burst Size:          " + cfg.getConfigRateLimiting().getRateLimitBurst());
             lines.add("Modules:");
             lines.add("  Metric:              " + cfg.isMetricEnabled());
             lines.add("  Clustering:          " + cfg.isClusteringEnabled());
@@ -73,9 +73,9 @@ public class ConfigCommand extends AdminCommand<String> {
                     "shared_key=" + (mode == EncryptionMode.SYMMETRIC ? "ENABLED" : "DISABLED"),
                     "auth_enabled=" + cfg.getConfigAuthWithTenant().isAuthEnabled(),
                     "tenant_key_prefixing=" + cfg.getConfigAuthWithTenant().isTenantKeyPrefixingEnabled(),
-                    "rate_limit_enabled=" + cfg.isRateLimitEnabled(),
-                    "rate_limit_tokens_per_sec=" + cfg.getRateLimitTokensTerSecond(),
-                    "rate_limit_burst=" + cfg.getRateLimitBurst(),
+                    "rate_limit_enabled=" + cfg.getConfigRateLimiting().isRateLimitEnabled(),
+                    "rate_limit_tokens_per_sec=" + cfg.getConfigRateLimiting().getRateLimitTokensTerSecond(),
+                    "rate_limit_burst=" + cfg.getConfigRateLimiting().getRateLimitBurst(),
                     "module_metric=" + cfg.isMetricEnabled(),
                     "module_clustering=" + cfg.isClusteringEnabled(),
                     "module_exporter=" + cfg.isExporterEnabled(),

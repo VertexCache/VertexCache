@@ -32,7 +32,7 @@ public class ModuleRegistry {
         Config config = Config.getInstance();
 
         register(ModuleName.AUTH, config.getConfigAuthWithTenant().isAuthEnabled(), AuthModule::new);
-        register(ModuleName.RATELIMITER, config.isRateLimitEnabled(), RateLimiterModule::new);
+        register(ModuleName.RATELIMITER, config.getConfigRateLimiting().isRateLimitEnabled(), RateLimiterModule::new);
         register(ModuleName.METRIC, config.isMetricEnabled(), MetricModule::new);
         register(ModuleName.REST_API, config.isRestApiEnabled(), RestApiModule::new);
         register(ModuleName.CLUSTER, config.isClusteringEnabled(), ClusterModule::new);

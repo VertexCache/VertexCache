@@ -13,19 +13,7 @@ public class ConfigAuthWithTenant {
     private boolean enableAuth;
     private boolean enableTenantKeyPrefix = ConfigKey.ENABLE_TENANT_KEY_PREFIX_DEFAULT;
 
-    public void loadFromConfigLoader() {
-        this.enableAuth = false;
-        this.enableTenantKeyPrefix = false;
-        if (configLoader.isExist(ConfigKey.ENABLE_AUTH)) {
-            this.enableAuth = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_AUTH));
-
-            if(this.enableAuth) {
-                this.enableTenantKeyPrefix = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_TENANT_KEY_PREFIX));
-            }
-        }
-    }
-
-    public void loadAuthSettings() {
+    public void load() {
         this.enableAuth = false;
         this.enableTenantKeyPrefix = false;
         if (configLoader.isExist(ConfigKey.ENABLE_AUTH)) {
@@ -35,6 +23,7 @@ public class ConfigAuthWithTenant {
             }
         }
     }
+
 
     public void setConfigLoader(ConfigLoader configLoader) {
         this.configLoader = configLoader;

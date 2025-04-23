@@ -55,7 +55,7 @@ public class CommandService {
             }
 
             // Global Rate Limiting
-            if (Config.getInstance().isRateLimitEnabled()) {
+            if (Config.getInstance().getConfigRateLimiting().isRateLimitEnabled()) {
                 if (!RateLimiterManager.getInstance().allowCommand()) {
                     CommandResponse rateLimitResponse = new CommandResponse();
                     rateLimitResponse.setResponseError("Rate Limit exceeded, too many requests. Please try again later.");

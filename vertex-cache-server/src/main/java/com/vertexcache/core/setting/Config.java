@@ -26,17 +26,10 @@ public class Config extends ConfigBase {
     private ConfigCache configCache;
     private ConfigSecurity configSecurity;
     private ConfigAuthWithTenant configAuthWithTenant;
+    private ConfigRateLimiting configRateLimiting;
 
     private String authDataStore;
-
-
     private String dataStoreType;
-
-
-    // Rate Limiting
-    private boolean enableRateLimit;
-    private String rateLimitTokensTerSecond;
-    private String rateLimitBurst;
 
     // Clustering
     private boolean enableClustering;
@@ -54,12 +47,11 @@ public class Config extends ConfigBase {
 
     private static volatile Config instance;
 
-
-
     private Config() {
         this.configCache = new ConfigCache();
         this.configSecurity = new ConfigSecurity();
         this.configAuthWithTenant = new ConfigAuthWithTenant();
+        this.configRateLimiting = new ConfigRateLimiting();
     }
 
     public static Config getInstance() {
@@ -89,6 +81,7 @@ public class Config extends ConfigBase {
                     this.configSecurity.setConfigLoader(this.configLoader);
                     this.configCache.setConfigLoader(this.configLoader);
                     this.configAuthWithTenant.setConfigLoader(this.configLoader);
+                    this.configRateLimiting.setConfigLoader(this.configLoader);
 
                     // Port
                     if (configLoader.isExist(ConfigKey.SERVER_PORT)) {
@@ -99,24 +92,12 @@ public class Config extends ConfigBase {
                     if (configLoader.isExist(ConfigKey.ENABLE_VERBOSE)) {
                         this.enableVerbose = configLoader.getBooleanProperty(ConfigKey.ENABLE_VERBOSE,ConfigKey.ENABLE_VERBOSE_DEFAULT);
                     }
-
-
-
+                    
                     configSecurity.loadFromConfigLoader();
                     configCache.loadFromConfigLoader();
-                    configAuthWithTenant.loadFromConfigLoader();
+                    configAuthWithTenant.load();
+                    configRateLimiting.load();
 
-                    // Rate Limiting
-                    this.enableRateLimit = false;
-                    if (configLoader.isExist(ConfigKey.ENABLE_RATE_LIMIT)) {
-                        this.enableRateLimit = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_RATE_LIMIT));
-                        if (configLoader.isExist(ConfigKey.RATE_LIMIT_TOKENS_PER_SECOND)) {
-                            this.rateLimitTokensTerSecond = configLoader.getProperty(ConfigKey.RATE_LIMIT_TOKENS_PER_SECOND);
-                        }
-                        if (configLoader.isExist(ConfigKey.RATE_LIMIT_BURST)) {
-                            this.rateLimitBurst = configLoader.getProperty(ConfigKey.RATE_LIMIT_BURST);
-                        }
-                    }
 
                     // Metric
                     this.enableMetric = false;
@@ -193,11 +174,6 @@ public class Config extends ConfigBase {
     public boolean isEnableVerbose() { return enableVerbose; }
 
 
-    // Rate Limiting
-    public boolean isRateLimitEnabled() { return enableRateLimit; }
-    public String getRateLimitTokensTerSecond() { return rateLimitTokensTerSecond; }
-    public String getRateLimitBurst() { return rateLimitBurst; }
-
     public boolean isMetricEnabled() { return enableMetric; }
 
     public boolean isRestApiEnabled() { return enableRestApi; }
@@ -234,8 +210,8 @@ public class Config extends ConfigBase {
         configSecurity.loadEncryptionSettings();
         configSecurity.loadTransportSettings();
         configCache.loadCacheSettings();
-        configAuthWithTenant.loadAuthSettings();
-        loadRateLimitSettings();
+        configAuthWithTenant.load();
+        configRateLimiting.load();
         loadModuleEnableFlags();
     }
 
@@ -246,19 +222,6 @@ public class Config extends ConfigBase {
 
         if (configLoader.isExist(ConfigKey.ENABLE_VERBOSE)) {
             this.enableVerbose = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_VERBOSE));
-        }
-    }
-
-    private void loadRateLimitSettings() {
-        this.enableRateLimit = false;
-        if (configLoader.isExist(ConfigKey.ENABLE_RATE_LIMIT)) {
-            this.enableRateLimit = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_RATE_LIMIT));
-            if (configLoader.isExist(ConfigKey.RATE_LIMIT_TOKENS_PER_SECOND)) {
-                this.rateLimitTokensTerSecond = configLoader.getProperty(ConfigKey.RATE_LIMIT_TOKENS_PER_SECOND);
-            }
-            if (configLoader.isExist(ConfigKey.RATE_LIMIT_BURST)) {
-                this.rateLimitBurst = configLoader.getProperty(ConfigKey.RATE_LIMIT_BURST);
-            }
         }
     }
 
@@ -308,6 +271,10 @@ public class Config extends ConfigBase {
 
     public ConfigAuthWithTenant getConfigAuthWithTenant() {
         return configAuthWithTenant;
+    }
+
+    public ConfigRateLimiting getConfigRateLimiting() {
+        return configRateLimiting;
     }
 }
 
