@@ -1,7 +1,8 @@
-package com.vertexcache.module.cluster;
+package com.vertexcache.core.setting.loader;
 
 import com.vertexcache.common.config.reader.ConfigLoader;
 import com.vertexcache.common.log.LogHelper;
+import com.vertexcache.module.cluster.ClusterNode;
 
 import java.util.*;
 

@@ -2,6 +2,7 @@ package com.vertexcache.module.cluster;
 
 import com.vertexcache.core.module.Module;
 import com.vertexcache.core.module.ModuleStatus;
+import com.vertexcache.core.setting.loader.ClusterConfigLoader;
 
 
 public class ClusterModule extends Module {

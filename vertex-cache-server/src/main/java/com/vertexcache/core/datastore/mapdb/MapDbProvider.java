@@ -18,12 +18,13 @@ public class MapDbProvider implements DatastoreProvider {
     @Override
     public void connect() {
         if (!connected) {
-            String filePath = resolveFilePath(moduleType);
-            db = MapDbManager.getOrOpen(filePath);
+           // String filePath = resolveFilePath(moduleType);
+            //db = MapDbManager.getOrOpen(filePath);
             connected = true;
         }
     }
 
+    /*
     private String resolveFilePath(ModuleType moduleType) {
         return switch (moduleType) {
             case AUTH -> Config.getInstance().getAuthDataStore();
@@ -41,6 +42,7 @@ public class MapDbProvider implements DatastoreProvider {
             case ADMIN -> null;
         };
     }
+    */
 
     public DB getDb() {
         return db;

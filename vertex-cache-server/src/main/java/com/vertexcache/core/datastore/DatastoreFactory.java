@@ -7,6 +7,7 @@ import com.vertexcache.core.setting.Config;
 public class DatastoreFactory {
 
     public static DatastoreProvider create(ModuleType moduleType) throws VertexCacheDataStoreTypeException {
+       /*
         DatastoreType type = DatastoreType.fromString(Config.getInstance().getDataStoreType());
 
         return switch (type) {
@@ -17,5 +18,8 @@ public class DatastoreFactory {
             // case MYSQL -> new MySqlProvider(moduleType);
             default -> throw new VertexCacheDataStoreTypeException("Unsupported datastore type: " + type);
         };
+
+        */
+        return null;
     }
 }

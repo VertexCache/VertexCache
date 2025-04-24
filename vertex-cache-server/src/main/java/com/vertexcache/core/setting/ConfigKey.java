@@ -32,6 +32,7 @@ public class ConfigKey {
     public static final String ENABLE_TENANT_KEY_PREFIX = "enable_tenant_key_prefix";
 
     // Rate Limiting
+    public static final boolean ENABLE_RATE_LIMIT_DEFAULT = true;
     public static final String ENABLE_RATE_LIMIT = "enable_rate_limit";
     public static final int RATE_LIMIT_TOKENS_PER_SECOND_DEFAULT = 1000;
     public static final String RATE_LIMIT_TOKENS_PER_SECOND = "rate_limit_tokens_per_second";
@@ -48,9 +49,11 @@ public class ConfigKey {
     public static final String ENABLE_CLUSTERING = "cluster_enabled";
 
     // Admin Commands
+    public static final boolean ENABLE_ADMIN_COMMANDS_DEFAULT = false;
     public static final String ENABLE_ADMIN_COMMANDS = "enable_admin_commands";
 
     // Alerting
+    public static final boolean ENABLE_ALERTING_DEFAULT = false;
     public static final String ENABLE_ALERTING = "enable_alerting";
 
     // Intelligence

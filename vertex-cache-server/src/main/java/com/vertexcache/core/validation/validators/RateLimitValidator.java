@@ -15,8 +15,8 @@ public class RateLimitValidator implements Validator {
     }
 
     public RateLimitValidator() {
-        this(Config.getInstance().getConfigRateLimiting().getRateLimitTokensTerSecond(),
-                Config.getInstance().getConfigRateLimiting().getRateLimitBurst());
+        this(Config.getInstance().getRateLimitingConfigLoader().getRateLimitTokensTerSecond(),
+                Config.getInstance().getRateLimitingConfigLoader().getRateLimitBurst());
     }
 
     @Override

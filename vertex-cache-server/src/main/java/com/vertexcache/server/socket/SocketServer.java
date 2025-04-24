@@ -39,13 +39,13 @@ public class SocketServer extends Module {
 
             CommandService commandService = new CommandService();
             //Cache.getInstance(Config.getInstance().getCacheEvictionPolicy(), Config.getInstance().getCacheSize());
-            Cache.getInstance(Config.getInstance().getConfigCache().getCacheEvictionPolicy(), Config.getInstance().getConfigCache().getCacheSize());
+            Cache.getInstance(Config.getInstance().getCacheConfigLoader().getCacheEvictionPolicy(), Config.getInstance().getCacheConfigLoader().getCacheSize());
 
             ServerSocket serverSocket;
-            if (Config.getInstance().getConfigSecurity().isEncryptTransport()) {
+            if (Config.getInstance().getSecurityConfigLoader().isEncryptTransport()) {
                 serverSocket = ServerSecurityHelper.createSecureSocket();
             } else {
-                serverSocket = new ServerSocket(Config.getInstance().getServerPort());
+                serverSocket = new ServerSocket(Config.getInstance().getCoreConfigLoader().getServerPort());
             }
 
             status = ModuleStatus.STARTUP_SUCCESSFUL;
@@ -66,7 +66,7 @@ public class SocketServer extends Module {
                 String address = clientSocket.getInetAddress().getHostAddress();
                 int port = clientSocket.getPort();
                 String transport = (clientSocket instanceof SSLSocket) ? "TLS" : "Plain";
-                String messageEncryption = Config.getInstance().getConfigSecurity().getEncryptionMode() != EncryptionMode.NONE ? "Yes" : "No";
+                String messageEncryption = Config.getInstance().getSecurityConfigLoader().getEncryptionMode() != EncryptionMode.NONE ? "Yes" : "No";
                 outputInfo(transport + " client connected from " + address + ":" + port + " (Encrypted Messages: " + messageEncryption + ")");
                 this.executor.execute(new ClientHandler(clientSocket, Config.getInstance(), commandService));
             }
@@ -105,7 +105,7 @@ public class SocketServer extends Module {
     }
 
     private void outputInfo(String message) {
-        if (Config.getInstance().isEnableVerbose()) {
+        if (Config.getInstance().getCoreConfigLoader().isEnableVerbose()) {
             LogHelper.getInstance().logInfo(message);
         }
     }

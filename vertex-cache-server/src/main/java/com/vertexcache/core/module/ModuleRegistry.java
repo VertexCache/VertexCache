@@ -31,13 +31,13 @@ public class ModuleRegistry {
     public void loadModules() {
         Config config = Config.getInstance();
 
-        register(ModuleName.AUTH, config.getConfigAuthWithTenant().isAuthEnabled(), AuthModule::new);
-        register(ModuleName.RATELIMITER, config.getConfigRateLimiting().isRateLimitEnabled(), RateLimiterModule::new);
+        register(ModuleName.AUTH, config.getAuthWithTenantConfigLoader().isAuthEnabled(), AuthModule::new);
+        register(ModuleName.RATELIMITER, config.getRateLimitingConfigLoader().isRateLimitEnabled(), RateLimiterModule::new);
         register(ModuleName.METRIC, config.isMetricEnabled(), MetricModule::new);
         register(ModuleName.REST_API, config.isRestApiEnabled(), RestApiModule::new);
         register(ModuleName.CLUSTER, config.isClusteringEnabled(), ClusterModule::new);
-        register(ModuleName.ADMIN, config.isAdminCommandsEnabled(), AdminModule::new);
-        register(ModuleName.ALERT, config.isAlertingEnabled(), AlertModule::new);
+        register(ModuleName.ADMIN, config.getAdminConfigLoader().isAdminCommandsEnabled(), AdminModule::new);
+        register(ModuleName.ALERT, config.getAlertConfigLoader().isEnableAlerting(), AlertModule::new);
         register(ModuleName.INTELLIGENCE, config.isIntelligenceEnabled(), IntelligenceModule::new);
         register(ModuleName.METRIC_EXPORTER, config.isExporterEnabled(), MetricExporterModule::new);
     }

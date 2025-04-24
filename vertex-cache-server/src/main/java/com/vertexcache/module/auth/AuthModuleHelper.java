@@ -1,6 +1,5 @@
 package com.vertexcache.module.auth;
 
-import com.vertexcache.core.module.ModuleHandler;
 import com.vertexcache.core.module.ModuleName;
 import com.vertexcache.core.module.ModuleRegistry;
 

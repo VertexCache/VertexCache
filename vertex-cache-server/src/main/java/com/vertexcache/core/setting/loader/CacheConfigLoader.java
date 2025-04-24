@@ -1,26 +1,26 @@
-package com.vertexcache.core.setting;
+package com.vertexcache.core.setting.loader;
 
 import com.vertexcache.common.config.reader.ConfigLoader;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.core.cache.EvictionPolicy;
+import com.vertexcache.core.setting.ConfigKey;
 
-public class ConfigCache {
+public class CacheConfigLoader extends LoaderBase {
 
     private static int DEFAULT_CACHE_SIZE=1000000;
 
     private EvictionPolicy cacheEvictionPolicy = EvictionPolicy.NONE;
     private int cacheSize;
 
-    private ConfigLoader configLoader;
-
-    public ConfigCache() {
+    public CacheConfigLoader() {
     }
 
-    protected void loadFromConfigLoader() {
+    @Override
+    public void load() {
         this.cacheEvictionPolicy = EvictionPolicy.NONE;
-        if (configLoader.isExist(ConfigKey.CACHE_EVICTION)) {
+        if (this.getConfigLoader().isExist(ConfigKey.CACHE_EVICTION)) {
             try {
-                this.cacheEvictionPolicy = EvictionPolicy.fromString(configLoader.getProperty(ConfigKey.CACHE_EVICTION));
+                this.cacheEvictionPolicy = EvictionPolicy.fromString(this.getConfigLoader().getProperty(ConfigKey.CACHE_EVICTION));
             } catch (IllegalArgumentException ie) {
                 LogHelper.getInstance().logWarn("Invalid eviction policy given, defaulting to NONE");
                 this.cacheEvictionPolicy = EvictionPolicy.NONE;
@@ -31,8 +31,8 @@ public class ConfigCache {
 
         // Cache Size, applied when Eviction Policy is not set to NONE
         this.cacheSize = DEFAULT_CACHE_SIZE;
-        if (configLoader.isExist(ConfigKey.CACHE_SIZE)) {
-            long cacheSize = Long.parseLong(configLoader.getProperty(ConfigKey.CACHE_SIZE));
+        if (this.getConfigLoader().isExist(ConfigKey.CACHE_SIZE)) {
+            long cacheSize = Long.parseLong(this.getConfigLoader().getProperty(ConfigKey.CACHE_SIZE));
             if (cacheSize <= Integer.MAX_VALUE) {
                 this.cacheSize = (int) cacheSize;
             } else {
@@ -43,25 +43,21 @@ public class ConfigCache {
         }
     }
 
-    protected void loadCacheSettings() {
+    public void loadCacheSettings() {
         this.cacheEvictionPolicy = EvictionPolicy.NONE;
-        if (configLoader.isExist(ConfigKey.CACHE_EVICTION)) {
+        if (this.getConfigLoader().isExist(ConfigKey.CACHE_EVICTION)) {
             try {
-                this.cacheEvictionPolicy = EvictionPolicy.fromString(configLoader.getProperty(ConfigKey.CACHE_EVICTION));
+                this.cacheEvictionPolicy = EvictionPolicy.fromString(this.getConfigLoader().getProperty(ConfigKey.CACHE_EVICTION));
             } catch (IllegalArgumentException ignored) {}
         }
 
         this.cacheSize = DEFAULT_CACHE_SIZE;
-        if (configLoader.isExist(ConfigKey.CACHE_SIZE)) {
-            long cacheSize = Long.parseLong(configLoader.getProperty(ConfigKey.CACHE_SIZE));
+        if (this.getConfigLoader().isExist(ConfigKey.CACHE_SIZE)) {
+            long cacheSize = Long.parseLong(this.getConfigLoader().getProperty(ConfigKey.CACHE_SIZE));
             if (cacheSize <= Integer.MAX_VALUE) {
                 this.cacheSize = (int) cacheSize;
             }
         }
-    }
-
-    public void setConfigLoader(ConfigLoader configLoader) {
-        this.configLoader = configLoader;
     }
 
     public EvictionPolicy getCacheEvictionPolicy() {

@@ -18,7 +18,7 @@ public class TenantIdValidator implements Validator {
             throw new VertexCacheValidationException("tenantId is required");
         }
 
-        if (Config.getInstance().getConfigAuthWithTenant().isTenantKeyPrefixingEnabled() &&
+        if (Config.getInstance().getAuthWithTenantConfigLoader().isTenantKeyPrefixingEnabled() &&
                 RESERVED_DEFAULT.equalsIgnoreCase(tenantId.trim())) {
             throw new VertexCacheValidationException("'default' is a reserved tenant ID and cannot be used when tenant key prefixing is enabled");
         }

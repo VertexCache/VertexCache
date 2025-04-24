@@ -1,6 +1,5 @@
 package com.vertexcache.core.command;
 
-import com.vertexcache.common.protocol.VertexCacheMessageProtocol;
 import com.vertexcache.core.command.argument.ArgumentParser;
 import com.vertexcache.core.command.impl.PingCommand;
 import com.vertexcache.core.command.impl.UnknownCommand;
@@ -36,7 +35,7 @@ public class CommandService {
             String commandName = command.getCommandName().toUpperCase();
 
             // Auth check
-            if (Config.getInstance().getConfigAuthWithTenant().isAuthEnabled() &&
+            if (Config.getInstance().getAuthWithTenantConfigLoader().isAuthEnabled() &&
                     !UNSECURED_COMMANDS.contains(commandName)) {
 
                 if (session == null) {
@@ -55,7 +54,7 @@ public class CommandService {
             }
 
             // Global Rate Limiting
-            if (Config.getInstance().getConfigRateLimiting().isRateLimitEnabled()) {
+            if (Config.getInstance().getRateLimitingConfigLoader().isRateLimitEnabled()) {
                 if (!RateLimiterManager.getInstance().allowCommand()) {
                     CommandResponse rateLimitResponse = new CommandResponse();
                     rateLimitResponse.setResponseError("Rate Limit exceeded, too many requests. Please try again later.");

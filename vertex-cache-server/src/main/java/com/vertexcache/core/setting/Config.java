@@ -6,7 +6,8 @@ import com.vertexcache.common.config.reader.ConfigLoaderFactory;
 import com.vertexcache.common.cli.CommandLineArgsParser;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.config.VertexCacheConfigException;
-import com.vertexcache.module.cluster.ClusterConfigLoader;
+import com.vertexcache.core.setting.loader.*;
+import com.vertexcache.core.setting.loader.ClusterConfigLoader;
 
 import java.util.List;
 import java.util.Map;
@@ -14,44 +15,44 @@ import java.util.Map;
 
 public class Config extends ConfigBase {
 
-    private static final String APP_NAME = "VertexCache";
+
     private boolean configLoaded = false;
     private boolean configError = false;
     private String configFilePath;
 
-    private int serverPort = ConfigKey.SERVER_PORT_DEFAULT;
+    private static volatile Config instance;
+    private ConfigLoader configLoader;
 
-    private boolean enableVerbose = ConfigKey.ENABLE_VERBOSE_DEFAULT;
+    private CoreConfigLoader coreConfigLoader;
+    private CacheConfigLoader cacheConfigLoader;
+    private SecurityConfigLoader securityConfigLoader;
 
-    private ConfigCache configCache;
-    private ConfigSecurity configSecurity;
-    private ConfigAuthWithTenant configAuthWithTenant;
-    private ConfigRateLimiting configRateLimiting;
-
-    private String authDataStore;
-    private String dataStoreType;
+    private AdminConfigLoader adminConfigLoader;
+    private AlertConfigLoader alertConfigLoader;
+    private AuthWithTenantConfigLoader authWithTenantConfigLoader;
+    private RateLimitingConfigLoader rateLimitingConfigLoader;
+    private ClusterConfigLoader clusterConfigLoader;
 
     // Clustering
     private boolean enableClustering;
-    private ClusterConfigLoader clusterConfigLoader;
 
     // Metric
     private boolean enableMetric;
     private boolean enableRestApi;
-    private boolean enableAdminCommands;
-    private boolean enableAlerting;
+    //private boolean enableAlerting;
     private boolean enableIntelligence;
     private boolean enableExporter;
 
-    private ConfigLoader configLoader;
-
-    private static volatile Config instance;
-
     private Config() {
-        this.configCache = new ConfigCache();
-        this.configSecurity = new ConfigSecurity();
-        this.configAuthWithTenant = new ConfigAuthWithTenant();
-        this.configRateLimiting = new ConfigRateLimiting();
+        this.coreConfigLoader = new CoreConfigLoader();
+        this.alertConfigLoader = new AlertConfigLoader();
+        this.cacheConfigLoader = new CacheConfigLoader();
+        this.securityConfigLoader = new SecurityConfigLoader();
+
+        // Modules
+        this.adminConfigLoader = new AdminConfigLoader();
+        this.authWithTenantConfigLoader = new AuthWithTenantConfigLoader();
+        this.rateLimitingConfigLoader = new RateLimitingConfigLoader();
     }
 
     public static Config getInstance() {
@@ -78,25 +79,23 @@ public class Config extends ConfigBase {
 
                     this.configLoaded = true;
 
-                    this.configSecurity.setConfigLoader(this.configLoader);
-                    this.configCache.setConfigLoader(this.configLoader);
-                    this.configAuthWithTenant.setConfigLoader(this.configLoader);
-                    this.configRateLimiting.setConfigLoader(this.configLoader);
+                    this.coreConfigLoader.setConfigLoader(this.configLoader);
+                    this.securityConfigLoader.setConfigLoader(this.configLoader);
+                    this.cacheConfigLoader.setConfigLoader(this.configLoader);
 
-                    // Port
-                    if (configLoader.isExist(ConfigKey.SERVER_PORT)) {
-                        this.serverPort = configLoader.getIntProperty(ConfigKey.SERVER_PORT,ConfigKey.SERVER_PORT_DEFAULT);
-                    }
+                    this.adminConfigLoader.setConfigLoader(this.configLoader);
+                    this.alertConfigLoader.setConfigLoader(this.configLoader);
+                    this.authWithTenantConfigLoader.setConfigLoader(this.configLoader);
+                    this.rateLimitingConfigLoader.setConfigLoader(this.configLoader);
 
-                    // Enable Verbose
-                    if (configLoader.isExist(ConfigKey.ENABLE_VERBOSE)) {
-                        this.enableVerbose = configLoader.getBooleanProperty(ConfigKey.ENABLE_VERBOSE,ConfigKey.ENABLE_VERBOSE_DEFAULT);
-                    }
-                    
-                    configSecurity.loadFromConfigLoader();
-                    configCache.loadFromConfigLoader();
-                    configAuthWithTenant.load();
-                    configRateLimiting.load();
+                    this.coreConfigLoader.load();
+                    this.securityConfigLoader.load();
+                    this.cacheConfigLoader.load();
+
+                    this.adminConfigLoader.load();
+                    this.alertConfigLoader.load();
+                    this.authWithTenantConfigLoader.load();
+                    this.rateLimitingConfigLoader.load();
 
 
                     // Metric
@@ -121,17 +120,8 @@ public class Config extends ConfigBase {
                         }
                     }
 
-                    // Admin Commands
-                    this.enableAdminCommands = false;
-                    if (configLoader.isExist(ConfigKey.ENABLE_ADMIN_COMMANDS)) {
-                        this.enableAdminCommands = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ADMIN_COMMANDS));
-                    }
 
-                    // Alerting
-                    this.enableAlerting = false;
-                    if (configLoader.isExist(ConfigKey.ENABLE_ALERTING)) {
-                        this.enableAlerting = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ALERTING));
-                    }
+
 
                     // Intelligence
                     this.enableIntelligence = false;
@@ -161,41 +151,25 @@ public class Config extends ConfigBase {
         }
     }
 
-    public boolean isConfigLoaded() { return configLoaded; }
-
-    public boolean isConfigError() { return configError; }
-
-    public String getConfigFilePath() { return configFilePath; }
-
-    public String getAppName() { return Config.APP_NAME; }
-
-    public int getServerPort() { return serverPort; }
-
-    public boolean isEnableVerbose() { return enableVerbose; }
-
-
-    public boolean isMetricEnabled() { return enableMetric; }
-
-    public boolean isRestApiEnabled() { return enableRestApi; }
-
-    // Clustering
-    public boolean isClusteringEnabled() { return enableClustering; }
-    public ClusterConfigLoader getClusterConfigLoader() { return clusterConfigLoader; }
-
-    public boolean isAdminCommandsEnabled() { return enableAdminCommands; }
-
-    public boolean isAlertingEnabled() { return enableAlerting; }
-
-    public boolean isIntelligenceEnabled() { return enableIntelligence; }
-
-    public boolean isExporterEnabled() { return enableExporter; }
-
     public void reloadFromDisk() {
         try {
             ConfigLoader loader = ConfigLoaderFactory.getLoader(this.configFilePath);
             if (loader.loadFromPath(this.configFilePath)) {
+
                 this.configLoader = loader;
-                loadPropertiesFromLoader();
+                this.coreConfigLoader.load();
+                this.securityConfigLoader.loadEncryptionSettings();
+                this.securityConfigLoader.loadTransportSettings();
+                this.cacheConfigLoader.loadCacheSettings();
+
+                this.adminConfigLoader.load();
+                this.alertConfigLoader.load();
+                this.authWithTenantConfigLoader.load();
+
+                this.rateLimitingConfigLoader.load();
+
+                loadModuleEnableFlags();
+
                 LogHelper.getInstance().logInfo("Configuration reloaded from: " + this.configFilePath);
             } else {
                 throw new VertexCacheConfigException("Failed to reload .env from: " + this.configFilePath);
@@ -205,25 +179,22 @@ public class Config extends ConfigBase {
         }
     }
 
-    private void loadPropertiesFromLoader() {
-        loadCoreSettings();
-        configSecurity.loadEncryptionSettings();
-        configSecurity.loadTransportSettings();
-        configCache.loadCacheSettings();
-        configAuthWithTenant.load();
-        configRateLimiting.load();
-        loadModuleEnableFlags();
+    public boolean isConfigLoaded() { return configLoaded; }
+    public boolean isConfigError() { return configError; }
+    public String getConfigFilePath() { return configFilePath; }
+
+
+    public boolean isMetricEnabled() { return enableMetric; }
+    public boolean isRestApiEnabled() { return enableRestApi; }
+
+    public boolean isClusteringEnabled() { return enableClustering; }
+    public ClusterConfigLoader getClusterConfigLoader() {
+        return clusterConfigLoader;
     }
 
-    private void loadCoreSettings() {
-        if (configLoader.isExist(ConfigKey.SERVER_PORT)) {
-            this.serverPort = Integer.parseInt(configLoader.getProperty(ConfigKey.SERVER_PORT));
-        }
+    public boolean isIntelligenceEnabled() { return enableIntelligence; }
+    public boolean isExporterEnabled() { return enableExporter; }
 
-        if (configLoader.isExist(ConfigKey.ENABLE_VERBOSE)) {
-            this.enableVerbose = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_VERBOSE));
-        }
-    }
 
     private void loadModuleEnableFlags() {
         if (configLoader.isExist(ConfigKey.ENABLE_METRIC)) {
@@ -235,12 +206,7 @@ public class Config extends ConfigBase {
         if (configLoader.isExist(ConfigKey.ENABLE_CLUSTERING)) {
             this.enableClustering = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_CLUSTERING));
         }
-        if (configLoader.isExist(ConfigKey.ENABLE_ADMIN_COMMANDS)) {
-            this.enableAdminCommands = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ADMIN_COMMANDS));
-        }
-        if (configLoader.isExist(ConfigKey.ENABLE_ALERTING)) {
-            this.enableAlerting = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ALERTING));
-        }
+
         if (configLoader.isExist(ConfigKey.ENABLE_INTELLIGENCE)) {
             this.enableIntelligence = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_INTELLIGENCE));
         }
@@ -249,32 +215,17 @@ public class Config extends ConfigBase {
         }
     }
 
-    public Map<String, String> getClusterFlatSummary() {
-        return clusterConfigLoader != null ? clusterConfigLoader.getFlatSummary() : Map.of();
-    }
+    public Map<String, String> getClusterFlatSummary() {return clusterConfigLoader != null ? clusterConfigLoader.getFlatSummary() : Map.of();}
+    public List<String> getClusterTextSummary() {return clusterConfigLoader != null ? clusterConfigLoader.getTextSummary() : List.of();}
 
-    public List<String> getClusterTextSummary() {
-        return clusterConfigLoader != null ? clusterConfigLoader.getTextSummary() : List.of();
-    }
 
-    public String getDataStoreType()  { return dataStoreType; }
+    public CacheConfigLoader getCacheConfigLoader() {return cacheConfigLoader;}
+    public SecurityConfigLoader getSecurityConfigLoader() {return securityConfigLoader;}
+    public AdminConfigLoader getAdminConfigLoader() {return adminConfigLoader;}
+    public AlertConfigLoader getAlertConfigLoader() {return alertConfigLoader;}
+    public AuthWithTenantConfigLoader getAuthWithTenantConfigLoader() {return authWithTenantConfigLoader;}
+    public RateLimitingConfigLoader getRateLimitingConfigLoader() {return rateLimitingConfigLoader;}
+    public CoreConfigLoader getCoreConfigLoader() {return coreConfigLoader;}
 
-    public String getAuthDataStore() { return authDataStore; }
-
-    public ConfigCache getConfigCache() {
-        return configCache;
-    }
-
-    public ConfigSecurity getConfigSecurity() {
-        return configSecurity;
-    }
-
-    public ConfigAuthWithTenant getConfigAuthWithTenant() {
-        return configAuthWithTenant;
-    }
-
-    public ConfigRateLimiting getConfigRateLimiting() {
-        return configRateLimiting;
-    }
 }
 

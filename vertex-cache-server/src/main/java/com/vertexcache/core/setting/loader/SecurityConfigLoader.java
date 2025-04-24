@@ -1,16 +1,15 @@
-package com.vertexcache.core.setting;
+package com.vertexcache.core.setting.loader;
 
 import com.vertexcache.common.config.VertexCacheConfigException;
 import com.vertexcache.common.config.reader.ConfigLoader;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.protocol.EncryptionMode;
 import com.vertexcache.common.security.KeyPairHelper;
+import com.vertexcache.core.setting.ConfigKey;
 
 import java.security.PrivateKey;
 
-public class ConfigSecurity {
-
-    private ConfigLoader configLoader;
+public class SecurityConfigLoader extends LoaderBase {
 
     private EncryptionMode encryptionMode = EncryptionMode.NONE;
     private boolean encryptWithPrivateKey = false;
@@ -25,13 +24,13 @@ public class ConfigSecurity {
     private String tlsPrivateKey;
     private String tlsKeyStorePassword;
 
-
-    public void loadFromConfigLoader() {
-        if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_MESSAGE) && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_MESSAGE))) {
+    @Override
+    public void load() {
+        if (this.getConfigLoader().isExist(ConfigKey.ENABLE_ENCRYPT_MESSAGE) && Boolean.parseBoolean(this.getConfigLoader().getProperty(ConfigKey.ENABLE_ENCRYPT_MESSAGE))) {
             try {
 
-                String privateKeyString = configLoader.getProperty(ConfigKey.PRIVATE_KEY);
-                this.sharedEncryptionKey = configLoader.getProperty(ConfigKey.SHARED_ENCRYPTION_KEY);
+                String privateKeyString = this.getConfigLoader().getProperty(ConfigKey.PRIVATE_KEY);
+                this.sharedEncryptionKey = this.getConfigLoader().getProperty(ConfigKey.SHARED_ENCRYPTION_KEY);
 
                 boolean hasPrivateKey = privateKeyString != null && !privateKeyString.isBlank();
                 boolean hasSharedKey = sharedEncryptionKey != null && !sharedEncryptionKey.isBlank();
@@ -67,23 +66,23 @@ public class ConfigSecurity {
         }
 
         // Encrypt Transport Layer
-        if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_TRANSPORT) && Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_TRANSPORT))) {
-            if (configLoader.isExist(ConfigKey.TLS_CERTIFICATE) && configLoader.isExist(ConfigKey.TLS_PRIVATE_KEY)) {
-                this.tlsCertificate = configLoader.getProperty(ConfigKey.TLS_CERTIFICATE);
-                this.tlsPrivateKey = configLoader.getProperty(ConfigKey.TLS_PRIVATE_KEY);
-                this.tlsKeyStorePassword = configLoader.getProperty(ConfigKey.TLS_KEY_STORE_PASSWORD);
+        if (this.getConfigLoader().isExist(ConfigKey.ENABLE_ENCRYPT_TRANSPORT) && Boolean.parseBoolean(this.getConfigLoader().getProperty(ConfigKey.ENABLE_ENCRYPT_TRANSPORT))) {
+            if (this.getConfigLoader().isExist(ConfigKey.TLS_CERTIFICATE) && this.getConfigLoader().isExist(ConfigKey.TLS_PRIVATE_KEY)) {
+                this.tlsCertificate = this.getConfigLoader().getProperty(ConfigKey.TLS_CERTIFICATE);
+                this.tlsPrivateKey = this.getConfigLoader().getProperty(ConfigKey.TLS_PRIVATE_KEY);
+                this.tlsKeyStorePassword = this.getConfigLoader().getProperty(ConfigKey.TLS_KEY_STORE_PASSWORD);
                 this.encryptTransport = true;
             }
         }
 
     }
 
-    protected void loadEncryptionSettings() {
-        if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_MESSAGE) &&
-                Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_MESSAGE))) {
+    public void loadEncryptionSettings() {
+        if (this.getConfigLoader().isExist(ConfigKey.ENABLE_ENCRYPT_MESSAGE) &&
+                Boolean.parseBoolean(this.getConfigLoader().getProperty(ConfigKey.ENABLE_ENCRYPT_MESSAGE))) {
             try {
-                String privateKeyString = configLoader.getProperty(ConfigKey.PRIVATE_KEY);
-                this.sharedEncryptionKey = configLoader.getProperty(ConfigKey.SHARED_ENCRYPTION_KEY);
+                String privateKeyString = this.getConfigLoader().getProperty(ConfigKey.PRIVATE_KEY);
+                this.sharedEncryptionKey = this.getConfigLoader().getProperty(ConfigKey.SHARED_ENCRYPTION_KEY);
 
                 boolean hasPrivateKey = privateKeyString != null && !privateKeyString.isBlank();
                 boolean hasSharedKey = sharedEncryptionKey != null && !sharedEncryptionKey.isBlank();
@@ -117,22 +116,17 @@ public class ConfigSecurity {
         }
     }
 
-    protected void loadTransportSettings() {
-        if (configLoader.isExist(ConfigKey.ENABLE_ENCRYPT_TRANSPORT) &&
-                Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_ENCRYPT_TRANSPORT))) {
-            if (configLoader.isExist(ConfigKey.TLS_CERTIFICATE) && configLoader.isExist(ConfigKey.TLS_PRIVATE_KEY)) {
-                this.tlsCertificate = configLoader.getProperty(ConfigKey.TLS_CERTIFICATE);
-                this.tlsPrivateKey = configLoader.getProperty(ConfigKey.TLS_PRIVATE_KEY);
-                this.tlsKeyStorePassword = configLoader.getProperty(ConfigKey.TLS_KEY_STORE_PASSWORD);
+    public void loadTransportSettings() {
+        if (this.getConfigLoader().isExist(ConfigKey.ENABLE_ENCRYPT_TRANSPORT) &&
+                Boolean.parseBoolean(this.getConfigLoader().getProperty(ConfigKey.ENABLE_ENCRYPT_TRANSPORT))) {
+            if (this.getConfigLoader().isExist(ConfigKey.TLS_CERTIFICATE) && this.getConfigLoader().isExist(ConfigKey.TLS_PRIVATE_KEY)) {
+                this.tlsCertificate = this.getConfigLoader().getProperty(ConfigKey.TLS_CERTIFICATE);
+                this.tlsPrivateKey = this.getConfigLoader().getProperty(ConfigKey.TLS_PRIVATE_KEY);
+                this.tlsKeyStorePassword = this.getConfigLoader().getProperty(ConfigKey.TLS_KEY_STORE_PASSWORD);
                 this.encryptTransport = true;
             }
         }
     }
-
-    public void setConfigLoader(ConfigLoader configLoader) {
-        this.configLoader = configLoader;
-    }
-
 
     public EncryptionMode getEncryptionMode() {
         return encryptionMode;

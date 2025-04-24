@@ -49,13 +49,13 @@ public class ClientHandler implements Runnable {
         try (InputStream inputStream = clientSocket.getInputStream();
              OutputStream outputStream = clientSocket.getOutputStream()) {
 
-            Cipher rsaCipher = config.getConfigSecurity().getEncryptionMode() == EncryptionMode.ASYMMETRIC
+            Cipher rsaCipher = config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.ASYMMETRIC
                     ? Cipher.getInstance("RSA/ECB/PKCS1Padding")
                     : null;
 
             byte[] aesKeyBytes = null;
-            if (config.getConfigSecurity().getEncryptionMode() == EncryptionMode.SYMMETRIC) {
-                aesKeyBytes = GcmCryptoHelper.decodeBase64Key(config.getConfigSecurity().getSharedEncryptionKey());
+            if (config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.SYMMETRIC) {
+                aesKeyBytes = GcmCryptoHelper.decodeBase64Key(config.getSecurityConfigLoader().getSharedEncryptionKey());
             }
 
             while (true) {
@@ -99,10 +99,10 @@ public class ClientHandler implements Runnable {
     private byte[] processInputData(byte[] data, Cipher rsaCipher, byte[] aesKeyBytes) throws Exception {
         byte[] decrypted;
 
-        if (config.getConfigSecurity().getEncryptionMode() == EncryptionMode.ASYMMETRIC) {
-            rsaCipher.init(Cipher.DECRYPT_MODE, config.getConfigSecurity().getPrivateKey());
+        if (config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.ASYMMETRIC) {
+            rsaCipher.init(Cipher.DECRYPT_MODE, config.getSecurityConfigLoader().getPrivateKey());
             decrypted = rsaCipher.doFinal(data);
-        } else if (config.getConfigSecurity().getEncryptionMode() == EncryptionMode.SYMMETRIC) {
+        } else if (config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.SYMMETRIC) {
             decrypted = GcmCryptoHelper.decrypt(data, aesKeyBytes);
         } else {
             decrypted = data;
@@ -123,7 +123,7 @@ public class ClientHandler implements Runnable {
                     return "-ERR IDENT Failed: missing client_id".getBytes(StandardCharsets.UTF_8);
                 }
 
-                if (config.getConfigAuthWithTenant().isAuthEnabled()) {
+                if (config.getAuthWithTenantConfigLoader().isAuthEnabled()) {
                     Optional<AuthService> optAuthService = AuthModuleHelper.getAuthService();
                     if (optAuthService.isEmpty()) {
                         return "-ERR IDENT Failed: Auth module not available".getBytes(StandardCharsets.UTF_8);
@@ -166,17 +166,17 @@ public class ClientHandler implements Runnable {
             }
         }
 
-        if (!isIdentified && config.getConfigAuthWithTenant().isAuthEnabled()) {
+        if (!isIdentified && config.getAuthWithTenantConfigLoader().isAuthEnabled()) {
             return "-ERR Unauthorized: IDENT required".getBytes(StandardCharsets.UTF_8);
         }
 
-        if (config.isEnableVerbose()) {
+        if (config.getCoreConfigLoader().isEnableVerbose()) {
             LogHelper.getInstance().logInfo(logTag + " Request: " + input);
         }
 
         byte[] response = commandProcessor.execute(decrypted, this.session);
 
-        if (config.isEnableVerbose()) {
+        if (config.getCoreConfigLoader().isEnableVerbose()) {
             LogHelper.getInstance().logInfo(logTag + " Response: " + new String(response, StandardCharsets.UTF_8));
         }
 
