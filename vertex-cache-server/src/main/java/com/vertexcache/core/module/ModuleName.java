@@ -9,7 +9,7 @@ public enum ModuleName {
     ADMIN("AdminModule"),
     ALERT("AlertModule"),
     INTELLIGENCE("IntelligenceModule"),
-    METRIC_EXPORTER("MetricExporterModule");
+    EXPORTER("ExporterModule");
 
     private final String value;
 
