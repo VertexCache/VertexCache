@@ -39,7 +39,7 @@ public class ModuleRegistry {
         register(ModuleName.ADMIN, config.getAdminConfigLoader().isAdminCommandsEnabled(), AdminModule::new);
         register(ModuleName.ALERT, config.getAlertConfigLoader().isEnableAlerting(), AlertModule::new);
         register(ModuleName.INTELLIGENCE, config.isIntelligenceEnabled(), IntelligenceModule::new);
-        register(ModuleName.METRIC_EXPORTER, config.isExporterEnabled(), MetricExporterModule::new);
+        register(ModuleName.METRIC_EXPORTER, config.getExporterConfig().isEnableExporter(), MetricExporterModule::new);
     }
 
     private void register(ModuleName moduleName, boolean enabled, Supplier<ModuleHandler> factory) {

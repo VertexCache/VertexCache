@@ -60,6 +60,7 @@ public class ConfigKey {
     public static final String ENABLE_INTELLIGENCE = "enable_intelligence";
 
     // Exporter
+    public static final boolean ENABLE_EXPORTER_DEFAULT = false;
     public static final String ENABLE_EXPORTER = "enable_exporter";
 
 }

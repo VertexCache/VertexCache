@@ -31,7 +31,8 @@ public class Config extends ConfigBase {
     private AlertConfigLoader alertConfigLoader;
     private AuthWithTenantConfigLoader authWithTenantConfigLoader;
     private RateLimitingConfigLoader rateLimitingConfigLoader;
-    private ClusterConfigLoader clusterConfigLoader;
+      private ClusterConfigLoader clusterConfigLoader;
+    private ExporterConfig exporterConfig;
 
     // Clustering
     private boolean enableClustering;
@@ -39,9 +40,8 @@ public class Config extends ConfigBase {
     // Metric
     private boolean enableMetric;
     private boolean enableRestApi;
-    //private boolean enableAlerting;
     private boolean enableIntelligence;
-    private boolean enableExporter;
+    //private boolean enableExporter;
 
     private Config() {
         this.coreConfigLoader = new CoreConfigLoader();
@@ -52,7 +52,11 @@ public class Config extends ConfigBase {
         // Modules
         this.adminConfigLoader = new AdminConfigLoader();
         this.authWithTenantConfigLoader = new AuthWithTenantConfigLoader();
+
+        this.exporterConfig = new ExporterConfig();
+
         this.rateLimitingConfigLoader = new RateLimitingConfigLoader();
+
     }
 
     public static Config getInstance() {
@@ -86,7 +90,10 @@ public class Config extends ConfigBase {
                     this.adminConfigLoader.setConfigLoader(this.configLoader);
                     this.alertConfigLoader.setConfigLoader(this.configLoader);
                     this.authWithTenantConfigLoader.setConfigLoader(this.configLoader);
+                    this.exporterConfig.setConfigLoader(this.configLoader);
                     this.rateLimitingConfigLoader.setConfigLoader(this.configLoader);
+
+
 
                     this.coreConfigLoader.load();
                     this.securityConfigLoader.load();
@@ -95,6 +102,7 @@ public class Config extends ConfigBase {
                     this.adminConfigLoader.load();
                     this.alertConfigLoader.load();
                     this.authWithTenantConfigLoader.load();
+                    this.exporterConfig.load();
                     this.rateLimitingConfigLoader.load();
 
 
@@ -129,11 +137,7 @@ public class Config extends ConfigBase {
                         this.enableIntelligence = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_INTELLIGENCE));
                     }
 
-                    // Exporter
-                    this.enableExporter = false;
-                    if (configLoader.isExist(ConfigKey.ENABLE_EXPORTER)) {
-                        this.enableExporter = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_EXPORTER));
-                    }
+
 
                 } else {
                     LogHelper.getInstance().logFatal("Properties file failed to load");
@@ -165,6 +169,7 @@ public class Config extends ConfigBase {
                 this.adminConfigLoader.load();
                 this.alertConfigLoader.load();
                 this.authWithTenantConfigLoader.load();
+                this.exporterConfig.load();
 
                 this.rateLimitingConfigLoader.load();
 
@@ -193,7 +198,7 @@ public class Config extends ConfigBase {
     }
 
     public boolean isIntelligenceEnabled() { return enableIntelligence; }
-    public boolean isExporterEnabled() { return enableExporter; }
+
 
 
     private void loadModuleEnableFlags() {
@@ -210,9 +215,6 @@ public class Config extends ConfigBase {
         if (configLoader.isExist(ConfigKey.ENABLE_INTELLIGENCE)) {
             this.enableIntelligence = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_INTELLIGENCE));
         }
-        if (configLoader.isExist(ConfigKey.ENABLE_EXPORTER)) {
-            this.enableExporter = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_EXPORTER));
-        }
     }
 
     public Map<String, String> getClusterFlatSummary() {return clusterConfigLoader != null ? clusterConfigLoader.getFlatSummary() : Map.of();}
@@ -224,6 +226,7 @@ public class Config extends ConfigBase {
     public AdminConfigLoader getAdminConfigLoader() {return adminConfigLoader;}
     public AlertConfigLoader getAlertConfigLoader() {return alertConfigLoader;}
     public AuthWithTenantConfigLoader getAuthWithTenantConfigLoader() {return authWithTenantConfigLoader;}
+    public ExporterConfig getExporterConfig() {return exporterConfig;}
     public RateLimitingConfigLoader getRateLimitingConfigLoader() {return rateLimitingConfigLoader;}
     public CoreConfigLoader getCoreConfigLoader() {return coreConfigLoader;}
 

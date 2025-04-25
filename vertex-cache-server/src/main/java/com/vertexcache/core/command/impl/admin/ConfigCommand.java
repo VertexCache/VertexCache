@@ -47,7 +47,7 @@ public class ConfigCommand extends AdminCommand<String> {
             lines.add("Modules:");
             lines.add("  Metric:              " + cfg.isMetricEnabled());
             lines.add("  Clustering:          " + cfg.isClusteringEnabled());
-            lines.add("  Exporter:            " + cfg.isExporterEnabled());
+            lines.add("  Exporter:            " + cfg.getExporterConfig().isEnableExporter());
             lines.add("  Intelligence:        " + cfg.isIntelligenceEnabled());
             lines.add("  Admin:               " + cfg.getAdminConfigLoader().isAdminCommandsEnabled());
             lines.add("  Alerting:            " + cfg.getAlertConfigLoader().isEnableAlerting());
@@ -77,7 +77,7 @@ public class ConfigCommand extends AdminCommand<String> {
                     "rate_limit_burst=" + cfg.getRateLimitingConfigLoader().getRateLimitBurst(),
                     "module_metric=" + cfg.isMetricEnabled(),
                     "module_clustering=" + cfg.isClusteringEnabled(),
-                    "module_exporter=" + cfg.isExporterEnabled(),
+                    "module_exporter=" + cfg.getExporterConfig().isEnableExporter(),
                     "module_intelligence=" + cfg.isIntelligenceEnabled(),
                     "module_admin=" + cfg.getAdminConfigLoader().isAdminCommandsEnabled(),
                     "module_alerting=" + cfg.getAlertConfigLoader().isEnableAlerting(),
