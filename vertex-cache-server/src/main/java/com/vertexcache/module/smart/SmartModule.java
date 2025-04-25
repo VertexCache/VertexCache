@@ -1,9 +1,9 @@
-package com.vertexcache.module.intelligence;
+package com.vertexcache.module.smart;
 
 import com.vertexcache.core.module.Module;
 import com.vertexcache.core.module.ModuleStatus;
 
-public class IntelligenceModule  extends Module {
+public class SmartModule extends Module {
 
     @Override
     protected void onValidate() {

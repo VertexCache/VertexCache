@@ -2,7 +2,7 @@ package com.vertexcache.core.setting.loader;
 
 import com.vertexcache.core.setting.ConfigKey;
 
-public class ExporterConfig extends LoaderBase {
+public class ExporterConfigLoader extends LoaderBase {
 
     private boolean enableExporter;
 

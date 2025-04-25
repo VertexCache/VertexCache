@@ -56,8 +56,9 @@ public class ConfigKey {
     public static final boolean ENABLE_ALERTING_DEFAULT = false;
     public static final String ENABLE_ALERTING = "enable_alerting";
 
-    // Intelligence
-    public static final String ENABLE_INTELLIGENCE = "enable_intelligence";
+    // Smart
+    public static final boolean ENABLE_SMART_DEFAULT = false;
+    public static final String ENABLE_SMART = "enable_smart";
 
     // Exporter
     public static final boolean ENABLE_EXPORTER_DEFAULT = false;

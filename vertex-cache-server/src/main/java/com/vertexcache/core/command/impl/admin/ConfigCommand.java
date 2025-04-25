@@ -47,8 +47,8 @@ public class ConfigCommand extends AdminCommand<String> {
             lines.add("Modules:");
             lines.add("  Metric:              " + cfg.isMetricEnabled());
             lines.add("  Clustering:          " + cfg.isClusteringEnabled());
-            lines.add("  Exporter:            " + cfg.getExporterConfig().isEnableExporter());
-            lines.add("  Intelligence:        " + cfg.isIntelligenceEnabled());
+            lines.add("  Exporter:            " + cfg.getExporterConfigLoader().isEnableExporter());
+            lines.add("  Smart:        " + cfg.getSmartConfigLoader().isEnableSmart());
             lines.add("  Admin:               " + cfg.getAdminConfigLoader().isAdminCommandsEnabled());
             lines.add("  Alerting:            " + cfg.getAlertConfigLoader().isEnableAlerting());
             lines.add("  REST API:            " + cfg.isRestApiEnabled());
@@ -75,13 +75,13 @@ public class ConfigCommand extends AdminCommand<String> {
                     "rate_limit_enabled=" + cfg.getRateLimitingConfigLoader().isRateLimitEnabled(),
                     "rate_limit_tokens_per_sec=" + cfg.getRateLimitingConfigLoader().getRateLimitTokensTerSecond(),
                     "rate_limit_burst=" + cfg.getRateLimitingConfigLoader().getRateLimitBurst(),
-                    "module_metric=" + cfg.isMetricEnabled(),
-                    "module_clustering=" + cfg.isClusteringEnabled(),
-                    "module_exporter=" + cfg.getExporterConfig().isEnableExporter(),
-                    "module_intelligence=" + cfg.isIntelligenceEnabled(),
-                    "module_admin=" + cfg.getAdminConfigLoader().isAdminCommandsEnabled(),
-                    "module_alerting=" + cfg.getAlertConfigLoader().isEnableAlerting(),
-                    "module_rest_api=" + cfg.isRestApiEnabled()
+                    "metric_module=" + cfg.isMetricEnabled(),
+                    "clustering_module=" + cfg.isClusteringEnabled(),
+                    "exporter_module=" + cfg.getExporterConfigLoader().isEnableExporter(),
+                    "smart_module=" + cfg.getSmartConfigLoader().isEnableSmart(),
+                    "admin_module=" + cfg.getAdminConfigLoader().isAdminCommandsEnabled(),
+                    "alerting_module=" + cfg.getAlertConfigLoader().isEnableAlerting(),
+                    "rest_api_module=" + cfg.isRestApiEnabled()
             ));
 
             if (cfg.isClusteringEnabled()) {

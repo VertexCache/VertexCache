@@ -8,7 +8,7 @@ public enum ModuleName {
     CLUSTER("ClusterModule"),
     ADMIN("AdminModule"),
     ALERT("AlertModule"),
-    INTELLIGENCE("IntelligenceModule"),
+    SMART("SmartModule"),
     EXPORTER("ExporterModule");
 
     private final String value;
