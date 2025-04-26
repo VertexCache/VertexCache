@@ -5,12 +5,11 @@ import com.vertexcache.core.module.ModuleStatus;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.setting.loader.ClusterConfigLoader;
 import com.vertexcache.core.validation.ValidationBatch;
-import com.vertexcache.core.validation.validators.cluster.ClusterNodeHostValidator;
-import com.vertexcache.core.validation.validators.cluster.ClusterNodePortValidator;
-import com.vertexcache.core.validation.validators.cluster.ClusterNodeRoleValidator;
-import com.vertexcache.core.validation.validators.cluster.ClusterNodeStatusValidator;
+import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.validators.cluster.*;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class ClusterModule extends Module {
@@ -89,6 +88,15 @@ public class ClusterModule extends Module {
                 reportHealth(ModuleStatus.STARTUP_FAILED, "Cluster validation failed: " + summary);
                 throw new VertexCacheClusterModuleException("Cluster validation failed: " + summary);
             }
+
+            Map<String, String> settings = clusterConfig.getCoordinationSettings();
+            try {
+                new ClusterCoordinationSettingsValidator(settings).validate();
+            } catch (VertexCacheValidationException e) {
+                reportHealth(ModuleStatus.STARTUP_FAILED, "Cluster coordination settings validation failed: " + e.getMessage());
+                throw new VertexCacheClusterModuleException("Cluster coordination settings validation failed: " + e.getMessage());
+            }
+
 
             reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Cluster nodes validated successfully.");
 
