@@ -2,17 +2,19 @@ package com.vertexcache.core.setting.loader;
 
 import com.vertexcache.common.config.reader.ConfigLoader;
 
-abstract public class LoaderBase {
+public abstract class LoaderBase<T extends LoaderBase<T>> {
 
     private ConfigLoader configLoader;
 
-    public void setConfigLoader(ConfigLoader configLoader) {
+    @SuppressWarnings("unchecked")
+    public T setConfigLoader(ConfigLoader configLoader) {
         this.configLoader = configLoader;
+        return (T) this;
     }
 
     protected ConfigLoader getConfigLoader() {
         return configLoader;
     }
 
-    abstract public void load();
+    public abstract void load();
 }

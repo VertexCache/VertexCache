@@ -9,13 +9,7 @@ import com.vertexcache.common.config.VertexCacheConfigException;
 import com.vertexcache.core.setting.loader.*;
 import com.vertexcache.core.setting.loader.ClusterConfigLoader;
 
-import java.util.List;
-import java.util.Map;
-
-
 public class Config extends ConfigBase {
-
-
     private boolean configLoaded = false;
     private boolean configError = false;
     private String configFilePath;
@@ -26,38 +20,29 @@ public class Config extends ConfigBase {
     private CoreConfigLoader coreConfigLoader;
     private CacheConfigLoader cacheConfigLoader;
     private SecurityConfigLoader securityConfigLoader;
-
     private AdminConfigLoader adminConfigLoader;
     private AlertConfigLoader alertConfigLoader;
     private AuthWithTenantConfigLoader authWithTenantConfigLoader;
     private RateLimitingConfigLoader rateLimitingConfigLoader;
-      private ClusterConfigLoader clusterConfigLoader;
+    private ClusterConfigLoader clusterConfigLoader;
     private ExporterConfigLoader exporterConfigLoader;
-    private SmartConfigLoader smartConfigLoader;
-
-    // Clustering
-    private boolean enableClustering;
-
-    // Metric
-    private boolean enableMetric;
-    private boolean enableRestApi;
-    //private boolean enableIntelligence;
-    //private boolean enableExporter;
+    private MetricConfigLoader metricConfigLoader;
+    private final RestApiConfigLoader restApiConfigLoader;
+    private final SmartConfigLoader smartConfigLoader;
 
     private Config() {
         this.coreConfigLoader = new CoreConfigLoader();
         this.alertConfigLoader = new AlertConfigLoader();
         this.cacheConfigLoader = new CacheConfigLoader();
         this.securityConfigLoader = new SecurityConfigLoader();
-
-        // Modules
         this.adminConfigLoader = new AdminConfigLoader();
         this.authWithTenantConfigLoader = new AuthWithTenantConfigLoader();
-
+        this.clusterConfigLoader = new ClusterConfigLoader();
         this.exporterConfigLoader = new ExporterConfigLoader();
-        this.smartConfigLoader = new SmartConfigLoader();
+        this.metricConfigLoader = new MetricConfigLoader();
         this.rateLimitingConfigLoader = new RateLimitingConfigLoader();
-
+        this.restApiConfigLoader = new RestApiConfigLoader();
+        this.smartConfigLoader = new SmartConfigLoader();
     }
 
     public static Config getInstance() {
@@ -73,70 +58,24 @@ public class Config extends ConfigBase {
 
     @Override
     public void loadPropertiesFromArgs(CommandLineArgsParser commandLineArgsParser) {
-
         try {
-
             if(commandLineArgsParser.isExist("--config")) {
                 this.configFilePath = commandLineArgsParser.getValue("--config");
-
                 this.configLoader = ConfigLoaderFactory.getLoader(this.configFilePath);
                 if (configLoader.loadFromPath(this.configFilePath)) {
-
                     this.configLoaded = true;
-
-                    this.coreConfigLoader.setConfigLoader(this.configLoader);
-                    this.securityConfigLoader.setConfigLoader(this.configLoader);
-                    this.cacheConfigLoader.setConfigLoader(this.configLoader);
-
-                    this.adminConfigLoader.setConfigLoader(this.configLoader);
-                    this.alertConfigLoader.setConfigLoader(this.configLoader);
-                    this.authWithTenantConfigLoader.setConfigLoader(this.configLoader);
-                    this.exporterConfigLoader.setConfigLoader(this.configLoader);
-                    this.smartConfigLoader.setConfigLoader(this.configLoader);
-                    this.rateLimitingConfigLoader.setConfigLoader(this.configLoader);
-
-
-
-                    this.coreConfigLoader.load();
-                    this.securityConfigLoader.load();
-                    this.cacheConfigLoader.load();
-
-                    this.adminConfigLoader.load();
-                    this.alertConfigLoader.load();
-                    this.authWithTenantConfigLoader.load();
-                    this.exporterConfigLoader.load();
-                    this.smartConfigLoader.load();
-                    this.rateLimitingConfigLoader.load();
-
-
-                    // Metric
-                    this.enableMetric = false;
-                    if (configLoader.isExist(ConfigKey.ENABLE_METRIC)) {
-                        this.enableMetric = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_METRIC));
-                    }
-
-                    // REST API
-                    this.enableRestApi = false;
-                    if (configLoader.isExist(ConfigKey.ENABLE_REST_API)) {
-                        this.enableRestApi = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_REST_API));
-                    }
-
-                    // Clustering
-                    this.enableClustering = false;
-                    if (configLoader.isExist(ConfigKey.ENABLE_CLUSTERING)) {
-                        this.enableClustering = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_CLUSTERING));
-
-                        if (this.enableClustering) {
-                            this.clusterConfigLoader = new ClusterConfigLoader(configLoader);
-                        }
-                    }
-
-
-
-
-
-
-
+                    this.coreConfigLoader.setConfigLoader(this.configLoader).load();
+                    this.securityConfigLoader.setConfigLoader(this.configLoader).load();
+                    this.cacheConfigLoader.setConfigLoader(this.configLoader).load();
+                    this.adminConfigLoader.setConfigLoader(this.configLoader).load();
+                    this.alertConfigLoader.setConfigLoader(this.configLoader).load();
+                    this.authWithTenantConfigLoader.setConfigLoader(this.configLoader).load();
+                    this.clusterConfigLoader.setConfigLoader(this.configLoader).load();
+                    this.exporterConfigLoader.setConfigLoader(this.configLoader).load();
+                    this.metricConfigLoader.setConfigLoader(this.configLoader).load();
+                    this.rateLimitingConfigLoader.setConfigLoader(this.configLoader).load();
+                    this.restApiConfigLoader.setConfigLoader(this.configLoader).load();
+                    this.smartConfigLoader.setConfigLoader(this.configLoader).load();
                 } else {
                     LogHelper.getInstance().logFatal("Properties file failed to load");
                     System.exit(0);
@@ -145,7 +84,6 @@ public class Config extends ConfigBase {
                 LogHelper.getInstance().logFatal("Parameter --config not set");
                 System.exit(0);
             }
-
         } catch (Exception exception) {
             LogHelper.getInstance().logFatal(exception.getMessage());
             this.configLoaded = false;
@@ -157,22 +95,20 @@ public class Config extends ConfigBase {
         try {
             ConfigLoader loader = ConfigLoaderFactory.getLoader(this.configFilePath);
             if (loader.loadFromPath(this.configFilePath)) {
-
                 this.configLoader = loader;
                 this.coreConfigLoader.load();
                 this.securityConfigLoader.loadEncryptionSettings();
                 this.securityConfigLoader.loadTransportSettings();
                 this.cacheConfigLoader.loadCacheSettings();
-
+                this.clusterConfigLoader.load();
                 this.adminConfigLoader.load();
                 this.alertConfigLoader.load();
                 this.authWithTenantConfigLoader.load();
                 this.exporterConfigLoader.load();
-                this.smartConfigLoader.load();
+                this.metricConfigLoader.load();
+                this.restApiConfigLoader.load();
                 this.rateLimitingConfigLoader.load();
-
-                loadModuleEnableFlags();
-
+                this.smartConfigLoader.load();
                 LogHelper.getInstance().logInfo("Configuration reloaded from: " + this.configFilePath);
             } else {
                 throw new VertexCacheConfigException("Failed to reload .env from: " + this.configFilePath);
@@ -186,43 +122,17 @@ public class Config extends ConfigBase {
     public boolean isConfigError() { return configError; }
     public String getConfigFilePath() { return configFilePath; }
 
-
-    public boolean isMetricEnabled() { return enableMetric; }
-    public boolean isRestApiEnabled() { return enableRestApi; }
-
-    public boolean isClusteringEnabled() { return enableClustering; }
-    public ClusterConfigLoader getClusterConfigLoader() {
-        return clusterConfigLoader;
-    }
-
-
-
-
-    private void loadModuleEnableFlags() {
-        if (configLoader.isExist(ConfigKey.ENABLE_METRIC)) {
-            this.enableMetric = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_METRIC));
-        }
-        if (configLoader.isExist(ConfigKey.ENABLE_REST_API)) {
-            this.enableRestApi = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_REST_API));
-        }
-        if (configLoader.isExist(ConfigKey.ENABLE_CLUSTERING)) {
-            this.enableClustering = Boolean.parseBoolean(configLoader.getProperty(ConfigKey.ENABLE_CLUSTERING));
-        }
-
-    }
-
-    public Map<String, String> getClusterFlatSummary() {return clusterConfigLoader != null ? clusterConfigLoader.getFlatSummary() : Map.of();}
-    public List<String> getClusterTextSummary() {return clusterConfigLoader != null ? clusterConfigLoader.getTextSummary() : List.of();}
-
-
+    public CoreConfigLoader getCoreConfigLoader() {return coreConfigLoader;}
     public CacheConfigLoader getCacheConfigLoader() {return cacheConfigLoader;}
     public SecurityConfigLoader getSecurityConfigLoader() {return securityConfigLoader;}
     public AdminConfigLoader getAdminConfigLoader() {return adminConfigLoader;}
     public AlertConfigLoader getAlertConfigLoader() {return alertConfigLoader;}
     public AuthWithTenantConfigLoader getAuthWithTenantConfigLoader() {return authWithTenantConfigLoader;}
+    public ClusterConfigLoader getClusterConfigLoader() {return clusterConfigLoader;}
     public ExporterConfigLoader getExporterConfigLoader() {return exporterConfigLoader;}
+    public MetricConfigLoader getMetricConfigLoader() {return metricConfigLoader;}
     public RateLimitingConfigLoader getRateLimitingConfigLoader() {return rateLimitingConfigLoader;}
-    public CoreConfigLoader getCoreConfigLoader() {return coreConfigLoader;}
+    public RestApiConfigLoader getRestApiConfigLoader() {return restApiConfigLoader;}
     public SmartConfigLoader getSmartConfigLoader() {return smartConfigLoader;}
 }
 

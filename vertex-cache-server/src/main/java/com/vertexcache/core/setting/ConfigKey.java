@@ -40,12 +40,15 @@ public class ConfigKey {
     public static final String RATE_LIMIT_BURST = "rate_limit_burst";
 
     // Metrics
+    public static final boolean ENABLE_METRIC_DEFAULT = true;
     public static final String ENABLE_METRIC = "enable_metric";
 
     // REST API
+    public static final boolean ENABLE_REST_API_DEFAULT = false;
     public static final String ENABLE_REST_API = "enable_rest_api";
 
     // Clustering - Not this follows the clustering convention prefix
+    public static final boolean ENABLE_CLUSTERING_DEFAULT = false;
     public static final String ENABLE_CLUSTERING = "cluster_enabled";
 
     // Admin Commands

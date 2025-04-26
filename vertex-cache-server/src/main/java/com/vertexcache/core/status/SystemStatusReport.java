@@ -110,8 +110,8 @@ public class SystemStatusReport {
     public static List<String> getClusterSummaryAsFlat() {
         List<String> flat = new ArrayList<>();
         Config config = Config.getInstance();
-        if (config.isClusteringEnabled()) {
-            flat.addAll(config.getClusterFlatSummary().entrySet().stream()
+        if (config.getClusterConfigLoader().isEnableClustering()) {
+            flat.addAll(config.getClusterConfigLoader().getFlatSummary().entrySet().stream()
                     .map(e -> e.getKey() + "=" + e.getValue())
                     .toList());
         }
@@ -171,8 +171,8 @@ public class SystemStatusReport {
         Config config = Config.getInstance();
         StringBuilder sb = new StringBuilder();
 
-        if (config.isClusteringEnabled()) {
-            List<String> clusterLines = config.getClusterTextSummary();
+        if (config.getClusterConfigLoader().isEnableClustering()) {
+            List<String> clusterLines = config.getClusterConfigLoader().getTextSummary();
             if (!clusterLines.isEmpty()) {
                 sb.append("  Cluster Summary:").append(System.lineSeparator());
                 for (String line : clusterLines) {
