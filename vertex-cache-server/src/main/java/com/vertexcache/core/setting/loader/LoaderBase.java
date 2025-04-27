@@ -12,7 +12,7 @@ public abstract class LoaderBase<T extends LoaderBase<T>> {
         return (T) this;
     }
 
-    protected ConfigLoader getConfigLoader() {
+    public ConfigLoader getConfigLoader() {
         return configLoader;
     }
 

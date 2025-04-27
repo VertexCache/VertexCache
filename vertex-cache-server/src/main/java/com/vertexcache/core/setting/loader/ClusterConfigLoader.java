@@ -160,5 +160,7 @@ public class ClusterConfigLoader extends LoaderBase {
         return lines;
     }
 
-
+    public String getProperty(String key, String fallback) {
+        return this.getConfigLoader().getProperty(key, fallback);
+    }
 }
