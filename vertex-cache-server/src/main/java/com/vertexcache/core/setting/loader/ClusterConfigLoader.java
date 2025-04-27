@@ -1,7 +1,7 @@
 package com.vertexcache.core.setting.loader;
 
 import com.vertexcache.core.setting.ConfigKey;
-import com.vertexcache.module.cluster.ClusterNode;
+import com.vertexcache.module.cluster.model.ClusterNode;
 
 import java.util.*;
 

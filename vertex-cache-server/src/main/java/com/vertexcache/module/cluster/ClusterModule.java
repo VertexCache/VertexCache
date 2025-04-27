@@ -1,5 +1,6 @@
 package com.vertexcache.module.cluster;
 
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.core.module.Module;
 import com.vertexcache.core.module.ModuleStatus;
 import com.vertexcache.core.setting.Config;
@@ -9,6 +10,11 @@ import com.vertexcache.core.validation.validators.cluster.ClusterNodeHostValidat
 import com.vertexcache.core.validation.validators.cluster.ClusterNodePortValidator;
 import com.vertexcache.core.validation.validators.cluster.ClusterNodeRoleValidator;
 import com.vertexcache.core.validation.validators.cluster.ClusterNodeStatusValidator;
+import com.vertexcache.module.cluster.enums.ClusterNodeRole;
+import com.vertexcache.module.cluster.exception.VertexCacheClusterModuleException;
+import com.vertexcache.module.cluster.heartbeat.HeartbeatManager;
+import com.vertexcache.module.cluster.model.ClusterNode;
+import com.vertexcache.module.cluster.store.ClusterPeerStore;
 
 import java.util.HashSet;
 import java.util.List;
@@ -18,10 +24,16 @@ import java.util.stream.Collectors;
 public class ClusterModule extends Module {
 
     private ClusterConfigLoader clusterConfig;
+    private ClusterPeerStore peerStore = new ClusterPeerStore();
+    private HeartbeatManager heartbeatManager;
 
     @Override
     protected void onStart() {
         try {
+            this.clusterConfig = Config.getInstance().getClusterConfigLoader();
+            this.heartbeatManager = new HeartbeatManager(this, getHeartbeatIntervalMs());
+            new Thread(heartbeatManager, "ClusterHeartbeatThread").start();
+
             reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Cluster nodes loaded successfully");
         } catch (Exception e) {
             reportHealth(ModuleStatus.STARTUP_FAILED, "Exception during cluster initialization: " + e.getMessage());
@@ -30,6 +42,9 @@ public class ClusterModule extends Module {
 
     @Override
     protected void onStop() {
+        if (heartbeatManager != null) {
+            heartbeatManager.stop();
+        }
         this.clusterConfig = null;
         setModuleStatus(ModuleStatus.SHUTDOWN_SUCCESSFUL);
     }
@@ -102,6 +117,26 @@ public class ClusterModule extends Module {
 
     public ClusterConfigLoader getClusterConfig() {
         return clusterConfig;
+    }
+
+    public ClusterPeerStore getPeerStore() {
+        return peerStore;
+    }
+
+    public void pingPeer(ClusterNode peer) {
+        try {
+            // Placeholder for actual network call / heartbeat logic
+            LogHelper.getInstance().logDebug("Pinging peer: " + peer.id());
+            // Simulate success:
+            peerStore.updateHeartbeat(peer.id());
+        } catch (Exception e) {
+            peerStore.markPeerDown(peer.id());
+            LogHelper.getInstance().logError("Failed to ping peer '" + peer.id() + "': " + e.getMessage());
+        }
+    }
+
+    public int getHeartbeatIntervalMs() {
+        return Integer.parseInt(clusterConfig.getCoordinationSettings().getOrDefault("cluster_failover_check_interval_ms", "2000"));
     }
 
     public ClusterNode getLocalNode() {

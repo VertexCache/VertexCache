@@ -2,7 +2,7 @@ package com.vertexcache.core.validation.validators.cluster;
 
 import com.vertexcache.core.validation.Validator;
 import com.vertexcache.core.validation.VertexCacheValidationException;
-import com.vertexcache.module.cluster.ClusterNodeStatus;
+import com.vertexcache.module.cluster.enums.ClusterNodeStatus;
 
 public class ClusterNodeStatusValidator implements Validator {
     private final String status;

@@ -1,4 +1,4 @@
-package com.vertexcache.module.cluster;
+package com.vertexcache.module.cluster.model;
 
 /**
  * @param status optional: active, standby, offline

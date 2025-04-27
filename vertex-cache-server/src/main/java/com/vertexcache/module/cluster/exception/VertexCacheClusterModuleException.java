@@ -1,4 +1,4 @@
-package com.vertexcache.module.cluster;
+package com.vertexcache.module.cluster.exception;
 
 public class VertexCacheClusterModuleException extends RuntimeException {
     public VertexCacheClusterModuleException(String message) {

@@ -1,4 +1,4 @@
-package com.vertexcache.module.cluster;
+package com.vertexcache.module.cluster.enums;
 
 public enum ClusterNodeStatus {
     ACTIVE,

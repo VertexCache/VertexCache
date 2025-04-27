@@ -3,7 +3,7 @@ package com.vertexcache.core.validation.validators.cluster;
 import com.vertexcache.core.validation.ValidationBatch;
 import com.vertexcache.core.validation.Validator;
 import com.vertexcache.core.validation.VertexCacheValidationException;
-import com.vertexcache.module.cluster.ClusterNode;
+import com.vertexcache.module.cluster.model.ClusterNode;
 
 import java.util.HashSet;
 import java.util.Map;

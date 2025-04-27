@@ -136,5 +136,15 @@ public class LogHelper {
     public void logFatal(String message) {
         logger.fatal(message);
     }
+
+
+    /**
+     * Logs a message at the DEBUG level.
+     *
+     * @param message the message to log
+     */
+    public void logDebug(String message) {
+        logger.debug(message);
+    }
 }
 
