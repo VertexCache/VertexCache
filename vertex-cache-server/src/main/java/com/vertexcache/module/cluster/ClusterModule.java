@@ -5,12 +5,15 @@ import com.vertexcache.core.module.ModuleStatus;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.setting.loader.ClusterConfigLoader;
 import com.vertexcache.core.validation.ValidationBatch;
-import com.vertexcache.core.validation.VertexCacheValidationException;
-import com.vertexcache.core.validation.validators.cluster.*;
+import com.vertexcache.core.validation.validators.cluster.ClusterNodeHostValidator;
+import com.vertexcache.core.validation.validators.cluster.ClusterNodePortValidator;
+import com.vertexcache.core.validation.validators.cluster.ClusterNodeRoleValidator;
+import com.vertexcache.core.validation.validators.cluster.ClusterNodeStatusValidator;
 
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ClusterModule extends Module {
 
@@ -89,15 +92,6 @@ public class ClusterModule extends Module {
                 throw new VertexCacheClusterModuleException("Cluster validation failed: " + summary);
             }
 
-            Map<String, String> settings = clusterConfig.getCoordinationSettings();
-            try {
-                new ClusterCoordinationSettingsValidator(settings).validate();
-            } catch (VertexCacheValidationException e) {
-                reportHealth(ModuleStatus.STARTUP_FAILED, "Cluster coordination settings validation failed: " + e.getMessage());
-                throw new VertexCacheClusterModuleException("Cluster coordination settings validation failed: " + e.getMessage());
-            }
-
-
             reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Cluster nodes validated successfully.");
 
         } catch (Exception e) {
@@ -108,5 +102,43 @@ public class ClusterModule extends Module {
 
     public ClusterConfigLoader getClusterConfig() {
         return clusterConfig;
+    }
+
+    public ClusterNode getLocalNode() {
+        return Config.getInstance().getClusterConfigLoader().getAllClusterNodes()
+                .get(Config.getInstance().getClusterConfigLoader().getLocalNodeId());
+    }
+
+    public List<ClusterNode> getPeers() {
+        return Config.getInstance().getClusterConfigLoader().getAllClusterNodes()
+                .values()
+                .stream()
+                .filter(node -> !node.id().equals(Config.getInstance().getClusterConfigLoader().getLocalNodeId()))
+                .collect(Collectors.toList());
+    }
+
+    public ClusterNode getPrimaryNode() {
+        return Config.getInstance().getClusterConfigLoader().getAllClusterNodes()
+                .values()
+                .stream()
+                .filter(node -> "PRIMARY".equalsIgnoreCase(node.role()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public List<ClusterNode> getSecondaryNodes() {
+        return Config.getInstance().getClusterConfigLoader().getAllClusterNodes()
+                .values()
+                .stream()
+                .filter(node -> "SECONDARY".equalsIgnoreCase(node.role()))
+                .collect(Collectors.toList());
+    }
+
+    public boolean isPrimary() {
+        return "PRIMARY".equalsIgnoreCase(getLocalNode().role());
+    }
+
+    public boolean isSecondary() {
+        return "SECONDARY".equalsIgnoreCase(getLocalNode().role());
     }
 }
