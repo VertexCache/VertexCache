@@ -24,8 +24,9 @@ import java.util.stream.Collectors;
 public class ClusterModule extends Module {
 
     private ClusterConfigLoader clusterConfig;
-    private ClusterPeerStore peerStore = new ClusterPeerStore();
+    private final ClusterPeerStore peerStore = new ClusterPeerStore();
     private HeartbeatManager heartbeatManager;
+    private String localRoleOverride = null;
 
     @Override
     protected void onStart() {
@@ -123,22 +124,6 @@ public class ClusterModule extends Module {
         return peerStore;
     }
 
-    public void pingPeer(ClusterNode peer) {
-        try {
-            // Placeholder for actual network call / heartbeat logic
-            LogHelper.getInstance().logDebug("Pinging peer: " + peer.id());
-            // Simulate success:
-            peerStore.updateHeartbeat(peer.id());
-        } catch (Exception e) {
-            peerStore.markPeerDown(peer.id());
-            LogHelper.getInstance().logError("Failed to ping peer '" + peer.id() + "': " + e.getMessage());
-        }
-    }
-
-    public int getHeartbeatIntervalMs() {
-        return Integer.parseInt(clusterConfig.getCoordinationSettings().getOrDefault("cluster_failover_check_interval_ms", "2000"));
-    }
-
     public ClusterNode getLocalNode() {
         return Config.getInstance().getClusterConfigLoader().getAllClusterNodes()
                 .get(Config.getInstance().getClusterConfigLoader().getLocalNodeId());
@@ -170,10 +155,66 @@ public class ClusterModule extends Module {
     }
 
     public boolean isPrimary() {
-        return "PRIMARY".equalsIgnoreCase(getLocalNode().role());
+        return "PRIMARY".equalsIgnoreCase(getEffectiveLocalRole());
     }
 
     public boolean isSecondary() {
-        return "SECONDARY".equalsIgnoreCase(getLocalNode().role());
+        return "SECONDARY".equalsIgnoreCase(getEffectiveLocalRole());
+    }
+
+    private String getEffectiveLocalRole() {
+        return (localRoleOverride != null) ? localRoleOverride : getLocalNode().role();
+    }
+
+    public void pingPeer(ClusterNode peer) {
+        try {
+            // Send HEARTBEAT command instead of direct peerStore update:
+            sendClusterCommand(peer, "HEARTBEAT " + getLocalNode().id());
+        } catch (Exception e) {
+            peerStore.markPeerDown(peer.id());
+            LogHelper.getInstance().logError("Failed to send heartbeat to peer '" + peer.id() + "': " + e.getMessage());
+        }
+    }
+
+    public int getHeartbeatIntervalMs() {
+        return Integer.parseInt(clusterConfig.getCoordinationSettings().getOrDefault("cluster_failover_check_interval_ms", "2000"));
+    }
+
+    public void promoteSelfToPrimary() {
+        if (!isSecondary()) {
+            LogHelper.getInstance().logWarn("Local node is not SECONDARY — cannot promote.");
+            return;
+        }
+
+        LogHelper.getInstance().logInfo("[ClusterModule] Promoting local node '" + getLocalNode().id() + "' to PRIMARY.");
+        this.localRoleOverride = "PRIMARY";
+
+        // Internal notification to listeners
+        peerStore.notifyRoleChange(getLocalNode().id(), "PRIMARY");
+        reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Local node promoted to PRIMARY.");
+
+        // ✅ New: Send ROLE_CHANGE command to peers
+        for (ClusterNode peer : getPeers()) {
+            sendClusterCommand(peer, "ROLE_CHANGE " + getLocalNode().id() + " PRIMARY");
+        }
+    }
+
+    public void sendClusterCommand(ClusterNode peer, String command) {
+        try {
+            // Use your existing Client SDK or SocketClient
+            // Example pseudo-code assuming you have a VertexCacheClient:
+            /**
+             *
+             *    TODO VertexCacheInternalClient!!!!!
+             *
+             *
+            VertexCacheClient client = new VertexCacheClient(peer.host(), peer.port(), "node-auth-token");
+            client.sendCommand(command);
+            client.close();
+            LogHelper.getInstance().logDebug("Sent cluster command to peer " + peer.id() + ": " + command);
+             */
+        } catch (Exception e) {
+            LogHelper.getInstance().logError("Failed to send cluster command to peer '" + peer.id() + "': " + e.getMessage());
+        }
     }
 }

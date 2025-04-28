@@ -50,4 +50,10 @@ public class ClusterPeerStore {
             listener.onPeerUp(nodeId);
         }
     }
+
+    public void notifyRoleChange(String nodeId, String newRole) {
+        for (PeerStateListener listener : listeners) {
+            listener.onRoleChange(nodeId, newRole);
+        }
+    }
 }

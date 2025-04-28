@@ -1,7 +1,6 @@
 package com.vertexcache.module.cluster.coordination;
 
 import com.vertexcache.common.log.LogHelper;
-import com.vertexcache.core.setting.Config;
 import com.vertexcache.module.cluster.ClusterModule;
 import com.vertexcache.module.cluster.model.ClusterNode;
 import com.vertexcache.module.cluster.store.PeerState;
@@ -43,7 +42,7 @@ public class FailoverManager {
         }
 
         if (!clusterModule.isSecondary()) {
-            LogHelper.getInstance().logDebug("[FailoverManager] Local node is not secondary, not eligible for promotion.");
+            LogHelper.getInstance().logDebug("[FailoverManager] Local node is not SECONDARY, not eligible for promotion.");
             return;
         }
 
@@ -52,7 +51,7 @@ public class FailoverManager {
             return;
         }
 
-        promoteSelfToPrimary();
+        clusterModule.promoteSelfToPrimary();
     }
 
     private boolean isHighestPriorityCandidate() {
@@ -62,7 +61,6 @@ public class FailoverManager {
                 .stream()
                 .filter(node -> !node.id().equals(clusterModule.getLocalNode().id()))
                 .filter(node -> {
-                    // Peer must not be marked down to be a candidate
                     return clusterModule
                             .getPeerStore()
                             .get(node.id())
@@ -85,22 +83,8 @@ public class FailoverManager {
 
     private int getFailoverPriority(ClusterNode node) {
         String key = "cluster_node." + node.id() + ".failover_priority";
-        return Integer.parseInt(Config.getInstance()
-                .getClusterConfigLoader()
-                .getConfigLoader()
+        return Integer.parseInt(clusterModule
+                .getClusterConfig()
                 .getProperty(key, "100"));
-    }
-
-    private void promoteSelfToPrimary() {
-        LogHelper.getInstance().logInfo("[FailoverManager] Promoting self to PRIMARY due to primary node failure.");
-
-        // Simplified: Here we just log and change role locally.
-        // You would need to update your ClusterNode status or role field here.
-        // Could also notify peers in the future.
-
-        // Example:
-        // clusterModule.promoteSelfToPrimary();
-        // Placeholder:
-        LogHelper.getInstance().logInfo("[FailoverManager] Self-promotion logic would be executed here.");
     }
 }
