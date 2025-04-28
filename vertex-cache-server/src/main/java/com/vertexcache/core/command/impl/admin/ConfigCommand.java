@@ -3,7 +3,7 @@ package com.vertexcache.core.command.impl.admin;
 import com.vertexcache.core.command.CommandResponse;
 import com.vertexcache.core.command.argument.ArgumentParser;
 import com.vertexcache.core.setting.Config;
-import com.vertexcache.common.protocol.EncryptionMode;
+import com.vertexcache.common.security.EncryptionMode;
 import com.vertexcache.server.session.ClientSessionContext;
 
 import java.util.ArrayList;

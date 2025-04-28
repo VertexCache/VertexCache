@@ -1,6 +1,6 @@
 package com.vertexcache.core.status;
 
-import com.vertexcache.common.protocol.EncryptionMode;
+import com.vertexcache.common.security.EncryptionMode;
 import com.vertexcache.common.version.VersionUtil;
 import com.vertexcache.core.module.ModuleHandler;
 import com.vertexcache.core.module.ModuleRegistry;

@@ -1,7 +1,7 @@
 package com.vertexcache.server.socket;
 
 import com.vertexcache.common.log.LogHelper;
-import com.vertexcache.common.protocol.EncryptionMode;
+import com.vertexcache.common.security.EncryptionMode;
 import com.vertexcache.core.cache.Cache;
 import com.vertexcache.core.module.Module;
 import com.vertexcache.core.module.ModuleStatus;

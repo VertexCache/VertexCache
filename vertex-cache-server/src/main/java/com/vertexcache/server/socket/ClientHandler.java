@@ -2,8 +2,8 @@ package com.vertexcache.server.socket;
 
 import com.google.gson.Gson;
 import com.vertexcache.common.log.LogHelper;
-import com.vertexcache.common.protocol.EncryptionMode;
-import com.vertexcache.common.protocol.MessageCodec;
+import com.vertexcache.common.security.EncryptionMode;
+import com.vertexcache.common.security.MessageCodec;
 import com.vertexcache.common.security.GcmCryptoHelper;
 import com.vertexcache.core.command.CommandService;
 import com.vertexcache.core.setting.Config;

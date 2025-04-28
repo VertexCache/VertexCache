@@ -1,4 +1,4 @@
-package com.vertexcache.common.protocol;
+package com.vertexcache.common.security;
 
 public enum EncryptionMode {
     NONE,

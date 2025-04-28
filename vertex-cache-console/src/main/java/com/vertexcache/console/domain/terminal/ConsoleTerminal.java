@@ -1,14 +1,13 @@
 package com.vertexcache.console.domain.terminal;
 
 import com.vertexcache.common.log.LogHelper;
-import com.vertexcache.common.protocol.EncryptionMode;
-import com.vertexcache.common.protocol.MessageCodec;
+import com.vertexcache.common.security.EncryptionMode;
+import com.vertexcache.common.security.MessageCodec;
 import com.vertexcache.common.version.VersionUtil;
 import com.vertexcache.console.domain.config.Config;
 import com.vertexcache.common.security.CertificateTrustManager.ServerCertificateTrustManagerNoVerification;
 import com.vertexcache.common.security.CertificateTrustManager.ServerCertificateTrustManagerVerification;
 import com.vertexcache.common.security.GcmCryptoHelper;
-import com.vertexcache.common.security.KeyPairHelper;
 
 import javax.crypto.Cipher;
 import javax.net.ssl.*;

@@ -1,9 +1,8 @@
 package com.vertexcache.core.setting.loader;
 
 import com.vertexcache.common.config.VertexCacheConfigException;
-import com.vertexcache.common.config.reader.ConfigLoader;
 import com.vertexcache.common.log.LogHelper;
-import com.vertexcache.common.protocol.EncryptionMode;
+import com.vertexcache.common.security.EncryptionMode;
 import com.vertexcache.common.security.KeyPairHelper;
 import com.vertexcache.core.setting.ConfigKey;
 

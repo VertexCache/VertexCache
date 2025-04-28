@@ -28,6 +28,7 @@ copy_file "./etc/config/test_tls_certificate.pem" "./vertex-cache-config/console
 
 # Copy over the Test Public/Private Keys, for VertexCache Server and Console Client
 copy_file "./etc/config/test_private_key.pem" "./vertex-cache-config/server/test_private_key.pem"
+copy_file "./etc/config/test_public_key.pem" "./vertex-cache-config/server/test_public_key.pem"
 copy_file "./etc/config/test_public_key.pem" "./vertex-cache-config/console/test_public_key.pem"
 
 # Copy over the Log4J Configuration Files
