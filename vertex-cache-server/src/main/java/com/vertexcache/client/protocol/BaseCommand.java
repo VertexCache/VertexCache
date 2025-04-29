@@ -39,6 +39,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Command {
     }
 
     protected abstract String buildCommand();
+    protected abstract String getCommandKey();
 
     protected void parseResponse(String responseBody) {
         // Default: do nothing — override if needed
