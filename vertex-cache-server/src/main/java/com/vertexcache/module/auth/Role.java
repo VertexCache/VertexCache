@@ -1,13 +1,16 @@
 package com.vertexcache.module.auth;
 
 import com.vertexcache.core.command.impl.*;
+import com.vertexcache.core.command.impl.internal.RoleChangeCommand;
 
 import java.util.Set;
 
 public enum Role {
     READ_ONLY,
     READ_WRITE,
-    ADMIN;
+    ADMIN,
+    NODE // this for M2M only, ie: Clustering
+    ;
 
     public boolean canExecute(String command) {
         return switch (this) {
@@ -28,6 +31,9 @@ public enum Role {
                             GetSecondaryIdxOneCommand.COMMAND_KEY,
                             GetSecondaryIdxTwoCommand.COMMAND_KEY
                     ).contains(command.toUpperCase());
+            case NODE -> Set.of(
+                            RoleChangeCommand.COMMAND_KEY
+                    ).contains(command.toUpperCase());
         };
     }
 
@@ -47,6 +53,9 @@ public enum Role {
                         GetCommand.COMMAND_KEY,
                         GetSecondaryIdxOneCommand.COMMAND_KEY,
                         GetSecondaryIdxTwoCommand.COMMAND_KEY
+                    );
+            case NODE -> Set.of(
+                        RoleChangeCommand.COMMAND_KEY
                     );
         };
     }

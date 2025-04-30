@@ -5,6 +5,7 @@ import com.vertexcache.core.command.impl.*;
 import java.util.Map;
 
 import com.vertexcache.core.command.impl.admin.*;
+import com.vertexcache.core.command.impl.internal.RoleChangeCommand;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
 /**
@@ -41,6 +42,9 @@ public class CommandFactory {
         commandMap.put(SessionsCommand.COMMAND_KEY, new SessionsCommand());
         commandMap.put(PurgeCommand.COMMAND_KEY, new PurgeCommand());
         commandMap.put(MetricsCommand.COMMAND_KEY, new MetricsCommand());
+
+        // Intended for Internal M2M / Clustering
+        commandMap.put(RoleChangeCommand.COMMAND_KEY, new RoleChangeCommand());
     }
 
     public Command<String> getCommand(String commandName) {

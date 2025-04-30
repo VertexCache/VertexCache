@@ -34,9 +34,16 @@ public class VertexCacheInternalClient {
         );
     }
 
-    public CommandResult ping() {
-        PingCommand cmd = (PingCommand) new PingCommand().execute(tcpClient);
-        return new CommandResult(cmd.isSuccess(), cmd.getStatusMessage());
+    public CommandResult sendCommand(String commandText) {
+        if (commandText.startsWith(PingCommand.COMMAND_KEY)) {
+            PingCommand cmd = (PingCommand) new PingCommand().execute(tcpClient);
+            return new CommandResult(cmd.isSuccess(), cmd.getStatusMessage());
+      //  } else if (commandText.startsWith("ROLE_CHANGE")) {
+            // TODO: Build a small RoleChangeCommand class
+          //  return tcpClient.executeCommand(new RoleChangeCommand(commandText));
+        } else {
+            throw new UnsupportedOperationException("Unsupported internal command: " + commandText);
+        }
     }
 
     public boolean isConnected() {

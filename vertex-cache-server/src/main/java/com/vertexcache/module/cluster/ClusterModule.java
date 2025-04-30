@@ -15,6 +15,7 @@ import com.vertexcache.module.cluster.exception.VertexCacheClusterModuleExceptio
 import com.vertexcache.module.cluster.heartbeat.HeartbeatManager;
 import com.vertexcache.module.cluster.model.ClusterNode;
 import com.vertexcache.module.cluster.store.ClusterPeerStore;
+import com.vertexcache.module.cluster.observer.PeerStateObserver;
 
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +33,7 @@ public class ClusterModule extends Module {
     protected void onStart() {
         try {
             this.clusterConfig = Config.getInstance().getClusterConfigLoader();
+            this.peerStore.registerListener(new PeerStateObserver());
             this.heartbeatManager = new HeartbeatManager(this, getHeartbeatIntervalMs());
             new Thread(heartbeatManager, "ClusterHeartbeatThread").start();
 
@@ -193,7 +195,7 @@ public class ClusterModule extends Module {
         peerStore.notifyRoleChange(getLocalNode().id(), "PRIMARY");
         reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Local node promoted to PRIMARY.");
 
-        // ✅ New: Send ROLE_CHANGE command to peers
+        // Send ROLE_CHANGE command to peers
         for (ClusterNode peer : getPeers()) {
             sendClusterCommand(peer, "ROLE_CHANGE " + getLocalNode().id() + " PRIMARY");
         }
@@ -201,8 +203,7 @@ public class ClusterModule extends Module {
 
     public void sendClusterCommand(ClusterNode peer, String command) {
         try {
-            // Use your existing Client SDK or SocketClient
-            // Example pseudo-code assuming you have a VertexCacheClient:
+
             /**
              *
              *    TODO VertexCacheInternalClient!!!!!
@@ -213,6 +214,8 @@ public class ClusterModule extends Module {
             client.close();
             LogHelper.getInstance().logDebug("Sent cluster command to peer " + peer.id() + ": " + command);
              */
+
+
         } catch (Exception e) {
             LogHelper.getInstance().logError("Failed to send cluster command to peer '" + peer.id() + "': " + e.getMessage());
         }
