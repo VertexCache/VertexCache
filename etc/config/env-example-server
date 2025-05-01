@@ -56,31 +56,6 @@ cluster_failover_enabled=true
 cluster_failover_check_interval_ms=2000
 cluster_failover_backoff_jitter_ms=500
 
-cluster_replication_retry_attempts=3
-cluster_replication_retry_interval_ms=100
-cluster_replication_queue_ttl_ms=3000
-
-# Optional: Tie-breaker (lower = higher priority)
-# cluster_failover_priority=1
-
-# Optional: Enforce config hash consistency
-# cluster_config_strict=true
-
-# Optional: Custom host/port for peer advertisement (e.g. Docker, NAT)
-# cluster_advertise_host=10.0.0.5
-# cluster_advertise_port=60420
-
-# Optional: Max number of secondaries that can be active
-# cluster_max_standbys=2
-
-# Optional: Heartbeat expiration before marking node unreachable
-# cluster_heartbeat_timeout_ms=6000
-
-# Optional: If true, a promoted node will demote itself if the original primary returns
-# cluster_auto_rejoin_role=secondary
-
-
-
 
 #####################################################
 # General Server Settings

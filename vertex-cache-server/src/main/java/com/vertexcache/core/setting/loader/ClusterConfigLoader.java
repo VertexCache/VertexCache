@@ -1,6 +1,7 @@
 package com.vertexcache.core.setting.loader;
 
 import com.vertexcache.core.setting.ConfigKey;
+import com.vertexcache.module.cluster.meta.ClusterCoordinationKeys;
 import com.vertexcache.module.cluster.model.ClusterNode;
 
 import java.util.*;
@@ -67,26 +68,11 @@ public class ClusterConfigLoader extends LoaderBase {
     }
 
     private void loadCoordinationSettings() {
-        Map<String, String> defaults = new LinkedHashMap<>();
-        defaults.put("cluster_failover_enabled", "true");
-        defaults.put("cluster_failover_check_interval_ms", "2000");
-        defaults.put("cluster_failover_backoff_jitter_ms", "500");
-        defaults.put("cluster_replication_retry_attempts", "3");
-        defaults.put("cluster_replication_retry_interval_ms", "100");
-        defaults.put("cluster_replication_queue_ttl_ms", "3000");
-        defaults.put("cluster_failover_priority", "100");
-        defaults.put("cluster_config_strict", "false");
-        defaults.put("cluster_advertise_host", "");
-        defaults.put("cluster_advertise_port", "");
-        defaults.put("cluster_max_standbys", "2");
-        defaults.put("cluster_heartbeat_timeout_ms", "6000");
-        defaults.put("cluster_auto_rejoin_role", "none");
-
-        for (Map.Entry<String, String> entry : defaults.entrySet()) {
-            String key = entry.getKey();
-            String fallback = entry.getValue();
-            String value = this.getConfigLoader().getProperty(key, fallback);
-            coordinationSettings.put(key, value);
+        for (String key : ClusterCoordinationKeys.ACTIVE_KEYS) {
+            String value = this.getConfigLoader().getProperty(key, null);
+            if (value != null) {
+                coordinationSettings.put(key, value);
+            }
         }
     }
 

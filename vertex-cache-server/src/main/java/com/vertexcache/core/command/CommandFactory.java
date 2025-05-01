@@ -5,6 +5,7 @@ import com.vertexcache.core.command.impl.*;
 import java.util.Map;
 
 import com.vertexcache.core.command.impl.admin.*;
+import com.vertexcache.core.command.impl.internal.PeerPingCommand;
 import com.vertexcache.core.command.impl.internal.RoleChangeCommand;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
@@ -45,6 +46,7 @@ public class CommandFactory {
 
         // Intended for Internal M2M / Clustering
         commandMap.put(RoleChangeCommand.COMMAND_KEY, new RoleChangeCommand());
+        commandMap.put(PeerPingCommand.COMMAND_KEY, new PeerPingCommand());
     }
 
     public Command<String> getCommand(String commandName) {

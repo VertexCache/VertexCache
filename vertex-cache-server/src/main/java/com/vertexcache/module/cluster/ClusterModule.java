@@ -6,10 +6,7 @@ import com.vertexcache.core.module.ModuleStatus;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.setting.loader.ClusterConfigLoader;
 import com.vertexcache.core.validation.ValidationBatch;
-import com.vertexcache.core.validation.validators.cluster.ClusterNodeHostValidator;
-import com.vertexcache.core.validation.validators.cluster.ClusterNodePortValidator;
-import com.vertexcache.core.validation.validators.cluster.ClusterNodeRoleValidator;
-import com.vertexcache.core.validation.validators.cluster.ClusterNodeStatusValidator;
+import com.vertexcache.core.validation.validators.cluster.*;
 import com.vertexcache.module.cluster.enums.ClusterNodeRole;
 import com.vertexcache.module.cluster.exception.VertexCacheClusterModuleException;
 import com.vertexcache.module.cluster.heartbeat.HeartbeatManager;
@@ -19,6 +16,7 @@ import com.vertexcache.module.cluster.observer.PeerStateObserver;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -109,6 +107,11 @@ public class ClusterModule extends Module {
                 reportHealth(ModuleStatus.STARTUP_FAILED, "Cluster validation failed: " + summary);
                 throw new VertexCacheClusterModuleException("Cluster validation failed: " + summary);
             }
+
+            Map<String, String> settings = Config.getInstance()
+                    .getClusterConfigLoader()
+                    .getCoordinationSettings();
+            new ClusterCoordinationSettingsValidator(settings).validate();
 
             reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Cluster nodes validated successfully.");
 
