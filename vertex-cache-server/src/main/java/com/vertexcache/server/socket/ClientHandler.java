@@ -149,13 +149,20 @@ public class ClientHandler implements Runnable {
                 } else {
                     session.setClientId(clientId);
                     session.setTenantId(TenantId.DEFAULT);
-                    session.setRole(Role.ADMIN);
+
+                    boolean isClusterNode = Config.getInstance().getClusterConfigLoader().getAllClusterNodes().containsKey(clientId);
+
+                    if (isClusterNode) {
+                        session.setRole(Role.NODE);
+                    } else {
+                        session.setRole(Role.ADMIN);
+                    }
 
                     this.clientName = clientId;
                     this.isIdentified = true;
                     SessionRegistry.register(connectionId, session);
 
-                    return "+OK IDENT (auth disabled)".getBytes(StandardCharsets.UTF_8);
+                    return ("+OK IDENT (auth disabled, role=" + session.getRole() + ")").getBytes(StandardCharsets.UTF_8);
                 }
 
             } else {
