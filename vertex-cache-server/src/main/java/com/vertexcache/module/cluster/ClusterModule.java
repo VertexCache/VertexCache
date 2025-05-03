@@ -1,23 +1,22 @@
 package com.vertexcache.module.cluster;
 
+import com.vertexcache.client.VertexCacheInternalClient;
+import com.vertexcache.client.VertexCacheInternalClientOptions;
 import com.vertexcache.common.log.LogHelper;
+import com.vertexcache.common.security.EncryptionMode;
 import com.vertexcache.core.module.Module;
 import com.vertexcache.core.module.ModuleStatus;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.setting.loader.ClusterConfigLoader;
-import com.vertexcache.core.validation.ValidationBatch;
 import com.vertexcache.core.validation.validators.cluster.*;
-import com.vertexcache.module.cluster.enums.ClusterNodeRole;
 import com.vertexcache.module.cluster.exception.VertexCacheClusterModuleException;
 import com.vertexcache.module.cluster.heartbeat.HeartbeatManager;
 import com.vertexcache.module.cluster.model.ClusterNode;
 import com.vertexcache.module.cluster.store.ClusterPeerStore;
 import com.vertexcache.module.cluster.observer.PeerStateObserver;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ClusterModule extends Module {
@@ -26,6 +25,7 @@ public class ClusterModule extends Module {
     private final ClusterPeerStore peerStore = new ClusterPeerStore();
     private HeartbeatManager heartbeatManager;
     private String localRoleOverride = null;
+    private VertexCacheInternalClient vertexCacheInternalClient = null;
 
     @Override
     protected void onStart() {
@@ -162,23 +162,47 @@ public class ClusterModule extends Module {
         }
     }
 
-    public void sendClusterCommand(ClusterNode peer, String command) {
+    private void sendClusterCommand(ClusterNode peer, String command) {
         try {
 
-            /**
-             *
-             *    TODO VertexCacheInternalClient!!!!!
-             *
-             *
-            VertexCacheClient client = new VertexCacheClient(peer.host(), peer.port(), "node-auth-token");
-            client.sendCommand(command);
-            client.close();
-            LogHelper.getInstance().logDebug("Sent cluster command to peer " + peer.id() + ": " + command);
-             */
+            this.initVertexCacheClient(peer);
 
+            // Need to Implement, send command(s)
 
         } catch (Exception e) {
             LogHelper.getInstance().logError("Failed to send cluster command to peer '" + peer.id() + "': " + e.getMessage());
         }
+    }
+
+    private VertexCacheInternalClient initVertexCacheClient(ClusterNode peer) {
+        if(this.vertexCacheInternalClient == null) {
+            VertexCacheInternalClientOptions options = new VertexCacheInternalClientOptions();
+            options.setClientId(peer.id());
+            // Not Required, because secuity can re-use TLS and Public/Private keys if those are enabled
+            options.setClientToken("");
+
+            options.setServerHost(peer.host());
+            options.setServerPort(peer.port());
+
+            if(Config.getInstance().getSecurityConfigLoader().isEncryptTransport()) {
+                options.setEnableTlsEncryption(true);
+                options.setTlsCertificate(Config.getInstance().getSecurityConfigLoader().getTlsCertificate());
+
+            } else {
+                options.setEnableTlsEncryption(false);
+            }
+
+            if(Config.getInstance().getSecurityConfigLoader().getEncryptionMode().equals(EncryptionMode.ASYMMETRIC)) {
+                options.setEncryptionMode(EncryptionMode.ASYMMETRIC);
+                options.setPublicKey(Config.getInstance().getSecurityConfigLoader().getPublicKey().toString());
+            } else if(Config.getInstance().getSecurityConfigLoader().getEncryptionMode().equals(EncryptionMode.SYMMETRIC)) {
+                options.setEncryptionMode(EncryptionMode.SYMMETRIC);
+                options.setSharedEncryptionKey(Config.getInstance().getSecurityConfigLoader().getSharedEncryptionKey());
+            } else {
+                options.setEncryptionMode(EncryptionMode.NONE);
+            }
+            options.setEncryptionMode(EncryptionMode.ASYMMETRIC);
+        }
+        return this.vertexCacheInternalClient;
     }
 }

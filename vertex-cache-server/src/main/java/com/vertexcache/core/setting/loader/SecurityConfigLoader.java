@@ -164,6 +164,10 @@ public class SecurityConfigLoader extends LoaderBase {
         this.privateKey = privateKey;
     }
 
+    public PublicKey getPublicKey() {return publicKey;}
+
+    public void setPublicKey(PublicKey publicKey) {this.publicKey = publicKey;}
+
     public String getSharedEncryptionKey() {
         return sharedEncryptionKey;
     }
