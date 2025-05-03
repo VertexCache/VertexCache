@@ -7,6 +7,7 @@ import com.vertexcache.common.security.KeyPairHelper;
 import com.vertexcache.core.setting.ConfigKey;
 
 import java.security.PrivateKey;
+import java.security.PublicKey;
 
 public class SecurityConfigLoader extends LoaderBase {
 
@@ -14,6 +15,7 @@ public class SecurityConfigLoader extends LoaderBase {
     private boolean encryptWithPrivateKey = false;
     private boolean encryptWithSharedKey = false;
     private PrivateKey privateKey;
+    private PublicKey publicKey;
 
     private String sharedEncryptionKey;
     private String encryptNote = "";
@@ -29,6 +31,7 @@ public class SecurityConfigLoader extends LoaderBase {
             try {
 
                 String privateKeyString = this.getConfigLoader().getProperty(ConfigKey.PRIVATE_KEY);
+                String publicKeyString = this.getConfigLoader().getProperty(ConfigKey.PUBLIC_KEY);
                 this.sharedEncryptionKey = this.getConfigLoader().getProperty(ConfigKey.SHARED_ENCRYPTION_KEY);
 
                 boolean hasPrivateKey = privateKeyString != null && !privateKeyString.isBlank();
@@ -48,6 +51,7 @@ public class SecurityConfigLoader extends LoaderBase {
 
                 if (hasPrivateKey) {
                     this.privateKey = KeyPairHelper.loadPrivateKey(privateKeyString);
+                    this.publicKey = KeyPairHelper.loadPublicKey(publicKeyString);
                     this.sharedEncryptionKey = null;
                     this.encryptWithPrivateKey = true;
                     this.encryptionMode = EncryptionMode.ASYMMETRIC;
@@ -55,6 +59,7 @@ public class SecurityConfigLoader extends LoaderBase {
 
                 if (hasSharedKey) {
                     this.privateKey = null;
+                    this.publicKey = null;
                     this.encryptWithSharedKey = true;
                     this.encryptionMode = EncryptionMode.SYMMETRIC;
                 }

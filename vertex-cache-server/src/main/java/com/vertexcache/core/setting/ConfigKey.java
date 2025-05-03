@@ -13,6 +13,7 @@ public class ConfigKey {
     // Encrypt Message Layer, Private/Public Key RSA (no use for the public key that's for the client), Shared Key AES
     public static final String ENABLE_ENCRYPT_MESSAGE = "enable_encrypt_message";
     public static final String PRIVATE_KEY = "private_key";
+    public static final String PUBLIC_KEY = "public_key";
     public static final String SHARED_ENCRYPTION_KEY = "shared_encryption_key";
 
 

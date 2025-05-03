@@ -100,6 +100,14 @@ enable_encrypt_message=true
 # RSA Private Key (RSA) - Embedded Single Line (Option 2)
 private_key="-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCfDAo3YzueImP5\nV3T7D1BvDmDDlPMBbDY9QGXmud6mCflCsua9DSzhqgMvokayfLH4alKjpSaSu9eS\nc5tb4AhTOwctztsV72p7+6tK+AsrNOGX2Rv8o3g254NUn6zfewMD3P6tED36yOnw\n9zZhyaYbM3WULbYoz6g9LEdC9FxPl1Du7o0aDulfzUMnVmwJdF4Te8agJBHImhE9\n0sDnihE3ALzb/Eqb1xF+CGNEqq+eSalLcV8KPSws/LhbsBEFZT5FuFTRSZ1S60Hc\nJ7Ut8ijoOmZ+GAcnU/XJ3/SJzyp+SqO/BSjFFSFHn51YhqQDwplhD3mA/qhrCZeK\n7Y9w95UTAgMBAAECggEATLx+YWLbbNyi57aulkM5R5vkS/kdld4j/UGI6N1c8zd0\nsB2o/iXRNb/VcbIV8h//rh9+Z75S8hD3XY2xs45P9fhQ6mUXh2nQMqmmZ7Ftkhcd\nkSoLOsWURslEsBuqSNkNB1wk9FMV1F4DoWNlNaEZJ56YaDn13ZLzVTB74W4M68kO\n7utITED6VKtDvbxCvMRfoig6qT3nk6FTZc+Sx9hiZEh/6+oIj0RScM/nmTAJp2Q5\nuN+TMkeRhft7K7pXoiG5O4W24hSmyXE5+TnPlrfvVn1kVmrPrsyfji4joHtwDkqF\n0CuS8v2jPgfrTQ9h56G2fyRFPYtyZr0GGWHCn035AQKBgQDYZ9Ts7X15oQi+GMn2\nrK5V2D7XZqbgu+xWmbcFfAeR4gjpz0zHxZ/DBtVgrUcDqpcGCpaor573QulbPHEV\nSj/PKr58SlbLIh0tdvi0C/Op2upDjG1Hk9W8rY0AjpD67bkHdo4x6xzh30MjzqDK\nPB0REjHodajvJTbhxgx1lCAWswKBgQC8JZrIG6ctkfeFqf6cNy6p15/MRQu1npif\nSHfkz+iexZxN0OuUo0SaTRSQt+gJax3rM/Rs03RupLtuKalfLiIBoq0CmKqpRaDP\njuWMtLuCJCuuVCfEpcFm6X+57VM7PdZ1j8vy0KNhzYFJBMaLD5uz5AnuKud8sid0\nI3GA92y4IQKBgFOOA5BXQhMsMgvz1kb/9W//xoO0hspOxLnLL/dWJDYXaAmemK6p\nhz3t7YUeYkTwIM+cVv9aj644j5FCjQcDXA/JGTM0IL7dtRZQ0UXzN2lltP3PwoHY\nerYW7FJCuYepMb/H7q8ncEdlxK6WoU50V2S3+b0fcNKlM8OIjFb5kkoxAoGAJMl9\ngA7YGzLlIL9iRw0LFK5SUlBVv8cotEwpFRYJt7GPpC9rQH7D1R+pG7q5pc3J5ckc\ny4J0y4VuGFYRBckxYPx7s3xCMiKpFKwt+dsEpqeH2ugddneqXwLctG/QzE6E9iuN\nhwaAS4kw9CP45gvBN+Uog+bjqB/1UuHzOXInUcECgYBy/Ll8X0VzLjeI4qIe9c2a\nMjnM+H5Cu+qGkTFQv/9tFfhhlj+lbR8O2exVTBpSCiOIkTEQm/clOLnMF+j90uAo\n6hgtLo0W0eIJ3aghcLeHQ8dHWcdEUlzob677i4oVJMKF8mcujMbVVHS/3mLtRE9A\nyEBBVcw6Ds4FKy8VNWOEFQ==\n-----END PRIVATE KEY-----"
 
+# Used for Clusters
+#public_key=./vertex-cache-config/console/test_public_key.pem
+
+# Public Key (RSA) - Embedded Single Line (Option 2)
+public_key="-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnwwKN2M7niJj+Vd0+w9Q\nbw5gw5TzAWw2PUBl5rnepgn5QrLmvQ0s4aoDL6JGsnyx+GpSo6UmkrvXknObW+AI\nUzsHLc7bFe9qe/urSvgLKzThl9kb/KN4NueDVJ+s33sDA9z+rRA9+sjp8Pc2Ycmm\nGzN1lC22KM+oPSxHQvRcT5dQ7u6NGg7pX81DJ1ZsCXReE3vGoCQRyJoRPdLA54oR\nNwC82/xKm9cRfghjRKqvnkmpS3FfCj0sLPy4W7ARBWU+RbhU0UmdUutB3Ce1LfIo\n6DpmfhgHJ1P1yd/0ic8qfkqjvwUoxRUhR5+dWIakA8KZYQ95gP6oawmXiu2PcPeV\nEwIDAQAB\n-----END PUBLIC KEY-----"
+
+
+
 # AES Key (256-bit, Base64 encoded) — use instead of RSA
 #shared_encryption_key=neEvmCDMRdEgive402Taji9I/vrrpqrjJ+qeAF4QRNc=
 
