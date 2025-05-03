@@ -60,57 +60,15 @@ public class ClusterModule extends Module {
                 throw new VertexCacheClusterModuleException("Cluster config loader is null.");
             }
 
-            var nodes = clusterConfig.getAllClusterNodes();
+            Map<String, ClusterNode> nodes = clusterConfig.getAllClusterNodes();
             if (nodes.isEmpty()) {
                 reportHealth(ModuleStatus.STARTUP_FAILED, "No cluster nodes defined in configuration.");
                 throw new VertexCacheClusterModuleException("Cluster node list is empty.");
             }
 
-            ValidationBatch batch = new ValidationBatch();
-            int primaryCount = 0;
-            int secondaryCount = 0;
-            Set<String> endpoints = new HashSet<>();
+            new ClusterTopologyValidator(nodes).validate();
 
-            for (var node : nodes.values()) {
-                String nodeRef = "node[" + node.id() + "]";
-                batch.check(nodeRef + ".role", new ClusterNodeRoleValidator(node.role()));
-                batch.check(nodeRef + ".status", new ClusterNodeStatusValidator(node.status()));
-                batch.check(nodeRef + ".host", new ClusterNodeHostValidator(node.host()));
-                batch.check(nodeRef + ".port", new ClusterNodePortValidator(node.port()));
-
-                try {
-                    ClusterNodeRole roleEnum = ClusterNodeRole.from(node.role());
-                    switch (roleEnum) {
-                        case PRIMARY -> primaryCount++;
-                        case SECONDARY -> secondaryCount++;
-                    }
-                } catch (IllegalArgumentException ignored) {
-                    // Already handled by role validator.
-                }
-
-                String endpoint = node.host() + ":" + node.port();
-                if (!endpoints.add(endpoint)) {
-                    batch.getErrors().add("Topology: Duplicate host:port detected for " + endpoint);
-                }
-            }
-
-            if (primaryCount != 1) {
-                batch.getErrors().add("Topology: Exactly 1 PRIMARY node required, found: " + primaryCount);
-            }
-
-            if (secondaryCount < 1) {
-                batch.getErrors().add("Topology: At least 1 SECONDARY node required, found: " + secondaryCount);
-            }
-
-            if (batch.hasErrors()) {
-                String summary = batch.getSummary();
-                reportHealth(ModuleStatus.STARTUP_FAILED, "Cluster validation failed: " + summary);
-                throw new VertexCacheClusterModuleException("Cluster validation failed: " + summary);
-            }
-
-            Map<String, String> settings = Config.getInstance()
-                    .getClusterConfigLoader()
-                    .getCoordinationSettings();
+            Map<String, String> settings = clusterConfig.getCoordinationSettings();
             new ClusterCoordinationSettingsValidator(settings).validate();
 
             reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Cluster nodes validated successfully.");
