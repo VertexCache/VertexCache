@@ -7,6 +7,8 @@ import com.vertexcache.common.security.MessageCodec;
 import com.vertexcache.common.security.GcmCryptoHelper;
 import com.vertexcache.core.command.CommandService;
 import com.vertexcache.core.setting.Config;
+import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.validators.IdentValidator;
 import com.vertexcache.module.auth.*;
 import com.vertexcache.server.session.ClientSessionContext;
 import com.vertexcache.server.session.IdentPayload;
@@ -121,6 +123,12 @@ public class ClientHandler implements Runnable {
 
                 if (clientId.isEmpty()) {
                     return "-ERR IDENT Failed: missing client_id".getBytes(StandardCharsets.UTF_8);
+                }
+
+                try {
+                    new IdentValidator(clientId, Config.getInstance().getClusterConfigLoader().isEnableClustering()).validate();
+                } catch (VertexCacheValidationException e) {
+                    return ("-ERR IDENT Failed: " + e.getMessage()).getBytes(StandardCharsets.UTF_8);
                 }
 
                 if (config.getAuthWithTenantConfigLoader().isAuthEnabled()) {
