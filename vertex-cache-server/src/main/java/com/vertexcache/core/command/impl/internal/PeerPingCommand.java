@@ -57,7 +57,7 @@ public class PeerPingCommand extends BaseCommand<String> {
 
         if (!localHash.equals(remoteHash)) {
             LogHelper.getInstance().logWarn("[PEER_PING] Config hash mismatch from " + nodeId + ". Local: " + localHash + ", Remote: " + remoteHash);
-            commandResponse.setResponseError("WARN Hash mismatch. Local: " + localHash);
+            commandResponse.setResponse("WARN Hash mismatch. Local: " + localHash);
         } else {
             LogHelper.getInstance().logDebug("[PEER_PING] Hash OK from " + nodeId);
             commandResponse.setResponseOK();
