@@ -34,6 +34,8 @@ public class CommandFactory {
         commandMap.put(SetCommand.COMMAND_KEY, new SetCommand());
         commandMap.put(DelCommand.COMMAND_KEY, new DelCommand());
 
+        commandMap.put(ClusterStatusCommand.COMMAND_KEY, new ClusterStatusCommand());
+
         // Intended for Admin Only
         commandMap.put(StatusCommand.COMMAND_KEY, new StatusCommand());
         commandMap.put(ShutdownCommand.COMMAND_KEY, new ShutdownCommand());

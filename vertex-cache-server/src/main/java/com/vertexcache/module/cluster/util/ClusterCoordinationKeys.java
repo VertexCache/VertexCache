@@ -1,4 +1,4 @@
-package com.vertexcache.module.cluster.meta;
+package com.vertexcache.module.cluster.util;
 
 import java.util.Set;
 

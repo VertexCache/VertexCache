@@ -23,15 +23,15 @@ public class ClusterTopologyValidator implements Validator {
         int secondaryCount = 0;
         Set<String> endpoints = new HashSet<>();
 
-        for (ClusterNode node : nodes.values()) {
-            String nodeRef = "node[" + node.id() + "]";
-            batch.check(nodeRef + ".role", new ClusterNodeRoleValidator(node.role()));
-            batch.check(nodeRef + ".status", new ClusterNodeStatusValidator(node.status()));
-            batch.check(nodeRef + ".host", new ClusterNodeHostValidator(node.host()));
-            batch.check(nodeRef + ".port", new ClusterNodePortValidator(node.port()));
+        for (ClusterNode clusterNode : nodes.values()) {
+            String nodeRef = "clusterNode[" + clusterNode.getId() + "]";
+            batch.check(nodeRef + ".role", new ClusterNodeRoleValidator(clusterNode.getRole().toString()));
+            batch.check(nodeRef + ".status", new ClusterNodeStatusValidator(clusterNode.getHealthStatus().toString()));
+            batch.check(nodeRef + ".host", new ClusterNodeHostValidator(clusterNode.getHost()));
+            batch.check(nodeRef + ".port", new ClusterNodePortValidator(Integer.parseInt(clusterNode.getPort())));
 
             try {
-                String role = node.role();
+                String role = String.valueOf(clusterNode.getRole());
                 if (role != null && !role.isBlank()) {
                     switch (role.trim().toUpperCase()) {
                         case "PRIMARY" -> primaryCount++;
@@ -43,7 +43,7 @@ public class ClusterTopologyValidator implements Validator {
             }
 
             // Duplicate endpoint detection
-            String endpoint = node.host() + ":" + node.port();
+            String endpoint = clusterNode.getHost() + ":" + clusterNode.getPort();
             if (!endpoints.add(endpoint)) {
                 batch.getErrors().add("Topology: Duplicate host:port detected for " + endpoint);
             }

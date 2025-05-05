@@ -1,18 +1,13 @@
-package com.vertexcache.module.cluster.store;
+package com.vertexcache.module.cluster.model;
 
-public class PeerState {
-    private final String nodeId;
+public class ClusterNodeHeartBeat {
+
     private volatile long lastHeartbeatTime;
     private volatile boolean down;
 
-    public PeerState(String nodeId) {
-        this.nodeId = nodeId;
+    public ClusterNodeHeartBeat() {
         this.lastHeartbeatTime = System.currentTimeMillis();
         this.down = false;
-    }
-
-    public String getNodeId() {
-        return nodeId;
     }
 
     public long getLastHeartbeatTime() {
@@ -30,5 +25,9 @@ public class PeerState {
 
     public void markDown() {
         this.down = true;
+    }
+
+    public boolean isAlive(long timeoutMs) {
+        return !down && (System.currentTimeMillis() - lastHeartbeatTime) <= timeoutMs;
     }
 }

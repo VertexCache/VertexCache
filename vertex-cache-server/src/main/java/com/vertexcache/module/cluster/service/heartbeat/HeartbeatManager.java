@@ -1,9 +1,9 @@
-package com.vertexcache.module.cluster.heartbeat;
+package com.vertexcache.module.cluster.service.heartbeat;
 
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.module.cluster.ClusterModule;
 import com.vertexcache.module.cluster.model.ClusterNode;
-import com.vertexcache.module.cluster.coordination.FailoverManager;
+import com.vertexcache.module.cluster.service.coordination.FailoverManager;
 
 import java.util.List;
 
@@ -20,6 +20,11 @@ public class HeartbeatManager implements Runnable {
         this.failoverManager = new FailoverManager(clusterModule);
     }
 
+    @Override
+    public void run() {
+
+    }
+/*
     @Override
     public void run() {
         while (running) {
@@ -44,4 +49,5 @@ public class HeartbeatManager implements Runnable {
     public void stop() {
         this.running = false;
     }
+    */
 }

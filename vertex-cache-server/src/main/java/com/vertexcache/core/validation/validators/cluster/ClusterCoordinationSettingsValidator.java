@@ -2,7 +2,7 @@ package com.vertexcache.core.validation.validators.cluster;
 
 import com.vertexcache.core.validation.Validator;
 import com.vertexcache.core.validation.VertexCacheValidationException;
-import com.vertexcache.module.cluster.meta.ClusterCoordinationKeys;
+import com.vertexcache.module.cluster.util.ClusterCoordinationKeys;
 
 import java.util.Map;
 

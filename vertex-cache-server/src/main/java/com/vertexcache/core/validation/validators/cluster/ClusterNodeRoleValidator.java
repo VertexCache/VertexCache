@@ -2,7 +2,7 @@ package com.vertexcache.core.validation.validators.cluster;
 
 import com.vertexcache.core.validation.Validator;
 import com.vertexcache.core.validation.VertexCacheValidationException;
-import com.vertexcache.module.cluster.enums.ClusterNodeRole;
+import com.vertexcache.module.cluster.model.ClusterNodeRole;
 
 public class ClusterNodeRoleValidator implements Validator {
     private final String role;
