@@ -50,7 +50,7 @@ public class PeerPingCommand extends BaseCommand<String> {
             return commandResponse;
         }
 
-      //  clusterModule.getPeerStore().updateHeartbeat(nodeId);
+        clusterModule.getClusterNodeTrackerStore().updateHeartbeat(nodeId);
 
         Map<String, String> localSettings = Config.getInstance().getClusterConfigLoader().getCoordinationSettings();
         String localHash = ClusterHashUtil.computeCoordinationHash(localSettings);

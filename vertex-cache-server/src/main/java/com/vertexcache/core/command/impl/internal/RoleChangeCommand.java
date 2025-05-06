@@ -66,7 +66,7 @@ public class RoleChangeCommand extends BaseCommand<String> {
             return commandResponse;
         }
 
-       // clusterModule.getPeerStore().notifyRoleChange(nodeId, newRole);
+        clusterModule.getClusterNodeTrackerStore().notifyRoleChange(nodeId, newRole);
 
         commandResponse.setResponseOK();
         return commandResponse;

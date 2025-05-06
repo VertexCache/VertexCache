@@ -9,6 +9,10 @@ import com.vertexcache.module.cluster.model.ClusterNodeRole;
 import java.util.Comparator;
 import java.util.Optional;
 
+/**
+ * Coordinates automatic promotion of a standby node to primary
+ * when the primary is considered unreachable. Runs as part of the heartbeat cycle.
+ */
 public class FailoverManager {
 
     private final ClusterModule clusterModule;
@@ -17,60 +21,71 @@ public class FailoverManager {
         this.clusterModule = clusterModule;
     }
 
-    /*
-    public void checkAndPromoteIfNecessary() {
-        boolean failoverEnabled = Boolean.parseBoolean(clusterModule.getClusterConfig()
-                .getCoordinationSettings()
-                .getOrDefault("cluster_failover_enabled", "false"));
-
-        if (!failoverEnabled) return;
+    /**
+     * Invoked by HeartbeatManager to evaluate failover conditions
+     * and promote this node if eligible.
+     */
+    public void checkFailover() {
+        if (!isFailoverEnabled()) return;
 
         ClusterNode local = clusterModule.getLocalNode();
-        ClusterNode primaryNode = clusterModule.getPrimaryNode();
+        ClusterNode primary = clusterModule.getPrimaryNode();
 
-        if (primaryNode == null) {
+        // Already the primary, nothing to do
+        if (local.getRole() == ClusterNodeRole.PRIMARY) return;
+
+        // No primary configured
+        if (primary == null) {
             LogHelper.getInstance().logWarn("[Failover] No primary node configured.");
             return;
         }
 
-        // Check if primary is down using tracker store
-        boolean primaryDown = clusterModule.getClusterNodeTrackerStore()
-                .get(primaryNode.getId())
-                .map(n -> n.getHeartbeat().isDown())
-                .orElse(true);
+        // If primary is up, no need to failover
+        boolean primaryAlive = clusterModule.getClusterNodeTrackerStore()
+                .get(primary.getId())
+                .map(state -> !state.getHeartbeat().isDown())
+                .orElse(false);
 
-        if (!primaryDown) return;
+        if (primaryAlive) return;
 
-        // Find eligible secondary
-        Optional<ClusterNode> eligibleSecondary = clusterModule.getClusterConfig()
+        // Find eligible secondary to promote
+        Optional<ClusterNode> candidate = clusterModule.getClusterConfig()
                 .getAllClusterNodes()
                 .values()
                 .stream()
-                .filter(n -> n.role() == ClusterNodeRole.SECONDARY)
-                .filter(n -> n.availability() == ClusterNodeAvailability.ENABLED)
+                .filter(n -> n.getRole() == ClusterNodeRole.SECONDARY)
+                .filter(n -> n.getAvailability() == ClusterNodeAvailability.ENABLED)
                 .filter(n -> clusterModule.getClusterNodeTrackerStore()
-                        .get(n.id())
-                        .map(node -> !node.getHeartbeat().isDown())
+                        .get(n.getId())
+                        .map(state -> !state.getHeartbeat().isDown())
                         .orElse(false))
                 .min(Comparator.comparingInt(this::getFailoverPriority));
 
-        if (eligibleSecondary.isEmpty()) {
-            LogHelper.getInstance().logWarn("[Failover] No eligible secondary node found for promotion.");
+        if (candidate.isEmpty()) {
+            LogHelper.getInstance().logWarn("[Failover] No eligible secondary found for promotion.");
             return;
         }
 
-        if (eligibleSecondary.get().getId().equals(local.getId())) {
-            LogHelper.getInstance().logInfo("[Failover] Promoting self to PRIMARY due to primary node failure.");
+        ClusterNode elected = candidate.get();
+        if (elected.getId().equals(local.getId())) {
+            LogHelper.getInstance().logInfo("[Failover] Promoting self to PRIMARY due to failover.");
             clusterModule.promoteSelfToPrimary();
         }
     }
 
+    private boolean isFailoverEnabled() {
+        return Boolean.parseBoolean(clusterModule
+                .getClusterConfig()
+                .getCoordinationSettings()
+                .getOrDefault("cluster_failover_enabled", "false"));
+    }
+
     private int getFailoverPriority(ClusterNode node) {
         String key = "cluster_node." + node.getId() + ".failover_priority";
-        return Integer.parseInt(clusterModule
-                .getClusterConfig()
-                .getConfigLoader()
-                .getProperty(key, "100"));
+        return Integer.parseInt(
+                clusterModule.getClusterConfig()
+                        .getConfigLoader()
+                        .getProperty(key, "100")
+        );
     }
-    */
 }

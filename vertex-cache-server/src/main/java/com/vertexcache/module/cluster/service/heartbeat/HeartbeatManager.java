@@ -6,48 +6,74 @@ import com.vertexcache.module.cluster.model.ClusterNode;
 import com.vertexcache.module.cluster.service.coordination.FailoverManager;
 
 import java.util.List;
+import java.util.concurrent.*;
 
-public class HeartbeatManager implements Runnable {
+/**
+ * Responsible for periodically sending heartbeat (PEER_PING) messages to all peer nodes
+ * and checking cluster failover conditions. Runs on a dedicated daemon thread to avoid
+ * blocking socket or application-level operations.
+ */
+public class HeartbeatManager {
 
     private final ClusterModule clusterModule;
     private final int heartbeatIntervalMs;
     private final FailoverManager failoverManager;
-    private volatile boolean running = true;
+    private final ScheduledExecutorService scheduler;
+
+    private ScheduledFuture<?> scheduledTask;
 
     public HeartbeatManager(ClusterModule clusterModule, int heartbeatIntervalMs) {
         this.clusterModule = clusterModule;
         this.heartbeatIntervalMs = heartbeatIntervalMs;
         this.failoverManager = new FailoverManager(clusterModule);
+        this.scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread t = new Thread(r, "ClusterHeartbeatThread");
+            t.setDaemon(true); // Ensures this thread won't block JVM shutdown
+            return t;
+        });
     }
 
-    @Override
-    public void run() {
+    /**
+     * Starts the periodic heartbeat loop if not already running.
+     */
+    public void start() {
+        if (scheduledTask != null && !scheduledTask.isCancelled()) return;
 
+        scheduledTask = scheduler.scheduleAtFixedRate(
+                this::heartbeatLoop,
+                0,
+                heartbeatIntervalMs,
+                TimeUnit.MILLISECONDS
+        );
+
+        LogHelper.getInstance().logInfo("[HeartbeatManager] Heartbeat loop started.");
     }
-/*
-    @Override
-    public void run() {
-        while (running) {
-            try {
-                List<ClusterNode> peers = clusterModule.getPeers();
-                for (ClusterNode peer : peers) {
-                    clusterModule.pingPeer(peer);
-                }
 
-                failoverManager.checkFailover();
+    /**
+     * Gracefully shuts down the heartbeat loop and thread.
+     */
+    public void shutdown() {
+        if (scheduledTask != null && !scheduledTask.isCancelled()) {
+            scheduledTask.cancel(true);
+        }
+        scheduler.shutdownNow();
+        LogHelper.getInstance().logInfo("[HeartbeatManager] Heartbeat loop stopped.");
+    }
 
-                Thread.sleep(heartbeatIntervalMs);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            } catch (Exception e) {
-                LogHelper.getInstance().logError("Heartbeat loop error: " + e.getMessage());
+    /**
+     * Called on each interval to send PEER_PINGs to all known peers and evaluate failover conditions.
+     */
+    private void heartbeatLoop() {
+        try {
+            List<ClusterNode> clusterNodes = clusterModule.getPeers();
+            for (ClusterNode clusterNode : clusterNodes) {
+                clusterModule.clusterPing(clusterNode); // Send heartbeat to peer
             }
+
+            failoverManager.checkFailover(); // Detect and promote standby if needed
+
+        } catch (Exception e) {
+            LogHelper.getInstance().logError("[HeartbeatManager] Heartbeat error: " + e.getMessage());
         }
     }
-
-    public void stop() {
-        this.running = false;
-    }
-    */
 }

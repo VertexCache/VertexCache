@@ -4,6 +4,8 @@ import com.vertexcache.client.VertexCacheInternalClient;
 import com.vertexcache.client.VertexCacheInternalClientOptions;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.security.EncryptionMode;
+import com.vertexcache.core.command.impl.internal.PeerPingCommand;
+import com.vertexcache.core.command.impl.internal.RoleChangeCommand;
 import com.vertexcache.core.module.Module;
 import com.vertexcache.core.module.ModuleStatus;
 import com.vertexcache.core.setting.Config;
@@ -16,6 +18,7 @@ import com.vertexcache.module.cluster.service.coordination.FailoverManager;
 import com.vertexcache.module.cluster.service.heartbeat.HeartbeatManager;
 import com.vertexcache.module.cluster.model.ClusterNode;
 import com.vertexcache.module.cluster.service.ClusterNodeTrackerStore;
+import com.vertexcache.module.cluster.util.ClusterHashUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -47,9 +50,9 @@ public class ClusterModule extends Module {
             // Initialize internal client for intra-cluster messaging
             this.initVertexCacheClient(localNode);
 
-            // Start heartbeat manager
+            // Start heartbeat manager (modern)
             this.heartbeatManager = new HeartbeatManager(this, getClusterHeartbeatIntervalMs());
-            new Thread(heartbeatManager, "ClusterHeartbeatThread").start();
+            this.heartbeatManager.start(); // ✅ fixed
 
             // Start failover manager
             this.failoverManager = new FailoverManager(this);
@@ -62,9 +65,9 @@ public class ClusterModule extends Module {
 
     @Override
     protected void onStop() {
-        //if (heartbeatManager != null) {
-        //    heartbeatManager.stop();
-       // }
+        if (heartbeatManager != null) {
+            heartbeatManager.shutdown(); // Cleanly stop scheduled heartbeat thread
+        }
         this.clusterConfig = null;
         setModuleStatus(ModuleStatus.SHUTDOWN_SUCCESSFUL);
     }
@@ -175,157 +178,17 @@ public class ClusterModule extends Module {
         reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Local node promoted to PRIMARY.");
 
         for (ClusterNode peer : getPeers()) {
-            sendClusterCommand(peer, "ROLE_CHANGE " + localNode.getId() + " PRIMARY");
+            vertexCacheInternalClient.sendCommand("ROLE_CHANGE " + localNode.getId() + " PRIMARY");
         }
     }
 
-    public void pingPeer(ClusterNode peer) {
+    public void clusterPing(ClusterNode node) {
         try {
-          //  sendClusterCommand(peer, "PEER_PING " + localNode.getId() + " " + getCoordinationHash());
+            String hash = ClusterHashUtil.computeCoordinationHash(clusterConfig.getCoordinationSettings());
+            vertexCacheInternalClient.sendCommand("PEER_PING " + localNode.getId() + " " + hash);
         } catch (Exception e) {
-            clusterNodeTrackerStore.markNodeDown(peer.getId());
-            LogHelper.getInstance().logError("Failed to send heartbeat to peer '" + peer.getId() + "': " + e.getMessage());
+            clusterNodeTrackerStore.markNodeDown(node.getId());
+            LogHelper.getInstance().logError("Failed to send heartbeat to node '" + node.getId() + "': " + e.getMessage());
         }
     }
-
-    private void sendClusterCommand(ClusterNode peer, String command) {
-        try {
-          //  VertexCacheInternalClient client = initVertexCacheClient(peer);
-          //  client.sendCommand(command);  // assuming method exists in internal client
-        } catch (Exception e) {
-            LogHelper.getInstance().logError("Failed to send cluster command to peer '" + peer.getId() + "': " + e.getMessage());
-        }
-    }
-
-    /*
-    public ClusterConfigLoader getClusterConfig() {
-        return clusterConfig;
-    }
-
-    public ClusterNodeTrackerStore getPeerStore() {
-        return peerStore;
-    }
-
-    public ClusterNode getLocalNode() {
-        return Config.getInstance().getClusterConfigLoader().getAllClusterNodes()
-                .get(Config.getInstance().getClusterConfigLoader().getLocalNodeId());
-    }
-
-    public List<ClusterNode> getPeers() {
-        return Config.getInstance().getClusterConfigLoader().getAllClusterNodes()
-                .values()
-                .stream()
-                .filter(node -> !node.id().equals(Config.getInstance().getClusterConfigLoader().getLocalNodeId()))
-                .collect(Collectors.toList());
-    }
-
-    public ClusterNode getPrimaryNode() {
-        return Config.getInstance().getClusterConfigLoader().getAllClusterNodes()
-                .values()
-                .stream()
-                .filter(node -> "PRIMARY".equalsIgnoreCase(node.role()))
-                .findFirst()
-                .orElse(null);
-    }
-
-    public List<ClusterNode> getSecondaryNodes() {
-        return Config.getInstance().getClusterConfigLoader().getAllClusterNodes()
-                .values()
-                .stream()
-                .filter(node -> "SECONDARY".equalsIgnoreCase(node.role()))
-                .collect(Collectors.toList());
-    }
-
-    public boolean isPrimary() {
-        return "PRIMARY".equalsIgnoreCase(getEffectiveLocalRole());
-    }
-
-    public boolean isSecondary() {
-        return "SECONDARY".equalsIgnoreCase(getEffectiveLocalRole());
-    }
-
-    private String getEffectiveLocalRole() {
-        return (localRoleOverride != null) ? localRoleOverride : getLocalNode().role();
-    }
-
-    public void pingPeer(ClusterNode peer) {
-        try {
-            // Send HEARTBEAT command instead of direct peerStore update:
-            sendClusterCommand(peer, "HEARTBEAT " + getLocalNode().id());
-        } catch (Exception e) {
-            peerStore.markPeerDown(peer.id());
-            LogHelper.getInstance().logError("Failed to send heartbeat to peer '" + peer.id() + "': " + e.getMessage());
-        }
-    }
-
-    public void promoteSelfToPrimary() {
-        if (!isSecondary()) {
-            LogHelper.getInstance().logWarn("Local node is not SECONDARY — cannot promote.");
-            return;
-        }
-
-        LogHelper.getInstance().logInfo("[ClusterModule] Promoting local node '" + getLocalNode().id() + "' to PRIMARY.");
-        this.localRoleOverride = "PRIMARY";
-
-        // Internal notification to listeners
-        peerStore.notifyRoleChange(getLocalNode().id(), "PRIMARY");
-        reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Local node promoted to PRIMARY.");
-
-        // Send ROLE_CHANGE command to peers
-        for (ClusterNode peer : getPeers()) {
-            sendClusterCommand(peer, "ROLE_CHANGE " + getLocalNode().id() + " PRIMARY");
-        }
-    }
-
-    private void sendClusterCommand(ClusterNode peer, String command) {
-        try {
-
-            this.initVertexCacheClient(peer);
-
-            // Need to Implement, send command(s)
-
-        } catch (Exception e) {
-            LogHelper.getInstance().logError("Failed to send cluster command to peer '" + peer.id() + "': " + e.getMessage());
-        }
-    }
-
-    private VertexCacheInternalClient initVertexCacheClient(ClusterNode peer) {
-        if(this.vertexCacheInternalClient == null) {
-            VertexCacheInternalClientOptions options = new VertexCacheInternalClientOptions();
-            options.setClientId(peer.id());
-            // Not Required, because secuity can re-use TLS and Public/Private keys if those are enabled
-            options.setClientToken("");
-
-            options.setServerHost(peer.host());
-            options.setServerPort(peer.port());
-
-            if(Config.getInstance().getSecurityConfigLoader().isEncryptTransport()) {
-                options.setEnableTlsEncryption(true);
-                options.setTlsCertificate(Config.getInstance().getSecurityConfigLoader().getTlsCertificate());
-
-            } else {
-                options.setEnableTlsEncryption(false);
-            }
-
-            if(Config.getInstance().getSecurityConfigLoader().getEncryptionMode().equals(EncryptionMode.ASYMMETRIC)) {
-                options.setEncryptionMode(EncryptionMode.ASYMMETRIC);
-                options.setPublicKey(Config.getInstance().getSecurityConfigLoader().getPublicKey().toString());
-            } else if(Config.getInstance().getSecurityConfigLoader().getEncryptionMode().equals(EncryptionMode.SYMMETRIC)) {
-                options.setEncryptionMode(EncryptionMode.SYMMETRIC);
-                options.setSharedEncryptionKey(Config.getInstance().getSecurityConfigLoader().getSharedEncryptionKey());
-            } else {
-                options.setEncryptionMode(EncryptionMode.NONE);
-            }
-            options.setEncryptionMode(EncryptionMode.ASYMMETRIC);
-        }
-        return this.vertexCacheInternalClient;
-    }
-
-    public ClusterNodeTrackerStore getClusterNodeTrackerStore() {
-        return clusterNodeTrackerStore;
-    }
-
-     */
-
-
 }
