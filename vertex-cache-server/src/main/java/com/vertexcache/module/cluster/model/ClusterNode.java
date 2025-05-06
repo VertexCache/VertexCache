@@ -10,13 +10,12 @@ public class ClusterNode {
     private ClusterNodeHealthStatus healthStatus;
     private final ClusterNodeHeartBeat heartbeat = new ClusterNodeHeartBeat();
 
-    public ClusterNode(String id, String host, String port, ClusterNodeRole role, ClusterNodeAvailability availability, ClusterNodeHealthStatus healthStatus) {
+    public ClusterNode(String id, String host, String port, ClusterNodeRole role, ClusterNodeAvailability availability) {
         this.id = id;
         this.host = host;
         this.port = port;
         this.role = role;
         this.availability = availability;
-        this.healthStatus = healthStatus;
     }
 
     public String getId() {

@@ -26,7 +26,7 @@ public class ClusterTopologyValidator implements Validator {
         for (ClusterNode clusterNode : nodes.values()) {
             String nodeRef = "clusterNode[" + clusterNode.getId() + "]";
             batch.check(nodeRef + ".role", new ClusterNodeRoleValidator(clusterNode.getRole().toString()));
-            batch.check(nodeRef + ".status", new ClusterNodeStatusValidator(clusterNode.getHealthStatus().toString()));
+            batch.check(nodeRef + ".enabled", new ClusterNodeAvailabilityValidator(clusterNode.getAvailability().toString()));
             batch.check(nodeRef + ".host", new ClusterNodeHostValidator(clusterNode.getHost()));
             batch.check(nodeRef + ".port", new ClusterNodePortValidator(Integer.parseInt(clusterNode.getPort())));
 

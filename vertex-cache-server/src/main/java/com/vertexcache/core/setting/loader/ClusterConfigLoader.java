@@ -33,15 +33,14 @@ public class ClusterConfigLoader extends LoaderBase {
                 String host = this.getConfigLoader().getProperty(prefix + ".host", null);
                 String port = this.getConfigLoader().getProperty(prefix + ".port", null);
                 String enabled = this.getConfigLoader().getProperty(prefix + ".enabled", null);
-                String status = this.getConfigLoader().getProperty(prefix + ".status", null);
+               // String status = this.getConfigLoader().getProperty(prefix + ".status", null);
 
                 allNodes.put(id, new ClusterNode(
                         id,
                         host,
                         port,
                         ClusterNodeRole.from(role),
-                        ClusterNodeAvailability.from(enabled),
-                        ClusterNodeHealthStatus.from(status)
+                        ClusterNodeAvailability.from(enabled)
                 ));
             }
 
@@ -105,8 +104,7 @@ public class ClusterConfigLoader extends LoaderBase {
             lines.add(String.format("      role:         %s", node.getRole()));
             lines.add(String.format("      host:         %s", node.getHost()));
             lines.add(String.format("      port:         %s", (node.getPort() == null || node.getPort().isBlank() ? "not set or invalid" : node.getPort())));
-            lines.add(String.format("      availability: %s", node.getAvailability()));
-            lines.add(String.format("      health:       %s", node.getHealthStatus()));
+            lines.add(String.format("      enabled: %s", node.getAvailability()));
         }
 
         return lines;
@@ -121,7 +119,7 @@ public class ClusterConfigLoader extends LoaderBase {
         for (ClusterNode node : allNodes.values()) {
             map.put(String.format("cluster_peer.%d.id", i), node.getId());
             map.put(String.format("cluster_peer.%d.role", i), node.getRole() != null ? String.valueOf(node.getRole()) : "null");
-            map.put(String.format("cluster_peer.%d.status", i), node.getHealthStatus() != null ? String.valueOf(node.getHealthStatus()) : "null");
+            map.put(String.format("cluster_peer.%d.enabled", i), node.getAvailability() != null ? String.valueOf(node.getAvailability()) : "null");
             map.put(String.format("cluster_peer.%d.host", i), node.getHost() != null ? node.getHost() : "null");
             map.put(String.format("cluster_peer.%d.port", i), String.valueOf(node.getPort()));  // Use 0 if primitive
             i++;
@@ -144,7 +142,7 @@ public class ClusterConfigLoader extends LoaderBase {
             lines.add(String.format("      role:   %s", node.getRole() != null ? node.getRole() : "null"));
             lines.add(String.format("      host:   %s", node.getHost() != null ? node.getHost() : "null"));
             lines.add(String.format("      port:   %s", (port == null || port.isBlank()) ? "not set or invalid" : port));
-            lines.add(String.format("      status: %s", node.getHealthStatus() != null ? node.getHealthStatus() : "null"));
+            lines.add(String.format("      enabled: %s", node.getAvailability() != null ? node.getAvailability() : "null"));
         }
 
         return lines;

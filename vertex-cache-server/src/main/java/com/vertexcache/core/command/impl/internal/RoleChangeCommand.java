@@ -4,11 +4,9 @@ import com.vertexcache.core.command.BaseCommand;
 import com.vertexcache.core.command.CommandResponse;
 import com.vertexcache.core.command.argument.ArgumentParser;
 import com.vertexcache.core.module.ModuleRegistry;
-import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.validation.VertexCacheValidationException;
-import com.vertexcache.core.validation.validators.cluster.ClusterNodeStateValidator;
+import com.vertexcache.core.validation.validators.cluster.ClusterNodeRoleValidator;
 import com.vertexcache.core.validation.validators.cluster.NodeIdExistsValidator;
-import com.vertexcache.module.auth.Role;
 import com.vertexcache.module.cluster.ClusterModule;
 import com.vertexcache.server.session.ClientSessionContext;
 
@@ -53,14 +51,14 @@ public class RoleChangeCommand extends BaseCommand<String> {
         // Validate node exists
         try {
             new NodeIdExistsValidator(nodeId).validate();
-            new ClusterNodeStateValidator(newRole).validate();
+            new ClusterNodeRoleValidator(newRole).validate();
         } catch (VertexCacheValidationException e) {
             commandResponse.setResponseError(e.getMessage());
             return commandResponse;
         }
         //Validate role is PRIMARY or SECONDARY
         try {
-            new ClusterNodeStateValidator(newRole).validate();
+            new ClusterNodeRoleValidator(newRole).validate();
         } catch (VertexCacheValidationException e) {
             commandResponse.setResponseError(e.getMessage());
             return commandResponse;

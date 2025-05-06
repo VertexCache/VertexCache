@@ -4,10 +4,10 @@ import com.vertexcache.core.validation.Validator;
 import com.vertexcache.core.validation.VertexCacheValidationException;
 import com.vertexcache.module.cluster.model.ClusterNodeAvailability;
 
-public class ClusterNodeStateValidator implements Validator {
+public class ClusterNodeAvailabilityValidator implements Validator {
     private final String state;
 
-    public ClusterNodeStateValidator(String state) {
+    public ClusterNodeAvailabilityValidator(String state) {
         this.state = state;
     }
 
