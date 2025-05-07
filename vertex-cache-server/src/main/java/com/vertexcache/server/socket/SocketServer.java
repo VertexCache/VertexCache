@@ -36,16 +36,23 @@ public class SocketServer extends Module {
 
         try {
             status = ModuleStatus.STARTUP_IN_PROGRESS;
-
             CommandService commandService = new CommandService();
-            //Cache.getInstance(Config.getInstance().getCacheEvictionPolicy(), Config.getInstance().getCacheSize());
             Cache.getInstance(Config.getInstance().getCacheConfigLoader().getCacheEvictionPolicy(), Config.getInstance().getCacheConfigLoader().getCacheSize());
 
+            int port = Config.getInstance().getCoreConfigLoader().getServerPort();
+            if(Config.getInstance().getClusterConfigLoader().isEnableClustering()) {
+                // Is a Cluster Node, used the Cluster Node's respective port
+                port = Config.getInstance().getClusterConfigLoader().getLocalClusterNode().getPortAsInt();
+            } else {
+                // Not a Cluster use the server_port
+                port = Config.getInstance().getCoreConfigLoader().getServerPort();
+            }
+            
             ServerSocket serverSocket;
             if (Config.getInstance().getSecurityConfigLoader().isEncryptTransport()) {
-                serverSocket = ServerSecurityHelper.createSecureSocket();
+                serverSocket = ServerSecurityHelper.createSecureSocket(port);
             } else {
-                serverSocket = new ServerSocket(Config.getInstance().getCoreConfigLoader().getServerPort());
+                serverSocket = new ServerSocket(port);
             }
 
             status = ModuleStatus.STARTUP_SUCCESSFUL;
@@ -64,7 +71,7 @@ public class SocketServer extends Module {
                 Socket clientSocket = serverSocket.accept();
                 clientSocket.setSoTimeout(SOCKET_IDLE_TIMEOUT_MS);
                 String address = clientSocket.getInetAddress().getHostAddress();
-                int port = clientSocket.getPort();
+                port = clientSocket.getPort();
                 String transport = (clientSocket instanceof SSLSocket) ? "TLS" : "Plain";
                 String messageEncryption = Config.getInstance().getSecurityConfigLoader().getEncryptionMode() != EncryptionMode.NONE ? "Yes" : "No";
                 outputInfo(transport + " client connected from " + address + ":" + port + " (Encrypted Messages: " + messageEncryption + ")");

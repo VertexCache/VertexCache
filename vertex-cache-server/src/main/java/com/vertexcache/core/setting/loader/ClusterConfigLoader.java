@@ -1,5 +1,6 @@
 package com.vertexcache.core.setting.loader;
 
+import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.setting.ConfigKey;
 import com.vertexcache.module.cluster.model.ClusterNodeAvailability;
 import com.vertexcache.module.cluster.model.ClusterNodeHealthStatus;
@@ -22,7 +23,7 @@ public class ClusterConfigLoader extends LoaderBase {
 
         if(this.enableClustering) {
 
-            this.localNodeId = resolveNodeId();
+            this.localNodeId = this.getConfigLoader().getProperty(ConfigKey.CLUSTER_NODE_ID);
 
             Map<String, String> all = this.getConfigLoader().getAllProperties();
             Set<String> nodeIds = discoverNodeIds(all);
@@ -46,13 +47,6 @@ public class ClusterConfigLoader extends LoaderBase {
 
             loadCoordinationSettings();
         }
-    }
-
-    private String resolveNodeId() {
-        String fromEnv = System.getenv("CLUSTER_NODE_ID");
-        return (fromEnv != null && !fromEnv.isBlank())
-                ? fromEnv
-                : this.getConfigLoader().getProperty("cluster_node_id", "").trim();
     }
 
     private Set<String> discoverNodeIds(Map<String, String> properties) {
@@ -150,5 +144,19 @@ public class ClusterConfigLoader extends LoaderBase {
 
     public String getProperty(String key, String fallback) {
         return this.getConfigLoader().getProperty(key, fallback);
+    }
+
+    /**
+     * Returns the ClusterNode with the given ID, or null if not found.
+     */
+    public ClusterNode getNodeByNodeId(String nodeId) {
+        return allNodes.get(nodeId);
+    }
+
+    /**
+     * Returns the local ClusterNode based on cluster_node_id.
+     */
+    public ClusterNode getLocalClusterNode() {
+        return allNodes.get(localNodeId);
     }
 }

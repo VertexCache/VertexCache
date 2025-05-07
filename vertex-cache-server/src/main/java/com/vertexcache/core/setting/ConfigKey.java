@@ -51,6 +51,7 @@ public class ConfigKey {
     // Clustering - Not this follows the clustering convention prefix
     public static final boolean ENABLE_CLUSTERING_DEFAULT = false;
     public static final String ENABLE_CLUSTERING = "cluster_enabled";
+    public static final String CLUSTER_NODE_ID = "cluster_node_id";
 
     // Admin Commands
     public static final boolean ENABLE_ADMIN_COMMANDS_DEFAULT = false;

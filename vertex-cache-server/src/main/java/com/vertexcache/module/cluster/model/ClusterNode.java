@@ -24,9 +24,8 @@ public class ClusterNode {
     public String getHost() {
         return host;
     }
-    public String getPort() {
-        return port;
-    }
+    public String getPort() {return port;}
+    public int getPortAsInt() { return Integer.parseInt(port); }
     public ClusterNodeRole getRole() {
         return role;
     }

@@ -11,7 +11,7 @@ import java.security.cert.X509Certificate;
 
 public class ServerSecurityHelper {
 
-    public static SSLServerSocket createSecureSocket() throws VertexCacheSSLServerSocketException {
+    public static SSLServerSocket createSecureSocket(int port) throws VertexCacheSSLServerSocketException {
         try {
             String certPem = Config.getInstance().getSecurityConfigLoader().getTlsCertificate();
             String keyPem = Config.getInstance().getSecurityConfigLoader().getTlsPrivateKey();
@@ -33,7 +33,7 @@ public class ServerSecurityHelper {
             sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 
             SSLServerSocketFactory factory = sslContext.getServerSocketFactory();
-            SSLServerSocket serverSocket = (SSLServerSocket) factory.createServerSocket(Config.getInstance().getCoreConfigLoader().getServerPort());
+            SSLServerSocket serverSocket = (SSLServerSocket) factory.createServerSocket(port);
 
             serverSocket.setEnabledProtocols(new String[]{"TLSv1.2"});
             serverSocket.setEnabledCipherSuites(new String[]{"TLS_RSA_WITH_AES_256_CBC_SHA256"});

@@ -121,10 +121,16 @@ public class SystemStatusReport {
 
     public static String getServerStatus() {
         Config config = Config.getInstance();
+
+        String port = String.valueOf(config.getCoreConfigLoader().getServerPort());
+        if(Config.getInstance().getClusterConfigLoader().isEnableClustering()) {
+            port = Config.getInstance().getClusterConfigLoader().getLocalClusterNode().getPort();
+        }
+
         return config.getCoreConfigLoader().getAppName() + " Server Startup Report:" + System.lineSeparator() +
                 "  Status: " + SocketServer.getStartupStatus() + (!SocketServer.getStartupMessage().isEmpty() ? " | " + SocketServer.getStartupMessage() : "")+ System.lineSeparator() +
                 "  Version: " + VersionUtil.getAppVersion() + System.lineSeparator() +
-                "  Port: " + config.getCoreConfigLoader().getServerPort() + System.lineSeparator() +
+                "  Port: " + port + System.lineSeparator() +
                 "  Verbose: " + (config.getCoreConfigLoader().isEnableVerbose() ? "ENABLED" : "DISABLED") + System.lineSeparator() +
                 "  Cache Eviction Policy: " + config.getCacheConfigLoader().getCacheEvictionPolicy() + System.lineSeparator() +
                 "  Cache Size: " + config.getCacheConfigLoader().getCacheSize() + System.lineSeparator() +
