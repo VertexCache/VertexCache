@@ -18,6 +18,13 @@ mkdir -p ./vertex-cache-config/server
 
 # Copy over example .env files
 copy_file "./etc/config/env-example-server" "./vertex-cache-config/server/.env"
+copy_file "./etc/config/env-example-server" "./vertex-cache-config/server/.env.node-b"
+copy_file "./etc/config/env-example-server" "./vertex-cache-config/server/.env.node-c"
+
+sed -i '' 's/^cluster_node_id=.*/cluster_node_id=node-b/' ./vertex-cache-config/server/.env.node-b
+sed -i '' 's/^cluster_node_id=.*/cluster_node_id=node-c/' ./vertex-cache-config/server/.env.node-c
+
+
 copy_file "./etc/config/env-example-client" "./vertex-cache-config/console/.env"
 
 # Copy over the Test TLS Certs
