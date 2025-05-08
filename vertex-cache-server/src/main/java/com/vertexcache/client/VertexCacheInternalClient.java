@@ -1,6 +1,6 @@
 package com.vertexcache.client;
 
-import com.vertexcache.client.protocol.command.PingCommand;
+import com.vertexcache.client.protocol.command.ClusterPingCommand;
 import com.vertexcache.client.result.CommandResult;
 import com.vertexcache.client.transport.TcpClient;
 
@@ -34,16 +34,9 @@ public class VertexCacheInternalClient {
         );
     }
 
-    public CommandResult sendCommand(String commandText) {
-        if (commandText.startsWith(PingCommand.COMMAND_KEY)) {
-            PingCommand cmd = (PingCommand) new PingCommand().execute(tcpClient);
-            return new CommandResult(cmd.isSuccess(), cmd.getStatusMessage());
-      //  } else if (commandText.startsWith("ROLE_CHANGE")) {
-            // TODO: Build a small RoleChangeCommand class
-          //  return tcpClient.executeCommand(new RoleChangeCommand(commandText));
-        } else {
-            throw new UnsupportedOperationException("Unsupported internal command: " + commandText);
-        }
+    public CommandResult sendClusterPingCommand(String nodeId, String configHash) {
+        ClusterPingCommand cmd = (ClusterPingCommand) new ClusterPingCommand(nodeId, configHash);
+        return new CommandResult(cmd.isSuccess(), cmd.getStatusMessage());
     }
 
     public boolean isConnected() {

@@ -2,6 +2,8 @@ package com.vertexcache.client;
 
 import com.vertexcache.common.security.EncryptionMode;
 
+import java.security.PublicKey;
+
 public class VertexCacheInternalClientOptions {
 
     public static String DEFAULT_CLIENT_ID = "sdk-client";
@@ -23,7 +25,7 @@ public class VertexCacheInternalClientOptions {
     private EncryptionMode encryptionMode = EncryptionMode.NONE;
     private boolean encryptWithPublicKey = false;
     private boolean encryptWithSharedKey = false;
-    private String publicKey = null;
+    private PublicKey publicKey = null;
     private String sharedEncryptionKey;
 
     private int readTimeout = VertexCacheInternalClientOptions.DEFAULT_READ_TIMEOUT;
@@ -77,11 +79,9 @@ public class VertexCacheInternalClientOptions {
         this.verifyCertificate = verifyCertificate;
     }
 
-    public String getPublicKey() {
-        return publicKey;
-    }
+    public PublicKey getPublicKey() { return publicKey;}
 
-    public void setPublicKey(String publicKey) {
+    public void setPublicKey(PublicKey publicKey) {
         this.publicKey = publicKey;
     }
 

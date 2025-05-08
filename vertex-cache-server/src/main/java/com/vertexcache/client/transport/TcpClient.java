@@ -28,8 +28,8 @@ public class TcpClient implements TcpClientInterface {
     private final int connectTimeoutMs;
     private final int readTimeoutMs;
     private final EncryptionMode encryptionMode;
-    private final PublicKey publicKey;
-    private final byte[] sharedKeyBytes;
+    private PublicKey publicKey = null;
+    private byte[] sharedKeyBytes = null;
     private final String clientId;
     private final String clientToken;
 
@@ -45,7 +45,7 @@ public class TcpClient implements TcpClientInterface {
                      int connectTimeoutMs,
                      int readTimeoutMs,
                      EncryptionMode encryptionMode,
-                     String publicKeyPem,
+                     PublicKey publicKey,
                      String sharedEncryptionKey,
                      String clientId,
                      String clientToken
@@ -63,12 +63,18 @@ public class TcpClient implements TcpClientInterface {
         this.clientToken = clientToken != null ? clientToken : "";
 
         try {
-            this.publicKey = encryptionMode == EncryptionMode.ASYMMETRIC ? loadPublicKey(publicKeyPem) : null;
-            this.sharedKeyBytes = encryptionMode == EncryptionMode.SYMMETRIC
-                    ? Base64.getDecoder().decode(sharedEncryptionKey)
-                    : null;
+
+            if(encryptionMode == EncryptionMode.ASYMMETRIC) {
+                this.publicKey = publicKey;
+            } else if(encryptionMode == EncryptionMode.SYMMETRIC) {
+                this.sharedKeyBytes = Base64.getDecoder().decode(sharedEncryptionKey);
+            }
+
             connect();
         } catch (Exception e) {
+
+            System.out.println((e.getMessage()));
+
             throw new VertexCacheInternalClientException("Failed to initialize TcpClient", e);
         }
     }
@@ -108,7 +114,7 @@ public class TcpClient implements TcpClientInterface {
             byte[] identResponse = MessageCodec.readFramedMessage(in);
             if (identResponse != null) {
                 String response = new String(identResponse);
-                System.out.println("[SDK] Server IDENT response: " + response);
+                System.out.println("[Cluster] Server IDENT response: " + response);
             }
 
         } catch (Exception e) {

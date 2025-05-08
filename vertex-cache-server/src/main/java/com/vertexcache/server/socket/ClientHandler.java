@@ -126,7 +126,7 @@ public class ClientHandler implements Runnable {
                 }
 
                 try {
-                    new IdentValidator(clientId, Config.getInstance().getClusterConfigLoader().isEnableClustering()).validate();
+                    new IdentValidator(clientId).validate();
                 } catch (VertexCacheValidationException e) {
                     return ("-ERR IDENT Failed: " + e.getMessage()).getBytes(StandardCharsets.UTF_8);
                 }

@@ -58,7 +58,9 @@ public abstract class Module implements ModuleHandler {
         this.message = message;
     }
 
-    protected void reportHealth(ModuleStatus status, String message) { setModuleStatus(status, message);}
+    protected void reportHealth(ModuleStatus status, String message) {
+        setModuleStatus(status, message);
+    }
 
     protected void reportHealth(ModuleStatus status) {
         reportHealth(status, "");

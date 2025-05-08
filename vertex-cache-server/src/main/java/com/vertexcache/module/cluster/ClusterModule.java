@@ -48,11 +48,11 @@ public class ClusterModule extends Module {
             clusterNodeTrackerStore.registerListener(new ClusterNodeLoggerObserver());
 
             // Initialize internal client for intra-cluster messaging
-            this.initVertexCacheClient(localNode);
+            this.initVertexCacheClient();
 
             // Start heartbeat manager (modern)
             this.heartbeatManager = new HeartbeatManager(this, getClusterHeartbeatIntervalMs());
-            this.heartbeatManager.start(); // ✅ fixed
+            this.heartbeatManager.start();
 
             // Start failover manager
             this.failoverManager = new FailoverManager(this);
@@ -93,11 +93,10 @@ public class ClusterModule extends Module {
             Map<String, String> settings = clusterConfig.getCoordinationSettings();
             new ClusterCoordinationSettingsValidator(settings).validate();
 
-            reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Cluster nodes validated successfully.");
+            //reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Cluster nodes validated successfully.");
 
         } catch (Exception e) {
-            reportHealth(ModuleStatus.STARTUP_FAILED, "Cluster validation failed: " + e.getMessage());
-            throw e;
+            reportHealth(ModuleStatus.STARTUP_FAILED, "Cluster validation failed due invalid configuration");
         }
     }
 
@@ -105,8 +104,11 @@ public class ClusterModule extends Module {
         return Integer.parseInt(clusterConfig.getCoordinationSettings().getOrDefault("cluster_failover_check_interval_ms", "2000"));
     }
 
-    private void initVertexCacheClient(ClusterNode clusterNode) {
+    private void initVertexCacheClient() {
         if(this.vertexCacheInternalClient == null) {
+
+            ClusterNode clusterNode = Config.getInstance().getClusterConfigLoader().getSecondaryEnabledClusterNode();
+
             VertexCacheInternalClientOptions options = new VertexCacheInternalClientOptions();
             options.setClientId(clusterNode.getId());
             // Not Required, because secuity can re-use TLS and Public/Private keys if those are enabled
@@ -125,7 +127,7 @@ public class ClusterModule extends Module {
 
             if(Config.getInstance().getSecurityConfigLoader().getEncryptionMode().equals(EncryptionMode.ASYMMETRIC)) {
                 options.setEncryptionMode(EncryptionMode.ASYMMETRIC);
-                options.setPublicKey(Config.getInstance().getSecurityConfigLoader().getPublicKey().toString());
+                options.setPublicKey(Config.getInstance().getSecurityConfigLoader().getPublicKey());
             } else if(Config.getInstance().getSecurityConfigLoader().getEncryptionMode().equals(EncryptionMode.SYMMETRIC)) {
                 options.setEncryptionMode(EncryptionMode.SYMMETRIC);
                 options.setSharedEncryptionKey(Config.getInstance().getSecurityConfigLoader().getSharedEncryptionKey());
@@ -133,6 +135,7 @@ public class ClusterModule extends Module {
                 options.setEncryptionMode(EncryptionMode.NONE);
             }
             options.setEncryptionMode(EncryptionMode.ASYMMETRIC);
+            this.vertexCacheInternalClient = new VertexCacheInternalClient(options);
         }
     }
 
@@ -178,14 +181,14 @@ public class ClusterModule extends Module {
         reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Local node promoted to PRIMARY.");
 
         for (ClusterNode peer : getPeers()) {
-            vertexCacheInternalClient.sendCommand("ROLE_CHANGE " + localNode.getId() + " PRIMARY");
+           //vertexCacheInternalClient.sedxxx("ROLE_CHANGE " + localNode.getId() + " PRIMARY");
         }
     }
 
     public void clusterPing(ClusterNode node) {
         try {
             String hash = ClusterHashUtil.computeCoordinationHash(clusterConfig.getCoordinationSettings());
-            vertexCacheInternalClient.sendCommand("PEER_PING " + localNode.getId() + " " + hash);
+           vertexCacheInternalClient.sendClusterPingCommand(localNode.getId(),hash);
         } catch (Exception e) {
             clusterNodeTrackerStore.markNodeDown(node.getId());
             LogHelper.getInstance().logError("Failed to send heartbeat to node '" + node.getId() + "': " + e.getMessage());

@@ -146,17 +146,27 @@ public class ClusterConfigLoader extends LoaderBase {
         return this.getConfigLoader().getProperty(key, fallback);
     }
 
-    /**
-     * Returns the ClusterNode with the given ID, or null if not found.
-     */
     public ClusterNode getNodeByNodeId(String nodeId) {
         return allNodes.get(nodeId);
     }
 
-    /**
-     * Returns the local ClusterNode based on cluster_node_id.
-     */
     public ClusterNode getLocalClusterNode() {
         return allNodes.get(localNodeId);
+    }
+
+    public ClusterNode getSecondaryEnabledClusterNode() {
+        return getSecondaryNodeByAvailability(true);
+    }
+
+    public ClusterNode getSecondaryDisabledClusterNode() {
+        return getSecondaryNodeByAvailability(false);
+    }
+
+    private ClusterNode getSecondaryNodeByAvailability(boolean enabled) {
+        return allNodes.values().stream()
+                .filter(n -> n.getRole() == ClusterNodeRole.SECONDARY)
+                .filter(n -> n.getAvailability().isEnabled() == enabled)
+                .findFirst()
+                .orElse(null);
     }
 }

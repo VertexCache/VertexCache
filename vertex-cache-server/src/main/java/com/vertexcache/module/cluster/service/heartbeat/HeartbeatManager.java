@@ -37,7 +37,11 @@ public class HeartbeatManager {
      * Starts the periodic heartbeat loop if not already running.
      */
     public void start() {
-        if (scheduledTask != null && !scheduledTask.isCancelled()) return;
+
+        System.out.print("=========> HeartbeatManager::start()");
+
+        if (scheduledTask != null && !scheduledTask.isCancelled())
+            return;
 
         scheduledTask = scheduler.scheduleAtFixedRate(
                 this::heartbeatLoop,
