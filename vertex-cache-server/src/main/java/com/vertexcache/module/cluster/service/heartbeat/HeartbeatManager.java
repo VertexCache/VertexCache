@@ -37,15 +37,12 @@ public class HeartbeatManager {
      * Starts the periodic heartbeat loop if not already running.
      */
     public void start() {
-
-        System.out.print("=========> HeartbeatManager::start()");
-
         if (scheduledTask != null && !scheduledTask.isCancelled())
             return;
 
         scheduledTask = scheduler.scheduleAtFixedRate(
                 this::heartbeatLoop,
-                0,
+                1000,
                 heartbeatIntervalMs,
                 TimeUnit.MILLISECONDS
         );
@@ -68,16 +65,30 @@ public class HeartbeatManager {
      * Called on each interval to send PEER_PINGs to all known peers and evaluate failover conditions.
      */
     private void heartbeatLoop() {
+        LogHelper.getInstance().logInfo("[HeartbeatManager] Running heartbeat loop");
+
         try {
-            List<ClusterNode> clusterNodes = clusterModule.getPeers();
-            for (ClusterNode clusterNode : clusterNodes) {
-                clusterModule.clusterPing(clusterNode); // Send heartbeat to peer
+            ClusterNode target = null;
+
+            if (clusterModule.getClusterConfig().isPrimaryNode()) {
+                target = clusterModule.getClusterConfig().getSecondaryEnabledClusterNode();
+            } else if (clusterModule.getClusterConfig().isSecondaryNode()) {
+                target = clusterModule.getClusterConfig().getPrimaryEnabledClusterNode();
             }
 
-            failoverManager.checkFailover(); // Detect and promote standby if needed
+            if (target != null) {
+                LogHelper.getInstance().logInfo("[HeartbeatManager] Sending PEER_PING to node: " + target.getId());
+                clusterModule.clusterPing(target);
+            } else {
+                LogHelper.getInstance().logInfo("[HeartbeatManager] No heartbeat target (likely standby/disabled).");
+            }
+
+            failoverManager.checkFailover();
 
         } catch (Exception e) {
-            LogHelper.getInstance().logError("[HeartbeatManager] Heartbeat error: " + e.getMessage());
+            LogHelper.getInstance().logError("[HeartbeatManager] Heartbeat loop failed: " + e.getMessage());
         }
     }
+
+
 }

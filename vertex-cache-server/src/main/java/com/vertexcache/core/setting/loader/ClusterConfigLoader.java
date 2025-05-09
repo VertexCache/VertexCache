@@ -154,6 +154,14 @@ public class ClusterConfigLoader extends LoaderBase {
         return allNodes.get(localNodeId);
     }
 
+    public ClusterNode getPrimaryEnabledClusterNode() {
+        return allNodes.values().stream()
+                .filter(n -> n.getRole() == ClusterNodeRole.PRIMARY)
+                .filter(n -> n.getAvailability().isEnabled())
+                .findFirst()
+                .orElse(null);
+    }
+
     public ClusterNode getSecondaryEnabledClusterNode() {
         return getSecondaryNodeByAvailability(true);
     }
@@ -168,5 +176,33 @@ public class ClusterConfigLoader extends LoaderBase {
                 .filter(n -> n.getAvailability().isEnabled() == enabled)
                 .findFirst()
                 .orElse(null);
+    }
+
+    /**
+     * Returns true if the local node is configured as PRIMARY.
+     */
+    public boolean isPrimaryNode() {
+        ClusterNode node = getLocalClusterNode();
+        return node != null && node.getRole() == ClusterNodeRole.PRIMARY;
+    }
+
+    /**
+     * Returns true if the local node is configured as SECONDARY and enabled.
+     */
+    public boolean isSecondaryNode() {
+        ClusterNode node = getLocalClusterNode();
+        return node != null &&
+                node.getRole() == ClusterNodeRole.SECONDARY &&
+                node.getAvailability().isEnabled();
+    }
+
+    /**
+     * Returns true if the local node is a standby SECONDARY (disabled).
+     */
+    public boolean isStandbyNode() {
+        ClusterNode node = getLocalClusterNode();
+        return node != null &&
+                node.getRole() == ClusterNodeRole.SECONDARY &&
+                !node.getAvailability().isEnabled();
     }
 }

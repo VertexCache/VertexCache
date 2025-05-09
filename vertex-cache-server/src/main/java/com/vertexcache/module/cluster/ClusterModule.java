@@ -50,7 +50,7 @@ public class ClusterModule extends Module {
             // Initialize internal client for intra-cluster messaging
             this.initVertexCacheClient();
 
-            // Start heartbeat manager (modern)
+            // Start heartbeat manager
             this.heartbeatManager = new HeartbeatManager(this, getClusterHeartbeatIntervalMs());
             this.heartbeatManager.start();
 
@@ -107,35 +107,48 @@ public class ClusterModule extends Module {
     private void initVertexCacheClient() {
         if(this.vertexCacheInternalClient == null) {
 
-            ClusterNode clusterNode = Config.getInstance().getClusterConfigLoader().getSecondaryEnabledClusterNode();
-
-            VertexCacheInternalClientOptions options = new VertexCacheInternalClientOptions();
-            options.setClientId(clusterNode.getId());
-            // Not Required, because secuity can re-use TLS and Public/Private keys if those are enabled
-            options.setClientToken("");
-
-            options.setServerHost(clusterNode.getHost());
-            options.setServerPort(Integer.parseInt(clusterNode.getPort()));
-
-            if(Config.getInstance().getSecurityConfigLoader().isEncryptTransport()) {
-                options.setEnableTlsEncryption(true);
-                options.setTlsCertificate(Config.getInstance().getSecurityConfigLoader().getTlsCertificate());
-
-            } else {
-                options.setEnableTlsEncryption(false);
+            // Fix this, get the right Node based on the Node type that is starting up
+            ClusterNode clusterNode = null;
+            if(Config.getInstance().getClusterConfigLoader().isPrimaryNode()) {
+                 clusterNode = Config.getInstance().getClusterConfigLoader().getSecondaryEnabledClusterNode();
             }
 
-            if(Config.getInstance().getSecurityConfigLoader().getEncryptionMode().equals(EncryptionMode.ASYMMETRIC)) {
+            if(Config.getInstance().getClusterConfigLoader().isSecondaryNode()) {
+                clusterNode = Config.getInstance().getClusterConfigLoader().getPrimaryEnabledClusterNode();
+            }
+
+            if(clusterNode != null) {
+
+                VertexCacheInternalClientOptions options = new VertexCacheInternalClientOptions();
+                options.setClientId(clusterNode.getId());
+                // Not Required, because secuity can re-use TLS and Public/Private keys if those are enabled
+                options.setClientToken("");
+
+                options.setServerHost(clusterNode.getHost());
+                options.setServerPort(Integer.parseInt(clusterNode.getPort()));
+
+                if (Config.getInstance().getSecurityConfigLoader().isEncryptTransport()) {
+                    options.setEnableTlsEncryption(true);
+                    options.setTlsCertificate(Config.getInstance().getSecurityConfigLoader().getTlsCertificate());
+
+                } else {
+                    options.setEnableTlsEncryption(false);
+                }
+
+                if (Config.getInstance().getSecurityConfigLoader().getEncryptionMode().equals(EncryptionMode.ASYMMETRIC)) {
+                    options.setEncryptionMode(EncryptionMode.ASYMMETRIC);
+                    options.setPublicKey(Config.getInstance().getSecurityConfigLoader().getPublicKey());
+                } else if (Config.getInstance().getSecurityConfigLoader().getEncryptionMode().equals(EncryptionMode.SYMMETRIC)) {
+                    options.setEncryptionMode(EncryptionMode.SYMMETRIC);
+                    options.setSharedEncryptionKey(Config.getInstance().getSecurityConfigLoader().getSharedEncryptionKey());
+                } else {
+                    options.setEncryptionMode(EncryptionMode.NONE);
+                }
                 options.setEncryptionMode(EncryptionMode.ASYMMETRIC);
-                options.setPublicKey(Config.getInstance().getSecurityConfigLoader().getPublicKey());
-            } else if(Config.getInstance().getSecurityConfigLoader().getEncryptionMode().equals(EncryptionMode.SYMMETRIC)) {
-                options.setEncryptionMode(EncryptionMode.SYMMETRIC);
-                options.setSharedEncryptionKey(Config.getInstance().getSecurityConfigLoader().getSharedEncryptionKey());
+                this.vertexCacheInternalClient = new VertexCacheInternalClient(options);
             } else {
-                options.setEncryptionMode(EncryptionMode.NONE);
+                reportHealth(ModuleStatus.STARTUP_FAILED, "Cluster Nodes configuration failed for internal client");
             }
-            options.setEncryptionMode(EncryptionMode.ASYMMETRIC);
-            this.vertexCacheInternalClient = new VertexCacheInternalClient(options);
         }
     }
 

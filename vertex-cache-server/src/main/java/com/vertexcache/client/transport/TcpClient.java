@@ -4,6 +4,7 @@ import com.vertexcache.client.exception.VertexCacheInternalClientException;
 import com.vertexcache.common.security.EncryptionMode;
 import com.vertexcache.common.security.MessageCodec;
 import com.vertexcache.common.security.GcmCryptoHelper;
+import com.vertexcache.core.setting.Config;
 
 import javax.crypto.Cipher;
 import javax.net.ssl.*;
@@ -104,8 +105,18 @@ public class TcpClient implements TcpClientInterface {
             // Send IDENT command immediately
             String safeClientId = clientId != null ? clientId : "";
             String safeToken = clientToken != null ? clientToken : "";
-            String identPayload = String.format("{\"client_id\":\"%s\", \"token\":\"%s\"}", safeClientId, safeToken);
-            String identCommand = "IDENT " + identPayload;
+
+            String identCommand;
+            if (Config.getInstance().getClusterConfigLoader().isEnableClustering()) {
+                // Internal cluster node — use raw IDENT
+                identCommand = "IDENT " + safeClientId;
+            } else {
+                // Regular client IDENT with JSON payload - Mostly won't be used
+                String identPayload = String.format("{\"client_id\":\"%s\", \"token\":\"%s\"}", safeClientId, safeToken);
+                identCommand = "IDENT " + identPayload;
+            }
+
+
             byte[] identBytes = encrypt(identCommand.getBytes());
             MessageCodec.writeFramedMessage(out, identBytes);
             out.flush();
@@ -118,7 +129,8 @@ public class TcpClient implements TcpClientInterface {
             }
 
         } catch (Exception e) {
-            throw new VertexCacheInternalClientException("Failed to connect to " + host + ":" + port, e);
+            //throw new VertexCacheInternalClientException("Failed to connect to " + host + ":" + port, e);
+            System.out.println("Failed to connect to " + host + ":" + port);
         }
     }
 
