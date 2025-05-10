@@ -61,7 +61,11 @@ public class ClusterModule extends Module {
 
             }
 
-            reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Cluster module started successfully");
+            if(this.getModuleStatus() == ModuleStatus.NOT_STARTED) {
+                reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Cluster module started successfully");
+            } else {
+                this.heartbeatManager.shutdown();
+            }
         } catch (Exception e) {
             reportHealth(ModuleStatus.STARTUP_FAILED, "Exception during cluster initialization: " + e.getMessage());
         }
@@ -150,6 +154,11 @@ public class ClusterModule extends Module {
                 }
                 options.setEncryptionMode(EncryptionMode.ASYMMETRIC);
                 this.vertexCacheInternalClient = new VertexCacheInternalClient(options);
+
+                if(!this.vertexCacheInternalClient.isConnected()) {
+                    reportHealth(ModuleStatus.STARTUP_FAILED, "Cluster, secondary node failed to connect with Primary, check if Primary node is up.");
+                }
+
             } else {
                 reportHealth(ModuleStatus.STARTUP_FAILED, "Cluster Nodes configuration failed for internal client");
             }

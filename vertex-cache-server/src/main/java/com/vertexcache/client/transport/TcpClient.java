@@ -39,6 +39,8 @@ public class TcpClient implements TcpClientInterface {
     private OutputStream out;
     private InputStream in;
 
+    private boolean isInit = false;
+
     public TcpClient(String host,
                      int port,
                      boolean useTls,
@@ -71,8 +73,9 @@ public class TcpClient implements TcpClientInterface {
             } else if(encryptionMode == EncryptionMode.SYMMETRIC) {
                 this.sharedKeyBytes = Base64.getDecoder().decode(sharedEncryptionKey);
             }
-
+            isInit = true;
             connect();
+            isInit = false;
         } catch (Exception e) {
             throw new VertexCacheInternalClientException("Failed to initialize TcpClient", e);
         }
@@ -117,7 +120,11 @@ public class TcpClient implements TcpClientInterface {
             }
 
         } catch (Exception e) {
-            LogHelper.getInstance().logError("Failed to connect to " + host + ":" + port);
+            if(isInit) {
+                LogHelper.getInstance().logError("Failed to connect on initial connect to " + host + ":" + port);
+            } else {
+                LogHelper.getInstance().logError("Failed to connect to " + host + ":" + port);
+            }
         }
     }
 
