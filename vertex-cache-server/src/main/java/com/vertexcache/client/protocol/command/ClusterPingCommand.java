@@ -1,6 +1,7 @@
 package com.vertexcache.client.protocol.command;
 
 import com.vertexcache.client.protocol.BaseCommand;
+import com.vertexcache.common.log.LogHelper;
 
 public class ClusterPingCommand extends BaseCommand<ClusterPingCommand> {
 
@@ -19,8 +20,18 @@ public class ClusterPingCommand extends BaseCommand<ClusterPingCommand> {
 
     @Override
     protected void parseResponse(String responseBody) {
-        if (responseBody == null || responseBody.isBlank() || responseBody.toLowerCase().contains("err")) {
-            setFailure("Heartbeat failed: " + responseBody);
+
+        try {
+
+            System.out.println("responseBody: " + responseBody);
+
+            if (responseBody == null || responseBody.isBlank() || responseBody.toLowerCase().contains("err")) {
+                setFailure("Heartbeat failed: " + responseBody);
+            }
+
+        } catch (Exception ex) {
+
+            LogHelper.getInstance().logFatal("==============> " + ex.getMessage());
         }
     }
 

@@ -5,14 +5,8 @@ import com.vertexcache.module.cluster.ClusterModule;
 import com.vertexcache.module.cluster.model.ClusterNode;
 import com.vertexcache.module.cluster.service.coordination.FailoverManager;
 
-import java.util.List;
 import java.util.concurrent.*;
 
-/**
- * Responsible for periodically sending heartbeat (PEER_PING) messages to all peer nodes
- * and checking cluster failover conditions. Runs on a dedicated daemon thread to avoid
- * blocking socket or application-level operations.
- */
 public class HeartbeatManager {
 
     private final ClusterModule clusterModule;
@@ -28,31 +22,24 @@ public class HeartbeatManager {
         this.failoverManager = new FailoverManager(clusterModule);
         this.scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
             Thread t = new Thread(r, "ClusterHeartbeatThread");
-            t.setDaemon(true); // Ensures this thread won't block JVM shutdown
+            t.setDaemon(true);
             return t;
         });
     }
 
-    /**
-     * Starts the periodic heartbeat loop if not already running.
-     */
     public void start() {
-        if (scheduledTask != null && !scheduledTask.isCancelled())
-            return;
+        if (scheduledTask != null && !scheduledTask.isCancelled()) return;
 
         scheduledTask = scheduler.scheduleAtFixedRate(
                 this::heartbeatLoop,
-                1000,
+                0,
                 heartbeatIntervalMs,
                 TimeUnit.MILLISECONDS
         );
 
-        LogHelper.getInstance().logInfo("[HeartbeatManager] Heartbeat loop started.");
+        LogHelper.getInstance().logInfo("[HeartbeatManager] Heartbeat loop scheduled at interval " + heartbeatIntervalMs + "ms.");
     }
 
-    /**
-     * Gracefully shuts down the heartbeat loop and thread.
-     */
     public void shutdown() {
         if (scheduledTask != null && !scheduledTask.isCancelled()) {
             scheduledTask.cancel(true);
@@ -61,9 +48,6 @@ public class HeartbeatManager {
         LogHelper.getInstance().logInfo("[HeartbeatManager] Heartbeat loop stopped.");
     }
 
-    /**
-     * Called on each interval to send PEER_PINGs to all known peers and evaluate failover conditions.
-     */
     private void heartbeatLoop() {
         LogHelper.getInstance().logInfo("[HeartbeatManager] Running heartbeat loop");
 
@@ -83,12 +67,23 @@ public class HeartbeatManager {
                 LogHelper.getInstance().logInfo("[HeartbeatManager] No heartbeat target (likely standby/disabled).");
             }
 
+            // Passive timeout check for all other nodes
+            for (ClusterNode node : clusterModule.getClusterConfig().getAllClusterNodes().values()) {
+                if (!node.getId().equals(clusterModule.getLocalNode().getId())) {
+                    clusterModule.getClusterNodeTrackerStore()
+                            .get(node.getId())
+                            .ifPresent(tracked -> {
+                                if (tracked.getHeartbeat().isDown()) {
+                                    clusterModule.getClusterNodeTrackerStore().markNodeDown(node.getId());
+                                }
+                            });
+                }
+            }
+
             failoverManager.checkFailover();
 
         } catch (Exception e) {
             LogHelper.getInstance().logError("[HeartbeatManager] Heartbeat loop failed: " + e.getMessage());
         }
     }
-
-
 }

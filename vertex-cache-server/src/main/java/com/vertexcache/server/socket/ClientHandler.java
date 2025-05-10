@@ -140,15 +140,25 @@ public class ClientHandler implements Runnable {
                     AuthService authService = optAuthService.get();
                     Optional<AuthEntry> result = authService.authenticate(clientId, token);
 
-                    if (result.isEmpty()) {
-                        return "-ERR IDENT Failed: invalid token or unknown client".getBytes(StandardCharsets.UTF_8);
+                    boolean isClusterNode = Config.getInstance().getClusterConfigLoader().getAllClusterNodes().containsKey(clientId);
+
+                    if (isClusterNode) {
+                        System.out.println("IS CLUSERT NODE client");
+                        session.setClientId(clientId);
+                        session.setTenantId(TenantId.DEFAULT);
+                        session.setRole(Role.NODE);
+                    } else {
+
+                        if (result.isEmpty()) {
+                            return "-ERR IDENT Failed: invalid token or unknown client".getBytes(StandardCharsets.UTF_8);
+                        }
+
+                        AuthEntry entry = result.get();
+                        session.setClientId(entry.getClientId());
+                        session.setTenantId(entry.getTenantId());
+                        session.setRole(entry.getRole());
+
                     }
-
-                    AuthEntry entry = result.get();
-                    session.setClientId(entry.getClientId());
-                    session.setTenantId(entry.getTenantId());
-                    session.setRole(entry.getRole());
-
                     this.clientName = clientId;
                     this.isIdentified = true;
                     SessionRegistry.register(connectionId, session);

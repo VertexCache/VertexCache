@@ -35,7 +35,7 @@ public class VertexCacheInternalClient {
     }
 
     public CommandResult sendClusterPingCommand(String nodeId, String configHash) {
-        ClusterPingCommand cmd = (ClusterPingCommand) new ClusterPingCommand(nodeId, configHash);
+        ClusterPingCommand cmd = (ClusterPingCommand) new ClusterPingCommand(nodeId, configHash).execute(tcpClient);
         return new CommandResult(cmd.isSuccess(), cmd.getStatusMessage());
     }
 

@@ -4,6 +4,8 @@ import com.vertexcache.core.command.impl.DelCommand;
 import com.vertexcache.core.command.impl.GetCommand;
 import com.vertexcache.core.command.impl.PingCommand;
 import com.vertexcache.core.command.impl.SetCommand;
+import com.vertexcache.core.command.impl.internal.PeerPingCommand;
+import com.vertexcache.core.command.impl.internal.RoleChangeCommand;
 import com.vertexcache.core.validation.Validator;
 import com.vertexcache.core.validation.VertexCacheValidationException;
 import com.vertexcache.module.auth.Role;
@@ -28,6 +30,15 @@ public class RoleCommandValidator implements Validator {
             case ADMIN -> {
                 // Admin can execute all commands
                 return;
+            }
+
+            case NODE -> {
+                if (!Set.of(
+                        PeerPingCommand.COMMAND_KEY,
+                        RoleChangeCommand.COMMAND_KEY
+                ).contains(normalized)) {
+                    throw new VertexCacheValidationException("Command not permitted for Cluster Node: " + commandName);
+                }
             }
 
             case READ_WRITE -> {

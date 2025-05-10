@@ -1,6 +1,7 @@
 package com.vertexcache.client.transport;
 
 import com.vertexcache.client.exception.VertexCacheInternalClientException;
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.security.EncryptionMode;
 import com.vertexcache.common.security.MessageCodec;
 import com.vertexcache.common.security.GcmCryptoHelper;
@@ -73,9 +74,6 @@ public class TcpClient implements TcpClientInterface {
 
             connect();
         } catch (Exception e) {
-
-            System.out.println((e.getMessage()));
-
             throw new VertexCacheInternalClientException("Failed to initialize TcpClient", e);
         }
     }
@@ -105,18 +103,8 @@ public class TcpClient implements TcpClientInterface {
             // Send IDENT command immediately
             String safeClientId = clientId != null ? clientId : "";
             String safeToken = clientToken != null ? clientToken : "";
-
-            String identCommand;
-            if (Config.getInstance().getClusterConfigLoader().isEnableClustering()) {
-                // Internal cluster node — use raw IDENT
-                identCommand = "IDENT " + safeClientId;
-            } else {
-                // Regular client IDENT with JSON payload - Mostly won't be used
-                String identPayload = String.format("{\"client_id\":\"%s\", \"token\":\"%s\"}", safeClientId, safeToken);
-                identCommand = "IDENT " + identPayload;
-            }
-
-
+            String identPayload = String.format("{\"client_id\":\"%s\", \"token\":\"%s\"}", safeClientId, safeToken);
+            String identCommand = "IDENT " + identPayload;
             byte[] identBytes = encrypt(identCommand.getBytes());
             MessageCodec.writeFramedMessage(out, identBytes);
             out.flush();
@@ -125,12 +113,11 @@ public class TcpClient implements TcpClientInterface {
             byte[] identResponse = MessageCodec.readFramedMessage(in);
             if (identResponse != null) {
                 String response = new String(identResponse);
-                System.out.println("[Cluster] Server IDENT response: " + response);
+                LogHelper.getInstance().logInfo("[Cluster] Server IDENT response: " + response);
             }
 
         } catch (Exception e) {
-            //throw new VertexCacheInternalClientException("Failed to connect to " + host + ":" + port, e);
-            System.out.println("Failed to connect to " + host + ":" + port);
+            LogHelper.getInstance().logError("Failed to connect to " + host + ":" + port);
         }
     }
 
@@ -148,7 +135,6 @@ public class TcpClient implements TcpClientInterface {
             if (response == null) {
                 throw new VertexCacheInternalClientException("Connection closed by server");
             }
-
             return new String(response);
 
         } catch (IOException e) {

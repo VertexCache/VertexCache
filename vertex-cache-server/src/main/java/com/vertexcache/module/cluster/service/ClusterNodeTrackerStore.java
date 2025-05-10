@@ -1,5 +1,6 @@
 package com.vertexcache.module.cluster.service;
 
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.module.cluster.model.ClusterNode;
 import com.vertexcache.module.cluster.model.ClusterNodeHealthStatus;
 
@@ -25,6 +26,8 @@ public class ClusterNodeTrackerStore {
 
         node.getHeartbeat().updateHeartbeat();
 
+        LogHelper.getInstance().logInfo("[ClusterNodeTrackerStore] Heartbeat timestamp refreshed for: " + nodeId);
+
         if (node.getHealthStatus() != ClusterNodeHealthStatus.ACTIVE) {
             node.setHealthStatus(ClusterNodeHealthStatus.ACTIVE);
             notifyNodeUp(nodeId);
@@ -39,6 +42,7 @@ public class ClusterNodeTrackerStore {
             node.getHeartbeat().markDown();
             node.setHealthStatus(ClusterNodeHealthStatus.DOWN);
             notifyNodeDown(nodeId);
+            LogHelper.getInstance().logWarn("[ClusterNodeTrackerStore] Node marked as DOWN: " + nodeId);
         }
     }
 

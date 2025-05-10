@@ -37,6 +37,8 @@ public class PeerPingCommand extends BaseCommand<String> {
         String nodeId = argumentParser.getPrimaryArgument().getArgs().getFirst();
         String remoteHash = argumentParser.getPrimaryArgument().getArgs().get(1);
 
+        LogHelper.getInstance().logInfo("[PeerPingCommand] Received PEER_PING from " + nodeId + " with hash: " + remoteHash);
+
         Optional<ClusterModule> optClusterModule = ModuleRegistry.getInstance().getModule(ClusterModule.class);
         if (optClusterModule.isEmpty()) {
             commandResponse.setResponseError("ERR Cluster module is not active");
@@ -51,6 +53,8 @@ public class PeerPingCommand extends BaseCommand<String> {
         }
 
         clusterModule.getClusterNodeTrackerStore().updateHeartbeat(nodeId);
+        LogHelper.getInstance().logInfo("[PeerPingCommand] Heartbeat updated for: " + nodeId);
+
 
         Map<String, String> localSettings = Config.getInstance().getClusterConfigLoader().getCoordinationSettings();
         String localHash = ClusterHashUtil.computeCoordinationHash(localSettings);
