@@ -47,15 +47,19 @@ public class ClusterModule extends Module {
             // Register a simple logging observer
             clusterNodeTrackerStore.registerListener(new ClusterNodeLoggerObserver());
 
-            // Initialize internal client for intra-cluster messaging
-            this.initVertexCacheClient();
+            if(Config.getInstance().getClusterConfigLoader().isSecondaryNode()) {
 
-            // Start heartbeat manager
-            this.heartbeatManager = new HeartbeatManager(this, getClusterHeartbeatIntervalMs());
-            this.heartbeatManager.start();
+                // Initialize internal client for intra-cluster messaging
+                this.initVertexCacheClient();
 
-            // Start failover manager
-            this.failoverManager = new FailoverManager(this);
+                // Start heartbeat manager
+                this.heartbeatManager = new HeartbeatManager(this, getClusterHeartbeatIntervalMs());
+                this.heartbeatManager.start();
+
+                // Start failover manager
+                this.failoverManager = new FailoverManager(this);
+
+            }
 
             reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Cluster module started successfully");
         } catch (Exception e) {
