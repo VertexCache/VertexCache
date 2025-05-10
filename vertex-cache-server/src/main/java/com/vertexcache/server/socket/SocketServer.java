@@ -47,7 +47,7 @@ public class SocketServer extends Module {
                 // Not a Cluster use the server_port
                 port = Config.getInstance().getCoreConfigLoader().getServerPort();
             }
-            
+
             ServerSocket serverSocket;
             if (Config.getInstance().getSecurityConfigLoader().isEncryptTransport()) {
                 serverSocket = ServerSecurityHelper.createSecureSocket(port);
@@ -119,8 +119,6 @@ public class SocketServer extends Module {
 
     @Override
     protected void onValidate() {
-        //status = ModuleStatus.STARTUP_FAILED;
-        //statusMessage = "IT FAILEd";
         if(status != ModuleStatus.NOT_STARTED) {
             LogHelper.getInstance().logInfo(SystemStatusReport.getStartupSystemReport());
             System.exit(0);

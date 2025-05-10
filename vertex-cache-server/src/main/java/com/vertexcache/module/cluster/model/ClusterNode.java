@@ -10,6 +10,8 @@ public class ClusterNode {
     private ClusterNodeHealthStatus healthStatus;
     private final ClusterNodeHeartBeat heartbeat = new ClusterNodeHeartBeat();
 
+    private boolean promotedToPrimary;
+
     public ClusterNode(String id, String host, String port, ClusterNodeRole role, ClusterNodeAvailability availability) {
         this.id = id;
         this.host = host;
@@ -31,10 +33,10 @@ public class ClusterNode {
     }
     public ClusterNodeAvailability getAvailability() {return availability;}
     public ClusterNodeHealthStatus getHealthStatus() {return healthStatus;}
-    public void setHealthStatus(ClusterNodeHealthStatus healthStatus) {
-        this.healthStatus = healthStatus;
-    }
+    public void setHealthStatus(ClusterNodeHealthStatus healthStatus) {this.healthStatus = healthStatus;}
     public ClusterNodeHeartBeat getHeartbeat() {
         return heartbeat;
     }
+    public boolean isPromotedToPrimary() {return promotedToPrimary;}
+    public void setPromotedToPrimary(boolean promotedToPrimary) {this.promotedToPrimary = promotedToPrimary;}
 }

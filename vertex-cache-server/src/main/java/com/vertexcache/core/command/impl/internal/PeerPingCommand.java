@@ -52,10 +52,6 @@ public class PeerPingCommand extends BaseCommand<String> {
             return commandResponse;
         }
 
-        clusterModule.getClusterNodeTrackerStore().updateHeartbeat(nodeId);
-        LogHelper.getInstance().logInfo("[PeerPingCommand] Heartbeat updated for: " + nodeId);
-
-
         Map<String, String> localSettings = Config.getInstance().getClusterConfigLoader().getCoordinationSettings();
         String localHash = ClusterHashUtil.computeCoordinationHash(localSettings);
 

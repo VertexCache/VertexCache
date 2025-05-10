@@ -113,6 +113,10 @@ public class ClientHandler implements Runnable {
         String input = new String(decrypted, StandardCharsets.UTF_8).trim();
         String logTag = "[client:" + (clientName != null ? clientName : clientSocket.getRemoteSocketAddress()) + "]";
 
+        if(Config.getInstance().getClusterConfigLoader().isSecondaryNode() && !Config.getInstance().getClusterConfigLoader().getSecondaryEnabledClusterNode().isPromotedToPrimary()) {
+            return "-ERR Access denied: Secondary node is still in standby mode and has not been promoted to primary.".getBytes(StandardCharsets.UTF_8);
+        }
+
         if (input.startsWith("IDENT ")) {
             String payload = input.substring(6).trim();
 
@@ -143,7 +147,6 @@ public class ClientHandler implements Runnable {
                     boolean isClusterNode = Config.getInstance().getClusterConfigLoader().getAllClusterNodes().containsKey(clientId);
 
                     if (isClusterNode) {
-                        System.out.println("IS CLUSERT NODE client");
                         session.setClientId(clientId);
                         session.setTenantId(TenantId.DEFAULT);
                         session.setRole(Role.NODE);

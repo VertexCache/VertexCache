@@ -49,7 +49,8 @@ public class HeartbeatManager {
     }
 
     private void heartbeatLoop() {
-        LogHelper.getInstance().logInfo("[HeartbeatManager] Running heartbeat loop");
+
+        //LogHelper.getInstance().logInfo("[HeartbeatManager] Running heartbeat loop");
 
         try {
             ClusterNode target = null;
@@ -65,19 +66,6 @@ public class HeartbeatManager {
                 clusterModule.clusterPing(target);
             } else {
                 LogHelper.getInstance().logInfo("[HeartbeatManager] No heartbeat target (likely standby/disabled).");
-            }
-
-            // Passive timeout check for all other nodes
-            for (ClusterNode node : clusterModule.getClusterConfig().getAllClusterNodes().values()) {
-                if (!node.getId().equals(clusterModule.getLocalNode().getId())) {
-                    clusterModule.getClusterNodeTrackerStore()
-                            .get(node.getId())
-                            .ifPresent(tracked -> {
-                                if (tracked.getHeartbeat().isDown()) {
-                                    clusterModule.getClusterNodeTrackerStore().markNodeDown(node.getId());
-                                }
-                            });
-                }
             }
 
             failoverManager.checkFailover();

@@ -2,6 +2,10 @@ package com.vertexcache.client.protocol.command;
 
 import com.vertexcache.client.protocol.BaseCommand;
 import com.vertexcache.common.log.LogHelper;
+import com.vertexcache.core.module.ModuleRegistry;
+import com.vertexcache.module.cluster.ClusterModule;
+
+import java.util.Optional;
 
 public class ClusterPingCommand extends BaseCommand<ClusterPingCommand> {
 
@@ -20,18 +24,8 @@ public class ClusterPingCommand extends BaseCommand<ClusterPingCommand> {
 
     @Override
     protected void parseResponse(String responseBody) {
-
-        try {
-
-            System.out.println("responseBody: " + responseBody);
-
-            if (responseBody == null || responseBody.isBlank() || responseBody.toLowerCase().contains("err")) {
-                setFailure("Heartbeat failed: " + responseBody);
-            }
-
-        } catch (Exception ex) {
-
-            LogHelper.getInstance().logFatal("==============> " + ex.getMessage());
+        if (responseBody == null || responseBody.isBlank() || responseBody.toLowerCase().contains("err")) {
+            setFailure("Heartbeat failed: " + responseBody);
         }
     }
 
@@ -42,11 +36,22 @@ public class ClusterPingCommand extends BaseCommand<ClusterPingCommand> {
 
     @Override
     public void onFailedConnect(String host, int port) {
-        System.out.println("[ClusterPingCommand] Connection failed to " + host + ":" + port);
+        LogHelper.getInstance().logWarn("[ClusterPingCommand] Connection failed to " + host + ":" + port);
+
+        Optional<ClusterModule> optClusterModule = ModuleRegistry.getInstance().getModule(ClusterModule.class);
+        if (optClusterModule.isPresent()) {
+            ClusterModule clusterModule = optClusterModule.get();
+            if (clusterModule.getClusterConfig().isSecondaryNode()) {
+                clusterModule.getClusterConfig().getPrimaryEnabledClusterNode().getHeartbeat().markDown();
+            }
+        } else {
+            LogHelper.getInstance().logWarn("[ClusterPingCommand] Cluster module not available.");
+        }
     }
 
     @Override
     public void onFailedSend(String command, Throwable cause) {
-        System.out.println("[ClusterPingCommand] Failed to send command '" + command + "': " + cause.getMessage());
+        // No-op
+        //System.out.println("[ClusterPingCommand] Failed to send command '" + command + "': " + cause.getMessage());
     }
 }
