@@ -39,4 +39,14 @@ public class ClusterPingCommand extends BaseCommand<ClusterPingCommand> {
     protected String getCommandKey() {
         return "PEER_PING";
     }
+
+    @Override
+    public void onFailedConnect(String host, int port) {
+        System.out.println("[ClusterPingCommand] Connection failed to " + host + ":" + port);
+    }
+
+    @Override
+    public void onFailedSend(String command, Throwable cause) {
+        System.out.println("[ClusterPingCommand] Failed to send command '" + command + "': " + cause.getMessage());
+    }
 }

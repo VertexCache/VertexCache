@@ -3,7 +3,7 @@ package com.vertexcache.client.protocol;
 import com.vertexcache.client.exception.VertexCacheInternalClientException;
 import com.vertexcache.client.transport.TcpClientInterface;
 
-public abstract class BaseCommand<T extends BaseCommand<T>> implements Command {
+public abstract class BaseCommand<T extends BaseCommand<T>> implements Command, CommandFailureHandler {
 
     private static String RESPONSE_OK = "OK";
     protected static final String COMMAND_SPACER = " ";
@@ -15,6 +15,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Command {
     @Override
     public Command execute(TcpClientInterface client) {
         try {
+            client.setCommandFailureHandler(this);
             String raw = client.send(buildCommand()).trim();
 
             if (raw.startsWith("+")) {

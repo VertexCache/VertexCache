@@ -1,6 +1,7 @@
 package com.vertexcache.client.transport;
 
 import com.vertexcache.client.exception.VertexCacheInternalClientException;
+import com.vertexcache.client.protocol.CommandFailureHandler;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.security.EncryptionMode;
 import com.vertexcache.common.security.MessageCodec;
@@ -41,6 +42,8 @@ public class TcpClient implements TcpClientInterface {
 
     private boolean isInit = false;
 
+    private CommandFailureHandler callback;
+
     public TcpClient(String host,
                      int port,
                      boolean useTls,
@@ -79,6 +82,10 @@ public class TcpClient implements TcpClientInterface {
         } catch (Exception e) {
             throw new VertexCacheInternalClientException("Failed to initialize TcpClient", e);
         }
+    }
+
+    public void setCommandFailureHandler(CommandFailureHandler callback) {
+        this.callback = callback;
     }
 
     private void connect() {
@@ -124,6 +131,7 @@ public class TcpClient implements TcpClientInterface {
                 LogHelper.getInstance().logError("Failed to connect on initial connect to " + host + ":" + port);
             } else {
                 LogHelper.getInstance().logError("Failed to connect to " + host + ":" + port);
+                this.callback.onFailedConnect(host,port);
             }
         }
     }
