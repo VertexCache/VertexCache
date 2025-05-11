@@ -1,7 +1,9 @@
-package com.vertexcache.module.auth;
+package com.vertexcache.module.auth.util;
 
 import com.vertexcache.core.module.ModuleName;
 import com.vertexcache.core.module.ModuleRegistry;
+import com.vertexcache.module.auth.AuthModule;
+import com.vertexcache.module.auth.service.AuthService;
 
 import java.util.Optional;
 

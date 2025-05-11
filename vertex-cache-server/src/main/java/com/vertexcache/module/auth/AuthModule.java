@@ -3,6 +3,9 @@ package com.vertexcache.module.auth;
 import com.vertexcache.core.module.Module;
 import com.vertexcache.core.module.ModuleStatus;
 import com.vertexcache.core.setting.Config;
+import com.vertexcache.module.auth.exception.VertexCacheAuthModuleException;
+import com.vertexcache.module.auth.service.AuthInitializer;
+import com.vertexcache.module.auth.service.AuthService;
 
 public class AuthModule extends Module {
 

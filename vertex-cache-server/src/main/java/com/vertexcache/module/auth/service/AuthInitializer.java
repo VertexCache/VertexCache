@@ -1,4 +1,4 @@
-package com.vertexcache.module.auth;
+package com.vertexcache.module.auth.service;
 
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.validation.ValidationBatch;
@@ -6,6 +6,11 @@ import com.vertexcache.core.validation.validators.ClientIdValidator;
 import com.vertexcache.core.validation.validators.RoleValidator;
 import com.vertexcache.core.validation.validators.TenantIdValidator;
 import com.vertexcache.core.validation.validators.UUIDValidator;
+import com.vertexcache.module.auth.model.Role;
+import com.vertexcache.module.auth.datastore.AuthStore;
+import com.vertexcache.module.auth.exception.VertexCacheAuthModuleException;
+import com.vertexcache.module.auth.model.AuthEntry;
+import com.vertexcache.module.auth.model.TenantId;
 
 import java.util.List;
 

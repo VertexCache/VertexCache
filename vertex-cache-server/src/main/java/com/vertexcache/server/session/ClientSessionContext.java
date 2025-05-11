@@ -1,7 +1,7 @@
 package com.vertexcache.server.session;
 
-import com.vertexcache.module.auth.Role;
-import com.vertexcache.module.auth.TenantId;
+import com.vertexcache.module.auth.model.Role;
+import com.vertexcache.module.auth.model.TenantId;
 
 public class ClientSessionContext {
     private String clientId;

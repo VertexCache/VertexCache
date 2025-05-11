@@ -1,4 +1,6 @@
-package com.vertexcache.module.auth;
+package com.vertexcache.module.auth.datastore;
+
+import com.vertexcache.module.auth.model.AuthEntry;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

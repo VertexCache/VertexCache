@@ -1,4 +1,4 @@
-package com.vertexcache.module.auth;
+package com.vertexcache.module.auth.model;
 
 import java.util.Objects;
 

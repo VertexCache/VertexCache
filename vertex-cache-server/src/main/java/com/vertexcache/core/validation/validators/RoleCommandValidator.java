@@ -8,7 +8,7 @@ import com.vertexcache.core.command.impl.internal.PeerPingCommand;
 import com.vertexcache.core.command.impl.internal.RoleChangeCommand;
 import com.vertexcache.core.validation.Validator;
 import com.vertexcache.core.validation.VertexCacheValidationException;
-import com.vertexcache.module.auth.Role;
+import com.vertexcache.module.auth.model.Role;
 
 import java.util.Set;
 

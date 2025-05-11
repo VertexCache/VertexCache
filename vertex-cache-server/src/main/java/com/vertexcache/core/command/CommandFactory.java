@@ -7,6 +7,7 @@ import java.util.Map;
 import com.vertexcache.core.command.impl.admin.*;
 import com.vertexcache.core.command.impl.internal.PeerPingCommand;
 import com.vertexcache.core.command.impl.internal.RoleChangeCommand;
+import com.vertexcache.module.auth.model.Role;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
 /**
@@ -17,7 +18,7 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
  * but do need to consider performance and do want added behaviour for disabling a command at
  * run-time - Command Registry similar to the ModuleRegistry
  *
- * @see com.vertexcache.module.auth.Role
+ * @see Role
  */
 public class CommandFactory {
     private final Map<String, Command<String>> commandMap;

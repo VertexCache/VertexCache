@@ -2,7 +2,7 @@ package com.vertexcache.core.validation.validators;
 
 import com.vertexcache.core.validation.Validator;
 import com.vertexcache.core.validation.VertexCacheValidationException;
-import com.vertexcache.module.auth.Role;
+import com.vertexcache.module.auth.model.Role;
 
 public class RoleValidator implements Validator {
     private final String value;

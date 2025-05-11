@@ -1,4 +1,4 @@
-package com.vertexcache.module.auth;
+package com.vertexcache.module.auth.exception;
 
 public class VertexCacheAuthModuleException extends RuntimeException {
     public VertexCacheAuthModuleException(String message) {

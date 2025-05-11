@@ -1,4 +1,4 @@
-package com.vertexcache.module.auth;
+package com.vertexcache.module.auth.model;
 
 public class AuthEntry {
     private final String clientId;

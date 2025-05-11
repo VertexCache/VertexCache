@@ -1,4 +1,7 @@
-package com.vertexcache.module.auth;
+package com.vertexcache.module.auth.service;
+
+import com.vertexcache.module.auth.datastore.AuthStore;
+import com.vertexcache.module.auth.model.AuthEntry;
 
 import java.util.Optional;
 
