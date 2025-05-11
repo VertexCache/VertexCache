@@ -183,7 +183,11 @@ enable_metric=true
 # REST API Module, when enable_rest_api=true
 #####################################################
 enable_rest_api=true
-
+rest_api_port=8080
+rest_api_require_tls=false
+rest_api_token_header=Authorization
+rest_api_allow_cors=false
+rest_api_allow_admin=false
 
 
 #####################################################
@@ -192,11 +196,14 @@ enable_rest_api=true
 enable_admin_commands=true
 
 
-
 #####################################################
 # Alert Module, when enable_alerting=true
 #####################################################
 enable_alerting=true
+alert_webhook_url=https://localhost/alert_callback_change_me
+alert_webhook_signing_secret=supersecret123_change_me
+alert_webhook_timeout=2000
+alert_webhook_retry_count=3
 
 
 #####################################################

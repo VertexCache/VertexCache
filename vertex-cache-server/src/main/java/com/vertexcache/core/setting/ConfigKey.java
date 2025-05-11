@@ -47,6 +47,12 @@ public class ConfigKey {
     // REST API
     public static final boolean ENABLE_REST_API_DEFAULT = false;
     public static final String ENABLE_REST_API = "enable_rest_api";
+    public static final int REST_API_PORT_DEFAULT = 8080;
+    public static final String REST_API_PORT = "rest_api_port";
+    public static final String REST_API_REQUIRE_TLS = "rest_api_require_tls";
+    public static final String REST_API_TOKEN_HEADER = "rest_api_token_header";
+    public static final String REST_API_ALLOW_CORS = "rest_api_allow_cors";
+    public static final String REST_API_ALLOW_ADMIN = "rest_api_allow_admin";
 
     // Clustering - Not this follows the clustering convention prefix
     public static final boolean ENABLE_CLUSTERING_DEFAULT = false;
@@ -60,6 +66,13 @@ public class ConfigKey {
     // Alerting
     public static final boolean ENABLE_ALERTING_DEFAULT = false;
     public static final String ENABLE_ALERTING = "enable_alerting";
+    public static final String ALERT_WEBHOOK_URL = "alert_webhook_url";
+    public static final String ALERT_WEBHOOK_SIGNING_SECRET = "alert_webhook_signing_secret";
+    public static final int ALERT_WEBHOOK_TIMEOUT_DEFAULT = 2000;
+    public static final String ALERT_WEBHOOK_TIMEOUT = "alert_webhook_timeout";
+    public static final int ALERT_WEBHOOK_RETRY_COUNT_DEFAULT = 3;
+    public static final String ALERT_WEBHOOK_RETRY_COUNT = "alert_webhook_retry_count";
+
 
     // Smart
     public static final boolean ENABLE_SMART_DEFAULT = false;
