@@ -1,9 +1,7 @@
 package com.vertexcache.core.setting.loader;
 
-import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.setting.ConfigKey;
 import com.vertexcache.module.cluster.model.ClusterNodeAvailability;
-import com.vertexcache.module.cluster.model.ClusterNodeHealthStatus;
 import com.vertexcache.module.cluster.model.ClusterNodeRole;
 import com.vertexcache.module.cluster.util.ClusterCoordinationKeys;
 import com.vertexcache.module.cluster.model.ClusterNode;

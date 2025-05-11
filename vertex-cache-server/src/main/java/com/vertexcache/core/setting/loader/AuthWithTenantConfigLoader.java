@@ -1,6 +1,5 @@
 package com.vertexcache.core.setting.loader;
 
-import com.vertexcache.common.config.reader.ConfigLoader;
 import com.vertexcache.common.config.reader.EnvLoader;
 import com.vertexcache.core.setting.ConfigKey;
 
