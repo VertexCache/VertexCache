@@ -6,7 +6,7 @@ import com.vertexcache.core.command.impl.UnknownCommand;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.validation.VertexCacheValidationException;
 import com.vertexcache.core.validation.validators.RoleCommandValidator;
-import com.vertexcache.module.ratelimiter.RateLimiterManager;
+import com.vertexcache.module.ratelimiter.service.RateLimiterManager;
 import com.vertexcache.server.session.ClientSessionContext;
 
 import java.util.Set;

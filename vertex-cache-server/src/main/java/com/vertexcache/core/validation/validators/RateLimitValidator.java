@@ -2,7 +2,7 @@ package com.vertexcache.core.validation.validators;
 
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.validation.Validator;
-import com.vertexcache.module.ratelimiter.VertexCacheRateLimitModuleException;
+import com.vertexcache.module.ratelimiter.exception.VertexCacheRateLimitModuleException;
 
 public class RateLimitValidator implements Validator {
 

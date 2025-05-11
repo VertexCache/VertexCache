@@ -1,4 +1,4 @@
-package com.vertexcache.module.ratelimiter.impl;
+package com.vertexcache.module.ratelimiter.model;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

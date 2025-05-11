@@ -1,6 +1,6 @@
-package com.vertexcache.module.ratelimiter;
+package com.vertexcache.module.ratelimiter.service;
 
-import com.vertexcache.module.ratelimiter.impl.TokenBucketRateLimiter;
+import com.vertexcache.module.ratelimiter.model.TokenBucketRateLimiter;
 
 public class RateLimiterManager {
     private static final RateLimiterManager instance = new RateLimiterManager();

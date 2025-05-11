@@ -3,8 +3,9 @@ package com.vertexcache.module.ratelimiter;
 import com.vertexcache.core.module.Module;
 import com.vertexcache.core.module.ModuleStatus;
 import com.vertexcache.core.validation.validators.RateLimitValidator;
-import com.vertexcache.module.ratelimiter.impl.TokenBucketRateLimiter;
+import com.vertexcache.module.ratelimiter.model.TokenBucketRateLimiter;
 import com.vertexcache.core.setting.Config;
+import com.vertexcache.module.ratelimiter.service.RateLimiterManager;
 
 public class RateLimiterModule extends Module {
 
