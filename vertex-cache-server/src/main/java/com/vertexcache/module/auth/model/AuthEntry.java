@@ -1,6 +1,9 @@
 package com.vertexcache.module.auth.model;
 
+import static com.vertexcache.module.auth.model.Role.*;
+
 public class AuthEntry {
+
     private final String clientId;
     private final TenantId tenantId;
     private final Role role;
@@ -11,6 +14,18 @@ public class AuthEntry {
         this.tenantId = tenantId;
         this.role = role;
         this.token = token;
+    }
+
+    public boolean hasRestApiReadAccess() {
+        return role == REST_API_READ_ONLY || role == REST_API_READ_WRITE;
+    }
+
+    public boolean hasRestApiWriteAccess() {
+        return role == REST_API_READ_WRITE;
+    }
+
+    public boolean isAlertBot() {
+        return role == ALERT_BOT_READ_ONLY;
     }
 
     public String getClientId() { return clientId; }
