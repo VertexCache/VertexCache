@@ -126,8 +126,6 @@ public class ClusterConfigLoader extends LoaderBase {
         lines.add("Node Count: " + allNodes.size());
         lines.add("Cluster Peers:");
 
-
-
         for (ClusterNode node : allNodes.values()) {
             String port = node.getPort();
             lines.add(String.format("  - %s", node.getId()));

@@ -5,7 +5,7 @@ import com.vertexcache.core.setting.Config;
 import com.vertexcache.module.auth.AuthModule;
 import com.vertexcache.module.ratelimiter.RateLimiterModule;
 import com.vertexcache.module.metric.MetricModule;
-import com.vertexcache.module.rest.RestApiModule;
+import com.vertexcache.module.restapi.RestApiModule;
 import com.vertexcache.module.cluster.ClusterModule;
 import com.vertexcache.module.admin.AdminModule;
 import com.vertexcache.module.alert.AlertModule;

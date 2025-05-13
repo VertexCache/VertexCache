@@ -1,6 +1,4 @@
-package com.vertexcache.module.rest.model;
-
-import com.vertexcache.module.cluster.model.ClusterNodeAvailability;
+package com.vertexcache.module.restapi.model;
 
 public enum TokenHeader {
     AUTHORIZATION,

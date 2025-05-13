@@ -1,20 +1,23 @@
 package com.vertexcache.module.auth.model;
 
 import com.vertexcache.core.command.impl.*;
+import com.vertexcache.core.command.impl.admin.ConfigCommand;
+import com.vertexcache.core.command.impl.admin.PurgeCommand;
+import com.vertexcache.core.command.impl.admin.ResetCommand;
+import com.vertexcache.core.command.impl.admin.SessionsCommand;
 import com.vertexcache.core.command.impl.internal.RoleChangeCommand;
 
 import java.util.Set;
 
 public enum Role {
 
-    // Basic All Access via TCP
+    // TCP Roles
     ADMIN,
-
-    // Roles for TCP Interaction
     READ_ONLY,
     READ_WRITE,
 
-    // Roles for REST API Client Access
+    // REST API Roles
+    REST_API_ADMIN,
     REST_API_READ_ONLY,
     REST_API_READ_WRITE,
 
@@ -49,6 +52,16 @@ public enum Role {
                             RoleChangeCommand.COMMAND_KEY
                     ).contains(command.toUpperCase());
 
+            case REST_API_ADMIN -> Set.of(
+                    PingCommand.COMMAND_KEY,
+                    GetCommand.COMMAND_KEY,
+                    GetSecondaryIdxOneCommand.COMMAND_KEY,
+                    GetSecondaryIdxTwoCommand.COMMAND_KEY,
+                    SetCommand.COMMAND_KEY,
+                    DelCommand.COMMAND_KEY,
+                    PurgeCommand.COMMAND_KEY,
+                    ResetCommand.COMMAND_KEY
+            ).contains(command.toUpperCase());
             case REST_API_READ_WRITE -> Set.of(
                     GetCommand.COMMAND_KEY,
                     SetCommand.COMMAND_KEY,
@@ -87,6 +100,16 @@ public enum Role {
                         RoleChangeCommand.COMMAND_KEY
                     );
 
+            case REST_API_ADMIN -> Set.of(
+                    PingCommand.COMMAND_KEY,
+                    GetCommand.COMMAND_KEY,
+                    GetSecondaryIdxOneCommand.COMMAND_KEY,
+                    GetSecondaryIdxTwoCommand.COMMAND_KEY,
+                    SetCommand.COMMAND_KEY,
+                    DelCommand.COMMAND_KEY,
+                    PurgeCommand.COMMAND_KEY,
+                    ResetCommand.COMMAND_KEY
+            );
             case REST_API_READ_WRITE -> Set.of(
                     GetCommand.COMMAND_KEY,
                     SetCommand.COMMAND_KEY,

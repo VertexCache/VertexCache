@@ -1,7 +1,12 @@
 package com.vertexcache.core.setting.loader;
 
 import com.vertexcache.core.setting.ConfigKey;
-import com.vertexcache.module.rest.model.TokenHeader;
+import com.vertexcache.module.restapi.model.TokenHeader;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RestApiConfigLoader extends LoaderBase {
 
@@ -20,6 +25,29 @@ public class RestApiConfigLoader extends LoaderBase {
         this.tokenHeader = TokenHeader.from(this.getConfigLoader().getProperty(ConfigKey.REST_API_TOKEN_HEADER,TokenHeader.NONE.toString()));
         this.allowCors = this.getConfigLoader().getBooleanProperty(ConfigKey.REST_API_ALLOW_CORS,false);
         this.allowAdmin = this.getConfigLoader().getBooleanProperty(ConfigKey.REST_API_ALLOW_ADMIN, false);
+    }
+
+    public Map<String, String> getFlatSummary() {
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("rest_api_enabled", String.valueOf(enableRestApi));
+        map.put("rest_api_port", String.valueOf(port));
+        map.put("rest_api_require_tls", String.valueOf(requireTls));
+        map.put("rest_api_token_header", tokenHeader != null ? tokenHeader.toString() : "null");
+        map.put("rest_api_allow_cors", String.valueOf(allowCors));
+        map.put("rest_api_allow_admin", String.valueOf(allowAdmin));
+        return map;
+    }
+
+    public List<String> getTextSummary() {
+        List<String> lines = new ArrayList<>();
+        lines.add("Settings:");
+        lines.add("  enabled:       " + enableRestApi);
+        lines.add("  port:          " + port);
+        lines.add("  require TLS:   " + requireTls);
+        lines.add("  token header:  " + (tokenHeader != null ? tokenHeader : "null"));
+        lines.add("  allow CORS:    " + allowCors);
+        //lines.add("  allow ADMIN:   " + allowAdmin);
+        return lines;
     }
 
     public boolean isEnableRestApi() {return enableRestApi;}

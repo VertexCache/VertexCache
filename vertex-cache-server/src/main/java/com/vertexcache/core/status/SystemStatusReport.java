@@ -21,6 +21,8 @@ public class SystemStatusReport {
         result.addAll(getSecuritySummaryAsFlat());
         result.addAll(getModuleStatusAsFlat());
         result.addAll(getClusterSummaryAsFlat());
+        result.addAll(getRestApiAsFlat());
+        result.addAll(getAlertAsFlat());
         result.addAll(getMemoryStatusSummaryAsFlat());
         return result;
     }
@@ -31,6 +33,8 @@ public class SystemStatusReport {
                 getSecuritySummary(),
                 getModuleStatus(),
                 getClusterSummary(),
+                getRestApiSummary(),
+                getAlertSummary(),
                 getServerMemoryStatus()
         );
     }
@@ -119,6 +123,28 @@ public class SystemStatusReport {
         return flat;
     }
 
+    public static List<String> getRestApiAsFlat() {
+        List<String> flat = new ArrayList<>();
+        Config config = Config.getInstance();
+        if (config.getRestApiConfigLoader().isEnableRestApi()) {
+            flat.addAll(config.getRestApiConfigLoader().getFlatSummary().entrySet().stream()
+                    .map(e -> e.getKey() + "=" + e.getValue())
+                    .toList());
+        }
+        return flat;
+    }
+
+    public static List<String> getAlertAsFlat() {
+        List<String> flat = new ArrayList<>();
+        Config config = Config.getInstance();
+        if (config.getAlertConfigLoader().isEnableAlerting()) {
+            flat.addAll(config.getAlertConfigLoader().getFlatSummary().entrySet().stream()
+                    .map(e -> e.getKey() + "=" + e.getValue())
+                    .toList());
+        }
+        return flat;
+    }
+
     public static String getServerStatus() {
         Config config = Config.getInstance();
 
@@ -191,6 +217,45 @@ public class SystemStatusReport {
 
         return sb.toString();
     }
+
+    public static String getRestApiSummary() {
+        Config config = Config.getInstance();
+        StringBuilder sb = new StringBuilder();
+
+        if (config.getRestApiConfigLoader().isEnableRestApi()) {
+            List<String> restApiLines = config.getRestApiConfigLoader().getTextSummary();
+            if (!restApiLines.isEmpty()) {
+                sb.append("  REST API Summary:").append(System.lineSeparator());
+                for (String line : restApiLines) {
+                    sb.append("    ").append(line).append(System.lineSeparator());
+                }
+            }
+        } else {
+            sb.append("  REST API Summary: N/A").append(System.lineSeparator());
+        }
+
+        return sb.toString();
+    }
+
+    public static String getAlertSummary() {
+        Config config = Config.getInstance();
+        StringBuilder sb = new StringBuilder();
+
+        if (config.getAlertConfigLoader().isEnableAlerting()) {
+            List<String> alertLines = config.getAlertConfigLoader().getTextSummary();
+            if (!alertLines.isEmpty()) {
+                sb.append("  Alert Summary:").append(System.lineSeparator());
+                for (String line : alertLines) {
+                    sb.append("    ").append(line).append(System.lineSeparator());
+                }
+            }
+        } else {
+            sb.append("  Alert Summary: N/A").append(System.lineSeparator());
+        }
+
+        return sb.toString();
+    }
+
 
     public static String getServerMemoryStatus() {
         Runtime runtime = Runtime.getRuntime();

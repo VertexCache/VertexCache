@@ -16,6 +16,8 @@ public class AuthEntry {
         this.token = token;
     }
 
+    public boolean isRestAdmin() { return role == REST_API_ADMIN; }
+
     public boolean hasRestApiReadAccess() {
         return role == REST_API_READ_ONLY || role == REST_API_READ_WRITE;
     }

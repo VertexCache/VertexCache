@@ -2,6 +2,11 @@ package com.vertexcache.core.setting.loader;
 
 import com.vertexcache.core.setting.ConfigKey;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 public class AlertConfigLoader extends LoaderBase {
 
     private boolean enableAlerting;
@@ -17,6 +22,27 @@ public class AlertConfigLoader extends LoaderBase {
         this.alertWebhookSigningUrl = this.getConfigLoader().getProperty(ConfigKey.ALERT_WEBHOOK_SIGNING_SECRET,"");
         this.alertWebhookTimeout = this.getConfigLoader().getIntProperty(ConfigKey.ALERT_WEBHOOK_TIMEOUT,ConfigKey.ALERT_WEBHOOK_TIMEOUT_DEFAULT);
         this.alertWebhookRetryCount = this.getConfigLoader().getIntProperty(ConfigKey.ALERT_WEBHOOK_RETRY_COUNT,ConfigKey.ALERT_WEBHOOK_RETRY_COUNT_DEFAULT);
+    }
+
+    public Map<String, String> getFlatSummary() {
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("alerting_enabled", String.valueOf(enableAlerting));
+        map.put("alert_webhook_url", alertWebhookUrl != null ? alertWebhookUrl : "null");
+        map.put("alert_webhook_signing_secret", alertWebhookSigningUrl != null && !alertWebhookSigningUrl.isBlank() ? "**** (set)" : "(not set)");
+        map.put("alert_webhook_timeout", String.valueOf(alertWebhookTimeout));
+        map.put("alert_webhook_retry_count", String.valueOf(alertWebhookRetryCount));
+        return map;
+    }
+
+    public List<String> getTextSummary() {
+        List<String> lines = new ArrayList<>();
+        lines.add("Alerting Settings:");
+        lines.add("  enabled:            " + enableAlerting);
+        lines.add("  webhook URL:        " + (alertWebhookUrl != null ? alertWebhookUrl : "null"));
+        lines.add("  signing secret:     " + (alertWebhookSigningUrl != null && !alertWebhookSigningUrl.isBlank() ? "**** (set)" : "(not set)"));
+        lines.add("  webhook timeout:    " + alertWebhookTimeout + " ms");
+        lines.add("  webhook retry count:" + alertWebhookRetryCount);
+        return lines;
     }
 
     public boolean isEnableAlerting() {
