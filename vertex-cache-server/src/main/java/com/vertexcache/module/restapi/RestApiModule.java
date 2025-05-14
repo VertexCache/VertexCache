@@ -14,11 +14,6 @@ public class RestApiModule  extends Module {
     protected void onValidate() {
         var config = Config.getInstance().getRestApiConfigLoader();
 
-        if (!config.isEnableRestApi()) {
-            this.setModuleStatus(ModuleStatus.DISABLED, "REST API disabled via config");
-            return;
-        }
-
         try {
             new PortValidator(config.getPort(), "REST API port").validate();
         } catch (VertexCacheValidationException ex) {
