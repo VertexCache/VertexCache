@@ -37,6 +37,14 @@
             <version>2.12.1</version>
         </dependency>
 
+        <!-- Javalin, Embedded Webserver for REST API Module -->
+        <dependency>
+            <groupId>io.javalin</groupId>
+            <artifactId>javalin</artifactId>
+            <version>6.6.0</version>
+        </dependency>
+
+
     </dependencies>
     <build>
         <resources>
