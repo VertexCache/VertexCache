@@ -2,7 +2,7 @@ package com.vertexcache.core.cache.impl;
 
 
 import com.vertexcache.core.cache.CacheBase;
-import com.vertexcache.core.cache.VertexCacheTypeException;
+import com.vertexcache.core.cache.exception.VertexCacheTypeException;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

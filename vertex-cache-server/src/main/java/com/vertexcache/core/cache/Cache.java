@@ -1,5 +1,6 @@
 package com.vertexcache.core.cache;
 
+import com.vertexcache.core.cache.exception.VertexCacheTypeException;
 import com.vertexcache.core.cache.impl.*;
 
 import java.util.Set;

@@ -8,7 +8,9 @@ import com.vertexcache.core.validation.validators.PortValidator;
 import com.vertexcache.core.validation.validators.restapi.RestApiTlsValidator;
 import com.vertexcache.core.validation.validators.restapi.TokenHeaderValidator;
 
-public class RestApiModule  extends Module {
+public class RestApiModule extends Module {
+
+    private RestApiServer server;
 
     @Override
     protected void onValidate() {
@@ -16,34 +18,36 @@ public class RestApiModule  extends Module {
 
         try {
             new PortValidator(config.getPort(), "REST API port").validate();
-        } catch (VertexCacheValidationException ex) {
-            this.setModuleStatus(ModuleStatus.STARTUP_FAILED, ex.getMessage());
-            return;
-        }
-
-        try {
             new TokenHeaderValidator(config.getTokenHeader()).validate();
-        } catch (VertexCacheValidationException ex) {
-            this.setModuleStatus(ModuleStatus.STARTUP_FAILED, ex.getMessage());
-            return;
-        }
-
-        try {
             new RestApiTlsValidator().validate();
         } catch (VertexCacheValidationException ex) {
             this.setModuleStatus(ModuleStatus.STARTUP_FAILED, ex.getMessage());
-            return;
         }
     }
 
-
     @Override
     protected void onStart() {
-        this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
+        var config = Config.getInstance().getRestApiConfigLoader();
+
+        if (!config.isEnableRestApi()) {
+            this.setModuleStatus(ModuleStatus.DISABLED, "REST API is disabled via config");
+            return;
+        }
+
+        try {
+            server = new RestApiServer();
+            server.start(config.getPort());
+            this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL, "REST API started on port " + config.getPort());
+        } catch (Exception ex) {
+            this.setModuleStatus(ModuleStatus.STARTUP_FAILED, "Failed to start REST API: " + ex.getMessage());
+        }
     }
 
     @Override
     protected void onStop() {
+        if (server != null) {
+            server.stop();
+        }
         this.setModuleStatus(ModuleStatus.SHUTDOWN_SUCCESSFUL);
     }
 }

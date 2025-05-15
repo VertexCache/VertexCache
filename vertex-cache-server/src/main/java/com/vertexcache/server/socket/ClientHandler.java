@@ -145,8 +145,12 @@ public class ClientHandler implements Runnable {
                         return "-ERR IDENT Failed: Auth module not available".getBytes(StandardCharsets.UTF_8);
                     }
 
-                    AuthService authService = optAuthService.get();
-                    Optional<AuthEntry> result = authService.authenticate(clientId, token);
+                    AuthEntry authEntry = AuthService.getInstance().authenticate(clientId, token)
+                            .orElse(null);
+
+                    if (authEntry == null) {
+                        return "-ERR IDENT Failed: invalid token or unknown client".getBytes(StandardCharsets.UTF_8);
+                    }
 
                     boolean isClusterNode = Config.getInstance().getClusterConfigLoader().getAllClusterNodes().containsKey(clientId);
 
@@ -156,14 +160,9 @@ public class ClientHandler implements Runnable {
                         session.setRole(Role.NODE);
                     } else {
 
-                        if (result.isEmpty()) {
-                            return "-ERR IDENT Failed: invalid token or unknown client".getBytes(StandardCharsets.UTF_8);
-                        }
-
-                        AuthEntry entry = result.get();
-                        session.setClientId(entry.getClientId());
-                        session.setTenantId(entry.getTenantId());
-                        session.setRole(entry.getRole());
+                        session.setClientId(authEntry.getClientId());
+                        session.setTenantId(authEntry.getTenantId());
+                        session.setRole(authEntry.getRole());
 
                     }
                     this.clientName = clientId;

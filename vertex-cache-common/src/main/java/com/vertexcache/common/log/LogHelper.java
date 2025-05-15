@@ -127,15 +127,15 @@ public class LogHelper {
     public void logWarn(String message) {
         logger.warn(message);
     }
+    public void logWarn(String message, Exception e) {logger.warn(message + ", " + e.getMessage());}
 
     /**
      * Logs a message at the FATAL level.
      *
      * @param message the message to log
      */
-    public void logFatal(String message) {
-        logger.fatal(message);
-    }
+    public void logFatal(String message) { logger.fatal(message);}
+    public void logFatal(String message, Exception e) {logger.fatal(message + ", " + e.getMessage());}
 
 
     /**

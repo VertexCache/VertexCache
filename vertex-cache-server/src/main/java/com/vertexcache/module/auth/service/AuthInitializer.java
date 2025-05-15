@@ -57,6 +57,7 @@ public class AuthInitializer {
             throw new VertexCacheAuthModuleException("No valid auth clients found in .env (auth_client_*)");
         }
 
-        return new AuthService(store);
+        AuthService.initialize(store);
+        return AuthService.getInstance();
     }
 }

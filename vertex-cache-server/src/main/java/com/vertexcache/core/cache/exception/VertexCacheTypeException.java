@@ -1,4 +1,4 @@
-package com.vertexcache.core.cache;
+package com.vertexcache.core.cache.exception;
 
 public class VertexCacheTypeException extends Exception {
     public VertexCacheTypeException() {

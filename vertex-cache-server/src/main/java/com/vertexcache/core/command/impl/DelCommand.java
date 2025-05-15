@@ -1,8 +1,7 @@
 package com.vertexcache.core.command.impl;
 
 import com.vertexcache.common.log.LogHelper;
-import com.vertexcache.core.cache.Cache;
-import com.vertexcache.core.cache.KeyPrefixer;
+import com.vertexcache.core.cache.service.CacheAccessService;
 import com.vertexcache.core.command.BaseCommand;
 import com.vertexcache.core.command.CommandResponse;
 import com.vertexcache.core.command.argument.ArgumentParser;
@@ -17,21 +16,26 @@ public class DelCommand extends BaseCommand<String> {
         return COMMAND_KEY;
     }
 
+    @Override
     public CommandResponse execute(ArgumentParser argumentParser, ClientSessionContext session) {
-        CommandResponse commandResponse = new CommandResponse();
+        CommandResponse response = new CommandResponse();
+
         try {
-            if (argumentParser.getPrimaryArgument().getArgs().size() == 1) {
-                Cache<Object, Object> cache = Cache.getInstance();
-                String key = KeyPrefixer.prefixKey(argumentParser.getPrimaryArgument().getArgs().getFirst(), session);
-                cache.remove(key);
-                commandResponse.setResponseOK();
-            } else {
-                commandResponse.setResponseError("DEL command requires a single argument, which is the key of the value you want to remove.");
+            if (argumentParser.getPrimaryArgument().getArgs().size() != 1) {
+                response.setResponseError("DEL command requires a single argument: the key to remove.");
+                return response;
             }
+
+            String key = argumentParser.getPrimaryArgument().getArgs().getFirst();
+            CacheAccessService service = new CacheAccessService();
+            service.remove(session, key);
+            response.setResponseOK();
+
         } catch (Exception ex) {
-            commandResponse.setResponseError("DEL command failed, fatal error, check logs.");
-            LogHelper.getInstance().logFatal(ex.getMessage());
+            response.setResponseError("DEL command failed. Check logs.");
+            LogHelper.getInstance().logFatal("[DelCommand] error: " + ex.getMessage(), ex);
         }
-        return commandResponse;
+
+        return response;
     }
 }

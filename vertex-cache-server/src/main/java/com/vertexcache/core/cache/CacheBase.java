@@ -1,5 +1,7 @@
 package com.vertexcache.core.cache;
 
+import com.vertexcache.core.cache.exception.VertexCacheTypeException;
+
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
