@@ -162,6 +162,10 @@ auth_client_10=sdk-client-ruby:tenant-b:READ_WRITE:abf024d1-f3fb-4cc8-ae92-549e8
 auth_client_11=sdk-client-rust:tenant-b:READ_WRITE:635006e5-65d4-4cff-a0d4-197ecf2b3be3
 auth_client_12=sdk-client-python:tenant-b:READ_ONLY:21d88d95-7c82-48c6-95a9-830648f3c28c
 
+# REST clients (Tenant C)
+auth_client_13=restapi-client-read:tenant-c:REST_API_READ_ONLY:d25b055e-c41e-4a07-9eba-39dcddd54c64
+auth_client_14=restapi-client-write:tenant-c:REST_API_READ_WRITE:c854eacc-be0f-4383-a733-a2cca6495bce
+auth_client_15=restapi-client-admin:tenant-c:REST_API_ADMIN:29c28aa3-2c72-4755-a620-b6ec065e25a7
 
 #####################################################
 # Rate Limiting Module, when enable_rate_limit=true
@@ -184,7 +188,8 @@ enable_metric=true
 #####################################################
 enable_rest_api=true
 rest_api_port=8080
-rest_api_require_tls=false
+rest_api_require_tls=true
+rest_api_require_auth=true
 rest_api_token_header=Authorization
 rest_api_allow_cors=false
 rest_api_allow_admin=false

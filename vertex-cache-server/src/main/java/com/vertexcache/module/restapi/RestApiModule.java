@@ -7,6 +7,7 @@ import com.vertexcache.core.validation.VertexCacheValidationException;
 import com.vertexcache.core.validation.validators.PortValidator;
 import com.vertexcache.core.validation.validators.restapi.RestApiTlsValidator;
 import com.vertexcache.core.validation.validators.restapi.TokenHeaderValidator;
+import com.vertexcache.module.restapi.server.RestApiServer;
 
 public class RestApiModule extends Module {
 
@@ -17,6 +18,9 @@ public class RestApiModule extends Module {
         var config = Config.getInstance().getRestApiConfigLoader();
 
         try {
+            if(config.isRequireAuth() && !Config.getInstance().getAuthWithTenantConfigLoader().isAuthEnabled()) {
+                throw new VertexCacheValidationException("RestApiAuth 'rest_api_require_auth' set enabled requires 'enable_auth' to be enabled");
+            }
             new PortValidator(config.getPort(), "REST API port").validate();
             new TokenHeaderValidator(config.getTokenHeader()).validate();
             new RestApiTlsValidator().validate();

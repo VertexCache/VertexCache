@@ -49,6 +49,7 @@ public class ConfigKey {
     public static final String ENABLE_REST_API = "enable_rest_api";
     public static final int REST_API_PORT_DEFAULT = 8080;
     public static final String REST_API_PORT = "rest_api_port";
+    public static final String REST_API_REQUIRE_AUTH = "rest_api_require_auth";
     public static final String REST_API_REQUIRE_TLS = "rest_api_require_tls";
     public static final String REST_API_TOKEN_HEADER = "rest_api_token_header";
     public static final String REST_API_ALLOW_CORS = "rest_api_allow_cors";

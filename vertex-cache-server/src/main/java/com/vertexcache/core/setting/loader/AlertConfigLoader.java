@@ -26,11 +26,11 @@ public class AlertConfigLoader extends LoaderBase {
 
     public Map<String, String> getFlatSummary() {
         Map<String, String> map = new LinkedHashMap<>();
-        map.put("alerting_enabled", String.valueOf(enableAlerting));
-        map.put("alert_webhook_url", alertWebhookUrl != null ? alertWebhookUrl : "null");
-        map.put("alert_webhook_signing_secret", alertWebhookSigningUrl != null && !alertWebhookSigningUrl.isBlank() ? "**** (set)" : "(not set)");
-        map.put("alert_webhook_timeout", String.valueOf(alertWebhookTimeout));
-        map.put("alert_webhook_retry_count", String.valueOf(alertWebhookRetryCount));
+        map.put(ConfigKey.ENABLE_ALERTING, String.valueOf(enableAlerting));
+        map.put(ConfigKey.ALERT_WEBHOOK_URL, alertWebhookUrl != null ? alertWebhookUrl : "null");
+        map.put(ConfigKey.ALERT_WEBHOOK_SIGNING_SECRET, alertWebhookSigningUrl != null && !alertWebhookSigningUrl.isBlank() ? "**** (set)" : "(not set)");
+        map.put(ConfigKey.ALERT_WEBHOOK_TIMEOUT, String.valueOf(alertWebhookTimeout));
+        map.put(ConfigKey.ALERT_WEBHOOK_RETRY_COUNT, String.valueOf(alertWebhookRetryCount));
         return map;
     }
 
