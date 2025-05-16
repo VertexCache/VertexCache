@@ -20,12 +20,12 @@ public class SetHandler extends AbstractRestHandler {
         String formatStr = getStringField(this.getBody(), "format");
 
         if (key == null || value == null) {
-            respondError(this.getContext(), 400, "Missing required fields: key and value");
+            respondBadRequest("Missing required fields: key and value");
             return;
         }
 
         if (idx2 != null && idx1 == null) {
-            respondError(this.getContext(), 400, "idx2 requires idx1 to be provided");
+            respondBadRequest("idx2 requires idx1 to be provided");
             return;
         }
 
@@ -35,7 +35,7 @@ public class SetHandler extends AbstractRestHandler {
             if (idx1 != null) new KeyValidator("idx1", idx1).validate();
             if (idx2 != null) new KeyValidator("idx2", idx2).validate();
         } catch (VertexCacheValidationException ex) {
-            respondError(this.getContext(), 400, ex.getMessage());
+            respondBadRequest(ex.getMessage());
             return;
         }
 
@@ -48,8 +48,6 @@ public class SetHandler extends AbstractRestHandler {
         } else {
             cache.put(this.getAuthEntry().getTenantId(), key, value);
         }
-        respondSuccess(this.getContext(), "Key set successfully");
+        respondSuccess("Key set successfully");
     }
-
-
 }

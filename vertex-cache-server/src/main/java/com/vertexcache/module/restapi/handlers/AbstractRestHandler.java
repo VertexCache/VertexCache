@@ -7,11 +7,14 @@ import com.vertexcache.core.cache.model.DataType;
 import com.vertexcache.core.validation.VertexCacheValidationException;
 import com.vertexcache.module.auth.model.AuthEntry;
 import com.vertexcache.module.restapi.model.ApiResponse;
+import com.vertexcache.module.restapi.model.HttpCode;
 import com.vertexcache.module.restapi.util.RestApiContextKeys;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 
 public abstract class AbstractRestHandler implements Handler {
+
+    private static final int MAX_BODY_LOG_OUTPUT = 500;
 
     private Context context;
     private JsonObject body;
@@ -25,7 +28,7 @@ public abstract class AbstractRestHandler implements Handler {
         AuthEntry client = getAuth(ctx);
 
         if (!isWritable(client)) {
-            respondError(ctx, 403, "Access denied: write access required");
+            respondError( HttpCode.FORBIDDEN.value(), "Access denied: write access required");
             return;
         }
 
@@ -33,12 +36,12 @@ public abstract class AbstractRestHandler implements Handler {
         try {
             body = JsonParser.parseString(ctx.body()).getAsJsonObject();
         } catch (Exception e) {
-            respondError(ctx, 400, "Invalid JSON body");
+            respondBadRequest("Invalid JSON body");
             return;
         }
 
         if (body == null) {
-            respondError(ctx, 400, "Empty or malformed JSON");
+            respondBadRequest("Empty or malformed JSON");
             return;
         }
 
@@ -75,8 +78,8 @@ public abstract class AbstractRestHandler implements Handler {
 
         String processedBody = this.body.toString().replace("\"", "\\\"");
 
-        if (processedBody.length() > 500) {
-            processedBody = processedBody.substring(0, 500) + "...";
+        if (processedBody.length() > MAX_BODY_LOG_OUTPUT) {
+            processedBody = processedBody.substring(0, MAX_BODY_LOG_OUTPUT) + "...";
         }
 
         LogHelper.getInstance().logInfo("[rest:" + this.getAuthEntry().getClientId() + "] Request: " + operation + ", Payload: " + processedBody + " " + this.context.path());
@@ -86,19 +89,24 @@ public abstract class AbstractRestHandler implements Handler {
         LogHelper.getInstance().logInfo("[rest:" + this.getAuthEntry().getClientId()+ "] Response: " + result);
     }
 
-    protected <T> void respondSuccess(Context ctx, String message, T data) {
+    protected <T> void respondSuccess(String message, T data) {
         logResponse(message);
-        ctx.json(ApiResponse.success(message, data));
+        this.context.json(ApiResponse.success(message, data));
     }
 
-    protected void respondSuccess(Context ctx, String message) {
+    protected void respondSuccess(String message) {
         logResponse(message);
-        ctx.json(ApiResponse.success(message));
+        this.context.json(ApiResponse.success(message));
     }
 
-    protected void respondError(Context ctx, int statusCode, String message) {
+    protected void respondBadRequest(String message) {
         logResponse(message);
-        ctx.status(statusCode).json(ApiResponse.error(message));
+        this.context.status(HttpCode.BAD_REQUEST.value()).json(ApiResponse.error(message));
+    }
+
+    protected void respondError(int statusCode, String message) {
+        logResponse(message);
+        this.context.status(statusCode).json(ApiResponse.error(message));
     }
 
     protected boolean isReadOnly(AuthEntry auth) {
