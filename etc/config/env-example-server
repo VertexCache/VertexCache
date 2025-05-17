@@ -216,9 +216,3 @@ alert_webhook_retry_count=3
 #####################################################
 enable_smart=true
 
-
-
-#####################################################
-# Exporter Module, when enable_exporter=true
-#####################################################
-enable_exporter=true

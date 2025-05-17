@@ -10,7 +10,6 @@ import com.vertexcache.module.cluster.ClusterModule;
 import com.vertexcache.module.admin.AdminModule;
 import com.vertexcache.module.alert.AlertModule;
 import com.vertexcache.module.smart.SmartModule;
-import com.vertexcache.module.exporter.MetricExporterModule;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -39,7 +38,8 @@ public class ModuleRegistry {
         register(ModuleName.ADMIN, config.getAdminConfigLoader().isAdminCommandsEnabled(), AdminModule::new);
         register(ModuleName.ALERT, config.getAlertConfigLoader().isEnableAlerting(), AlertModule::new);
         register(ModuleName.SMART, config.getSmartConfigLoader().isEnableSmart(), SmartModule::new);
-        register(ModuleName.EXPORTER, config.getExporterConfigLoader().isEnableExporter(), MetricExporterModule::new);
+        // Exporter Disabled for Now
+        //register(ModuleName.EXPORTER, config.getExporterConfigLoader().isEnableExporter(), MetricExporterModule::new);
     }
 
     private void register(ModuleName moduleName, boolean enabled, Supplier<ModuleHandler> factory) {

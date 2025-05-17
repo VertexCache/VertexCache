@@ -25,7 +25,7 @@ public class Config extends ConfigBase {
     private AuthWithTenantConfigLoader authWithTenantConfigLoader;
     private RateLimitingConfigLoader rateLimitingConfigLoader;
     private ClusterConfigLoader clusterConfigLoader;
-    private ExporterConfigLoader exporterConfigLoader;
+    //private ExporterConfigLoader exporterConfigLoader;
     private MetricConfigLoader metricConfigLoader;
     private final RestApiConfigLoader restApiConfigLoader;
     private final SmartConfigLoader smartConfigLoader;
@@ -38,7 +38,7 @@ public class Config extends ConfigBase {
         this.adminConfigLoader = new AdminConfigLoader();
         this.authWithTenantConfigLoader = new AuthWithTenantConfigLoader();
         this.clusterConfigLoader = new ClusterConfigLoader();
-        this.exporterConfigLoader = new ExporterConfigLoader();
+        //this.exporterConfigLoader = new ExporterConfigLoader();
         this.metricConfigLoader = new MetricConfigLoader();
         this.rateLimitingConfigLoader = new RateLimitingConfigLoader();
         this.restApiConfigLoader = new RestApiConfigLoader();
@@ -71,7 +71,7 @@ public class Config extends ConfigBase {
                     this.alertConfigLoader.setConfigLoader(this.configLoader).load();
                     this.authWithTenantConfigLoader.setConfigLoader(this.configLoader).load();
                     this.clusterConfigLoader.setConfigLoader(this.configLoader).load();
-                    this.exporterConfigLoader.setConfigLoader(this.configLoader).load();
+                    //this.exporterConfigLoader.setConfigLoader(this.configLoader).load();
                     this.metricConfigLoader.setConfigLoader(this.configLoader).load();
                     this.rateLimitingConfigLoader.setConfigLoader(this.configLoader).load();
                     this.restApiConfigLoader.setConfigLoader(this.configLoader).load();
@@ -104,7 +104,7 @@ public class Config extends ConfigBase {
                 this.adminConfigLoader.load();
                 this.alertConfigLoader.load();
                 this.authWithTenantConfigLoader.load();
-                this.exporterConfigLoader.load();
+                //this.exporterConfigLoader.load();
                 this.metricConfigLoader.load();
                 this.restApiConfigLoader.load();
                 this.rateLimitingConfigLoader.load();
@@ -129,7 +129,7 @@ public class Config extends ConfigBase {
     public AlertConfigLoader getAlertConfigLoader() {return alertConfigLoader;}
     public AuthWithTenantConfigLoader getAuthWithTenantConfigLoader() {return authWithTenantConfigLoader;}
     public ClusterConfigLoader getClusterConfigLoader() {return clusterConfigLoader;}
-    public ExporterConfigLoader getExporterConfigLoader() {return exporterConfigLoader;}
+    //public ExporterConfigLoader getExporterConfigLoader() {return exporterConfigLoader;}
     public MetricConfigLoader getMetricConfigLoader() {return metricConfigLoader;}
     public RateLimitingConfigLoader getRateLimitingConfigLoader() {return rateLimitingConfigLoader;}
     public RestApiConfigLoader getRestApiConfigLoader() {return restApiConfigLoader;}
