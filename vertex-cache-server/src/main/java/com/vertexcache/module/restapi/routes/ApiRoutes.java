@@ -1,23 +1,19 @@
 package com.vertexcache.module.restapi.routes;
 
-//import com.vertexcache.module.restapi.handlers.GetHandler;
-//import com.vertexcache.module.restapi.handlers.SetHandler;
-//import com.vertexcache.module.restapi.handlers.DeleteHandler;
-import com.vertexcache.module.restapi.handlers.SetHandler;
-import com.vertexcache.module.restapi.handlers.StatusHandler;
+import com.vertexcache.module.restapi.handlers.*;
 import io.javalin.Javalin;
-
-import static io.javalin.apibuilder.ApiBuilder.path;
-import static io.javalin.apibuilder.ApiBuilder.post;
 
 public class ApiRoutes {
 
     public static void register(Javalin app) {
-        app.get("/status", new StatusHandler());
-       // app.get("/get", new GetHandler());
-      //  app.post("/set", new SetHandler());
-      //  app.post("/del", new DeleteHandler());
+        app.get("/ping", new PingHandler());
 
         app.post("/cache", new SetHandler());
+        //app.get("/cache/by-primary/{key}", new GetHandler());
+        //app.get("/cache/by-secondary/:idx1", new GetIdx1Handler());
+        //app.get("/cache/by-tertiary/:idx2", new GetIdx2Handler());
+
+        //app.delete("/cache/:key", new DelHandler());
+
     }
 }

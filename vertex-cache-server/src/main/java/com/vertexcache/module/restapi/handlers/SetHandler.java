@@ -5,19 +5,24 @@ import com.vertexcache.core.command.impl.SetCommand;
 import com.vertexcache.core.validation.VertexCacheValidationException;
 import com.vertexcache.core.validation.validators.KeyValidator;
 import com.vertexcache.core.validation.validators.ValueValidator;
+import com.vertexcache.module.restapi.model.ApiParameter;
 
 public class SetHandler extends AbstractRestHandler {
 
     @Override
     public void _handle() throws Exception {
-
         logRequest(SetCommand.COMMAND_KEY);
 
-        String key = getStringField(this.getBody(), "key");
-        String value = getStringField(this.getBody(), "value");
-        String idx1 = getStringField(this.getBody(), "idx1");
-        String idx2 = getStringField(this.getBody(), "idx2");
-        String formatStr = getStringField(this.getBody(), "format");
+        if (!isWritable()) {
+            respondForbiddenRequest("Access denied: write access required");
+            return;
+        }
+
+        String key = getStringField(this.getBody(), ApiParameter.KEY.value());
+        String value = getStringField(this.getBody(), ApiParameter.VALUE.value());
+        String idx1 = getStringField(this.getBody(), ApiParameter.IDX2.value());
+        String idx2 = getStringField(this.getBody(), ApiParameter.IDX2.value());
+        String formatStr = getStringField(this.getBody(), ApiParameter.FORMAT.value());
 
         if (key == null || value == null) {
             respondBadRequest("Missing required fields: key and value");
@@ -30,10 +35,10 @@ public class SetHandler extends AbstractRestHandler {
         }
 
         try {
-            new KeyValidator("key", key).validate();
-            new ValueValidator("value", value, parseDataType(formatStr)).validate();
-            if (idx1 != null) new KeyValidator("idx1", idx1).validate();
-            if (idx2 != null) new KeyValidator("idx2", idx2).validate();
+            new KeyValidator(ApiParameter.KEY.value(), key).validate();
+            new ValueValidator(ApiParameter.VALUE.value(), value, parseDataType(formatStr)).validate();
+            if (idx1 != null) new KeyValidator(ApiParameter.IDX1.value(), idx1).validate();
+            if (idx2 != null) new KeyValidator(ApiParameter.IDX2.value(), idx2).validate();
         } catch (VertexCacheValidationException ex) {
             respondBadRequest(ex.getMessage());
             return;

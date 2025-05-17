@@ -27,26 +27,31 @@ public abstract class AbstractRestHandler implements Handler {
 
         AuthEntry client = getAuth(ctx);
 
-        if (!isWritable(client)) {
-            respondError( HttpCode.FORBIDDEN.value(), "Access denied: write access required");
-            return;
+        JsonObject body = null;
+        if (!ctx.method() .name().equalsIgnoreCase("GET")) {
+
+            try {
+                body = JsonParser.parseString(ctx.body()).getAsJsonObject();
+
+                if (!body.isEmpty()) {
+                    body = normalizeKeys(body);
+                }
+
+            } catch (Exception e) {
+                respondBadRequest("Invalid JSON body");
+                return;
+            }
+
+            if (body == null) {
+                respondBadRequest("Empty or malformed JSON");
+                return;
+            }
+            this.body = body;
         }
 
-        JsonObject body;
-        try {
-            body = JsonParser.parseString(ctx.body()).getAsJsonObject();
-        } catch (Exception e) {
-            respondBadRequest("Invalid JSON body");
-            return;
-        }
 
-        if (body == null) {
-            respondBadRequest("Empty or malformed JSON");
-            return;
-        }
 
         this.authEntry = client;
-        this.body = body;
         this.context = ctx;
 
         this._handle();
@@ -59,6 +64,16 @@ public abstract class AbstractRestHandler implements Handler {
             throw new IllegalStateException("No auth client found in context.");
         }
         return client;
+    }
+
+    protected String getPathParam(String... possibleNames) {
+        for (String name : possibleNames) {
+            try {
+                String value = this.context.pathParam(name);
+                if (value != null) return value;
+            } catch (Exception ignored) {}
+        }
+        throw new IllegalArgumentException("Missing expected path parameter: " + String.join(" or ", possibleNames));
     }
 
     protected String getStringField(JsonObject obj, String field) {
@@ -74,6 +89,14 @@ public abstract class AbstractRestHandler implements Handler {
         }
     }
 
+    protected JsonObject normalizeKeys(JsonObject obj) {
+        JsonObject normalized = new JsonObject();
+        for (String key : obj.keySet()) {
+            normalized.add(key.toLowerCase(), obj.get(key));
+        }
+        return normalized;
+    }
+
     protected void logRequest(String operation) {
 
         String processedBody = this.body.toString().replace("\"", "\\\"");
@@ -82,11 +105,11 @@ public abstract class AbstractRestHandler implements Handler {
             processedBody = processedBody.substring(0, MAX_BODY_LOG_OUTPUT) + "...";
         }
 
-        LogHelper.getInstance().logInfo("[rest:" + this.getAuthEntry().getClientId() + "] Request: " + operation + ", Payload: " + processedBody + " " + this.context.path());
+      //  LogHelper.getInstance().logInfo("[rest:" + this.getAuthEntry().getClientId() + "] Request: " + operation + ", Payload: " + processedBody + " " + this.context.path());
     }
 
     protected void logResponse(String result) {
-        LogHelper.getInstance().logInfo("[rest:" + this.getAuthEntry().getClientId()+ "] Response: " + result);
+      //  LogHelper.getInstance().logInfo("[rest:" + this.getAuthEntry().getClientId()+ "] Response: " + result);
     }
 
     protected <T> void respondSuccess(String message, T data) {
@@ -99,9 +122,19 @@ public abstract class AbstractRestHandler implements Handler {
         this.context.json(ApiResponse.success(message));
     }
 
+    protected void respondForbiddenRequest(String message) {
+        logResponse(message);
+        this.context.status(HttpCode.FORBIDDEN.value()).json(ApiResponse.error(message));
+    }
+
     protected void respondBadRequest(String message) {
         logResponse(message);
         this.context.status(HttpCode.BAD_REQUEST.value()).json(ApiResponse.error(message));
+    }
+
+    protected void respondNotFound(String message) {
+        logResponse(message);
+        this.context.status(HttpCode.NOT_FOUND.value()).json(ApiResponse.error(message));
     }
 
     protected void respondError(int statusCode, String message) {
@@ -109,12 +142,12 @@ public abstract class AbstractRestHandler implements Handler {
         this.context.status(statusCode).json(ApiResponse.error(message));
     }
 
-    protected boolean isReadOnly(AuthEntry auth) {
-        return auth.hasRestReadAccess();
+    protected boolean isReadOnly() {
+        return authEntry.hasRestReadAccess();
     }
 
-    protected boolean isWritable(AuthEntry auth) {
-        return auth.hasRestWriteAccess() || auth.isRestAdmin();
+    protected boolean isWritable() {
+        return authEntry.hasRestWriteAccess() || authEntry.isRestAdmin();
     }
 
     protected AuthEntry getAuthEntry() {

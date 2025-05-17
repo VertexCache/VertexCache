@@ -52,6 +52,7 @@ public enum Role {
                             RoleChangeCommand.COMMAND_KEY
                     ).contains(command.toUpperCase());
 
+            // Note the Rest Handlers map to the same Command Keys from the respective Commands
             case REST_API_ADMIN -> Set.of(
                     PingCommand.COMMAND_KEY,
                     GetCommand.COMMAND_KEY,
@@ -71,57 +72,7 @@ public enum Role {
                     GetCommand.COMMAND_KEY
             ).contains(command.toUpperCase());
 
-            case ALERT_BOT_READ_ONLY -> Set.of(
-                    PingCommand.COMMAND_KEY
-            ).contains(command.toUpperCase());
-        };
-    }
-
-    public static Set<String> allowedCommands(Role role) {
-        return switch (role) {
-            case ADMIN -> Set.of("*");
-
-            case READ_WRITE -> Set.of(
-                        PingCommand.COMMAND_KEY,
-                        GetCommand.COMMAND_KEY,
-                        GetSecondaryIdxOneCommand.COMMAND_KEY,
-                        GetSecondaryIdxTwoCommand.COMMAND_KEY,
-                        SetCommand.COMMAND_KEY,
-                        DelCommand.COMMAND_KEY
-                    );
-            case READ_ONLY -> Set.of(
-                        PingCommand.COMMAND_KEY,
-                        GetCommand.COMMAND_KEY,
-                        GetSecondaryIdxOneCommand.COMMAND_KEY,
-                        GetSecondaryIdxTwoCommand.COMMAND_KEY
-                    );
-
-            case NODE -> Set.of(
-                        RoleChangeCommand.COMMAND_KEY
-                    );
-
-            case REST_API_ADMIN -> Set.of(
-                    PingCommand.COMMAND_KEY,
-                    GetCommand.COMMAND_KEY,
-                    GetSecondaryIdxOneCommand.COMMAND_KEY,
-                    GetSecondaryIdxTwoCommand.COMMAND_KEY,
-                    SetCommand.COMMAND_KEY,
-                    DelCommand.COMMAND_KEY,
-                    PurgeCommand.COMMAND_KEY,
-                    ResetCommand.COMMAND_KEY
-            );
-            case REST_API_READ_WRITE -> Set.of(
-                    GetCommand.COMMAND_KEY,
-                    SetCommand.COMMAND_KEY,
-                    DelCommand.COMMAND_KEY
-            );
-            case REST_API_READ_ONLY -> Set.of(
-                    GetCommand.COMMAND_KEY
-            );
-
-            case ALERT_BOT_READ_ONLY -> Set.of(
-                    PingCommand.COMMAND_KEY
-            );
+            case ALERT_BOT_READ_ONLY -> false;
         };
     }
 
