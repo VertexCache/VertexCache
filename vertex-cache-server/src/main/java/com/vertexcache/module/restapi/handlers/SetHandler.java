@@ -20,7 +20,7 @@ public class SetHandler extends AbstractRestHandler {
 
         String key = getStringField(this.getBody(), ApiParameter.KEY.value());
         String value = getStringField(this.getBody(), ApiParameter.VALUE.value());
-        String idx1 = getStringField(this.getBody(), ApiParameter.IDX2.value());
+        String idx1 = getStringField(this.getBody(), ApiParameter.IDX1.value());
         String idx2 = getStringField(this.getBody(), ApiParameter.IDX2.value());
         String formatStr = getStringField(this.getBody(), ApiParameter.FORMAT.value());
 

@@ -1,36 +1,37 @@
 package com.vertexcache.module.restapi.handlers;
 
 import com.vertexcache.core.cache.service.CacheAccessService;
-import com.vertexcache.core.command.impl.GetCommand;
+import com.vertexcache.core.command.impl.GetSecondaryIdxOneCommand;
 import com.vertexcache.core.validation.validators.KeyValidator;
+import com.vertexcache.module.restapi.model.ApiParameter;
 
-public class GetHandler extends AbstractRestHandler {
+public class GetIdx1Handler extends AbstractRestHandler {
 
     @Override
     public void _handle() throws Exception {
-        logRequest(GetCommand.COMMAND_KEY);
+        logRequest(GetSecondaryIdxOneCommand.COMMAND_KEY);
 
         if (!isReadOnly()) {
             respondForbiddenRequest("Access denied: read access required");
             return;
         }
 
-        String key = this.getContext().pathParam("key");
+        String idx1 = this.getPathParam(ApiParameter.IDX1.value());
 
         try {
-            new KeyValidator("key", key).validate();
+            new KeyValidator(ApiParameter.IDX1.value(), idx1).validate();
         } catch (Exception ex) {
             respondBadRequest(ex.getMessage());
             return;
         }
 
         CacheAccessService cache = new CacheAccessService();
-        String value = cache.get(this.getAuthEntry().getTenantId(), key);
+        String value = cache.getBySecondaryIdx1(this.getAuthEntry().getTenantId(), idx1);
 
         if (value == null) {
-            respondSuccess("Key not found");
+            respondSuccess("Secondary Key (idx1) not found");
         } else {
-            respondSuccess("Value retrieved successfully by primary key",value);
+            respondSuccess("Value retrieved successfully by secondary key (idx1)",value);
         }
     }
 }

@@ -9,9 +9,9 @@ public class ApiRoutes {
         app.get("/ping", new PingHandler());
 
         app.post("/cache", new SetHandler());
-        app.get("/cache/by-primary/{key}", new GetHandler());
-        //app.get("/cache/by-secondary/:idx1", new GetIdx1Handler());
-        //app.get("/cache/by-tertiary/:idx2", new GetIdx2Handler());
+        app.get("/cache/primary/{key}", new GetHandler());
+        app.get("/cache/idx1/{idx1}", new GetIdx1Handler());
+        app.get("/cache/idx2/{idx2}", new GetIdx2Handler());
 
         //app.delete("/cache/:key", new DelHandler());
 

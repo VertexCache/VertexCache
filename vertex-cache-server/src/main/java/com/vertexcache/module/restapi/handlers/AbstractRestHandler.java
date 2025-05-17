@@ -116,14 +116,23 @@ public abstract class AbstractRestHandler implements Handler {
         LogHelper.getInstance().logInfo("[rest:" + this.getAuthEntry().getClientId()+ "] Response: " + result);
     }
 
+    protected void logResponse(String result, String responsePayLoad) {
+        LogHelper.getInstance().logInfo("[rest:" + this.getAuthEntry().getClientId()+ "] Response: " + result + ", Response Payload: " + responsePayLoad);
+    }
+
     protected <T> void respondSuccess(String message, T data) {
-        logResponse(message);
+        logResponse(message, (String) data);
         this.context.json(ApiResponse.success(message, data));
     }
 
     protected void respondSuccess(String message) {
         logResponse(message);
         this.context.json(ApiResponse.success(message));
+    }
+
+    protected void respondSuccess(String message, String data) {
+        logResponse(message);
+        this.context.json(ApiResponse.success(message,data));
     }
 
     protected void respondForbiddenRequest(String message) {

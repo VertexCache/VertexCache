@@ -42,10 +42,12 @@ public class Cache<K, V> {
     }
 
     public static <K, V> Cache<K, V> getInstance() throws Exception {
-        if (instance == null) {
-            throw new Exception("Cache not yet initialized with eviction policy");
+        synchronized (Cache.class) {
+            if (instance == null) {
+                throw new Exception("Cache not yet initialized with eviction policy");
+            }
+            return (Cache<K, V>) instance;
         }
-        return (Cache<K, V>) instance;
     }
 
     public void put(K primaryKey, V value, String... secondaryKeys) throws VertexCacheTypeException {
