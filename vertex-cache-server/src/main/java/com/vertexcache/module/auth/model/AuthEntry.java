@@ -16,14 +16,12 @@ public class AuthEntry {
         this.token = token;
     }
 
-    public boolean isRestAdmin() { return role == REST_API_ADMIN; }
-
     public boolean hasRestReadAccess() {
-        return role == Role.REST_API_READ_ONLY || role == Role.REST_API_READ_WRITE || role == Role.REST_API_ADMIN;
+        return role == Role.REST_API_READ_ONLY || role == Role.REST_API_READ_WRITE;
     }
 
     public boolean hasRestWriteAccess() {
-        return role == Role.REST_API_READ_WRITE || role == Role.REST_API_ADMIN;
+        return role == Role.REST_API_READ_WRITE;
     }
 
     public boolean isAlertBot() {

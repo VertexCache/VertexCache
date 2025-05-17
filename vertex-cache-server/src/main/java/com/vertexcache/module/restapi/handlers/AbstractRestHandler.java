@@ -150,7 +150,7 @@ public abstract class AbstractRestHandler implements Handler {
         return authEntry.hasRestReadAccess();
     }
 
-    protected boolean isWritable() { return authEntry.hasRestWriteAccess() || authEntry.isRestAdmin();}
+    protected boolean isWritable() { return authEntry.hasRestWriteAccess(); }
 
     protected AuthEntry getAuthEntry() {
         return this.authEntry;

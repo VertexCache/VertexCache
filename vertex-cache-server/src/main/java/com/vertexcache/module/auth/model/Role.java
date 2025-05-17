@@ -17,7 +17,6 @@ public enum Role {
     READ_WRITE,
 
     // REST API Roles
-    REST_API_ADMIN,
     REST_API_READ_ONLY,
     REST_API_READ_WRITE,
 
@@ -53,16 +52,6 @@ public enum Role {
                     ).contains(command.toUpperCase());
 
             // Note the Rest Handlers map to the same Command Keys from the respective Commands
-            case REST_API_ADMIN -> Set.of(
-                    PingCommand.COMMAND_KEY,
-                    GetCommand.COMMAND_KEY,
-                    GetSecondaryIdxOneCommand.COMMAND_KEY,
-                    GetSecondaryIdxTwoCommand.COMMAND_KEY,
-                    SetCommand.COMMAND_KEY,
-                    DelCommand.COMMAND_KEY,
-                    PurgeCommand.COMMAND_KEY,
-                    ResetCommand.COMMAND_KEY
-            ).contains(command.toUpperCase());
             case REST_API_READ_WRITE -> Set.of(
                     GetCommand.COMMAND_KEY,
                     SetCommand.COMMAND_KEY,

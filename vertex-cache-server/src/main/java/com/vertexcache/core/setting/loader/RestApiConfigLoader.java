@@ -16,7 +16,6 @@ public class RestApiConfigLoader extends LoaderBase {
     private boolean requireTls;
     private TokenHeader tokenHeader;
     private boolean allowCors;
-    private boolean allowAdmin;
 
     @Override
     public void load() {
@@ -26,7 +25,6 @@ public class RestApiConfigLoader extends LoaderBase {
         this.requireTls = this.getConfigLoader().getBooleanProperty(ConfigKey.REST_API_REQUIRE_TLS,true);
         this.tokenHeader = TokenHeader.from(this.getConfigLoader().getProperty(ConfigKey.REST_API_TOKEN_HEADER,TokenHeader.NONE.toString()));
         this.allowCors = this.getConfigLoader().getBooleanProperty(ConfigKey.REST_API_ALLOW_CORS,false);
-        this.allowAdmin = this.getConfigLoader().getBooleanProperty(ConfigKey.REST_API_ALLOW_ADMIN, false);
     }
 
     public Map<String, String> getFlatSummary() {
@@ -37,7 +35,6 @@ public class RestApiConfigLoader extends LoaderBase {
         map.put(ConfigKey.REST_API_REQUIRE_TLS, String.valueOf(requireTls));
         map.put(ConfigKey.REST_API_TOKEN_HEADER, tokenHeader != null ? tokenHeader.toString() : "null");
         map.put(ConfigKey.REST_API_ALLOW_CORS, String.valueOf(allowCors));
-        map.put(ConfigKey.REST_API_ALLOW_ADMIN, String.valueOf(allowAdmin));
         return map;
     }
 
@@ -49,7 +46,6 @@ public class RestApiConfigLoader extends LoaderBase {
         lines.add("  require TLS:   " + requireTls);
         lines.add("  token header:  " + (tokenHeader != null ? tokenHeader : "null"));
         lines.add("  allow CORS:    " + allowCors);
-        //lines.add("  allow ADMIN:   " + allowAdmin);
         return lines;
     }
 
@@ -65,6 +61,4 @@ public class RestApiConfigLoader extends LoaderBase {
     public void setTokenHeader(TokenHeader tokenHeader) {this.tokenHeader = tokenHeader;}
     public boolean isAllowCors() {return allowCors;}
     public void setAllowCors(boolean allowCors) {this.allowCors = allowCors;}
-    public boolean isAllowAdmin() {return allowAdmin;}
-    public void setAllowAdmin(boolean allowAdmin) {this.allowAdmin = allowAdmin;}
 }
