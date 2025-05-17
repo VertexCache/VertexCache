@@ -8,6 +8,7 @@ import com.vertexcache.core.validation.VertexCacheValidationException;
 import com.vertexcache.module.auth.model.AuthEntry;
 import com.vertexcache.module.restapi.model.ApiResponse;
 import com.vertexcache.module.restapi.model.HttpCode;
+import com.vertexcache.module.restapi.model.HttpMethod;
 import com.vertexcache.module.restapi.util.RestApiContextKeys;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
@@ -28,7 +29,8 @@ public abstract class AbstractRestHandler implements Handler {
         AuthEntry client = getAuth(ctx);
 
         JsonObject body = null;
-        if (!ctx.method() .name().equalsIgnoreCase("GET")) {
+        if (!ctx.method() .name().equalsIgnoreCase(HttpMethod.GET.name())) {
+
 
             try {
                 body = JsonParser.parseString(ctx.body()).getAsJsonObject();
@@ -98,18 +100,20 @@ public abstract class AbstractRestHandler implements Handler {
     }
 
     protected void logRequest(String operation) {
+        if( this.body == null || this.body.isEmpty()) {
+            LogHelper.getInstance().logInfo("[rest:" + this.getAuthEntry().getClientId() + "] Request: " + operation + ", Path: " + this.context.path());
+        } else {
+            String processedBody = this.body.toString().replace("\"", "\\\"");
 
-        String processedBody = this.body.toString().replace("\"", "\\\"");
-
-        if (processedBody.length() > MAX_BODY_LOG_OUTPUT) {
-            processedBody = processedBody.substring(0, MAX_BODY_LOG_OUTPUT) + "...";
+            if (processedBody.length() > MAX_BODY_LOG_OUTPUT) {
+                processedBody = processedBody.substring(0, MAX_BODY_LOG_OUTPUT) + "...";
+            }
+            LogHelper.getInstance().logInfo("[rest:" + this.getAuthEntry().getClientId() + "] Request: " + operation + ", Path: " + this.context.path() +", Payload: " + processedBody);
         }
-
-      //  LogHelper.getInstance().logInfo("[rest:" + this.getAuthEntry().getClientId() + "] Request: " + operation + ", Payload: " + processedBody + " " + this.context.path());
     }
 
     protected void logResponse(String result) {
-      //  LogHelper.getInstance().logInfo("[rest:" + this.getAuthEntry().getClientId()+ "] Response: " + result);
+        LogHelper.getInstance().logInfo("[rest:" + this.getAuthEntry().getClientId()+ "] Response: " + result);
     }
 
     protected <T> void respondSuccess(String message, T data) {
