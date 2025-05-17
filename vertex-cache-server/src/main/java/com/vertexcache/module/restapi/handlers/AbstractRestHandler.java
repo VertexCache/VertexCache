@@ -27,40 +27,28 @@ public abstract class AbstractRestHandler implements Handler {
 
     @Override
     public void handle(Context ctx) throws Exception {
-
         AuthEntry client = getAuth(ctx);
-
         JsonObject body = null;
-        if (!ctx.method() .name().equalsIgnoreCase(HttpMethod.GET.name())) {
-
-
+        if (!ctx.method().name().equalsIgnoreCase(HttpMethod.GET.name()) && !ctx.method().name().equalsIgnoreCase(HttpMethod.DELETE.name())) {
             try {
                 body = JsonParser.parseString(ctx.body()).getAsJsonObject();
-
                 if (!body.isEmpty()) {
                     body = normalizeKeys(body);
                 }
-
             } catch (Exception e) {
                 respondBadRequest("Invalid JSON body");
                 return;
             }
-
             if (body == null) {
                 respondBadRequest("Empty or malformed JSON");
                 return;
             }
             this.body = body;
         }
-
-
-
         this.authEntry = client;
         this.context = ctx;
-
         this._handle();
     }
-
 
     protected AuthEntry getAuth(Context ctx) {
         AuthEntry client = ctx.attribute(RestApiContextKeys.AUTH_ENTRY);
@@ -122,21 +110,6 @@ public abstract class AbstractRestHandler implements Handler {
         LogHelper.getInstance().logInfo("[rest:" + this.getAuthEntry().getClientId()+ "] Response: " + result + ", Response Payload: " + responsePayLoad);
     }
 
-    protected void respondSuccess(String message) {
-        logResponse(message);
-        this.context.json(ApiResponse.success(message));
-    }
-
-    protected void respondSuccess(String message, String data) {
-        logResponse(message);
-        this.context.json(ApiResponse.success(message,data));
-    }
-
-    protected void respondForbiddenRequest(String message) {
-        logResponse(message);
-        this.context.status(HttpCode.FORBIDDEN.value()).json(ApiResponse.error(message));
-    }
-
     protected void respondBadRequest(String message) {
         ApiResponse<Object> response = ApiResponse.error(message).withStatus(HttpCode.BAD_REQUEST.value());
         logResponse(response.getMessage());
@@ -146,6 +119,12 @@ public abstract class AbstractRestHandler implements Handler {
     protected <T> void respondOk(ResultCode code, T data) {
         ApiResponse<T> response = ApiResponse.success(code, data);
         logResponse(response.getMessage(), (String) data);
+        context.status(HttpCode.OK.value()).json(response);
+    }
+
+    protected <T> void respondOk(ResultCode code) {
+        ApiResponse<T> response = (ApiResponse<T>) ApiResponse.success(code,null);
+        logResponse(response.getMessage());
         context.status(HttpCode.OK.value()).json(response);
     }
 
@@ -171,9 +150,7 @@ public abstract class AbstractRestHandler implements Handler {
         return authEntry.hasRestReadAccess();
     }
 
-    protected boolean isWritable() {
-        return authEntry.hasRestWriteAccess() || authEntry.isRestAdmin();
-    }
+    protected boolean isWritable() { return authEntry.hasRestWriteAccess() || authEntry.isRestAdmin();}
 
     protected AuthEntry getAuthEntry() {
         return this.authEntry;

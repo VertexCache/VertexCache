@@ -12,8 +12,7 @@ public class ApiRoutes {
         app.get("/cache/primary/{key}", new GetHandler());
         app.get("/cache/idx1/{idx1}", new GetIdx1Handler());
         app.get("/cache/idx2/{idx2}", new GetIdx2Handler());
-
-        //app.delete("/cache/:key", new DelHandler());
+        app.delete("/cache/primary/{key}", new DelHandler());
 
     }
 }
