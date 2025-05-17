@@ -2,6 +2,7 @@ package com.vertexcache.module.restapi.handlers;
 
 import com.vertexcache.core.cache.service.CacheAccessService;
 import com.vertexcache.core.command.impl.SetCommand;
+import com.vertexcache.core.util.message.ResultCode;
 import com.vertexcache.core.validation.VertexCacheValidationException;
 import com.vertexcache.core.validation.validators.KeyValidator;
 import com.vertexcache.core.validation.validators.ValueValidator;
@@ -14,7 +15,7 @@ public class SetHandler extends AbstractRestHandler {
         logRequest(SetCommand.COMMAND_KEY);
 
         if (!isWritable()) {
-            respondForbiddenRequest("Access denied: write access required");
+            respondForbiddenAccess(ResultCode.UNAUTHORIZED);
             return;
         }
 
@@ -24,13 +25,18 @@ public class SetHandler extends AbstractRestHandler {
         String idx2 = getStringField(this.getBody(), ApiParameter.IDX2.value());
         String formatStr = getStringField(this.getBody(), ApiParameter.FORMAT.value());
 
-        if (key == null || value == null) {
-            respondBadRequest("Missing required fields: key and value");
+        if (key == null) {
+            respondBadRequest(ResultCode.KEY_REQUIRED);
+            return;
+        }
+
+        if(value == null) {
+            respondBadRequest(ResultCode.VALUE_REQUIRED);
             return;
         }
 
         if (idx2 != null && idx1 == null) {
-            respondBadRequest("idx2 requires idx1 to be provided");
+            respondBadRequest(ResultCode.IDX2_REQUIRES_IDX1);
             return;
         }
 
@@ -53,6 +59,6 @@ public class SetHandler extends AbstractRestHandler {
         } else {
             cache.put(this.getAuthEntry().getTenantId(), key, value);
         }
-        respondSuccess("Key set successfully");
+        respondOk(ResultCode.VALUE_SET, value);
     }
 }

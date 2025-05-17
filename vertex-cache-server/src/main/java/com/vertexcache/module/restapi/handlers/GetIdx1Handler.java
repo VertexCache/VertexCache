@@ -2,6 +2,7 @@ package com.vertexcache.module.restapi.handlers;
 
 import com.vertexcache.core.cache.service.CacheAccessService;
 import com.vertexcache.core.command.impl.GetSecondaryIdxOneCommand;
+import com.vertexcache.core.util.message.ResultCode;
 import com.vertexcache.core.validation.validators.KeyValidator;
 import com.vertexcache.module.restapi.model.ApiParameter;
 
@@ -12,7 +13,7 @@ public class GetIdx1Handler extends AbstractRestHandler {
         logRequest(GetSecondaryIdxOneCommand.COMMAND_KEY);
 
         if (!isReadOnly()) {
-            respondForbiddenRequest("Access denied: read access required");
+            respondForbiddenAccess(ResultCode.UNAUTHORIZED);
             return;
         }
 
@@ -29,9 +30,9 @@ public class GetIdx1Handler extends AbstractRestHandler {
         String value = cache.getBySecondaryIdx1(this.getAuthEntry().getTenantId(), idx1);
 
         if (value == null) {
-            respondSuccess("Secondary Key (idx1) not found");
+            respondNotFound(ResultCode.KEY_NOT_FOUND);
         } else {
-            respondSuccess("Value retrieved successfully by secondary key (idx1)",value);
+            respondOk(ResultCode.CACHE_HIT, value);
         }
     }
 }

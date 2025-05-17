@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.core.cache.model.DataType;
+import com.vertexcache.core.util.message.ResultCode;
 import com.vertexcache.core.validation.VertexCacheValidationException;
 import com.vertexcache.module.auth.model.AuthEntry;
 import com.vertexcache.module.restapi.model.ApiResponse;
@@ -12,6 +13,7 @@ import com.vertexcache.module.restapi.model.HttpMethod;
 import com.vertexcache.module.restapi.util.RestApiContextKeys;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
+import io.javalin.http.HttpStatus;
 
 public abstract class AbstractRestHandler implements Handler {
 
@@ -120,11 +122,6 @@ public abstract class AbstractRestHandler implements Handler {
         LogHelper.getInstance().logInfo("[rest:" + this.getAuthEntry().getClientId()+ "] Response: " + result + ", Response Payload: " + responsePayLoad);
     }
 
-    protected <T> void respondSuccess(String message, T data) {
-        logResponse(message, (String) data);
-        this.context.json(ApiResponse.success(message, data));
-    }
-
     protected void respondSuccess(String message) {
         logResponse(message);
         this.context.json(ApiResponse.success(message));
@@ -141,18 +138,33 @@ public abstract class AbstractRestHandler implements Handler {
     }
 
     protected void respondBadRequest(String message) {
-        logResponse(message);
-        this.context.status(HttpCode.BAD_REQUEST.value()).json(ApiResponse.error(message));
+        ApiResponse<Object> response = ApiResponse.error(message).withStatus(HttpCode.BAD_REQUEST.value());
+        logResponse(response.getMessage());
+        context.status(HttpCode.BAD_REQUEST.value()).json(response);
     }
 
-    protected void respondNotFound(String message) {
-        logResponse(message);
-        this.context.status(HttpCode.NOT_FOUND.value()).json(ApiResponse.error(message));
+    protected <T> void respondOk(ResultCode code, T data) {
+        ApiResponse<T> response = ApiResponse.success(code, data);
+        logResponse(response.getMessage(), (String) data);
+        context.status(HttpCode.OK.value()).json(response);
     }
 
-    protected void respondError(int statusCode, String message) {
-        logResponse(message);
-        this.context.status(statusCode).json(ApiResponse.error(message));
+    protected void respondBadRequest(ResultCode code) {
+        ApiResponse<Object> response = ApiResponse.error(code).withStatus(HttpCode.BAD_REQUEST.value());
+        logResponse(response.getMessage());
+        context.status(HttpCode.BAD_REQUEST.value()).json(response);
+    }
+
+    protected void respondForbiddenAccess(ResultCode code) {
+        ApiResponse<Object> response = ApiResponse.error(code).withStatus(HttpCode.FORBIDDEN.value());
+        logResponse(response.getMessage());
+        context.status(HttpCode.FORBIDDEN.value()).json(response);
+    }
+
+    protected void respondNotFound(ResultCode code) {
+        ApiResponse<Object> response = ApiResponse.error(code).withStatus(HttpCode.NOT_FOUND.value());
+        logResponse(response.getMessage());
+        context.status(HttpCode.NOT_FOUND.value()).json(response);
     }
 
     protected boolean isReadOnly() {

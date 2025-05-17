@@ -2,7 +2,9 @@ package com.vertexcache.module.restapi.handlers;
 
 import com.vertexcache.core.cache.service.CacheAccessService;
 import com.vertexcache.core.command.impl.GetCommand;
+import com.vertexcache.core.util.message.ResultCode;
 import com.vertexcache.core.validation.validators.KeyValidator;
+import com.vertexcache.module.restapi.model.ApiParameter;
 
 public class GetHandler extends AbstractRestHandler {
 
@@ -11,14 +13,14 @@ public class GetHandler extends AbstractRestHandler {
         logRequest(GetCommand.COMMAND_KEY);
 
         if (!isReadOnly()) {
-            respondForbiddenRequest("Access denied: read access required");
+            respondForbiddenAccess(ResultCode.UNAUTHORIZED);
             return;
         }
 
-        String key = this.getContext().pathParam("key");
+        String key = this.getContext().pathParam(ApiParameter.KEY.value());
 
         try {
-            new KeyValidator("key", key).validate();
+            new KeyValidator(ApiParameter.KEY.value(), key).validate();
         } catch (Exception ex) {
             respondBadRequest(ex.getMessage());
             return;
@@ -28,9 +30,9 @@ public class GetHandler extends AbstractRestHandler {
         String value = cache.get(this.getAuthEntry().getTenantId(), key);
 
         if (value == null) {
-            respondSuccess("Key not found");
+            respondNotFound(ResultCode.KEY_NOT_FOUND);
         } else {
-            respondSuccess("Value retrieved successfully by primary key",value);
+            respondOk(ResultCode.CACHE_HIT, value);
         }
     }
 }
