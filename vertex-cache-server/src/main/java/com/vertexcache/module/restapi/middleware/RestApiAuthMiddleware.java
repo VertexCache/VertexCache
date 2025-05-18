@@ -3,7 +3,7 @@ package com.vertexcache.module.restapi.middleware;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.module.auth.model.AuthEntry;
 import com.vertexcache.module.auth.service.AuthService;
-import com.vertexcache.module.restapi.util.RestApiContextKeys;
+import com.vertexcache.module.restapi.model.RestApiContextKeys;
 import com.vertexcache.common.log.LogHelper;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;

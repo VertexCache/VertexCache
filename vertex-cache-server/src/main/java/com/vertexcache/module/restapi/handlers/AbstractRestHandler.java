@@ -10,10 +10,9 @@ import com.vertexcache.module.auth.model.AuthEntry;
 import com.vertexcache.module.restapi.model.ApiResponse;
 import com.vertexcache.module.restapi.model.HttpCode;
 import com.vertexcache.module.restapi.model.HttpMethod;
-import com.vertexcache.module.restapi.util.RestApiContextKeys;
+import com.vertexcache.module.restapi.model.RestApiContextKeys;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
-import io.javalin.http.HttpStatus;
 
 public abstract class AbstractRestHandler implements Handler {
 
