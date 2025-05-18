@@ -204,7 +204,8 @@ enable_admin_commands=true
 #####################################################
 enable_alerting=true
 alert_webhook_url=https://localhost/alert_callback_change_me
-alert_webhook_signing_secret=supersecret123_change_me
+alert_webhook_signing_enabled=true
+alert_webhook_signing_secret=790270bdcdd682ecef06dbac697cfb34ce74a3fed2d5aa9a0204d4091443a3f4
 alert_webhook_timeout=2000
 alert_webhook_retry_count=3
 

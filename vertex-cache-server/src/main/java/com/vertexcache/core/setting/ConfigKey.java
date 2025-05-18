@@ -70,6 +70,7 @@ public class ConfigKey {
     public static final boolean ENABLE_ALERTING_DEFAULT = false;
     public static final String ENABLE_ALERTING = "enable_alerting";
     public static final String ALERT_WEBHOOK_URL = "alert_webhook_url";
+    public static final String ALERT_WEBHOOK_SIGNING_ENABLED = "alert_webhook_signing_enabled";
     public static final String ALERT_WEBHOOK_SIGNING_SECRET = "alert_webhook_signing_secret";
     public static final int ALERT_WEBHOOK_TIMEOUT_DEFAULT = 2000;
     public static final String ALERT_WEBHOOK_TIMEOUT = "alert_webhook_timeout";

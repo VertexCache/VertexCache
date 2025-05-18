@@ -1,5 +1,6 @@
 package com.vertexcache.module.alert;
 
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.core.module.Module;
 import com.vertexcache.core.module.ModuleStatus;
 import com.vertexcache.core.setting.Config;
@@ -7,8 +8,12 @@ import com.vertexcache.core.validation.VertexCacheValidationException;
 import com.vertexcache.core.validation.validators.RetryCountValidator;
 import com.vertexcache.core.validation.validators.TimeoutMsValidator;
 import com.vertexcache.core.validation.validators.UrlValidator;
+import com.vertexcache.module.alert.listeners.ClusterNodeEventListener;
+import com.vertexcache.module.alert.service.AlertWebhookDispatcher;
 
-public class AlertModule  extends Module {
+public class AlertModule  extends Module implements ClusterNodeEventListener {
+
+    private AlertWebhookDispatcher alertWebhookDispatcher;
 
     @Override
     protected void onValidate() {
@@ -40,6 +45,15 @@ public class AlertModule  extends Module {
 
     @Override
     protected void onStart() {
+
+        this.alertWebhookDispatcher = new AlertWebhookDispatcher(
+                Config.getInstance().getAlertConfigLoader().getAlertWebhookUrl(),
+                Config.getInstance().getAlertConfigLoader().isAlertWebhookSigningEnabled(),
+                Config.getInstance().getAlertConfigLoader().getAlertWebhookSigningSecret(),
+                Config.getInstance().getAlertConfigLoader().getAlertWebhookTimeout(),
+                Config.getInstance().getAlertConfigLoader().getAlertWebhookRetryCount()
+        );
+
         this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
     }
 
@@ -48,4 +62,12 @@ public class AlertModule  extends Module {
         this.setModuleStatus(ModuleStatus.SHUTDOWN_SUCCESSFUL);
     }
 
+    @Override
+    public void onSecondaryNodePromotedToPrimary(String nodeId) {
+        LogHelper.getInstance().logInfo("[AlertModule] Not Implemented Yet - Send off Alert Secondary Node Promoted to Primary");
+
+        // Build AlertEvent
+
+        //this.alertWebhookDispatcher.dispatch(alertEvent);
+    }
 }

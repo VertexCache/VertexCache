@@ -4,8 +4,8 @@ public enum ModuleType {
     AUTH,
     RATELIMIT,
     METRICS,
-    EXPORTER,
+    //EXPORTER,
     ALERT,
-    INTELLIGENCE,
+    SMART,
     ADMIN
 }

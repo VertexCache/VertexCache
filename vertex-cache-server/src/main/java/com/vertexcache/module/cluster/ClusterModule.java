@@ -9,6 +9,9 @@ import com.vertexcache.core.module.ModuleStatus;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.setting.loader.ClusterConfigLoader;
 import com.vertexcache.core.validation.validators.cluster.*;
+import com.vertexcache.module.alert.AlertModule;
+import com.vertexcache.module.alert.AlertModuleNoOp;
+import com.vertexcache.module.alert.listeners.ClusterNodeEventListener;
 import com.vertexcache.module.cluster.exception.VertexCacheClusterModuleException;
 import com.vertexcache.module.cluster.model.ClusterNodeRole;
 import com.vertexcache.module.cluster.service.coordination.FailoverManager;
@@ -26,7 +29,7 @@ public class ClusterModule extends Module {
     private VertexCacheInternalClient vertexCacheInternalClient = null;
     private String localRoleOverride = null;
     private ClusterNode localNode;
-
+    private ClusterNodeEventListener clusterNodeEventListener;
 
     @Override
     protected void onStart() {
@@ -41,7 +44,7 @@ public class ClusterModule extends Module {
                 this.initVertexCacheClient();
 
                 // Start heartbeat manager
-                this.heartbeatManager = new HeartbeatManager(this, getClusterHeartbeatIntervalMs());
+                this.heartbeatManager = new HeartbeatManager(this, this.clusterConfig.getClusterHeartbeatIntervalMs());
                 this.heartbeatManager.start();
 
                 // Start failover manager
@@ -49,6 +52,13 @@ public class ClusterModule extends Module {
             }
 
             if(this.getModuleStatus() == ModuleStatus.NOT_STARTED) {
+
+                if(Config.getInstance().getAlertConfigLoader().isEnableAlerting()) {
+                    this.clusterNodeEventListener = new AlertModule();
+                } else {
+                    this.clusterNodeEventListener = new AlertModuleNoOp();
+                }
+
                 reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Cluster module started successfully");
             } else {
                 this.heartbeatManager.shutdown();
@@ -88,15 +98,9 @@ public class ClusterModule extends Module {
             Map<String, String> settings = clusterConfig.getCoordinationSettings();
             new ClusterCoordinationSettingsValidator(settings).validate();
 
-            //reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Cluster nodes validated successfully.");
-
         } catch (Exception e) {
             reportHealth(ModuleStatus.STARTUP_FAILED, "Cluster validation failed due invalid configuration");
         }
-    }
-
-    public int getClusterHeartbeatIntervalMs() {
-        return Integer.parseInt(clusterConfig.getCoordinationSettings().getOrDefault("cluster_failover_check_interval_ms", "2000"));
     }
 
     private void initVertexCacheClient() {
@@ -174,17 +178,19 @@ public class ClusterModule extends Module {
     public void promoteSelfToPrimary() {
         if (!ClusterNodeRole.SECONDARY.equals(localNode.getRole())) {
             // Shouldn't happen
-            LogHelper.getInstance().logWarn("Local node is not SECONDARY — cannot promote.");
+            LogHelper.getInstance().logWarn("Local node is not " + ClusterNodeRole.SECONDARY.name() + " — cannot promote.");
             return;
         }
 
-        LogHelper.getInstance().logInfo("[ClusterModule] Promoting secondary node '" + localNode.getId() + "' to PRIMARY.");
+        LogHelper.getInstance().logInfo("[ClusterModule] Promoting " + ClusterNodeRole.SECONDARY.name() + " node '" + localNode.getId() + "' to " + ClusterNodeRole.PRIMARY.name() + ".");
         Config.getInstance().getClusterConfigLoader().getSecondaryEnabledClusterNode().setPromotedToPrimary(true);
 
         // Secondary is now Primary, deactivate the heartbeat
         this.heartbeatManager.shutdown();
 
-        reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, Config.getInstance().getClusterConfigLoader().getSecondaryEnabledClusterNode().getId() + " promoted to PRIMARY.");
+        this.clusterNodeEventListener.onSecondaryNodePromotedToPrimary(localNode.getId());
+
+        reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, Config.getInstance().getClusterConfigLoader().getSecondaryEnabledClusterNode().getId() + " promoted to " + ClusterNodeRole.PRIMARY.name() + ".");
     }
 
     public void clusterPing(ClusterNode node) {
@@ -193,7 +199,7 @@ public class ClusterModule extends Module {
            vertexCacheInternalClient.sendClusterPingCommand(localNode.getId(),hash);
         } catch (Exception e) {
             clusterConfig.getPrimaryEnabledClusterNode().getHeartbeat().markDown();
-            LogHelper.getInstance().logError("Failed to send heartbeat to primary node '" + node.getId() + "': " + e.getMessage());
+            LogHelper.getInstance().logError("Failed to send heartbeat to " + ClusterNodeRole.PRIMARY.name() + " node '" + node.getId() + "': " + e.getMessage());
         }
     }
 }

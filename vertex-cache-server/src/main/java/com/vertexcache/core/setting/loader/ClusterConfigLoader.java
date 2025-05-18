@@ -87,6 +87,10 @@ public class ClusterConfigLoader extends LoaderBase {
         return Collections.unmodifiableMap(coordinationSettings);
     }
 
+    public int getClusterHeartbeatIntervalMs() {
+        return Integer.parseInt(getCoordinationSettings().getOrDefault("cluster_failover_check_interval_ms", "2000"));
+    }
+
     public List<String> getAttributeSummary() {
         List<String> lines = new ArrayList<>();
         lines.add("Cluster Node Attributes:");

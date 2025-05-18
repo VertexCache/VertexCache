@@ -47,7 +47,7 @@ public class RestApiConfigLoader extends LoaderBase {
         lines.add("  enabled:       " + enableRestApi);
         lines.add("  port:          " + port);
         lines.add("  require TLS:   " + requireTls);
-        lines.add("  port tls:          " + (requireTls ? portTls : "n/a") );
+        lines.add("  port tls:      " + (requireTls ? portTls : "n/a") );
         lines.add("  token header:  " + (tokenHeader != null ? tokenHeader : "null"));
         lines.add("  allow CORS:    " + allowCors);
         return lines;
