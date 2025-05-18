@@ -50,6 +50,12 @@
             <version>6.6.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.javalin.community.ssl</groupId>
+            <artifactId>ssl-plugin</artifactId>
+            <version>6.6.0</version>
+        </dependency>
+
         <!-- Javalin dependency -->
         <dependency>
             <groupId>org.slf4j</groupId>

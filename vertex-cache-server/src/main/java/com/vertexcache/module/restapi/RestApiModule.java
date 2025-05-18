@@ -38,9 +38,21 @@ public class RestApiModule extends Module {
             return;
         }
 
+        if (config.isRequireTls()) {
+            if (Config.getInstance().getSecurityConfigLoader().getTlsCertificate() == null || Config.getInstance().getSecurityConfigLoader().getTlsCertificate().isBlank()) {
+                this.setModuleStatus(ModuleStatus.STARTUP_FAILED, "TLS is required for REST API, but no certificate is set.");
+                return;
+            }
+
+            if (Config.getInstance().getSecurityConfigLoader().getTlsPrivateKey() == null || Config.getInstance().getSecurityConfigLoader().getTlsPrivateKey().isBlank()) {
+                this.setModuleStatus(ModuleStatus.STARTUP_FAILED, "TLS is required for REST API, but no private key is set.");
+                return;
+            }
+        }
+
         try {
             server = new RestApiServer();
-            server.start(config.getPort());
+            server.start();
             this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL, "REST API started on port " + config.getPort());
         } catch (Exception ex) {
             this.setModuleStatus(ModuleStatus.STARTUP_FAILED, "Failed to start REST API: " + ex.getMessage());

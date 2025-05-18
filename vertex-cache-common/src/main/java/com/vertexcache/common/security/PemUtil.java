@@ -87,13 +87,21 @@ public class PemUtil {
         return factory.generatePrivate(spec);
     }
 
-    private static String loadPemContent(String input) throws IOException {
+    public static String loadPemContent(String input) throws IOException {
         Path path = Paths.get(input);
         if (Files.exists(path)) {
             return Files.readString(path, StandardCharsets.UTF_8).trim();
         } else {
             return input.replace("\\n", "\n").trim();
         }
+    }
+
+    public static boolean isFilePath(String input) {
+        if (input == null || input.trim().isEmpty()) {
+            return false;
+        }
+        Path path = Paths.get(input);
+        return Files.exists(path) && Files.isRegularFile(path);
     }
 
 }

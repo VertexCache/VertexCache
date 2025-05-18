@@ -42,7 +42,7 @@ public class ServerSecurityHelper {
 
         } catch (Exception e) {
             LogHelper.getInstance().logError(e.getMessage());
-            throw new VertexCacheSSLServerSocketException("TLS Initialization failed, due to invalid certs");
+            throw new VertexCacheSSLServerSocketException("TLS Initialization failed, due to invalid certs " + e.getMessage());
         }
     }
 
