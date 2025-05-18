@@ -53,7 +53,7 @@ public class RestApiModule extends Module {
         try {
             server = new RestApiServer();
             server.start();
-            this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL, "REST API started on port " + config.getPort());
+            this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL, "REST API started on port " + (config.isRequireTls() ? config.getPortTls() : config.getPort()));
         } catch (Exception ex) {
             this.setModuleStatus(ModuleStatus.STARTUP_FAILED, "Failed to start REST API: " + ex.getMessage());
         }
