@@ -123,7 +123,7 @@ public class TcpClient implements TcpClientInterface {
             byte[] identResponse = MessageCodec.readFramedMessage(in);
             if (identResponse != null) {
                 String response = new String(identResponse);
-                LogHelper.getInstance().logInfo("[Cluster] Primary Node IDENT response: " + response);
+                //LogHelper.getInstance().logInfo("[Cluster] Primary Node IDENT response: " + response);
             }
 
         } catch (Exception e) {

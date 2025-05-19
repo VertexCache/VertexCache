@@ -51,10 +51,6 @@ public class AlertModule  extends Module implements ClusterNodeEventListener {
 
     @Override
     protected void onStart() {
-
-        System.out.println("webhook url: " + Config.getInstance().getAlertConfigLoader().getAlertWebhookUrl());
-
-
         this.alertWebhookDispatcher = new AlertWebhookDispatcher(
                 Config.getInstance().getAlertConfigLoader().getAlertWebhookUrl(),
                 Config.getInstance().getAlertConfigLoader().isAlertWebhookSigningEnabled(),
@@ -62,9 +58,7 @@ public class AlertModule  extends Module implements ClusterNodeEventListener {
                 Config.getInstance().getAlertConfigLoader().getAlertWebhookTimeout(),
                 Config.getInstance().getAlertConfigLoader().getAlertWebhookRetryCount()
         );
-
         this.executorService = new AlertExecutorService(alertWebhookDispatcher);
-
         this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
     }
 
@@ -77,7 +71,6 @@ public class AlertModule  extends Module implements ClusterNodeEventListener {
     public void onSecondaryNodePromotedToPrimary(String nodeId) {
         LogHelper.getInstance().logInfo("[AlertModule] Send off Alert Secondary Node Promoted to Primary");
         AlertEvent alertEvent = new AlertEvent(AlertEventType.PRIMARY_PROMOTED, nodeId);
-        //this.alertWebhookDispatcher.dispatch(alertEvent);
         executorService.dispatchAsync(alertEvent);
     }
 }

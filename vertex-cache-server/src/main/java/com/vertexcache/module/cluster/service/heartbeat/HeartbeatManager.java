@@ -9,12 +9,16 @@ import java.util.concurrent.*;
 
 public class HeartbeatManager {
 
+    private final static long INITIAL_DELAY = 10_000;
+
     private final ClusterModule clusterModule;
     private final int heartbeatIntervalMs;
     private final FailoverManager failoverManager;
     private final ScheduledExecutorService scheduler;
 
     private ScheduledFuture<?> scheduledTask;
+
+    private boolean isMuted = true;
 
     public HeartbeatManager(ClusterModule clusterModule, int heartbeatIntervalMs) {
         this.clusterModule = clusterModule;
@@ -32,12 +36,10 @@ public class HeartbeatManager {
 
         scheduledTask = scheduler.scheduleAtFixedRate(
                 this::heartbeatLoop,
-                0,
+                INITIAL_DELAY,
                 heartbeatIntervalMs,
                 TimeUnit.MILLISECONDS
         );
-
-        LogHelper.getInstance().logInfo("[HeartbeatManager] Heartbeat loop scheduled at interval " + heartbeatIntervalMs + "ms.");
     }
 
     public void shutdown() {
@@ -49,9 +51,6 @@ public class HeartbeatManager {
     }
 
     private void heartbeatLoop() {
-
-        //LogHelper.getInstance().logInfo("[HeartbeatManager] Running heartbeat loop");
-
         try {
             ClusterNode target = null;
 
