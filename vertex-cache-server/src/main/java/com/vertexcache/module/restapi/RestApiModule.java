@@ -31,6 +31,12 @@ public class RestApiModule extends Module {
 
     @Override
     protected void onStart() {
+        if(Config.getInstance().getClusterConfigLoader().isPrimaryNode()) {
+            this.startRestService();
+        }
+    }
+
+    public void startRestService() {
         var config = Config.getInstance().getRestApiConfigLoader();
 
         if (!config.isEnableRestApi()) {
