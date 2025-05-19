@@ -148,11 +148,11 @@ public class ClientHandler implements Runnable {
                     AuthEntry authEntry = AuthService.getInstance().authenticate(clientId, token)
                             .orElse(null);
 
-                    if (authEntry == null) {
+                    boolean isClusterNode = Config.getInstance().getClusterConfigLoader().getAllClusterNodes().containsKey(clientId);
+
+                    if (authEntry == null && !isClusterNode) {
                         return "-ERR IDENT Failed: invalid token or unknown client".getBytes(StandardCharsets.UTF_8);
                     }
-
-                    boolean isClusterNode = Config.getInstance().getClusterConfigLoader().getAllClusterNodes().containsKey(clientId);
 
                     if (isClusterNode) {
                         session.setClientId(clientId);
