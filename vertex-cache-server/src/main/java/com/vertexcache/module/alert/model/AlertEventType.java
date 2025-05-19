@@ -1,0 +1,13 @@
+package com.vertexcache.module.alert.model;
+
+public enum AlertEventType {
+    PRIMARY_PROMOTED,
+    PRIMARY_DEMOTED,
+    NODE_UNREACHABLE,
+    NODE_RECOVERED,
+    DATA_CORRUPTION_DETECTED,
+    CONFIG_HASH_MISMATCH,
+    AUTH_FAILURE,
+    MEMORY_USAGE_HIGH,
+    DISK_USAGE_HIGH
+}

@@ -9,7 +9,11 @@ import com.vertexcache.core.validation.validators.RetryCountValidator;
 import com.vertexcache.core.validation.validators.TimeoutMsValidator;
 import com.vertexcache.core.validation.validators.UrlValidator;
 import com.vertexcache.module.alert.listeners.ClusterNodeEventListener;
+import com.vertexcache.module.alert.model.AlertEvent;
+import com.vertexcache.module.alert.model.AlertEventType;
 import com.vertexcache.module.alert.service.AlertWebhookDispatcher;
+
+import java.util.Map;
 
 public class AlertModule  extends Module implements ClusterNodeEventListener {
 
@@ -45,7 +49,6 @@ public class AlertModule  extends Module implements ClusterNodeEventListener {
 
     @Override
     protected void onStart() {
-
         this.alertWebhookDispatcher = new AlertWebhookDispatcher(
                 Config.getInstance().getAlertConfigLoader().getAlertWebhookUrl(),
                 Config.getInstance().getAlertConfigLoader().isAlertWebhookSigningEnabled(),
@@ -64,10 +67,8 @@ public class AlertModule  extends Module implements ClusterNodeEventListener {
 
     @Override
     public void onSecondaryNodePromotedToPrimary(String nodeId) {
-        LogHelper.getInstance().logInfo("[AlertModule] Not Implemented Yet - Send off Alert Secondary Node Promoted to Primary");
-
-        // Build AlertEvent
-
+        LogHelper.getInstance().logInfo("[AlertModule] Send off Alert Secondary Node Promoted to Primary");
+        //AlertEvent alertEvent = new AlertEvent(AlertEventType.PRIMARY_PROMOTED, nodeId);
         //this.alertWebhookDispatcher.dispatch(alertEvent);
     }
 }

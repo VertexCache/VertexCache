@@ -5,6 +5,7 @@ import com.vertexcache.client.VertexCacheInternalClientOptions;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.security.EncryptionMode;
 import com.vertexcache.core.module.Module;
+import com.vertexcache.core.module.ModuleRegistry;
 import com.vertexcache.core.module.ModuleStatus;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.setting.loader.ClusterConfigLoader;
@@ -20,6 +21,7 @@ import com.vertexcache.module.cluster.model.ClusterNode;
 import com.vertexcache.module.cluster.util.ClusterHashUtil;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ClusterModule extends Module {
 
@@ -53,11 +55,16 @@ public class ClusterModule extends Module {
 
             if(this.getModuleStatus() == ModuleStatus.NOT_STARTED) {
 
-                if(Config.getInstance().getAlertConfigLoader().isEnableAlerting()) {
-                    this.clusterNodeEventListener = new AlertModule();
+
+                Optional<AlertModule> optionalAlertModule = ModuleRegistry.getInstance().getModule(AlertModule.class);
+
+                if (!Config.getInstance().getAlertConfigLoader().isEnableAlerting()) {
+                    LogHelper.getInstance().logInfo("[Alert] AlertModule not enabled — skipping alert wiring.");
+                    this.clusterNodeEventListener = new AlertModuleNoOp(); // or skip wiring altogether
                 } else {
-                    this.clusterNodeEventListener = new AlertModuleNoOp();
+                    this.clusterNodeEventListener = optionalAlertModule.get();
                 }
+
 
                 reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, "Cluster module started successfully");
             } else {
@@ -188,9 +195,9 @@ public class ClusterModule extends Module {
         // Secondary is now Primary, deactivate the heartbeat
         this.heartbeatManager.shutdown();
 
-        this.clusterNodeEventListener.onSecondaryNodePromotedToPrimary(localNode.getId());
-
         reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, Config.getInstance().getClusterConfigLoader().getSecondaryEnabledClusterNode().getId() + " promoted to " + ClusterNodeRole.PRIMARY.name() + ".");
+
+        this.clusterNodeEventListener.onSecondaryNodePromotedToPrimary(localNode.getId());
     }
 
     public void clusterPing(ClusterNode node) {
