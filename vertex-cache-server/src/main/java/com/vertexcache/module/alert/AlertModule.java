@@ -11,12 +11,14 @@ import com.vertexcache.core.validation.validators.UrlValidator;
 import com.vertexcache.module.alert.listeners.ClusterNodeEventListener;
 import com.vertexcache.module.alert.model.AlertEvent;
 import com.vertexcache.module.alert.model.AlertEventType;
+import com.vertexcache.module.alert.service.AlertExecutorService;
 import com.vertexcache.module.alert.service.AlertWebhookDispatcher;
 
 import java.util.Map;
 
 public class AlertModule  extends Module implements ClusterNodeEventListener {
 
+    private AlertExecutorService executorService;
     private AlertWebhookDispatcher alertWebhookDispatcher;
 
     @Override
@@ -49,6 +51,10 @@ public class AlertModule  extends Module implements ClusterNodeEventListener {
 
     @Override
     protected void onStart() {
+
+        System.out.println("webhook url: " + Config.getInstance().getAlertConfigLoader().getAlertWebhookUrl());
+
+
         this.alertWebhookDispatcher = new AlertWebhookDispatcher(
                 Config.getInstance().getAlertConfigLoader().getAlertWebhookUrl(),
                 Config.getInstance().getAlertConfigLoader().isAlertWebhookSigningEnabled(),
@@ -56,6 +62,8 @@ public class AlertModule  extends Module implements ClusterNodeEventListener {
                 Config.getInstance().getAlertConfigLoader().getAlertWebhookTimeout(),
                 Config.getInstance().getAlertConfigLoader().getAlertWebhookRetryCount()
         );
+
+        this.executorService = new AlertExecutorService(alertWebhookDispatcher);
 
         this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
     }
@@ -68,7 +76,8 @@ public class AlertModule  extends Module implements ClusterNodeEventListener {
     @Override
     public void onSecondaryNodePromotedToPrimary(String nodeId) {
         LogHelper.getInstance().logInfo("[AlertModule] Send off Alert Secondary Node Promoted to Primary");
-        //AlertEvent alertEvent = new AlertEvent(AlertEventType.PRIMARY_PROMOTED, nodeId);
+        AlertEvent alertEvent = new AlertEvent(AlertEventType.PRIMARY_PROMOTED, nodeId);
         //this.alertWebhookDispatcher.dispatch(alertEvent);
+        executorService.dispatchAsync(alertEvent);
     }
 }
