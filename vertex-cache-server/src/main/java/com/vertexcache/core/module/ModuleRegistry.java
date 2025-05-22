@@ -3,6 +3,7 @@ package com.vertexcache.core.module;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.module.auth.AuthModule;
+import com.vertexcache.module.metric.service.MetricAccess;
 import com.vertexcache.module.ratelimiter.RateLimiterModule;
 import com.vertexcache.module.metric.MetricModule;
 import com.vertexcache.module.restapi.RestApiModule;
@@ -125,5 +126,17 @@ public class ModuleRegistry {
 
     public List<String> getAllModuleNames() {
         return new ArrayList<>(allModules.keySet());
+    }
+
+    public static Optional<MetricAccess> getMetricAccessIfEnabled() {
+        boolean enabled = Config.getInstance().getMetricConfigLoader().isEnableMetric();
+
+        if (!enabled) {
+            return Optional.empty();
+        }
+
+        return getInstance()
+                .getModule(MetricModule.class)
+                .map(MetricModule::getMetricAccess);
     }
 }

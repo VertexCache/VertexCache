@@ -12,11 +12,8 @@ public class DefaultMetricCollector implements MetricCollector, StructuredMetric
     }
 
     // --- MetricCollector (MetricName) ---
-
     @Override
-    public void increment(MetricName name) {
-        registry.increment(name);
-    }
+    public void increment(MetricName name) {registry.increment(name);}
 
     @Override
     public void incrementBy(MetricName name, long count) {
@@ -33,12 +30,12 @@ public class DefaultMetricCollector implements MetricCollector, StructuredMetric
         registry.setGauge(name, value);
     }
 
-    // --- StructuredMetricCollector (MetricKey) ---
-
     @Override
-    public void incrementCounter(MetricKey key) {
-        registry.incrementCounter(key);
-    }
+    public long getCounter(MetricName name) {return registry.getCounter(name);}
+
+    // --- StructuredMetricCollector (MetricKey) ---
+    @Override
+    public void incrementCounter(MetricKey key) {registry.incrementCounter(key);}
 
     @Override
     public void incrementCounter(MetricKey key, long amount) {
@@ -59,6 +56,4 @@ public class DefaultMetricCollector implements MetricCollector, StructuredMetric
     public void addTag(MetricKey key, String tag) {
         registry.addTag(key, tag);
     }
-
-
 }

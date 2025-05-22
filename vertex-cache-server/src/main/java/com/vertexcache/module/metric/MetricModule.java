@@ -2,6 +2,7 @@ package com.vertexcache.module.metric;
 
 import com.vertexcache.core.module.Module;
 import com.vertexcache.core.module.ModuleStatus;
+import com.vertexcache.core.util.RuntimeInfo;
 import com.vertexcache.module.metric.service.*;
 
 public class MetricModule extends Module {
@@ -20,11 +21,16 @@ public class MetricModule extends Module {
 
     @Override
     protected void onStart() {
+
+        // Trigger off the start time
+        long uptime = RuntimeInfo.getUptimeMillis();
+
         this.metricRegistry = new MetricRegistry();
         this.hotKeyTracker = new HotKeyTracker();
         this.clientCommandCounters = new ClientCommandCounters();
         this.metricCollector = new DefaultMetricCollector(metricRegistry);
         this.metricAnalysisHelper = new MetricAnalysisHelper(metricRegistry, hotKeyTracker, clientCommandCounters);
+
 
         metricAccess = new MetricAccess();
         metricAccess.setMetricRegistry(this.metricRegistry);

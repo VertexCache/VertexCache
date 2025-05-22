@@ -30,7 +30,8 @@ public class MetricRegistry {
     }
 
     public void incrementBy(MetricName name, long count) {
-        counters.computeIfAbsent(name, n -> new LongAdder()).add(count);
+        LongAdder adder = counters.computeIfAbsent(name, n -> new LongAdder());
+        adder.add(count);
     }
 
     public void recordValue(MetricName name, long value) {

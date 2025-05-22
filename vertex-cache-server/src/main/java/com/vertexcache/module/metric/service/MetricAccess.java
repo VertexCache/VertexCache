@@ -1,12 +1,15 @@
 package com.vertexcache.module.metric.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vertexcache.core.cache.exception.VertexCacheException;
+import com.vertexcache.core.module.ModuleRegistry;
+import com.vertexcache.core.util.RuntimeInfo;
+import com.vertexcache.module.cluster.ClusterModule;
+import com.vertexcache.module.metric.MetricModule;
 import com.vertexcache.module.metric.model.MetricKey;
 import com.vertexcache.module.metric.model.MetricName;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -18,25 +21,6 @@ public class MetricAccess {
     private HotKeyTracker hotKeyTracker;
     private ClientCommandCounters clientCommandCounters;
 
-    public MetricRegistry getMetricRegistry() {return metricRegistry;}
-    public void setMetricRegistry(MetricRegistry metricRegistry) {this.metricRegistry = metricRegistry;}
-    public void setMetricCollector(MetricCollector metricCollector) {this.metricCollector = metricCollector;}
-    public MetricCollector getMetricCollector() {
-        return metricCollector;
-    }
-    public void setMetricAnalysisHelper(MetricAnalysisHelper metricAnalysisHelper) {this.metricAnalysisHelper = metricAnalysisHelper;}
-    public MetricAnalysisHelper getMetricAnalysisHelper() {
-        return metricAnalysisHelper;
-    }
-    public void setHotKeyTracker(HotKeyTracker tracker) {
-        this.hotKeyTracker = tracker;
-    }
-    public HotKeyTracker getHotKeyTracker() {
-        return hotKeyTracker;
-    }
-    public void setClientCommandCounters(ClientCommandCounters clientCommandCounters) {this.clientCommandCounters = clientCommandCounters;}
-    public ClientCommandCounters getClientCommandCounters() {return clientCommandCounters;}
-
     public void clearAll() {
         metricCollector = null;
         metricAnalysisHelper = null;
@@ -46,76 +30,35 @@ public class MetricAccess {
 
     public Map<String, Object> getCommandUsageView() {
         Map<String, Object> view = new HashMap<>();
-        ConcurrentMap<MetricKey, LongAdder> counters = metricRegistry.getKeyCounters();
-
-        long totalGet = 0;
-        long totalSet = 0;
-        long totalDel = 0;
-
-        for (Map.Entry<MetricKey, LongAdder> entry : counters.entrySet()) {
-            String metricName = entry.getKey().value();
-            long count = entry.getValue().sum();
-
-            switch (metricName) {
-                case "commands.get.total" -> totalGet += count;
-                case "commands.set.total" -> totalSet += count;
-                case "commands.del.total" -> totalDel += count;
-            }
-        }
-
-        view.put("commands.get.total", totalGet);
-        view.put("commands.set.total", totalSet);
-        view.put("commands.del.total", totalDel);
+        Optional<MetricModule> optMetricModule = ModuleRegistry.getInstance().getModule(MetricModule.class);
+        MetricModule metricModule = optMetricModule.get();
+        view.put("commands.get.total", metricModule.getMetricAccess().getMetricCollector().getCounter(MetricName.CACHE_GET_TOTAL));
+        view.put("commands.set.total", metricModule.getMetricAccess().getMetricCollector().getCounter(MetricName.CACHE_SET_TOTAL));
+        view.put("commands.del.total", metricModule.getMetricAccess().getMetricCollector().getCounter(MetricName.CACHE_DEL_TOTAL));
         return view;
     }
 
     public Map<String, Object> getCacheEffectivenessView() {
         Map<String, Object> view = new HashMap<>();
-        ConcurrentMap<MetricKey, LongAdder> counters = metricRegistry.getKeyCounters();
-
-        long hitCount = 0;
-        long missCount = 0;
-
-        for (Map.Entry<MetricKey, LongAdder> entry : counters.entrySet()) {
-            String metricName = entry.getKey().value();
-            long count = entry.getValue().sum();
-
-            switch (metricName) {
-                case "cache.hit.count" -> hitCount += count;
-                case "cache.miss.count" -> missCount += count;
-            }
-        }
-
+        Optional<MetricModule> optMetricModule = ModuleRegistry.getInstance().getModule(MetricModule.class);
+        MetricModule metricModule = optMetricModule.get();
+        long hitCount = metricModule.getMetricAccess().getMetricCollector().getCounter(MetricName.CACHE_HIT_COUNT);
+        long missCount = metricModule.getMetricAccess().getMetricCollector().getCounter(MetricName.CACHE_MISS_COUNT);
         long total = hitCount + missCount;
         double hitRatio = (total > 0) ? ((double) hitCount / total) : 0.0;
-
+        String formattedPercent = String.format("%.1f%%", hitRatio * 100); // for 63.6%
         view.put("cache.hit.count", hitCount);
         view.put("cache.miss.count", missCount);
-        view.put("cache.hit.ratio", hitRatio);
-
+        view.put("cache.hit.ratio", formattedPercent);
         return view;
     }
 
     public Map<String, Object> getIndexUsageView() {
         Map<String, Object> view = new HashMap<>();
-        ConcurrentMap<MetricKey, LongAdder> counters = metricRegistry.getKeyCounters();
-
-        long idx1Count = 0;
-        long idx2Count = 0;
-
-        for (Map.Entry<MetricKey, LongAdder> entry : counters.entrySet()) {
-            String metricName = entry.getKey().value();
-            long count = entry.getValue().sum();
-
-            switch (metricName) {
-                case "cache.index.usage.idx1" -> idx1Count += count;
-                case "cache.index.usage.idx2" -> idx2Count += count;
-            }
-        }
-
-        view.put("cache.index.usage.idx1", idx1Count);
-        view.put("cache.index.usage.idx2", idx2Count);
-
+        Optional<MetricModule> optMetricModule = ModuleRegistry.getInstance().getModule(MetricModule.class);
+        MetricModule metricModule = optMetricModule.get();
+        view.put("cache.index.usage.idx1", metricModule.getMetricAccess().getMetricCollector().getCounter(MetricName.CACHE_INDEX_USAGE_IDX1));
+        view.put("cache.index.usage.idx2", metricModule.getMetricAccess().getMetricCollector().getCounter(MetricName.CACHE_INDEX_USAGE_IDX2));
         return view;
     }
 
@@ -216,20 +159,26 @@ public class MetricAccess {
     }
 
     public Map<String, Object> getJvmMemoryView() {
-        Map<String, Object> view = new HashMap<>();
+        Map<String, Object> view = new LinkedHashMap<>();
         Runtime runtime = Runtime.getRuntime();
 
-        long usedMemory = runtime.totalMemory() - runtime.freeMemory();
-        long freeMemory = runtime.freeMemory();
-        long totalMemory = runtime.totalMemory();
         long maxMemory = runtime.maxMemory();
+        long totalMemory = runtime.totalMemory();
+        long freeMemory = runtime.freeMemory();
+        long usedMemory = totalMemory - freeMemory;
 
-        view.put("memory.used.bytes", usedMemory);
-        view.put("memory.free.bytes", freeMemory);
-        view.put("memory.total.allocated.bytes", totalMemory);
-        view.put("memory.max.bytes", maxMemory);
+        view.put("memory.used.mb", bytesToMb(usedMemory));
+        view.put("memory.free.mb", bytesToMb(freeMemory));
+        view.put("memory.max.mb", bytesToMb(maxMemory));
+        view.put("memory.total.allocated.mb", bytesToMb(totalMemory));
+
+        view.put("uptime", formatUptime(System.currentTimeMillis() - RuntimeInfo.getStartupTimeMillis()));
 
         return view;
+    }
+
+    private int bytesToMb(long bytes) {
+        return (int) (bytes / (1024 * 1024));
     }
 
     public Map<String, Object> getFullMetricSnapshot() {
@@ -275,10 +224,16 @@ public class MetricAccess {
         return sb.toString();
     }
 
+    @SuppressWarnings("unchecked")
     private void appendPrettySection(StringBuilder sb, String title, Object section) {
         if (!(section instanceof Map<?, ?> map)) return;
 
         sb.append("=== ").append(title).append(" ===\n");
+        if (map.isEmpty()) {
+            sb.append("(none)\n\n");
+            return;
+        }
+
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             sb.append(capitalize(entry.getKey().toString().replace("_", "")))
                     .append(": ")
@@ -295,38 +250,76 @@ public class MetricAccess {
     public String toSummaryAsFlat() {
         Map<String, Object> snapshot = getFullMetricSnapshot();
         StringBuilder sb = new StringBuilder();
+        List<String> lines = new ArrayList<>();
 
         for (Map.Entry<String, Object> top : snapshot.entrySet()) {
             String groupKey = top.getKey();
             Object value = top.getValue();
 
             if (value instanceof Map<?, ?> nested) {
-                flattenVcmp(groupKey, nested, sb);
+                flattenVcmp(groupKey, nested, lines);
             } else {
-                sb.append("#").append(groupKey).append("=").append(value).append("\n");
+                lines.add("#" + groupKey + "=" + value);
             }
         }
 
+        sb.append("[").append(lines.size()).append("\n");
+        for (String line : lines) {
+            sb.append(line).append("\n");
+        }
+        sb.append("]\n");
         return sb.toString();
     }
 
-    private void flattenVcmp(String parent, Map<?, ?> map, StringBuilder sb) {
+    private void flattenVcmp(String parent, Map<?, ?> map, List<String> lines) {
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             String key = entry.getKey().toString();
             Object value = entry.getValue();
 
             String flatKey = parent + "." + key;
 
-            // Special handling: format memory in megabytes
             if (flatKey.startsWith("jvm_memory.memory.") && flatKey.endsWith(".bytes")) {
                 long bytes = (value instanceof Number) ? ((Number) value).longValue() : 0L;
                 long mb = bytes / (1024 * 1024);
                 String vcmpKey = "#memory_" + key.replace(".bytes", "_mb");
-                sb.append(vcmpKey).append("=").append(mb).append("\n");
+                lines.add(vcmpKey + "=" + mb);
             } else {
-                sb.append("#").append(flatKey).append("=").append(value).append("\n");
+                lines.add("#" + flatKey + "=" + value);
             }
         }
     }
 
+    private String formatUptime(long uptimeMillis) {
+        long seconds = uptimeMillis / 1000;
+        long minutes = seconds / 60;
+        long hours = minutes / 60;
+        long days = hours / 24;
+        long years = days / 365;
+
+        seconds %= 60;
+        minutes %= 60;
+        hours %= 24;
+        days %= 365;
+
+        StringBuilder sb = new StringBuilder();
+        if (years > 0) sb.append(years).append(" year").append(years > 1 ? "s " : " ");
+        if (days > 0) sb.append(days).append(" day").append(days > 1 ? "s " : " ");
+        if (hours > 0) sb.append(hours).append(" hour").append(hours > 1 ? "s " : " ");
+        if (minutes > 0) sb.append(minutes).append(" minute").append(minutes > 1 ? "s " : " ");
+        if (seconds > 0 || sb.length() == 0) sb.append(seconds).append(" second").append(seconds != 1 ? "s" : "");
+
+        return sb.toString().trim();
+    }
+
+    public void setMetricRegistry(MetricRegistry metricRegistry) {this.metricRegistry = metricRegistry;}
+    public void setMetricCollector(MetricCollector metricCollector) {this.metricCollector = metricCollector;}
+    public void setMetricAnalysisHelper(MetricAnalysisHelper metricAnalysisHelper) {this.metricAnalysisHelper = metricAnalysisHelper;}
+    public void setHotKeyTracker(HotKeyTracker tracker) {this.hotKeyTracker = tracker;}
+    public void setClientCommandCounters(ClientCommandCounters clientCommandCounters) {this.clientCommandCounters = clientCommandCounters;}
+
+    public MetricRegistry getMetricRegistry() {return metricRegistry;}
+    public MetricCollector getMetricCollector() {return metricCollector;}
+    public MetricAnalysisHelper getMetricAnalysisHelper() {return metricAnalysisHelper;}
+    public HotKeyTracker getHotKeyTracker() {return hotKeyTracker;}
+    public ClientCommandCounters getClientCommandCounters() {return clientCommandCounters;}
 }

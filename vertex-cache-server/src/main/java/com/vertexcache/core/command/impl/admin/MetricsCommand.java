@@ -2,15 +2,17 @@ package com.vertexcache.core.command.impl.admin;
 
 import com.vertexcache.core.command.CommandResponse;
 import com.vertexcache.core.command.argument.ArgumentParser;
+import com.vertexcache.core.module.ModuleRegistry;
+import com.vertexcache.core.setting.Config;
+import com.vertexcache.module.metric.MetricModule;
+import com.vertexcache.module.metric.service.MetricAccess;
 import com.vertexcache.server.session.ClientSessionContext;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 public class MetricsCommand extends AdminCommand<String> {
 
     public static final String COMMAND_KEY = "METRICS";
-    private static final long START_TIME = System.currentTimeMillis();
 
     @Override
     protected String getCommandKey() {
@@ -19,33 +21,24 @@ public class MetricsCommand extends AdminCommand<String> {
 
     @Override
     public CommandResponse executeAdminCommand(ArgumentParser argumentParser, ClientSessionContext session) {
-        CommandResponse response = new CommandResponse();
+        CommandResponse commandResponse = new CommandResponse();
 
         boolean pretty = argumentParser.getPrimaryArgument().getArgs().size() == 1 &&
                 argumentParser.getPrimaryArgument().getArgs().getFirst().equalsIgnoreCase(COMMAND_PRETTY);
 
-        long uptimeMillis = System.currentTimeMillis() - START_TIME;
-        long uptimeSeconds = uptimeMillis / 1000;
-        long usedMemory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024 * 1024);
-        long maxMemory = Runtime.getRuntime().maxMemory() / (1024 * 1024);
-
-        if (pretty) {
-            String output = String.join(System.lineSeparator(),
-                    "Runtime Stats:",
-                    "--------------",
-                    "Uptime:       " + uptimeSeconds + " seconds",
-                    "Memory Used:  " + usedMemory + " MB",
-                    "Memory Max:   " + maxMemory + " MB"
-            );
-            response.setResponse(output);
-        } else {
-            List<String> stats = new ArrayList<>();
-            stats.add("uptime_seconds=" + uptimeSeconds);
-            stats.add("memory_used_mb=" + usedMemory);
-            stats.add("memory_max_mb=" + maxMemory);
-            response.setResponseFromArray(stats);
+        Optional<MetricModule> optMetricModule = ModuleRegistry.getInstance().getModule(MetricModule.class);
+        if (!Config.getInstance().getMetricConfigLoader().isEnableMetric() || optMetricModule.isEmpty()) {
+            commandResponse.setResponseError("Metric module is not loaded or enabled.");
+            return commandResponse;
         }
 
-        return response;
+        MetricModule metricModule = optMetricModule.get();
+        MetricAccess metricAccess = metricModule.getMetricAccess();
+        if (pretty) {
+            commandResponse.setResponse(metricAccess.toSummaryAsPretty());
+        } else {
+            commandResponse.setResponse(metricAccess.toSummaryAsFlat());
+        }
+        return commandResponse;
     }
 }
