@@ -12,6 +12,7 @@ import com.vertexcache.module.metric.service.MetricAccess;
 import com.vertexcache.server.session.ClientSessionContext;
 import com.vertexcache.common.log.LogHelper;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 public class CacheAccessService {
@@ -30,8 +31,11 @@ public class CacheAccessService {
 
     public void put(ClientSessionContext session, String key, String value) {
         try {
-            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL));
             this.cache.put(KeyPrefixer.prefixKey(key, session), value);
+            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> {
+                metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL);
+                metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,this.cache.size());
+            });
         } catch (VertexCacheTypeException ex) {
             logAndRethrow("put(session, key, value)", session.getClientId(), key, ex);
         }
@@ -39,9 +43,12 @@ public class CacheAccessService {
 
     public void put(ClientSessionContext session, String key, String value, String idx1) {
         try {
-            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL));
-            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX1));
             this.cache.put(KeyPrefixer.prefixKey(key, session), value, KeyPrefixer.prefixKey(idx1, session));
+            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> {
+                metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL);
+                metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX1);
+                metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,this.cache.size());
+            });
         } catch (VertexCacheTypeException ex) {
             logAndRethrow("put(session, key, value, idx1)", session.getClientId(), key, ex);
         }
@@ -49,10 +56,13 @@ public class CacheAccessService {
 
     public void put(ClientSessionContext session, String key, String value, String idx1, String idx2) {
         try {
-            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL));
-            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX1));
-            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX2));
             this.cache.put(KeyPrefixer.prefixKey(key, session), value, KeyPrefixer.prefixKey(idx1, session), KeyPrefixer.prefixKey(idx2, session));
+            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> {
+                metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL);
+                metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX1);
+                metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX2);
+                metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,this.cache.size());
+            });
         } catch (VertexCacheTypeException ex) {
             logAndRethrow("put(session, key, value, idx1, idx2)", session.getClientId(), key, ex);
         }
@@ -60,8 +70,12 @@ public class CacheAccessService {
 
     public void put(TenantId tenant, String key, String value) {
         try {
-            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL));
             this.cache.put(tenant + "::" + key, value);
+            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL));
+            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> {
+                metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL);
+                metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,this.cache.size());
+            });
         } catch (VertexCacheTypeException ex) {
             logAndRethrow("put(tenant, key, value)", tenant, key, ex);
         }
@@ -69,9 +83,12 @@ public class CacheAccessService {
 
     public void put(TenantId tenant, String key, String value, String idx1) {
         try {
-            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL));
-            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX1));
             this.cache.put(tenant + "::" + key, value, tenant + "::" + idx1);
+            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> {
+                metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL);
+                metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX1);
+                metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,this.cache.size());
+            });
         } catch (VertexCacheTypeException ex) {
             logAndRethrow("put(tenant, key, value, idx1)", tenant, key, ex);
         }
@@ -79,10 +96,13 @@ public class CacheAccessService {
 
     public void put(TenantId tenant, String key, String value, String idx1, String idx2) {
         try {
-            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL));
-            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX1));
-            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX2));
             this.cache.put(tenant + "::" + key, value, tenant + "::" + idx1, tenant + "::" + idx2);
+            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> {
+                metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL);
+                metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX1);
+                metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX2);
+                metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,this.cache.size());
+            });
         } catch (VertexCacheTypeException ex) {
             logAndRethrow("put(tenant, key, value, idx1, idx2)", tenant, key, ex);
         }
@@ -92,17 +112,18 @@ public class CacheAccessService {
     // === GET ===
 
     public String get(ClientSessionContext session, String key) {
-        return hitAndMissMetricTracking((String) cache.get(KeyPrefixer.prefixKey(key, session)));
+        return hitAndMissMetricTracking(key, (String) cache.get(KeyPrefixer.prefixKey(key, session)));
     }
 
     public String get(TenantId tenant, String key) {
-        return hitAndMissMetricTracking((String) cache.get(tenant + "::" + key));
+        return hitAndMissMetricTracking(key, (String) cache.get(tenant + "::" + key));
     }
 
-    private String hitAndMissMetricTracking(String result) {
+    private String hitAndMissMetricTracking(String key, String result) {
         Optional<MetricAccess> optionalMetricAccess = ModuleRegistry.getMetricAccessIfEnabled();
         if (optionalMetricAccess != null) {
             optionalMetricAccess.ifPresent(metricAccess -> metricAccess.getMetricCollector().increment(MetricName.CACHE_GET_TOTAL));
+            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getHotKeyTracker().recordAccess(key));
             if (result != null) {
                 optionalMetricAccess.ifPresent(metricAccess -> metricAccess.getMetricCollector().increment(MetricName.CACHE_HIT_COUNT));
             } else {
@@ -135,13 +156,19 @@ public class CacheAccessService {
     // === DELETE ===
 
     public void remove(ClientSessionContext session, String key) {
-        ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_DEL_TOTAL));
         cache.remove(KeyPrefixer.prefixKey(key, session));
+        ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> {
+            metrics.getMetricCollector().increment(MetricName.CACHE_DEL_TOTAL);
+            metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,this.cache.size());
+        });
     }
 
     public void remove(TenantId tenant, String key) {
-        ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_DEL_TOTAL));
         cache.remove(tenant + "::" + key);
+        ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> {
+            metrics.getMetricCollector().increment(MetricName.CACHE_DEL_TOTAL);
+            metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,this.cache.size());
+        });
     }
 
     // === Centralized Logging ===

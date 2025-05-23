@@ -7,6 +7,8 @@ public interface MetricCollector {
     void incrementBy(MetricName name, long count);
     void recordValue(MetricName name, long value);
     void setGauge(MetricName name, long value);
+
     long getCounter(MetricName name);
+    long getGauge(MetricName name);
 }
 

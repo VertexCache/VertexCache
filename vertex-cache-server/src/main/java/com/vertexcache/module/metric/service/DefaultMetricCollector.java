@@ -33,6 +33,10 @@ public class DefaultMetricCollector implements MetricCollector, StructuredMetric
     @Override
     public long getCounter(MetricName name) {return registry.getCounter(name);}
 
+    @Override
+    public long getGauge(MetricName name) {return registry.getGauge(name);}
+
+
     // --- StructuredMetricCollector (MetricKey) ---
     @Override
     public void incrementCounter(MetricKey key) {registry.incrementCounter(key);}

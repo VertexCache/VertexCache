@@ -1,17 +1,13 @@
 package com.vertexcache.module.metric.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vertexcache.core.cache.exception.VertexCacheException;
 import com.vertexcache.core.module.ModuleRegistry;
 import com.vertexcache.core.util.RuntimeInfo;
-import com.vertexcache.module.cluster.ClusterModule;
 import com.vertexcache.module.metric.MetricModule;
-import com.vertexcache.module.metric.model.MetricKey;
 import com.vertexcache.module.metric.model.MetricName;
+import com.vertexcache.module.metric.model.MetricViewKey;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.LongAdder;
 
 public class MetricAccess {
 
@@ -32,9 +28,9 @@ public class MetricAccess {
         Map<String, Object> view = new HashMap<>();
         Optional<MetricModule> optMetricModule = ModuleRegistry.getInstance().getModule(MetricModule.class);
         MetricModule metricModule = optMetricModule.get();
-        view.put("commands.get.total", metricModule.getMetricAccess().getMetricCollector().getCounter(MetricName.CACHE_GET_TOTAL));
-        view.put("commands.set.total", metricModule.getMetricAccess().getMetricCollector().getCounter(MetricName.CACHE_SET_TOTAL));
-        view.put("commands.del.total", metricModule.getMetricAccess().getMetricCollector().getCounter(MetricName.CACHE_DEL_TOTAL));
+        view.put(MetricViewKey.COMMAND_GET_TOTAL, metricModule.getMetricAccess().getMetricCollector().getCounter(MetricName.CACHE_GET_TOTAL));
+        view.put(MetricViewKey.COMMAND_SET_TOTAL, metricModule.getMetricAccess().getMetricCollector().getCounter(MetricName.CACHE_SET_TOTAL));
+        view.put(MetricViewKey.COMMAND_DEL_TOTAL, metricModule.getMetricAccess().getMetricCollector().getCounter(MetricName.CACHE_DEL_TOTAL));
         return view;
     }
 
@@ -44,12 +40,14 @@ public class MetricAccess {
         MetricModule metricModule = optMetricModule.get();
         long hitCount = metricModule.getMetricAccess().getMetricCollector().getCounter(MetricName.CACHE_HIT_COUNT);
         long missCount = metricModule.getMetricAccess().getMetricCollector().getCounter(MetricName.CACHE_MISS_COUNT);
+        long keyCount = metricModule.getMetricAccess().getMetricCollector().getGauge(MetricName.CACHE_KEY_COUNT);
         long total = hitCount + missCount;
         double hitRatio = (total > 0) ? ((double) hitCount / total) : 0.0;
         String formattedPercent = String.format("%.1f%%", hitRatio * 100); // for 63.6%
-        view.put("cache.hit.count", hitCount);
-        view.put("cache.miss.count", missCount);
-        view.put("cache.hit.ratio", formattedPercent);
+        view.put(MetricViewKey.CACHE_HIT_COUNT, hitCount);
+        view.put(MetricViewKey.CACHE_MISS_COUNT, missCount);
+        view.put(MetricViewKey.CACHE_HIT_RATIO, formattedPercent);
+        view.put(MetricViewKey.CACHE_KEY_COUNT, keyCount);
         return view;
     }
 
@@ -57,41 +55,8 @@ public class MetricAccess {
         Map<String, Object> view = new HashMap<>();
         Optional<MetricModule> optMetricModule = ModuleRegistry.getInstance().getModule(MetricModule.class);
         MetricModule metricModule = optMetricModule.get();
-        view.put("cache.index.usage.idx1", metricModule.getMetricAccess().getMetricCollector().getCounter(MetricName.CACHE_INDEX_USAGE_IDX1));
-        view.put("cache.index.usage.idx2", metricModule.getMetricAccess().getMetricCollector().getCounter(MetricName.CACHE_INDEX_USAGE_IDX2));
-        return view;
-    }
-
-    public Map<String, Object> getTtlDistributionView() {
-        Map<String, Object> view = new HashMap<>();
-        ConcurrentMap<MetricKey, LongAdder> counters = metricRegistry.getKeyCounters();
-
-        for (Map.Entry<MetricKey, LongAdder> entry : counters.entrySet()) {
-            String metricName = entry.getKey().value();
-
-            if (metricName.startsWith(MetricName.TTL_DISTRIBUTION_PREFIX)) {
-                long count = entry.getValue().sum();
-                view.put(metricName, count);
-            }
-        }
-
-        return view;
-    }
-
-    public Map<String, Object> getValueSizeDistributionView() {
-        Map<String, Object> view = new HashMap<>();
-        ConcurrentMap<MetricKey, LongAdder> counters = metricRegistry.getKeyCounters();
-
-        for (Map.Entry<MetricKey, LongAdder> entry : counters.entrySet()) {
-            String metricName = entry.getKey().value();
-
-            if (metricName.startsWith("cache.value.size.")) {
-                long count = entry.getValue().sum();
-                String shortName = metricName.substring("cache.value.size.".length());
-                view.put(shortName, count);
-            }
-        }
-
+        view.put(MetricViewKey.INDEX_USAGE_IDX1, metricModule.getMetricAccess().getMetricCollector().getCounter(MetricName.CACHE_INDEX_USAGE_IDX1));
+        view.put(MetricViewKey.INDEX_USAGE_IDX2, metricModule.getMetricAccess().getMetricCollector().getCounter(MetricName.CACHE_INDEX_USAGE_IDX2));
         return view;
     }
 
@@ -105,55 +70,10 @@ public class MetricAccess {
 
         int rank = 1;
         for (Map.Entry<String, Long> entry : hotKeys.entrySet()) {
-            view.put("key." + rank, entry.getKey());
-            view.put("hits." + rank, entry.getValue());
+            view.put(MetricViewKey.HOT_KEY_PREFIX + rank, entry.getKey());
+            view.put(MetricViewKey.HOT_HITS_PREFIX + rank, entry.getValue());
             rank++;
         }
-
-        return view;
-    }
-
-    public Map<String, Object> getAvgValueSizeView() {
-        Map<String, Object> view = new HashMap<>();
-        ConcurrentMap<MetricKey, LongAdder> counters = metricRegistry.getKeyCounters();
-
-        long avgSize = 0;
-
-        for (Map.Entry<MetricKey, LongAdder> entry : counters.entrySet()) {
-            String metricName = entry.getKey().value();
-            if ("cache.avg.value.size.bytes".equals(metricName)) {
-                avgSize = entry.getValue().sum(); // assume it’s pre-derived
-                break;
-            }
-        }
-
-        view.put("cache.avg.value.size.bytes", avgSize);
-        return view;
-    }
-
-
-    public Map<String, Object> getCacheLifecycleStatsView() {
-        Map<String, Object> view = new HashMap<>();
-        ConcurrentMap<MetricKey, LongAdder> counters = metricRegistry.getKeyCounters();
-
-        long evictions = 0;
-        long expired = 0;
-        long keyCount = 0;
-
-        for (Map.Entry<MetricKey, LongAdder> entry : counters.entrySet()) {
-            String metricName = entry.getKey().value();
-            long count = entry.getValue().sum();
-
-            switch (metricName) {
-                case "cache.evictions.total" -> evictions += count;
-                case "cache.expired.total"   -> expired += count;
-                case "cache.key.count"       -> keyCount = count; // it's a gauge, just overwrite
-            }
-        }
-
-        view.put("cache.evictions.total", evictions);
-        view.put("cache.expired.total", expired);
-        view.put("cache.key.count", keyCount);
 
         return view;
     }
@@ -167,12 +87,12 @@ public class MetricAccess {
         long freeMemory = runtime.freeMemory();
         long usedMemory = totalMemory - freeMemory;
 
-        view.put("memory.used.mb", bytesToMb(usedMemory));
-        view.put("memory.free.mb", bytesToMb(freeMemory));
-        view.put("memory.max.mb", bytesToMb(maxMemory));
-        view.put("memory.total.allocated.mb", bytesToMb(totalMemory));
+        view.put(MetricViewKey.JVM_MEMORY_USED_MB, bytesToMb(usedMemory));
+        view.put(MetricViewKey.JVM_MEMORY_FREE_MB, bytesToMb(freeMemory));
+        view.put(MetricViewKey.JVM_MEMORY_MAX_MB, bytesToMb(maxMemory));
+        view.put(MetricViewKey.JVM_MEMORY_ALLOCATED_MB, bytesToMb(totalMemory));
 
-        view.put("uptime", formatUptime(System.currentTimeMillis() - RuntimeInfo.getStartupTimeMillis()));
+        view.put(MetricViewKey.JVM_UPTIME, formatUptime(System.currentTimeMillis() - RuntimeInfo.getStartupTimeMillis()));
 
         return view;
     }
@@ -186,11 +106,7 @@ public class MetricAccess {
 
         snapshot.put("command_usage", getCommandUsageView());
         snapshot.put("cache_effectiveness", getCacheEffectivenessView());
-        snapshot.put("cache_lifecycle", getCacheLifecycleStatsView());
         snapshot.put("index_usage", getIndexUsageView());
-        snapshot.put("ttl_distribution", getTtlDistributionView());
-        snapshot.put("value_size_distribution", getValueSizeDistributionView());
-        snapshot.put("avg_value_size", getAvgValueSizeView());
         snapshot.put("hot_keys", getHotKeysView(10));
         snapshot.put("jvm_memory", getJvmMemoryView());
 
