@@ -1,4 +1,4 @@
-package com.vertexcache.core.cache;
+package com.vertexcache.core.cache.model;
 
 public class CacheIndexRef {
     public final Object idx1;

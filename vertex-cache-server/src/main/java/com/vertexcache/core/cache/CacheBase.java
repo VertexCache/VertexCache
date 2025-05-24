@@ -1,6 +1,7 @@
 package com.vertexcache.core.cache;
 
 import com.vertexcache.core.cache.exception.VertexCacheTypeException;
+import com.vertexcache.core.cache.model.CacheIndexRef;
 
 import java.util.Collections;
 import java.util.Map;

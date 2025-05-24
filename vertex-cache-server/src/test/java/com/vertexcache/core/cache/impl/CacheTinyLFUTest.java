@@ -1,5 +1,6 @@
 package com.vertexcache.core.cache.impl;
 
+import com.vertexcache.core.cache.algos.CacheTinyLFU;
 import com.vertexcache.core.cache.exception.VertexCacheTypeException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

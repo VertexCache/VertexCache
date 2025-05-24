@@ -1,7 +1,7 @@
 package com.vertexcache.module.restapi.handlers;
 
 
-import com.vertexcache.core.cache.service.CacheAccessService;
+import com.vertexcache.core.cache.CacheAccessService;
 import com.vertexcache.core.command.impl.DelCommand;
 import com.vertexcache.core.util.message.ResultCode;
 import com.vertexcache.core.validation.validators.KeyValidator;

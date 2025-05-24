@@ -1,13 +1,10 @@
 package com.vertexcache.module.restapi.handlers;
 
-import com.vertexcache.core.cache.service.CacheAccessService;
-import com.vertexcache.core.command.impl.GetSecondaryIdxOneCommand;
+import com.vertexcache.core.cache.CacheAccessService;
 import com.vertexcache.core.command.impl.GetSecondaryIdxTwoCommand;
 import com.vertexcache.core.util.message.ResultCode;
 import com.vertexcache.core.validation.validators.KeyValidator;
 import com.vertexcache.module.restapi.model.ApiParameter;
-import com.vertexcache.module.restapi.model.ApiResponse;
-import io.javalin.http.Context;
 
 public class GetIdx2Handler extends AbstractRestHandler {
 

@@ -1,8 +1,7 @@
 package com.vertexcache.core.setting.loader;
 
-import com.vertexcache.common.config.reader.ConfigLoader;
 import com.vertexcache.common.log.LogHelper;
-import com.vertexcache.core.cache.EvictionPolicy;
+import com.vertexcache.core.cache.model.EvictionPolicy;
 import com.vertexcache.core.setting.ConfigKey;
 
 public class CacheConfigLoader extends LoaderBase {

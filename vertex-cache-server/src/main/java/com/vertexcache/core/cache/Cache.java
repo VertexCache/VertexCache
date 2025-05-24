@@ -1,9 +1,10 @@
 package com.vertexcache.core.cache;
 
+import com.vertexcache.core.cache.algos.*;
 import com.vertexcache.core.cache.exception.VertexCacheTypeException;
-import com.vertexcache.core.cache.impl.*;
+import com.vertexcache.core.cache.model.CacheEntry;
+import com.vertexcache.core.cache.model.EvictionPolicy;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 

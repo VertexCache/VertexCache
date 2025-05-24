@@ -1,4 +1,4 @@
-package com.vertexcache.core.cache.impl;
+package com.vertexcache.core.cache.algos;
 
 import com.vertexcache.core.cache.CacheBase;
 import com.vertexcache.core.cache.exception.VertexCacheTypeException;

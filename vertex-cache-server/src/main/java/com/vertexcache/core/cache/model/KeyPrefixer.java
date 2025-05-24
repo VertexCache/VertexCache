@@ -1,4 +1,4 @@
-package com.vertexcache.core.cache;
+package com.vertexcache.core.cache.model;
 
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.server.session.ClientSessionContext;

@@ -1,7 +1,6 @@
-package com.vertexcache.core.cache.service;
+package com.vertexcache.core.cache;
 
-import com.vertexcache.core.cache.Cache;
-import com.vertexcache.core.cache.KeyPrefixer;
+import com.vertexcache.core.cache.model.KeyPrefixer;
 import com.vertexcache.core.cache.exception.VertexCacheException;
 import com.vertexcache.core.cache.exception.VertexCacheTypeException;
 import com.vertexcache.core.module.ModuleRegistry;

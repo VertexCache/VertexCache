@@ -1,4 +1,4 @@
-package com.vertexcache.core.cache;
+package com.vertexcache.core.cache.model;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

@@ -1,7 +1,7 @@
 package com.vertexcache.core.command.impl;
 
 import com.vertexcache.common.log.LogHelper;
-import com.vertexcache.core.cache.service.CacheAccessService;
+import com.vertexcache.core.cache.CacheAccessService;
 import com.vertexcache.core.command.BaseCommand;
 import com.vertexcache.core.command.CommandResponse;
 import com.vertexcache.core.command.argument.ArgumentParser;

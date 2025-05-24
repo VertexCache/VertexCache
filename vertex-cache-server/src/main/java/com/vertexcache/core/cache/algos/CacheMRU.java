@@ -1,4 +1,4 @@
-package com.vertexcache.core.cache.impl;
+package com.vertexcache.core.cache.algos;
 
 import com.vertexcache.core.cache.CacheBase;
 import com.vertexcache.core.cache.exception.VertexCacheTypeException;
@@ -6,7 +6,6 @@ import com.vertexcache.core.cache.exception.VertexCacheTypeException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /*

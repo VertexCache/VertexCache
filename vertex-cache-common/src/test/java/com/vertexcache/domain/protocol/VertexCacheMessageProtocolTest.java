@@ -16,11 +16,13 @@ public class VertexCacheMessageProtocolTest {
 
     @Test
     public void testEncodeArray() {
-        byte[] expected = "[2\r\nHello\r\nWorld\r\n]\r\n".getBytes(StandardCharsets.UTF_8);
+        byte[] expected = "[2\r\n#Hello\r\n#World\r\n]\r\n".getBytes(StandardCharsets.UTF_8);
+
         byte[][] values = {
                 "Hello".getBytes(StandardCharsets.UTF_8),
                 "World".getBytes(StandardCharsets.UTF_8)
         };
+
         byte[] actual = VertexCacheMessageProtocol.encodeArray(values);
         assertArrayEquals(expected, actual);
     }
