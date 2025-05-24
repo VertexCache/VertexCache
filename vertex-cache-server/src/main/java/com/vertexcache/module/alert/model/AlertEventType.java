@@ -9,5 +9,7 @@ public enum AlertEventType {
     CONFIG_HASH_MISMATCH,
     AUTH_FAILURE,
     MEMORY_USAGE_HIGH,
-    DISK_USAGE_HIGH
+    DISK_USAGE_HIGH,
+
+    HOT_KEY_ALERT
 }

@@ -73,4 +73,8 @@ public class AlertModule  extends Module implements ClusterNodeEventListener {
         AlertEvent alertEvent = new AlertEvent(AlertEventType.PRIMARY_PROMOTED, nodeId);
         executorService.dispatchAsync(alertEvent);
     }
+
+    public void dispatch(AlertEvent alertEvent) {
+        executorService.dispatchAsync(alertEvent);
+    }
 }

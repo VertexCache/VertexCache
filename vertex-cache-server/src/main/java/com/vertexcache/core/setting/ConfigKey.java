@@ -81,6 +81,14 @@ public class ConfigKey {
     // Smart
     public static final boolean ENABLE_SMART_DEFAULT = false;
     public static final String ENABLE_SMART = "enable_smart";
+    public static final boolean ENABLE_SMART_HOTKEY_WATCHER_DEFAULT = true;
+    public static final String ENABLE_SMART_HOTKEY_WATCHER = "hotkey_watcher";
+    public static final boolean ENABLE_SMART_INDEX_CLEANUP_DEFAULT = true;
+    public static final String ENABLE_SMART_INDEX_CLEANUP = "enable_smart_index_cleanup";
+    public static final boolean ENABLE_SMART_ACCESS_TRACKING_DEFAULT = true;
+    public static final String ENABLE_SMART_ACCESS_TRACKING = "enable_smart_access_tracking";
+    public static final boolean ENABLE_SMART_ALERT_TRIGGERS_DEFAULT = true;
+    public static final String ENABLE_SMART_ALERT_TRIGGERS = "enable_smart_alert_triggers";
 
     // Exporter
     public static final boolean ENABLE_EXPORTER_DEFAULT = false;
