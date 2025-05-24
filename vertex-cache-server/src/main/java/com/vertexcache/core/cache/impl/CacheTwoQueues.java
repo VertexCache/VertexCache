@@ -4,6 +4,7 @@ import com.vertexcache.core.cache.CacheBase;
 import com.vertexcache.core.cache.exception.VertexCacheTypeException;
 
 import java.util.*;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /*
  * Two Queues (2Q) caching strategy, two separate queues are utilized: the "in" queue (inQueue) and the "out"
@@ -33,6 +34,7 @@ import java.util.*;
  */
 public class CacheTwoQueues<K, V> extends CacheBase<K, V> {
 
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final Map<K, Boolean> inQueue; // LinkedHashMap for new elements
     private final Map<K, Boolean> outQueue; // LinkedHashMap for old elements
     private int sizeCapacity;
@@ -48,26 +50,39 @@ public class CacheTwoQueues<K, V> extends CacheBase<K, V> {
 
     @Override
     public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheTypeException {
-        synchronized (this.getPrimaryCache()) {
+        lock.writeLock().lock();
+        try {
             if (this.getPrimaryCache().containsKey(primaryKey)) {
-                // Move the key to the front of the inQueue
                 inQueue.remove(primaryKey);
                 inQueue.put(primaryKey, true);
                 this.getPrimaryCache().put(primaryKey, value);
             } else {
-                if (this.getPrimaryCache().size() >= sizeCapacity) {
-                    // Evict the least recently used element from the outQueue
+                while (this.getPrimaryCache().size() >= sizeCapacity) {
                     Iterator<Map.Entry<K, Boolean>> iterator = outQueue.entrySet().iterator();
                     if (iterator.hasNext()) {
                         K outKey = iterator.next().getKey();
                         iterator.remove();
                         this.getPrimaryCache().remove(outKey);
+                        this.cleanupIndexFor(outKey);
+                    } else {
+                        // fallback: remove from inQueue
+                        Iterator<Map.Entry<K, Boolean>> inIterator = inQueue.entrySet().iterator();
+                        if (inIterator.hasNext()) {
+                            K inKey = inIterator.next().getKey();
+                            inIterator.remove();
+                            this.getPrimaryCache().remove(inKey);
+                            this.cleanupIndexFor(inKey);
+                        } else {
+                            break; // nothing more to evict
+                        }
                     }
                 }
                 inQueue.put(primaryKey, true);
                 this.getPrimaryCache().put(primaryKey, value);
             }
-            this.updateSecondaryKeys(primaryKey,secondaryKeys);
+            this.updateSecondaryKeys(primaryKey, secondaryKeys);
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
@@ -90,8 +105,7 @@ public class CacheTwoQueues<K, V> extends CacheBase<K, V> {
             if (this.getPrimaryCache().containsKey(key)) {
                 this.getPrimaryCache().remove(key);
                 inQueue.remove(key);
-                this.getSecondaryIndexOne().remove(key);
-                this.getSecondaryIndexTwo().remove(key);
+                this.cleanupIndexFor(key);
             }
         }
     }

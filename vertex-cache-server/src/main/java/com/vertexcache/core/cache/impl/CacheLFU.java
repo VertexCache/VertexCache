@@ -7,9 +7,11 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class CacheLFU <K, V> extends CacheBase<K, V> {
 
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final Map<K, Integer> frequencyMap;
     private int sizeCapacity;
 
@@ -23,33 +25,19 @@ public class CacheLFU <K, V> extends CacheBase<K, V> {
 
     @Override
     public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheTypeException {
-        if(secondaryKeys.length <= MAX_SECONDARY_INDEXES) {
-            try {
-
-                synchronized (this.getPrimaryCache()) {
-                    this.getPrimaryCache().put(primaryKey, value);
-                }
-                frequencyMap.put(primaryKey, frequencyMap.getOrDefault(primaryKey, 0) + 1);
-
-                synchronized (this.getSecondaryIndexOne()) {
-                    if (secondaryKeys.length > 0 && secondaryKeys[0] != null) {
-                        this.getSecondaryIndexOne().put(secondaryKeys[0], primaryKey);
-                    }
-                }
-                synchronized (this.getSecondaryIndexTwo()) {
-                    if (secondaryKeys.length > 1 && secondaryKeys[1] != null) {
-                        this.getSecondaryIndexTwo().put(secondaryKeys[1], primaryKey);
-                    }
-                }
-            } catch (OutOfMemoryError e) {
-                // This still potentially can occur even with LRU
-                throw new VertexCacheTypeException("Out of memory, increase memory or use eviction policy other than none.");
+        lock.writeLock().lock();
+        try {
+            if (secondaryKeys.length > MAX_SECONDARY_INDEXES) {
+                throw new VertexCacheTypeException("Too many secondary indexes, maximum 2 allowed.");
             }
-
+            this.getPrimaryCache().put(primaryKey, value);
+            frequencyMap.put(primaryKey, frequencyMap.getOrDefault(primaryKey, 0) + 1);
+            this.updateSecondaryKeys(primaryKey, secondaryKeys);
             evictIfNecessary();
-
-        } else {
-            throw new VertexCacheTypeException("Too many secondary index, maximum 2 allowed.");
+        } catch (OutOfMemoryError e) {
+            throw new VertexCacheTypeException("Out of memory, increase memory or use eviction policy other than none.");
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
@@ -60,14 +48,16 @@ public class CacheLFU <K, V> extends CacheBase<K, V> {
 
     @Override
     public V get(K key) {
-        V value;
-        synchronized (this.getPrimaryCache()) {
-            value = this.getPrimaryCache().get(key);
+        lock.writeLock().lock(); // because it mutates frequencyMap
+        try {
+            V value = this.getPrimaryCache().get(key);
+            if (value != null) {
+                frequencyMap.put(key, frequencyMap.getOrDefault(key, 0) + 1);
+            }
+            return value;
+        } finally {
+            lock.writeLock().unlock();
         }
-        if (value != null) {
-            frequencyMap.put(key, frequencyMap.getOrDefault(key, 0) + 1);
-        }
-        return value;
     }
 
     private void evictIfNecessary() {
@@ -85,20 +75,10 @@ public class CacheLFU <K, V> extends CacheBase<K, V> {
 
                 if (leastFrequentKey != null) {
                     this.getPrimaryCache().remove(leastFrequentKey);
+                    this.cleanupIndexFor(leastFrequentKey);
                     frequencyMap.remove(leastFrequentKey);
-                    removeKeyFromSecondaryIndexes(leastFrequentKey);
                 }
             }
         }
     }
-
-    private void removeKeyFromSecondaryIndexes(K key) {
-        synchronized (this.getSecondaryIndexOne()) {
-            this.getSecondaryIndexOne().entrySet().removeIf(entry -> Objects.equals(entry.getValue(), key));
-        }
-        synchronized (this.getSecondaryIndexTwo()) {
-            this.getSecondaryIndexTwo().entrySet().removeIf(entry -> Objects.equals(entry.getValue(), key));
-        }
-    }
-
 }

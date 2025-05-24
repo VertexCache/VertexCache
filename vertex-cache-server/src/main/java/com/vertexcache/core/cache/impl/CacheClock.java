@@ -1,10 +1,10 @@
 package com.vertexcache.core.cache.impl;
 
-
 import com.vertexcache.core.cache.CacheBase;
 import com.vertexcache.core.cache.exception.VertexCacheTypeException;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -69,27 +69,40 @@ public class CacheClock<K, V> extends CacheBase<K, V> {
         lock.writeLock().lock();
         try {
             if (this.getPrimaryCache().containsKey(primaryKey)) {
-                // Update the existing entry
+                // Update existing key; refresh value only
                 this.getPrimaryCache().put(primaryKey, value);
-            } else {
-                // Evict if necessary
-                while (true) {
-                    if (!clockBits[hand]) {
-                        K evictedKey = getKeyAtIndex(hand);
-                        if (evictedKey != null) {
-                            this.getPrimaryCache().remove(evictedKey);
-                            clockBits[hand] = true;
-                            this.getPrimaryCache().put(primaryKey, value);
-                            this.updateSecondaryKeys(primaryKey,secondaryKeys);
-                            return;
-                        }
+                return;
+            }
+
+            // Eviction check
+            if (this.getPrimaryCache().size() >= this.sizeCapacity) {
+                List<K> keys = new ArrayList<>(this.getPrimaryCache().keySet());
+
+                int attempts = 0;
+                while (attempts < sizeCapacity * 2) {
+                    int index = hand % keys.size();
+                    K candidateKey = keys.get(index);
+
+                    if (!clockBits[index]) {
+                        this.getPrimaryCache().remove(candidateKey);
+                        this.cleanupIndexFor(candidateKey);
+                        clockBits[index] = true;
+                        break; // Ready to insert new key
                     } else {
-                        clockBits[hand] = false;
+                        clockBits[index] = false;
                     }
 
                     hand = (hand + 1) % sizeCapacity;
+                    attempts++;
+                }
+
+                if (attempts >= sizeCapacity * 2) {
+                    throw new VertexCacheTypeException("Clock put() failed to find eviction candidate after full rotation.");
                 }
             }
+
+            this.putDefaultImpl(primaryKey, value, secondaryKeys);
+
         } finally {
             lock.writeLock().unlock();
         }
@@ -105,20 +118,9 @@ public class CacheClock<K, V> extends CacheBase<K, V> {
         lock.writeLock().lock();
         try {
             this.getPrimaryCache().remove(primaryKey);
-            this.getSecondaryIndexOne().remove(primaryKey);
-            this.getSecondaryIndexTwo().remove(primaryKey);
+            this.cleanupIndexFor(primaryKey);
         } finally {
             lock.writeLock().unlock();
         }
     }
-
-    private K getKeyAtIndex(int index) {
-        for (Map.Entry<K, V> entry : this.getPrimaryCache().entrySet()) {
-            if (entry.getValue() != null && entry.getKey().hashCode() % sizeCapacity == index) {
-                return entry.getKey();
-            }
-        }
-        return null;
-    }
-
 }

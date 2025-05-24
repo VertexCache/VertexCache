@@ -81,30 +81,39 @@ public class CacheTinyLFU<K, V> extends CacheBase<K, V> {
 
     @Override
     public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheTypeException {
-        lock.writeLock().lock();
         try {
-            if (lruCache.containsKey(primaryKey)) {
-                lruCache.put(primaryKey, value);
-            } else if (lfuCache.containsKey(primaryKey)) {
-                lfuCache.put(primaryKey, value);
-                frequencySketch.add(primaryKey);
-            } else {
-                if (lruCache.size() >= sizeCapacity) {
-                    K evictedKey = lruQueue.pollFirst();
-                    if (evictedKey != null) {
-                        if (lfuCache.size() + lruCache.size() >= sizeCapacity) {
-                            evict();
-                        }
-                        lfuCache.put(evictedKey, lruCache.get(evictedKey));
-                        lruCache.remove(evictedKey);
-                    }
-                }
-                lruCache.put(primaryKey, value);
-                lruQueue.addLast(primaryKey);
+            if (lruCache.containsKey(primaryKey) || lfuCache.containsKey(primaryKey)) {
+                return; // already cached
             }
+
+            // Evict from LRU segment if full
+            if (lruCache.size() >= sizeCapacity) {
+                evict();
+            }
+
+            // Evict from LFU segment if full
+            if (lfuCache.size() >= sizeCapacity) {
+                K victim = selectLFUEvictionCandidate();
+                if (victim != null) {
+                    lfuCache.remove(victim);
+                    cleanupIndexFor(victim);
+                }
+            }
+
+            // Insert into LRU segment
+            lruCache.put(primaryKey, value);
+            lruQueue.addLast(primaryKey);
+
+            // Frequency sketch update
+            frequencySketch.add(primaryKey);
+
+            // Store in primary cache
+            getPrimaryCache().put(primaryKey, value);
+
+            // Indexing
             updateSecondaryKeys(primaryKey, secondaryKeys);
-        } finally {
-            lock.writeLock().unlock();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new VertexCacheTypeException("FrequencySketch error: possible hash calculation issue. Check hash function and sketch size.", e);
         }
     }
 
@@ -132,33 +141,37 @@ public class CacheTinyLFU<K, V> extends CacheBase<K, V> {
         lock.writeLock().lock();
         try {
             lruCache.remove(key);
-            lfuCache.remove(key);
             lruQueue.remove(key);
-            removeSecondaryKeys(key);
+            lfuCache.remove(key);
+            getPrimaryCache().remove(key);
+            cleanupIndexFor(key);
         } finally {
             lock.writeLock().unlock();
         }
     }
 
-    private void evict() {
-        lock.writeLock().lock();
-        try {
-            K keyToRemove = null;
-            int minFreq = Integer.MAX_VALUE;
-            for (K key : lfuCache.keySet()) {
-                int freq = frequencySketch.frequency(key);
-                if (freq < minFreq) {
-                    minFreq = freq;
-                    keyToRemove = key;
-                }
+    private K selectLFUEvictionCandidate() {
+        K victim = null;
+        long minFrequency = Long.MAX_VALUE;
+
+        for (K key : lfuCache.keySet()) {
+            long freq = frequencySketch.estimateCount(key);
+            if (freq < minFrequency) {
+                minFrequency = freq;
+                victim = key;
             }
-            if (keyToRemove != null) {
-                lfuCache.remove(keyToRemove);
-                removeSecondaryKeys(keyToRemove);
-            }
-        } finally {
-            lock.writeLock().unlock();
         }
+
+        return victim;
+    }
+
+    private void evict() {
+        if (lruQueue.isEmpty()) {
+            return;
+        }
+        K keyToRemove = lruQueue.removeFirst();
+        lruCache.remove(keyToRemove);
+        this.cleanupIndexFor(keyToRemove);
     }
 
     private void promoteToLRU(K key, V value) {
@@ -181,19 +194,6 @@ public class CacheTinyLFU<K, V> extends CacheBase<K, V> {
         }
     }
 
-    private void removeSecondaryKeys(K key) {
-        for (Map.Entry<Object, K> entry : getSecondaryIndexOne().entrySet()) {
-            if (entry.getValue().equals(key)) {
-                getSecondaryIndexOne().remove(entry.getKey());
-            }
-        }
-        for (Map.Entry<Object, K> entry : getSecondaryIndexTwo().entrySet()) {
-            if (entry.getValue().equals(key)) {
-                getSecondaryIndexTwo().remove(entry.getKey());
-            }
-        }
-    }
-
     // Simplified CountMinSketch implementation for frequency estimation
     private static class CountMinSketch<K> {
         private final int depth;
@@ -213,7 +213,7 @@ public class CacheTinyLFU<K, V> extends CacheBase<K, V> {
         }
 
         private int hash(K key, int seed) {
-            return (key.hashCode() ^ seed) % width;
+            return Math.floorMod(key.hashCode() ^ seed, width);
         }
 
         public void add(K key) {
@@ -230,6 +230,10 @@ public class CacheTinyLFU<K, V> extends CacheBase<K, V> {
                 minFreq = Math.min(minFreq, table[i][index]);
             }
             return minFreq;
+        }
+
+        public int estimateCount(K key) {
+            return frequency(key);
         }
     }
 }

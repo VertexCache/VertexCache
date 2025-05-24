@@ -4,8 +4,9 @@ import com.vertexcache.core.cache.CacheBase;
 import com.vertexcache.core.cache.exception.VertexCacheTypeException;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /*
  * ARC (Adaptive Replacement Cache) is a cache replacement algorithm designed to adapt dynamically to changing access
@@ -43,24 +44,26 @@ import java.util.Map;
  */
 public class CacheARC<K, V> extends CacheBase<K, V> {
 
-    private Map<K, V> ghostCache = Collections.synchronizedMap(new LinkedHashMap<K, V>());
-
-    private Map<K, V> mainEvict = Collections.synchronizedMap(new LinkedHashMap<K, V>());
-    private Map<K, V> ghostEvict = Collections.synchronizedMap(new LinkedHashMap<K, V>());
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private Map<K, V> ghostCache = Collections.synchronizedMap(new ConcurrentHashMap<K, V>());
+    private Map<K, V> mainEvict = Collections.synchronizedMap(new ConcurrentHashMap<K, V>());
+    private Map<K, V> ghostEvict = Collections.synchronizedMap(new ConcurrentHashMap<K, V>());
 
     private int sizeCapacity;
 
     public CacheARC(int sizeCapacity) {
         this.sizeCapacity = sizeCapacity;
-        this.setPrimaryCache(Collections.synchronizedMap(new LinkedHashMap<K, V>()));
-        this.setSecondaryIndexOne(Collections.synchronizedMap(new LinkedHashMap<Object, K>()));
-        this.setSecondaryIndexTwo(Collections.synchronizedMap(new LinkedHashMap<Object, K>()));
+        this.setPrimaryCache(Collections.synchronizedMap(new ConcurrentHashMap<K, V>()));
+        this.setSecondaryIndexOne(Collections.synchronizedMap(new ConcurrentHashMap<Object, K>()));
+        this.setSecondaryIndexTwo(Collections.synchronizedMap(new ConcurrentHashMap<Object, K>()));
     }
 
+    @Override
     public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheTypeException {
-        synchronized (this) {
+        lock.writeLock().lock();
+        try {
             if (this.getPrimaryCache().containsKey(primaryKey) || ghostCache.containsKey(primaryKey)) {
-                return; // Key already in cache, no need to add
+                return;
             }
 
             if (this.getPrimaryCache().size() + ghostCache.size() >= sizeCapacity) {
@@ -68,66 +71,66 @@ public class CacheARC<K, V> extends CacheBase<K, V> {
                     replace();
                 } else {
                     if (!this.getPrimaryCache().isEmpty()) {
-                        ghostEvict.put(this.getPrimaryCache().keySet().iterator().next(), this.getPrimaryCache().remove(this.getPrimaryCache().keySet().iterator().next()));
+                        K keyToEvict = this.getPrimaryCache().keySet().iterator().next();
+                        ghostEvict.put(keyToEvict, this.getPrimaryCache().remove(keyToEvict));
+                        this.cleanupIndexFor(keyToEvict);
                     } else {
-                        ghostEvict.put(ghostCache.keySet().iterator().next(), ghostCache.remove(ghostCache.keySet().iterator().next()));
+                        K ghostKey = ghostCache.keySet().iterator().next();
+                        ghostEvict.put(ghostKey, ghostCache.remove(ghostKey));
                     }
                 }
             }
 
             this.getPrimaryCache().put(primaryKey, value);
-            if (secondaryKeys.length > 0 && secondaryKeys[0] != null) {
-                this.getSecondaryIndexOne().put(secondaryKeys[0], primaryKey);
-            }
-            if (secondaryKeys.length > 1 && secondaryKeys[1] != null) {
-                this.getSecondaryIndexTwo().put(secondaryKeys[1], primaryKey);
-            }
+            this.updateSecondaryKeys(primaryKey, secondaryKeys);
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
     @Override
     public V get(K key) {
-        synchronized (this) {
+        lock.writeLock().lock(); // needed because we update ghostCache
+        try {
             if (this.getPrimaryCache().containsKey(key)) {
-                V value = this.getPrimaryCache().remove(key);
-                ghostCache.put(key, value);
-                return value;
+                return this.getPrimaryCache().get(key);
             } else if (ghostCache.containsKey(key)) {
-                V value = ghostCache.remove(key);
-                ghostCache.put(key, value);
-                return value;
-            } else {
-                return null; // Key not found in cache
+                ghostEvict.put(key, ghostCache.remove(key)); // touch for recency
             }
+            return null;
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
     @Override
-    public void remove(K primaryKey) {
-        synchronized (this) {
-            this.getPrimaryCache().remove(primaryKey);
-            ghostCache.remove(primaryKey);
-            mainEvict.remove(primaryKey);
-            ghostEvict.remove(primaryKey);
-
-            // Remove from secondary indexes
-            for (Map<Object, K> index : new Map[]{this.getSecondaryIndexOne(), this.getSecondaryIndexTwo()}) {
-                index.entrySet().removeIf(entry -> entry.getValue().equals(primaryKey));
-            }
+    public void remove(K key) {
+        lock.writeLock().lock();
+        try {
+            this.getPrimaryCache().remove(key);
+            ghostCache.remove(key);
+            mainEvict.remove(key);
+            ghostEvict.remove(key);
+            this.cleanupIndexFor(key);
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
     private void replace() {
-        synchronized (this) {
-            if (!mainEvict.isEmpty() && (this.getPrimaryCache().size() > 0 || this.getPrimaryCache().size() == 0 && !ghostCache.containsKey(mainEvict.keySet().iterator().next()))) {
+        lock.writeLock().lock();
+        try {
+            if (!mainEvict.isEmpty()) {
                 K key = mainEvict.keySet().iterator().next();
                 mainEvict.remove(key);
-                this.getPrimaryCache().put(key, null); // Add key to mainCache
-            } else {
+                this.getPrimaryCache().put(key, null);
+            } else if (!ghostCache.isEmpty()) {
                 K key = ghostEvict.keySet().iterator().next();
                 ghostEvict.remove(key);
-                ghostCache.put(key, null); // Add key to ghostCache
+                ghostCache.put(key, null);
             }
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 }
