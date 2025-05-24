@@ -14,14 +14,14 @@ import java.util.logging.Logger;
  * It delegates to the cache subsystem through a clean interface without
  * directly referencing internal cache details or data structures.
  */
-public class ReverseIndexSweeperService {
+public class ReverseIndexCleanupService {
 
-    private static final Logger logger = Logger.getLogger(ReverseIndexSweeperService.class.getName());
+    private static final Logger logger = Logger.getLogger(ReverseIndexCleanupService.class.getName());
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     private final long sweepIntervalMs;
 
-    public ReverseIndexSweeperService(long sweepIntervalMs) throws VertexCacheException {
+    public ReverseIndexCleanupService(long sweepIntervalMs) throws VertexCacheException {
         this.sweepIntervalMs = sweepIntervalMs;
     }
 

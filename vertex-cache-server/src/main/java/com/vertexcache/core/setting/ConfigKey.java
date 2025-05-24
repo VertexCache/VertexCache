@@ -81,14 +81,16 @@ public class ConfigKey {
     // Smart
     public static final boolean ENABLE_SMART_DEFAULT = false;
     public static final String ENABLE_SMART = "enable_smart";
-    public static final boolean ENABLE_SMART_HOTKEY_WATCHER_DEFAULT = true;
-    public static final String ENABLE_SMART_HOTKEY_WATCHER = "hotkey_watcher";
+    public static final boolean ENABLE_SMART_HOTKEY_WATCHER_ALERT_DEFAULT = true;
+    public static final String ENABLE_SMART_HOTKEY_WATCHER_ALERT = "enable_smart_hotkey_watcher_alert";
     public static final boolean ENABLE_SMART_INDEX_CLEANUP_DEFAULT = true;
     public static final String ENABLE_SMART_INDEX_CLEANUP = "enable_smart_index_cleanup";
-    public static final boolean ENABLE_SMART_ACCESS_TRACKING_DEFAULT = true;
-    public static final String ENABLE_SMART_ACCESS_TRACKING = "enable_smart_access_tracking";
-    public static final boolean ENABLE_SMART_ALERT_TRIGGERS_DEFAULT = true;
-    public static final String ENABLE_SMART_ALERT_TRIGGERS = "enable_smart_alert_triggers";
+    public static final boolean ENABLE_SMART_KEY_CHURN_ALERT_DEFAULT = true;
+    public static final String ENABLE_SMART_KEY_CHURN_ALERT = "enable_smart_key_churn_alert";
+    public static final boolean ENABLE_SMART_UNAUTHORIZED_ACCESS_ALERT_DEFAULT = true;
+    public static final String ENABLE_SMART_UNAUTHORIZED_ACCESS_ALERT = "enable_smart_unauthorized_access_alert";
+    public static final boolean ENABLE_SMART_HOTKEY_ANOMALY_ALERT_DEFAULT = true;
+    public static final String ENABLE_SMART_HOTKEY_ANOMALY_ALERT = "enable_smart_hotkey_anomaly_alert";
 
     // Exporter
     public static final boolean ENABLE_EXPORTER_DEFAULT = false;

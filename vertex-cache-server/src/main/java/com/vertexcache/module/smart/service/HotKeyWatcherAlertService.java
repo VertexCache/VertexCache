@@ -42,13 +42,13 @@ import java.util.concurrent.atomic.LongAdder;
  * It works best when paired with efficient counter management and optionally integrates
  * with metrics reporting systems (e.g., Prometheus).
  */
-public final class HotKeyWatcherService {
+public final class HotKeyWatcherAlertService {
 
     private final MetricModule metricModule;
     private final AlertModule alertModule;
     private final ScheduledExecutorService executor;
 
-    public HotKeyWatcherService() throws VertexCacheException {
+    public HotKeyWatcherAlertService() throws VertexCacheException {
 
         Optional<MetricModule> optMetricModule = ModuleRegistry.getInstance().getModule(MetricModule.class);
         if (!optMetricModule.isPresent()) {

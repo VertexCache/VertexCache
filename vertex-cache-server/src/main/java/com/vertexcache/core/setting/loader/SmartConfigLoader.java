@@ -5,33 +5,37 @@ import com.vertexcache.core.setting.ConfigKey;
 public class SmartConfigLoader extends LoaderBase {
 
     private boolean enableSmart;
-    private boolean enableSmartHotkeyWatcher;
     private boolean enableSmartIndexCleanup;
-    private boolean enableSmartAccessTracking;
-    private boolean enableSmartAlertTriggers;
+    private boolean enableSmartHotkeyWatcherAlert;
+    private boolean enableSmartKeyChurnAlert;
+    private boolean enableSmartUnauthorizedAccessAlert;
+    private boolean enableSmartHotkeyAnomalyAlert;
 
     @Override
     public void load() {
         this.enableSmart = this.getConfigLoader().getBooleanProperty(ConfigKey.ENABLE_SMART,ConfigKey.ENABLE_SMART_DEFAULT);
-        this.enableSmartHotkeyWatcher = this.getConfigLoader().getBooleanProperty(ConfigKey.ENABLE_SMART_HOTKEY_WATCHER,ConfigKey.ENABLE_SMART_HOTKEY_WATCHER_DEFAULT);
+        this.enableSmartHotkeyWatcherAlert = this.getConfigLoader().getBooleanProperty(ConfigKey.ENABLE_SMART_HOTKEY_WATCHER_ALERT,ConfigKey.ENABLE_SMART_HOTKEY_WATCHER_ALERT_DEFAULT);
         this.enableSmartIndexCleanup = this.getConfigLoader().getBooleanProperty(ConfigKey.ENABLE_SMART_INDEX_CLEANUP,ConfigKey.ENABLE_SMART_INDEX_CLEANUP_DEFAULT);
-        this.enableSmartAccessTracking = this.getConfigLoader().getBooleanProperty(ConfigKey.ENABLE_SMART_ACCESS_TRACKING,ConfigKey.ENABLE_SMART_ACCESS_TRACKING_DEFAULT);
-        this.enableSmartAlertTriggers = this.getConfigLoader().getBooleanProperty(ConfigKey.ENABLE_SMART_ALERT_TRIGGERS,ConfigKey.ENABLE_SMART_ALERT_TRIGGERS_DEFAULT);
+        this.enableSmartKeyChurnAlert = this.getConfigLoader().getBooleanProperty(ConfigKey.ENABLE_SMART_KEY_CHURN_ALERT,ConfigKey.ENABLE_SMART_KEY_CHURN_ALERT_DEFAULT);
+        this.enableSmartUnauthorizedAccessAlert = this.getConfigLoader().getBooleanProperty(ConfigKey.ENABLE_SMART_UNAUTHORIZED_ACCESS_ALERT,ConfigKey.ENABLE_SMART_UNAUTHORIZED_ACCESS_ALERT_DEFAULT);
+        this.enableSmartHotkeyAnomalyAlert = this.getConfigLoader().getBooleanProperty(ConfigKey.ENABLE_SMART_HOTKEY_ANOMALY_ALERT,ConfigKey.ENABLE_SMART_HOTKEY_ANOMALY_ALERT_DEFAULT);
     }
 
     public boolean isEnableSmart() {
         return enableSmart;
     }
-    public boolean isEnableSmartHotkeyWatcher() {return enableSmartHotkeyWatcher;}
+    public boolean isEnableSmartHotkeyWatcherAlert() {return enableSmartHotkeyWatcherAlert;}
     public boolean isEnableSmartIndexCleanup() {return enableSmartIndexCleanup;}
-    public boolean isEnableSmartAccessTracking() {return enableSmartAccessTracking;}
-    public boolean isEnableSmartAlertTriggers() {return enableSmartAlertTriggers;}
+    public boolean isEnableSmartKeyChurnAlert() {return enableSmartKeyChurnAlert;}
+    public boolean isEnableSmartUnauthorizedAccessAlert() {return enableSmartUnauthorizedAccessAlert;}
+    public boolean isEnableSmartHotkeyAnomalyAlert() {return enableSmartHotkeyAnomalyAlert;}
 
     public void setEnableSmart(boolean enableSmart) {
         this.enableSmart = enableSmart;
     }
-    public void setEnableSmartHotkeyWatcher(boolean enableSmartHotkeyWatcher) {this.enableSmartHotkeyWatcher = enableSmartHotkeyWatcher;}
+    public void setEnableSmartHotkeyWatcherAlert(boolean enableSmartHotkeyWatcherAlert) {this.enableSmartHotkeyWatcherAlert = enableSmartHotkeyWatcherAlert;}
     public void setEnableSmartIndexCleanup(boolean enableSmartIndexCleanup) {this.enableSmartIndexCleanup = enableSmartIndexCleanup;}
-    public void setEnableSmartAccessTracking(boolean enableSmartAccessTracking) {this.enableSmartAccessTracking = enableSmartAccessTracking;}
-    public void setEnableSmartAlertTriggers(boolean enableSmartAlertTriggers) {this.enableSmartAlertTriggers = enableSmartAlertTriggers;}
+    public void setEnableSmartKeyChurnAlert(boolean enableSmartKeyChurnAlert) {this.enableSmartKeyChurnAlert = enableSmartKeyChurnAlert;}
+    public void setEnableSmartUnauthorizedAccessAlert(boolean enableSmartUnauthorizedAccessAlert) {this.enableSmartUnauthorizedAccessAlert = enableSmartUnauthorizedAccessAlert;}
+    public void setEnableSmartHotkeyAnomalyAlert(boolean enableSmartHotkeyAnomalyAlert) {this.enableSmartHotkeyAnomalyAlert = enableSmartHotkeyAnomalyAlert;}
 }
