@@ -7,10 +7,12 @@ import com.vertexcache.core.module.ModuleStatus;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.validation.VertexCacheValidationException;
 import com.vertexcache.module.smart.service.HotKeyWatcherService;
+import com.vertexcache.module.smart.service.ReverseIndexSweeperService;
 
 public class SmartModule extends Module {
 
     private HotKeyWatcherService hotKeyWatcherService;
+    private ReverseIndexSweeperService reverseIndexSweeperService;
 
     @Override
     protected void onValidate() {
@@ -34,16 +36,28 @@ public class SmartModule extends Module {
                 this.hotKeyWatcherService.start();
                 //LogHelper.getInstance().logInfo("[SmartModule] HotKeyWatcherService initialized");
             }
+
+            if (Config.getInstance().getSmartConfigLoader().isEnableSmartIndexCleanup()) {
+                // Run the index sweeper every hour, move this to a config option later
+                this.reverseIndexSweeperService = new ReverseIndexSweeperService(3_600_000);
+                this.reverseIndexSweeperService.start();
+                //LogHelper.getInstance().logInfo("[SmartModule] ReverseIndexSweeperService initialized");
+            }
+
+            this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
         } catch (VertexCacheException ex) {
             this.setModuleStatus(ModuleStatus.STARTUP_FAILED, ex.getMessage());
         }
-        this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
+
     }
 
     @Override
     protected void onStop() {
-        if (hotKeyWatcherService != null) {
-            hotKeyWatcherService.shutdown();
+        if (this.hotKeyWatcherService != null) {
+            this.hotKeyWatcherService.shutdown();
+        }
+        if(this.reverseIndexSweeperService != null) {
+            this.reverseIndexSweeperService.shutdown();
         }
         this.setModuleStatus(ModuleStatus.SHUTDOWN_SUCCESSFUL);
     }

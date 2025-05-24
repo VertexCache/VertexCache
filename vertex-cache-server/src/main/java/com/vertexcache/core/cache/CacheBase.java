@@ -162,4 +162,6 @@ abstract public class CacheBase<K, V> {
     public Map<Object, K> getReadOnlySecondaryIndexTwo() {
         return Collections.unmodifiableMap(secondaryIndexTwo);
     }
+
+    public Map<K, CacheIndexRef> getReverseIndex() { return reverseIndex; }
 }

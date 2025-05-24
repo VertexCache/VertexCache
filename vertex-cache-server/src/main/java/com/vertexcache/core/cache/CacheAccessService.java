@@ -1,5 +1,6 @@
 package com.vertexcache.core.cache;
 
+import com.vertexcache.core.cache.model.CacheIndexRef;
 import com.vertexcache.core.cache.model.KeyPrefixer;
 import com.vertexcache.core.cache.exception.VertexCacheException;
 import com.vertexcache.core.cache.exception.VertexCacheTypeException;
@@ -9,6 +10,8 @@ import com.vertexcache.module.metric.model.MetricName;
 import com.vertexcache.module.metric.service.MetricAccess;
 import com.vertexcache.server.session.ClientSessionContext;
 import com.vertexcache.common.log.LogHelper;
+
+import java.util.Map;
 import java.util.Optional;
 
 public class CacheAccessService {
@@ -207,4 +210,33 @@ public class CacheAccessService {
         LogHelper.getInstance().logError(msg);
         throw new RuntimeException(msg, ex);
     }
+
+    // ==== Cache Utils ===
+
+    public void sweepOrphanedIndexEntries() throws VertexCacheException {
+        try {
+            Map<Object, CacheIndexRef> reverseIndex = cache.getReverseIndex();
+            Map<Object, Object> idx1Map = cache.getReadOnlySecondaryIndexOne();
+            Map<Object, Object> idx2Map = cache.getReadOnlySecondaryIndexTwo();
+
+            for (Map.Entry<Object, CacheIndexRef> entry : reverseIndex.entrySet()) {
+                Object primaryKey = entry.getKey();
+                CacheIndexRef ref = entry.getValue();
+
+                if (!cache.containsKey(primaryKey)) {
+                    if (ref.getIdx1() != null) {
+                        idx1Map.remove(ref.getIdx1(), primaryKey);
+                    }
+                    if (ref.getIdx2() != null) {
+                        idx2Map.remove(ref.getIdx2(), primaryKey);
+                    }
+
+                    reverseIndex.remove(primaryKey);
+                }
+            }
+        } catch (Exception e) {
+            throw new VertexCacheException("sweepOrphanedIndexEntries Failed");
+        }
+    }
+
 }

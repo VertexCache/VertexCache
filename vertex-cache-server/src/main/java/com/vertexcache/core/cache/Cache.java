@@ -3,6 +3,7 @@ package com.vertexcache.core.cache;
 import com.vertexcache.core.cache.algos.*;
 import com.vertexcache.core.cache.exception.VertexCacheTypeException;
 import com.vertexcache.core.cache.model.CacheEntry;
+import com.vertexcache.core.cache.model.CacheIndexRef;
 import com.vertexcache.core.cache.model.EvictionPolicy;
 
 import java.util.Map;
@@ -88,6 +89,8 @@ public class Cache<K, V> {
     public Map<Object, K> getReadOnlySecondaryIndexTwo() {
         return cache.getReadOnlySecondaryIndexTwo();
     }
+
+    public Map<K, CacheIndexRef> getReverseIndex() { return cache.getReverseIndex(); }
 
     public boolean containsKey(K key) {
         return cache.containsKey(key);
