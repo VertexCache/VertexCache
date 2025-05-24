@@ -3,6 +3,8 @@ package com.vertexcache.core.cache;
 import com.vertexcache.core.cache.exception.VertexCacheTypeException;
 import com.vertexcache.core.cache.impl.*;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 public class Cache<K, V> {
@@ -68,14 +70,22 @@ public class Cache<K, V> {
         return entry != null ? entry.getValue() : null;
     }
 
-    public V getBySecondaryKeyIndexOne(Object secondaryKey) {
+    protected V getBySecondaryKeyIndexOne(Object secondaryKey) {
         CacheEntry<V> entry = cache.getBySecondaryKeyIndexOne(secondaryKey);
         return entry != null ? entry.getValue() : null;
     }
 
-    public V getBySecondaryKeyIndexTwo(Object secondaryKey) {
+    protected V getBySecondaryKeyIndexTwo(Object secondaryKey) {
         CacheEntry<V> entry = cache.getBySecondaryKeyIndexTwo(secondaryKey);
         return entry != null ? entry.getValue() : null;
+    }
+
+    public Map<Object, K> getReadOnlySecondaryIndexOne() {
+        return cache.getReadOnlySecondaryIndexOne();
+    }
+
+    public Map<Object, K> getReadOnlySecondaryIndexTwo() {
+        return cache.getReadOnlySecondaryIndexTwo();
     }
 
     public boolean containsKey(K key) {
@@ -89,6 +99,7 @@ public class Cache<K, V> {
     }
 
     public void remove(K primaryKey) {
+        cache.cleanupIndexFor(primaryKey);
         cache.remove(primaryKey);
     }
 

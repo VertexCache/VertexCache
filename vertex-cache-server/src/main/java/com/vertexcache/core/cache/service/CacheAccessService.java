@@ -6,13 +6,10 @@ import com.vertexcache.core.cache.exception.VertexCacheException;
 import com.vertexcache.core.cache.exception.VertexCacheTypeException;
 import com.vertexcache.core.module.ModuleRegistry;
 import com.vertexcache.module.auth.model.TenantId;
-import com.vertexcache.module.metric.model.MetricKey;
 import com.vertexcache.module.metric.model.MetricName;
 import com.vertexcache.module.metric.service.MetricAccess;
 import com.vertexcache.server.session.ClientSessionContext;
 import com.vertexcache.common.log.LogHelper;
-
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 public class CacheAccessService {
@@ -121,50 +118,82 @@ public class CacheAccessService {
 
     private String hitAndMissMetricTracking(String key, String result) {
         Optional<MetricAccess> optionalMetricAccess = ModuleRegistry.getMetricAccessIfEnabled();
-        if (optionalMetricAccess != null) {
-            optionalMetricAccess.ifPresent(metricAccess -> metricAccess.getMetricCollector().increment(MetricName.CACHE_GET_TOTAL));
-            ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getHotKeyTracker().recordAccess(key));
+        if (optionalMetricAccess.isPresent()) {
+            MetricAccess metrics = optionalMetricAccess.get();
+            metrics.getMetricCollector().increment(MetricName.CACHE_GET_TOTAL);
+            metrics.getHotKeyTracker().recordAccess(key);
+
             if (result != null) {
-                optionalMetricAccess.ifPresent(metricAccess -> metricAccess.getMetricCollector().increment(MetricName.CACHE_HIT_COUNT));
+                metrics.getMetricCollector().increment(MetricName.CACHE_HIT_COUNT);
             } else {
-                optionalMetricAccess.ifPresent(metricAccess -> metricAccess.getMetricCollector().increment(MetricName.CACHE_MISS_COUNT));
+                metrics.getMetricCollector().increment(MetricName.CACHE_MISS_COUNT);
             }
         }
         return result;
     }
 
     public String getBySecondaryIdx1(ClientSessionContext session, String idxKey) {
-        ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX1));
-        return (String) cache.getBySecondaryKeyIndexOne(KeyPrefixer.prefixKey(idxKey, session));
+        return this.getBySecondaryIdx1(KeyPrefixer.prefixKey(idxKey, session));
     }
 
     public String getBySecondaryIdx1(TenantId tenant, String idxKey) {
-        ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX1));
-        return (String) cache.getBySecondaryKeyIndexOne(tenant + "::" + idxKey);
+        return this.getBySecondaryIdx1(tenant + "::" + idxKey);
+    }
+
+    private String getBySecondaryIdx1(String key) {
+
+        // Look up the primary key using the reverse index
+        String primaryKey = (String) cache.getReadOnlySecondaryIndexOne().get(key);
+        if (primaryKey == null) {
+            return null;
+        }
+
+        // Record metric for index lookup usage
+        ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics ->
+                metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX1)
+        );
+
+        // Return the value associated with the resolved primary key
+        return (String) cache.get(primaryKey);
     }
 
     public String getBySecondaryIdx2(ClientSessionContext session, String idxKey) {
-        ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX2));
-        return (String) cache.getBySecondaryKeyIndexTwo(KeyPrefixer.prefixKey(idxKey, session));
+        return this.getBySecondaryIdx2(KeyPrefixer.prefixKey(idxKey, session));
     }
 
     public String getBySecondaryIdx2(TenantId tenant, String idxKey) {
-        ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX2));
-        return (String) cache.getBySecondaryKeyIndexTwo(tenant + "::" + idxKey);
+        return this.getBySecondaryIdx2(tenant + "::" + idxKey);
+    }
+
+    private String getBySecondaryIdx2(String key) {
+
+        // Look up the primary key using the reverse index
+        String primaryKey = (String) cache.getReadOnlySecondaryIndexTwo().get(key);
+        if (primaryKey == null) {
+            return null;
+        }
+
+        // Record metric for index lookup usage
+        ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics ->
+                metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX2)
+        );
+
+        // Return the value associated with the resolved primary key
+        return (String) cache.get(primaryKey);
     }
 
     // === DELETE ===
 
     public void remove(ClientSessionContext session, String key) {
-        cache.remove(KeyPrefixer.prefixKey(key, session));
-        ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> {
-            metrics.getMetricCollector().increment(MetricName.CACHE_DEL_TOTAL);
-            metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,this.cache.size());
-        });
+        this.remove(KeyPrefixer.prefixKey(key, session));
     }
 
     public void remove(TenantId tenant, String key) {
-        cache.remove(tenant + "::" + key);
+        this.remove(tenant + "::" + key);
+    }
+
+    private void remove(String key) {
+        cache.remove( key);
         ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> {
             metrics.getMetricCollector().increment(MetricName.CACHE_DEL_TOTAL);
             metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,this.cache.size());
