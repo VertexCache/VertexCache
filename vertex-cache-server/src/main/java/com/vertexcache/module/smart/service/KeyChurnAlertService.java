@@ -14,62 +14,48 @@ import java.util.concurrent.*;
 
 public class KeyChurnAlertService extends BaseAlertService {
 
-    private static final int CHURN_WINDOW_SEC = 60;
-    private static final int BASELINE_THRESHOLD = 500;
-    private static final int MAX_THRESHOLD = 100_000;
+    private static final int CHURN_WINDOW_SEC = 10;
+    private static final int BASE_THRESHOLD = 100;
+    private static final int MAX_CACHE_SIZE = 1000000;
+    private static final long ALERT_COOLDOWN_MS = 30_000;
 
     private final Set<String> recentKeys = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+    private long lastAlertTime = 0;
 
     public KeyChurnAlertService() throws VertexCacheException {
-        super();
+        super("KeyChurn", CHURN_WINDOW_SEC);
     }
 
     @Override
-    public void start() {
-        executor.scheduleAtFixedRate(this::resetWindow, CHURN_WINDOW_SEC, CHURN_WINDOW_SEC, TimeUnit.SECONDS);
-    }
-
-    @Override
-    public void shutdown() {
-        executor.shutdownNow();
-    }
-
-    public void onKeySet(String key) throws VertexCacheTypeException {
-        recentKeys.add(key);
-        if (recentKeys.size() >= getDynamicThreshold()) {
-            triggerAlert();
-        }
-    }
-
-    private int getDynamicThreshold() throws VertexCacheTypeException {
-        int size = this.getCacheAccessService().getKeyCount();
-        long dynamic = Math.max(BASELINE_THRESHOLD, size / 10L);
-        return (int) Math.min(dynamic, MAX_THRESHOLD); // Always capped to prevent memory blowout
-    }
-
-    private void triggerAlert() throws VertexCacheTypeException {
-        int dynamicThreshold = getDynamicThreshold();
+    protected void evaluate() throws VertexCacheTypeException {
         int recentKeyCount = recentKeys.size();
-        long cacheSize = this.getCacheAccessService().getKeyCount();
+        int cacheSize = this.getCacheAccessService().getKeyCount();
 
-        Map<String, Object> details = new HashMap<>();
-        details.put("message", "High key churn: " + recentKeyCount + " unique keys in " + CHURN_WINDOW_SEC + " seconds.");
-        details.put("unique_key_count", recentKeyCount);
-        details.put("threshold", dynamicThreshold);
-        details.put("window_sec", CHURN_WINDOW_SEC);
-        details.put("total_cache_keys", cacheSize);
+        if (cacheSize <= 0) {
+            recentKeys.clear();
+            return;
+        }
 
-        this.getAlertModule().dispatch(new AlertEvent(
-                AlertEventType.KEY_CHURN,
-                Config.getInstance().getCoreConfigLoader().getLocalNodeId(),
-                details
-        ));
+        int dynamicThreshold = Math.min(BASE_THRESHOLD + (int)(cacheSize * 0.01), MAX_CACHE_SIZE);
+        long now = System.currentTimeMillis();
 
-        recentKeys.clear(); // reset after alert
-    }
+        if (recentKeyCount >= dynamicThreshold && (now - lastAlertTime) >= ALERT_COOLDOWN_MS) {
+            lastAlertTime = now;
 
-    private void resetWindow() {
+            Map<String, Object> details = new HashMap<>();
+            details.put("message", "High key churn: " + recentKeyCount + " unique keys in " + CHURN_WINDOW_SEC + " seconds.");
+            details.put("unique_key_count", recentKeyCount);
+            details.put("threshold", dynamicThreshold);
+            details.put("window_sec", CHURN_WINDOW_SEC);
+            details.put("total_cache_keys", cacheSize);
+
+            this.getAlertModule().dispatch(new AlertEvent(
+                    AlertEventType.KEY_CHURN,
+                    Config.getInstance().getCoreConfigLoader().getLocalNodeId(),
+                    details
+            ));
+        }
+
         recentKeys.clear();
     }
 }

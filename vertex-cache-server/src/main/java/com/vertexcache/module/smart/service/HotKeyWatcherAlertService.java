@@ -44,24 +44,12 @@ import java.util.concurrent.atomic.LongAdder;
  */
 public final class HotKeyWatcherAlertService extends BaseAlertService {
 
-    private final ScheduledExecutorService executor;
-
     public HotKeyWatcherAlertService() throws VertexCacheException {
-        super();
-        this.executor = Executors.newSingleThreadScheduledExecutor();
+        super("HotKeyWatcher", 10); // Run every 10 seconds
     }
 
     @Override
-    public void start() {
-        executor.scheduleAtFixedRate(this::scan, 5, 30, TimeUnit.SECONDS);
-    }
-
-    @Override
-    public void shutdown() {
-        executor.shutdown();
-    }
-
-    private void scan() {
+    protected void evaluate() {
         Map<String, Object> hotKeys = this.getMetricModule().getMetricAccess().getHotKeysView();
         LongAdder adder = (LongAdder) hotKeys.get(MetricViewKey.COMMAND_GET_TOTAL);
         long totalGet = adder == null ? 0 : adder.longValue();

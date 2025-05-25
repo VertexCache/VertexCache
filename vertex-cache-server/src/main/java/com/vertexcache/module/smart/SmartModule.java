@@ -1,23 +1,32 @@
 package com.vertexcache.module.smart;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.core.cache.exception.VertexCacheException;
 import com.vertexcache.core.module.Module;
 import com.vertexcache.core.module.ModuleStatus;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.validation.VertexCacheValidationException;
-import com.vertexcache.module.smart.service.HotKeyWatcherAlertService;
-import com.vertexcache.module.smart.service.KeyChurnAlertService;
-import com.vertexcache.module.smart.service.ReverseIndexCleanupService;
-import com.vertexcache.module.smart.service.UnauthorizedAccessAlertService;
+import com.vertexcache.module.smart.service.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class SmartModule extends Module {
+
+    private final ScheduledExecutorService smartScheduler =
+            Executors.newSingleThreadScheduledExecutor(
+                    new ThreadFactoryBuilder().setNameFormat("SmartModule-%d").setDaemon(true).build()
+            );
 
     private ReverseIndexCleanupService reverseIndexCleanupService;
     private HotKeyWatcherAlertService hotKeyWatcherAlertService;
     private KeyChurnAlertService keyChurnAlertService;
     private UnauthorizedAccessAlertService unauthorizedAccessAlertService;
-    
+    private HotKeyAnomalyAlertService hotKeyAnomalyAlertService;
+
     @Override
     protected void onValidate() {
         var config = Config.getInstance();
@@ -35,26 +44,36 @@ public class SmartModule extends Module {
     @Override
     protected void onStart() {
         try {
+            List<BaseAlertService> enabledServices = new ArrayList<>();
+
             if (Config.getInstance().getSmartConfigLoader().isEnableSmartHotkeyWatcherAlert()) {
                 this.hotKeyWatcherAlertService = new HotKeyWatcherAlertService();
-                this.hotKeyWatcherAlertService.start();
-                //LogHelper.getInstance().logInfo("[SmartModule] HotKeyWatcherService initialized");
+                enabledServices.add(hotKeyWatcherAlertService);
             }
 
             if (Config.getInstance().getSmartConfigLoader().isEnableSmartIndexCleanup()) {
                 this.reverseIndexCleanupService = new ReverseIndexCleanupService();
-                this.reverseIndexCleanupService.start();
-                //LogHelper.getInstance().logInfo("[SmartModule] ReverseIndexSweeperService initialized");
+                enabledServices.add(reverseIndexCleanupService);
             }
 
             if (Config.getInstance().getSmartConfigLoader().isEnableSmartKeyChurnAlert()) {
                 this.keyChurnAlertService = new KeyChurnAlertService();
-                this.keyChurnAlertService.start();
-                //LogHelper.getInstance().logInfo("[SmartModule] KeyChurnAlertService initialized");
+                enabledServices.add(keyChurnAlertService);
             }
 
-            if(Config.getInstance().getSmartConfigLoader().isEnableSmartUnauthorizedAccessAlert()) {
+            if (Config.getInstance().getSmartConfigLoader().isEnableSmartUnauthorizedAccessAlert()) {
                 this.unauthorizedAccessAlertService = new UnauthorizedAccessAlertService();
+                enabledServices.add(unauthorizedAccessAlertService);
+            }
+
+            if (Config.getInstance().getSmartConfigLoader().isEnableSmartHotkeyAnomalyAlert()) {
+                this.hotKeyAnomalyAlertService = new HotKeyAnomalyAlertService();
+                enabledServices.add(hotKeyAnomalyAlertService);
+            }
+
+            // Register only enabled services
+            for (BaseAlertService service : enabledServices) {
+                service.start(smartScheduler);
             }
 
             this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
@@ -65,16 +84,23 @@ public class SmartModule extends Module {
 
     @Override
     protected void onStop() {
-        if (this.hotKeyWatcherAlertService != null) {
-            this.hotKeyWatcherAlertService.shutdown();
+        if (hotKeyWatcherAlertService != null) {
+            hotKeyWatcherAlertService.stop();
         }
-        if(this.reverseIndexCleanupService != null) {
-            this.reverseIndexCleanupService.shutdown();
+        if (reverseIndexCleanupService != null) {
+            reverseIndexCleanupService.stop();
         }
-        if(this.keyChurnAlertService != null) {
-            this.keyChurnAlertService.shutdown();
+        if (keyChurnAlertService != null) {
+            keyChurnAlertService.stop();
         }
-        this.setModuleStatus(ModuleStatus.SHUTDOWN_SUCCESSFUL);
+        if (unauthorizedAccessAlertService != null) {
+            unauthorizedAccessAlertService.stop();
+        }
+        if (hotKeyAnomalyAlertService != null) {
+            hotKeyAnomalyAlertService.stop();
+        }
+
+        smartScheduler.shutdown();
     }
 
     public UnauthorizedAccessAlertService getUnauthorizedAccessAlertService() {

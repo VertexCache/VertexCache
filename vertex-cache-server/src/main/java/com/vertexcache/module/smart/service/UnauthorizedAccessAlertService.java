@@ -25,17 +25,12 @@ public class UnauthorizedAccessAlertService extends BaseAlertService implements 
     private static final long ALERT_COOLDOWN_MILLIS = 10_000; // 10 seconds
 
     public UnauthorizedAccessAlertService() throws VertexCacheException {
-        super();
+        super("UnauthorizedAccess", 0); // No scheduler needed
     }
 
     @Override
-    public void start() {
-        // NoOp
-    }
-
-    @Override
-    public void shutdown() {
-        // NoOp
+    protected void evaluate() {
+        // No-op: manual trigger only via listener
     }
 
     @Override

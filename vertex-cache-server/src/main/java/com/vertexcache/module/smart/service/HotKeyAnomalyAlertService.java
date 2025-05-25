@@ -13,18 +13,7 @@ public class HotKeyAnomalyAlertService extends BaseAlertService {
     private Map<String, Long> previousSnapshot = new HashMap<>();
 
     public HotKeyAnomalyAlertService() throws VertexCacheException {
-        super();
-
-    }
-
-    @Override
-    public void start() {
-
-    }
-
-    @Override
-    public void shutdown() {
-
+        super("HotKeyAnomaly", 10); // runs every 10 seconds
     }
 
     public void evaluate() {
