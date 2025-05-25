@@ -11,5 +11,6 @@ public enum AlertEventType {
     MEMORY_USAGE_HIGH,
     DISK_USAGE_HIGH,
 
-    HOT_KEY_ALERT
+    HOT_KEY_ALERT,
+    KEY_CHURN
 }

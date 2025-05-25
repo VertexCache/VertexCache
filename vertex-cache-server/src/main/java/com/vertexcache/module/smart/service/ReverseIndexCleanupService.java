@@ -16,17 +16,15 @@ import java.util.logging.Logger;
  */
 public class ReverseIndexCleanupService {
 
+    private static final long SWEEP_INTERVAL_MS = 3_600_000;
     private static final Logger logger = Logger.getLogger(ReverseIndexCleanupService.class.getName());
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
-    private final long sweepIntervalMs;
-
-    public ReverseIndexCleanupService(long sweepIntervalMs) throws VertexCacheException {
-        this.sweepIntervalMs = sweepIntervalMs;
+    public ReverseIndexCleanupService() throws VertexCacheException {
     }
 
     public void start() {
-        scheduler.scheduleAtFixedRate(this::runSweepSafely, sweepIntervalMs, sweepIntervalMs, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(this::runSweepSafely, SWEEP_INTERVAL_MS, SWEEP_INTERVAL_MS, TimeUnit.MILLISECONDS);
     }
 
     public void shutdown() {

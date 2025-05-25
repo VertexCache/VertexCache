@@ -1,6 +1,7 @@
 package com.vertexcache.core.cache;
 
 import com.vertexcache.core.cache.algos.*;
+import com.vertexcache.core.cache.exception.VertexCacheException;
 import com.vertexcache.core.cache.exception.VertexCacheTypeException;
 import com.vertexcache.core.cache.model.CacheEntry;
 import com.vertexcache.core.cache.model.CacheIndexRef;
@@ -45,10 +46,10 @@ public class Cache<K, V> {
         return getInstance(evictionPolicy, 0);
     }
 
-    public static <K, V> Cache<K, V> getInstance() throws Exception {
+    public static <K, V> Cache<K, V> getInstance() throws VertexCacheTypeException {
         synchronized (Cache.class) {
             if (instance == null) {
-                throw new Exception("Cache not yet initialized with eviction policy");
+                throw new VertexCacheTypeException("Cache not yet initialized with eviction policy");
             }
             return (Cache<K, V>) instance;
         }

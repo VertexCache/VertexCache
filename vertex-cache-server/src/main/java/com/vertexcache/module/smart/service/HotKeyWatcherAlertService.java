@@ -42,14 +42,13 @@ import java.util.concurrent.atomic.LongAdder;
  * It works best when paired with efficient counter management and optionally integrates
  * with metrics reporting systems (e.g., Prometheus).
  */
-public final class HotKeyWatcherAlertService {
+public final class HotKeyWatcherAlertService extends BaseAlertService {
 
     private final MetricModule metricModule;
-    private final AlertModule alertModule;
     private final ScheduledExecutorService executor;
 
     public HotKeyWatcherAlertService() throws VertexCacheException {
-
+        super();
         Optional<MetricModule> optMetricModule = ModuleRegistry.getInstance().getModule(MetricModule.class);
         if (!optMetricModule.isPresent()) {
             if (Config.getInstance().getMetricConfigLoader().isEnableMetric()) {
@@ -59,27 +58,20 @@ public final class HotKeyWatcherAlertService {
         } else {
             this.metricModule = optMetricModule.get();
         }
-
-        Optional<AlertModule> optAlertModule = ModuleRegistry.getInstance().getModule(AlertModule.class);
-        if (!optAlertModule.isPresent()) {
-            if (Config.getInstance().getAlertConfigLoader().isEnableAlerting()) {
-                throw new VertexCacheException("AlertModule not enabled");
-            }
-            this.alertModule = null;
-        } else {
-            this.alertModule = optAlertModule.get();
-        }
-
-
         this.executor = Executors.newSingleThreadScheduledExecutor();
     }
 
+    @Override
     public void start() {
         executor.scheduleAtFixedRate(this::scan, 5, 30, TimeUnit.SECONDS);
     }
 
-    private void scan() {
+    @Override
+    public void shutdown() {
+        executor.shutdown();
+    }
 
+    private void scan() {
         Map<String, Object> hotKeys = this.metricModule.getMetricAccess().getHotKeysView();
         LongAdder adder = (LongAdder) hotKeys.get(MetricViewKey.COMMAND_GET_TOTAL);
         long totalGet = adder == null ? 0 : adder.longValue();
@@ -99,16 +91,12 @@ public final class HotKeyWatcherAlertService {
             details.put("hit_count", hits);
             details.put("hit_ratio_percent", String.format("%.2f", ratio));
             details.put("total_get_requests", totalGet);
-            alertModule.dispatch(new AlertEvent(
+
+            this.getAlertModule().dispatch(new AlertEvent(
                     AlertEventType.HOT_KEY_ALERT,
                     Config.getInstance().getCoreConfigLoader().getLocalNodeId(),
                     details
             ));
-            LogHelper.getInstance().logWarn(msg);
         }
-    }
-
-    public void shutdown() {
-        executor.shutdown();
     }
 }

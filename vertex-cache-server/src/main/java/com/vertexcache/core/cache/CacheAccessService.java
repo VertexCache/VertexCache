@@ -16,24 +16,29 @@ import java.util.Optional;
 
 public class CacheAccessService {
 
-    private final Cache<Object, Object> cache;
+    //private final Cache<Object, Object> cache;
 
+    @SuppressWarnings("unchecked")
     public CacheAccessService() throws VertexCacheException {
-        try {
-            this.cache = Cache.getInstance();
-        } catch (Exception e) {
-            throw new VertexCacheException("Failed to initialize CacheAccessService");
-        }
+      //  try {
+        //    this.cache = Cache.getInstance();
+        //} catch (Exception e) {
+          //  throw new VertexCacheException("Failed to initialize CacheAccessService");
+        //}
     }
 
     // === SET ===
 
     public void put(ClientSessionContext session, String key, String value) {
         try {
-            this.cache.put(KeyPrefixer.prefixKey(key, session), value);
+            Cache.getInstance().put(KeyPrefixer.prefixKey(key, session), value);
             ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> {
                 metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL);
-                metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,this.cache.size());
+                try {
+                    metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,Cache.getInstance().size());
+                } catch (VertexCacheTypeException e) {
+                    throw new RuntimeException(e);
+                }
             });
         } catch (VertexCacheTypeException ex) {
             logAndRethrow("put(session, key, value)", session.getClientId(), key, ex);
@@ -42,11 +47,15 @@ public class CacheAccessService {
 
     public void put(ClientSessionContext session, String key, String value, String idx1) {
         try {
-            this.cache.put(KeyPrefixer.prefixKey(key, session), value, KeyPrefixer.prefixKey(idx1, session));
+            Cache.getInstance().put(KeyPrefixer.prefixKey(key, session), value, KeyPrefixer.prefixKey(idx1, session));
             ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> {
                 metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL);
                 metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX1);
-                metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,this.cache.size());
+                try {
+                    metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,Cache.getInstance().size());
+                } catch (VertexCacheTypeException e) {
+                    throw new RuntimeException(e);
+                }
             });
         } catch (VertexCacheTypeException ex) {
             logAndRethrow("put(session, key, value, idx1)", session.getClientId(), key, ex);
@@ -55,12 +64,16 @@ public class CacheAccessService {
 
     public void put(ClientSessionContext session, String key, String value, String idx1, String idx2) {
         try {
-            this.cache.put(KeyPrefixer.prefixKey(key, session), value, KeyPrefixer.prefixKey(idx1, session), KeyPrefixer.prefixKey(idx2, session));
+            Cache.getInstance().put(KeyPrefixer.prefixKey(key, session), value, KeyPrefixer.prefixKey(idx1, session), KeyPrefixer.prefixKey(idx2, session));
             ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> {
                 metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL);
                 metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX1);
                 metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX2);
-                metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,this.cache.size());
+                try {
+                    metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,Cache.getInstance().size());
+                } catch (VertexCacheTypeException e) {
+                    throw new RuntimeException(e);
+                }
             });
         } catch (VertexCacheTypeException ex) {
             logAndRethrow("put(session, key, value, idx1, idx2)", session.getClientId(), key, ex);
@@ -69,11 +82,15 @@ public class CacheAccessService {
 
     public void put(TenantId tenant, String key, String value) {
         try {
-            this.cache.put(tenant + "::" + key, value);
+            Cache.getInstance().put(tenant + "::" + key, value);
             ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL));
             ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> {
                 metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL);
-                metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,this.cache.size());
+                try {
+                    metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,Cache.getInstance().size());
+                } catch (VertexCacheTypeException e) {
+                    throw new RuntimeException(e);
+                }
             });
         } catch (VertexCacheTypeException ex) {
             logAndRethrow("put(tenant, key, value)", tenant, key, ex);
@@ -82,11 +99,15 @@ public class CacheAccessService {
 
     public void put(TenantId tenant, String key, String value, String idx1) {
         try {
-            this.cache.put(tenant + "::" + key, value, tenant + "::" + idx1);
+            Cache.getInstance().put(tenant + "::" + key, value, tenant + "::" + idx1);
             ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> {
                 metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL);
                 metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX1);
-                metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,this.cache.size());
+                try {
+                    metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,Cache.getInstance().size());
+                } catch (VertexCacheTypeException e) {
+                    throw new RuntimeException(e);
+                }
             });
         } catch (VertexCacheTypeException ex) {
             logAndRethrow("put(tenant, key, value, idx1)", tenant, key, ex);
@@ -95,12 +116,16 @@ public class CacheAccessService {
 
     public void put(TenantId tenant, String key, String value, String idx1, String idx2) {
         try {
-            this.cache.put(tenant + "::" + key, value, tenant + "::" + idx1, tenant + "::" + idx2);
+            Cache.getInstance().put(tenant + "::" + key, value, tenant + "::" + idx1, tenant + "::" + idx2);
             ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> {
                 metrics.getMetricCollector().increment(MetricName.CACHE_SET_TOTAL);
                 metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX1);
                 metrics.getMetricCollector().increment(MetricName.CACHE_INDEX_USAGE_IDX2);
-                metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,this.cache.size());
+                try {
+                    metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,Cache.getInstance().size());
+                } catch (VertexCacheTypeException e) {
+                    throw new RuntimeException(e);
+                }
             });
         } catch (VertexCacheTypeException ex) {
             logAndRethrow("put(tenant, key, value, idx1, idx2)", tenant, key, ex);
@@ -110,12 +135,12 @@ public class CacheAccessService {
 
     // === GET ===
 
-    public String get(ClientSessionContext session, String key) {
-        return hitAndMissMetricTracking(key, (String) cache.get(KeyPrefixer.prefixKey(key, session)));
+    public String get(ClientSessionContext session, String key) throws VertexCacheTypeException {
+        return hitAndMissMetricTracking(key, (String) Cache.getInstance().get(KeyPrefixer.prefixKey(key, session)));
     }
 
-    public String get(TenantId tenant, String key) {
-        return hitAndMissMetricTracking(key, (String) cache.get(tenant + "::" + key));
+    public String get(TenantId tenant, String key) throws VertexCacheTypeException {
+        return hitAndMissMetricTracking(key, (String) Cache.getInstance().get(tenant + "::" + key));
     }
 
     private String hitAndMissMetricTracking(String key, String result) {
@@ -134,18 +159,18 @@ public class CacheAccessService {
         return result;
     }
 
-    public String getBySecondaryIdx1(ClientSessionContext session, String idxKey) {
+    public String getBySecondaryIdx1(ClientSessionContext session, String idxKey) throws VertexCacheTypeException {
         return this.getBySecondaryIdx1(KeyPrefixer.prefixKey(idxKey, session));
     }
 
-    public String getBySecondaryIdx1(TenantId tenant, String idxKey) {
+    public String getBySecondaryIdx1(TenantId tenant, String idxKey) throws VertexCacheTypeException {
         return this.getBySecondaryIdx1(tenant + "::" + idxKey);
     }
 
-    private String getBySecondaryIdx1(String key) {
+    private String getBySecondaryIdx1(String key) throws VertexCacheTypeException {
 
         // Look up the primary key using the reverse index
-        String primaryKey = (String) cache.getReadOnlySecondaryIndexOne().get(key);
+        String primaryKey = (String) Cache.getInstance().getReadOnlySecondaryIndexOne().get(key);
         if (primaryKey == null) {
             return null;
         }
@@ -156,21 +181,21 @@ public class CacheAccessService {
         );
 
         // Return the value associated with the resolved primary key
-        return (String) cache.get(primaryKey);
+        return (String) Cache.getInstance().get(primaryKey);
     }
 
-    public String getBySecondaryIdx2(ClientSessionContext session, String idxKey) {
+    public String getBySecondaryIdx2(ClientSessionContext session, String idxKey) throws VertexCacheTypeException {
         return this.getBySecondaryIdx2(KeyPrefixer.prefixKey(idxKey, session));
     }
 
-    public String getBySecondaryIdx2(TenantId tenant, String idxKey) {
+    public String getBySecondaryIdx2(TenantId tenant, String idxKey) throws VertexCacheTypeException {
         return this.getBySecondaryIdx2(tenant + "::" + idxKey);
     }
 
-    private String getBySecondaryIdx2(String key) {
+    private String getBySecondaryIdx2(String key) throws VertexCacheTypeException {
 
         // Look up the primary key using the reverse index
-        String primaryKey = (String) cache.getReadOnlySecondaryIndexTwo().get(key);
+        String primaryKey = (String) Cache.getInstance().getReadOnlySecondaryIndexTwo().get(key);
         if (primaryKey == null) {
             return null;
         }
@@ -181,24 +206,28 @@ public class CacheAccessService {
         );
 
         // Return the value associated with the resolved primary key
-        return (String) cache.get(primaryKey);
+        return (String) Cache.getInstance().get(primaryKey);
     }
 
     // === DELETE ===
 
-    public void remove(ClientSessionContext session, String key) {
+    public void remove(ClientSessionContext session, String key) throws VertexCacheTypeException {
         this.remove(KeyPrefixer.prefixKey(key, session));
     }
 
-    public void remove(TenantId tenant, String key) {
+    public void remove(TenantId tenant, String key) throws VertexCacheTypeException {
         this.remove(tenant + "::" + key);
     }
 
-    private void remove(String key) {
-        cache.remove( key);
+    private void remove(String key) throws VertexCacheTypeException {
+        Cache.getInstance().remove( key);
         ModuleRegistry.getMetricAccessIfEnabled().ifPresent(metrics -> {
             metrics.getMetricCollector().increment(MetricName.CACHE_DEL_TOTAL);
-            metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,this.cache.size());
+            try {
+                metrics.getMetricCollector().setGauge(MetricName.CACHE_KEY_COUNT,Cache.getInstance().size());
+            } catch (VertexCacheTypeException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 
@@ -215,15 +244,15 @@ public class CacheAccessService {
 
     public void sweepOrphanedIndexEntries() throws VertexCacheException {
         try {
-            Map<Object, CacheIndexRef> reverseIndex = cache.getReverseIndex();
-            Map<Object, Object> idx1Map = cache.getReadOnlySecondaryIndexOne();
-            Map<Object, Object> idx2Map = cache.getReadOnlySecondaryIndexTwo();
+            Map<Object, CacheIndexRef> reverseIndex = Cache.getInstance().getReverseIndex();
+            Map<Object, Object> idx1Map = Cache.getInstance().getReadOnlySecondaryIndexOne();
+            Map<Object, Object> idx2Map = Cache.getInstance().getReadOnlySecondaryIndexTwo();
 
             for (Map.Entry<Object, CacheIndexRef> entry : reverseIndex.entrySet()) {
                 Object primaryKey = entry.getKey();
                 CacheIndexRef ref = entry.getValue();
 
-                if (!cache.containsKey(primaryKey)) {
+                if (!Cache.getInstance().containsKey(primaryKey)) {
                     if (ref.getIdx1() != null) {
                         idx1Map.remove(ref.getIdx1(), primaryKey);
                     }
@@ -237,6 +266,10 @@ public class CacheAccessService {
         } catch (Exception e) {
             throw new VertexCacheException("sweepOrphanedIndexEntries Failed");
         }
+    }
+
+    public int getKeyCount() throws VertexCacheTypeException {
+        return Cache.getInstance().size();
     }
 
 }

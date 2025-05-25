@@ -1,18 +1,21 @@
 package com.vertexcache.module.smart;
 
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.core.cache.exception.VertexCacheException;
 import com.vertexcache.core.module.Module;
 import com.vertexcache.core.module.ModuleStatus;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.validation.VertexCacheValidationException;
 import com.vertexcache.module.smart.service.HotKeyWatcherAlertService;
+import com.vertexcache.module.smart.service.KeyChurnAlertService;
 import com.vertexcache.module.smart.service.ReverseIndexCleanupService;
 
 public class SmartModule extends Module {
 
-    private HotKeyWatcherAlertService hotKeyWatcherAlertService;
     private ReverseIndexCleanupService reverseIndexCleanupService;
-
+    private HotKeyWatcherAlertService hotKeyWatcherAlertService;
+    private KeyChurnAlertService keyChurnAlertService;
+    
     @Override
     protected void onValidate() {
         var config = Config.getInstance();
@@ -37,17 +40,21 @@ public class SmartModule extends Module {
             }
 
             if (Config.getInstance().getSmartConfigLoader().isEnableSmartIndexCleanup()) {
-                // Run the index sweeper every hour, move this to a config option later
-                this.reverseIndexCleanupService = new ReverseIndexCleanupService(3_600_000);
+                this.reverseIndexCleanupService = new ReverseIndexCleanupService();
                 this.reverseIndexCleanupService.start();
                 //LogHelper.getInstance().logInfo("[SmartModule] ReverseIndexSweeperService initialized");
+            }
+
+            if (Config.getInstance().getSmartConfigLoader().isEnableSmartKeyChurnAlert()) {
+                this.keyChurnAlertService = new KeyChurnAlertService();
+                this.keyChurnAlertService.start();
+                //LogHelper.getInstance().logInfo("[SmartModule] KeyChurnAlertService initialized");
             }
 
             this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
         } catch (VertexCacheException ex) {
             this.setModuleStatus(ModuleStatus.STARTUP_FAILED, ex.getMessage());
         }
-
     }
 
     @Override
@@ -57,6 +64,9 @@ public class SmartModule extends Module {
         }
         if(this.reverseIndexCleanupService != null) {
             this.reverseIndexCleanupService.shutdown();
+        }
+        if(this.keyChurnAlertService != null) {
+            this.keyChurnAlertService.shutdown();
         }
         this.setModuleStatus(ModuleStatus.SHUTDOWN_SUCCESSFUL);
     }
