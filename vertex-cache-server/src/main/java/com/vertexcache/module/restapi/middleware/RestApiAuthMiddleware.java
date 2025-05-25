@@ -26,7 +26,7 @@ public class RestApiAuthMiddleware implements Handler {
             throw new UnauthorizedResponse("Missing auth token");
         }
 
-        AuthEntry client = AuthService.getInstance().getClientByToken(token);
+        AuthEntry client = AuthService.getInstance().authenticateByToken(token);
         if (client == null) {
             LogHelper.getInstance().logWarn("[REST API] Invalid token on path: " + path);
             throw new UnauthorizedResponse("Invalid auth token");

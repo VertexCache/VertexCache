@@ -217,5 +217,5 @@ enable_smart=true
 enable_smart_index_cleanup=true
 enable_smart_hotkey_watcher_alert=true
 enable_smart_key_churn_alert=true
-enable_smart_unauthorized_access_alert
-enable_smart_hotkey_anomaly_alert
+enable_smart_unauthorized_access_alert=true
+enable_smart_hotkey_anomaly_alert=true

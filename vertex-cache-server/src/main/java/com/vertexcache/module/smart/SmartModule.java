@@ -9,12 +9,14 @@ import com.vertexcache.core.validation.VertexCacheValidationException;
 import com.vertexcache.module.smart.service.HotKeyWatcherAlertService;
 import com.vertexcache.module.smart.service.KeyChurnAlertService;
 import com.vertexcache.module.smart.service.ReverseIndexCleanupService;
+import com.vertexcache.module.smart.service.UnauthorizedAccessAlertService;
 
 public class SmartModule extends Module {
 
     private ReverseIndexCleanupService reverseIndexCleanupService;
     private HotKeyWatcherAlertService hotKeyWatcherAlertService;
     private KeyChurnAlertService keyChurnAlertService;
+    private UnauthorizedAccessAlertService unauthorizedAccessAlertService;
     
     @Override
     protected void onValidate() {
@@ -51,6 +53,10 @@ public class SmartModule extends Module {
                 //LogHelper.getInstance().logInfo("[SmartModule] KeyChurnAlertService initialized");
             }
 
+            if(Config.getInstance().getSmartConfigLoader().isEnableSmartUnauthorizedAccessAlert()) {
+                this.unauthorizedAccessAlertService = new UnauthorizedAccessAlertService();
+            }
+
             this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
         } catch (VertexCacheException ex) {
             this.setModuleStatus(ModuleStatus.STARTUP_FAILED, ex.getMessage());
@@ -71,4 +77,7 @@ public class SmartModule extends Module {
         this.setModuleStatus(ModuleStatus.SHUTDOWN_SUCCESSFUL);
     }
 
+    public UnauthorizedAccessAlertService getUnauthorizedAccessAlertService() {
+        return unauthorizedAccessAlertService;
+    }
 }

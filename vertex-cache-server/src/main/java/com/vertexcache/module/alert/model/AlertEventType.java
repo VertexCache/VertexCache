@@ -12,5 +12,6 @@ public enum AlertEventType {
     DISK_USAGE_HIGH,
 
     HOT_KEY_ALERT,
-    KEY_CHURN
+    KEY_CHURN,
+    UNAUTHORIZED_ACCESS_ATTEMPT
 }
