@@ -6,7 +6,8 @@
   -->
 <meta name='keywords' content='in-memory cache, caching, java, data structure, database'>
 
-# ![VertexCache](https://github.com/jasonlam604/VertexCache/blob/main/etc/assets/vertexcache-logo-32x32.png) What is VertexCache
+![VertexCache](https://github.com/jasonlam604/VertexCache/blob/main/etc/assets/vertexcache-logo-192x192.png) 
+# What is VertexCache
 VertexCache is a high-performance, open-source, in-memory caching system designed for speed, flexibility, and ease of use. Built with scalability and security in mind, it offers multi-index caching, allowing efficient data retrieval using one primary key and up to two optional secondary keys for faster lookups and reduced database I/O.
 
 Developed in Java, VertexCache is powered by the Vertex Cache Message Protocol (VCMP)—an open, structured, and lightweight messaging protocol optimized for low-latency, high-throughput communication. With built-in configurable logging via Log4J, developers gain real-time visibility and debugging capabilities without compromising performance.
