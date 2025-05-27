@@ -15,6 +15,7 @@
  */
 package com.vertexcache.module.restapi;
 
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.core.module.Module;
 import com.vertexcache.core.module.ModuleStatus;
 import com.vertexcache.core.setting.Config;
@@ -47,11 +48,13 @@ public class RestApiModule extends Module {
     @Override
     protected void onStart() {
         if(Config.getInstance().getClusterConfigLoader().isPrimaryNode()) {
-            this.startRestService();
+            this.startService();
+        } else {
+            this.setModuleStatus(ModuleStatus.STARTUP_STANDBY, "REST API Server will start on Node Promotion");
         }
     }
 
-    public void startRestService() {
+    public void startService() {
         var config = Config.getInstance().getRestApiConfigLoader();
 
         if (!config.isEnableRestApi()) {

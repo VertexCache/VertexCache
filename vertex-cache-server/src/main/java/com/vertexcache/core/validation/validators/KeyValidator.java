@@ -15,9 +15,10 @@
  */
 package com.vertexcache.core.validation.validators;
 
+import com.vertexcache.core.validation.Validator;
 import com.vertexcache.core.validation.VertexCacheValidationException;
 
-public class KeyValidator {
+public class KeyValidator implements Validator {
 
     private final String fieldName;
     private final String value;
@@ -36,7 +37,7 @@ public class KeyValidator {
             throw new VertexCacheValidationException(fieldName + " exceeds maximum length (255)");
         }
 
-        if (!value.matches("^[a-zA-Z0-9_-]+$")) {
+        if (!value.matches("^[a-zA-Z0-9:_\\-\\.]+$")) {
             throw new VertexCacheValidationException(fieldName + " contains invalid characters");
         }
     }

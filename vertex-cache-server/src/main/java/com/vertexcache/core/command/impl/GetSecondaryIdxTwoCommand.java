@@ -21,6 +21,8 @@ import com.vertexcache.core.cache.CacheAccessService;
 import com.vertexcache.core.command.BaseCommand;
 import com.vertexcache.core.command.CommandResponse;
 import com.vertexcache.core.command.argument.ArgumentParser;
+import com.vertexcache.core.validation.validators.KeyValidator;
+import com.vertexcache.module.restapi.model.ApiParameter;
 import com.vertexcache.server.session.ClientSessionContext;
 
 public class GetSecondaryIdxTwoCommand extends BaseCommand<String> {
@@ -43,6 +45,14 @@ public class GetSecondaryIdxTwoCommand extends BaseCommand<String> {
             }
 
             String idxKey = argumentParser.getPrimaryArgument().getArgs().getFirst();
+
+            try {
+                new KeyValidator(ApiParameter.IDX2.value(), idxKey).validate();
+            } catch (Exception ex) {
+                response.setResponseError(ex.getMessage());
+                return response;
+            }
+
             CacheAccessService service = new CacheAccessService();
             String value = service.getBySecondaryIdx2(session, idxKey);
 

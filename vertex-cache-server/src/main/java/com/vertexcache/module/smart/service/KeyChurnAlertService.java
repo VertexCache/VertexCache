@@ -15,6 +15,7 @@
  */
 package com.vertexcache.module.smart.service;
 
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.core.cache.exception.VertexCacheException;
 import com.vertexcache.core.cache.exception.VertexCacheTypeException;
 import com.vertexcache.core.setting.Config;
@@ -64,11 +65,18 @@ public class KeyChurnAlertService extends BaseAlertService {
             details.put("window_sec", CHURN_WINDOW_SEC);
             details.put("total_cache_keys", cacheSize);
 
-            this.getAlertModule().dispatch(new AlertEvent(
-                    AlertEventType.KEY_CHURN,
-                    Config.getInstance().getCoreConfigLoader().getLocalNodeId(),
-                    details
-            ));
+            if(Config.getInstance().getAlertConfigLoader().isEnableAlerting()) {
+                this.getAlertModule().dispatch(new AlertEvent(
+                        AlertEventType.KEY_CHURN,
+                        Config.getInstance().getCoreConfigLoader().getLocalNodeId(),
+                        details
+                ));
+            }
+            String logMessage = String.format(
+                    "[KEY_CHURN] Detected %d unique keys in %d seconds (threshold=%d, total_cache_keys=%d)",
+                    recentKeyCount, CHURN_WINDOW_SEC, dynamicThreshold, cacheSize
+            );
+            LogHelper.getInstance().logWarn(logMessage);
         }
 
         recentKeys.clear();

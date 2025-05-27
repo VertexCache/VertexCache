@@ -41,13 +41,15 @@ public class SmartModule extends Module {
     private UnauthorizedAccessAlertService unauthorizedAccessAlertService;
     private HotKeyAnomalyAlertService hotKeyAnomalyAlertService;
 
+    List<BaseAlertService> enabledServices = new ArrayList<>();
+
     @Override
     protected void onValidate() {
         var config = Config.getInstance();
 
         try {
-            if(!config.getMetricConfigLoader().isEnableMetric() || !config.getAlertConfigLoader().isEnableAlerting()) {
-                throw new VertexCacheValidationException("SmartModule requires both MetricModule and AlertModule enabled, 'enable_metric' and 'enable_alerting=true'");
+            if(!config.getMetricConfigLoader().isEnableMetric()) {
+                throw new VertexCacheValidationException("SmartModule requires both MetricModule enabled, 'enable_metric'");
             }
 
         } catch (VertexCacheValidationException ex) {
@@ -58,7 +60,6 @@ public class SmartModule extends Module {
     @Override
     protected void onStart() {
         try {
-            List<BaseAlertService> enabledServices = new ArrayList<>();
 
             if (Config.getInstance().getSmartConfigLoader().isEnableSmartHotkeyWatcherAlert()) {
                 this.hotKeyWatcherAlertService = new HotKeyWatcherAlertService();
@@ -85,14 +86,18 @@ public class SmartModule extends Module {
                 enabledServices.add(hotKeyAnomalyAlertService);
             }
 
-            // Register only enabled services
-            for (BaseAlertService service : enabledServices) {
-                service.start(smartScheduler);
+            if(Config.getInstance().getSmartConfigLoader().isEnableSmart()) {
+                this.startService();
+                this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
             }
-
-            this.setModuleStatus(ModuleStatus.STARTUP_SUCCESSFUL);
         } catch (VertexCacheException ex) {
             this.setModuleStatus(ModuleStatus.STARTUP_FAILED, ex.getMessage());
+        }
+    }
+
+    public void startService() {
+        for (BaseAlertService service : enabledServices) {
+            service.start(smartScheduler);
         }
     }
 

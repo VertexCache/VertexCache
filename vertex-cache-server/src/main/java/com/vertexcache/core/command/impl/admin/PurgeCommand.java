@@ -19,6 +19,8 @@ import com.vertexcache.core.cache.Cache;
 import com.vertexcache.core.command.CommandResponse;
 import com.vertexcache.core.command.argument.ArgumentParser;
 import com.vertexcache.core.setting.Config;
+import com.vertexcache.core.validation.validators.KeyValidator;
+import com.vertexcache.module.restapi.model.ApiParameter;
 import com.vertexcache.server.session.ClientSessionContext;
 
 import java.util.Set;
@@ -49,6 +51,13 @@ public class PurgeCommand extends AdminCommand<String> {
             targetPrefix = session.getTenantId() + "::" + inputPrefix;
         } else {
             targetPrefix = inputPrefix;
+        }
+
+        try {
+            new KeyValidator(ApiParameter.KEY_OR_PREFIX.value(), targetPrefix).validate();
+        } catch (Exception ex) {
+            response.setResponseError(ex.getMessage());
+            return response;
         }
 
         try {

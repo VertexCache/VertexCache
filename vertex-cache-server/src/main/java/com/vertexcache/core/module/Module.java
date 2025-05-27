@@ -56,6 +56,7 @@ public abstract class Module implements ModuleHandler {
     public String getStatusSummary() {
         return switch (moduleStatus) {
             case STARTUP_SUCCESSFUL -> "Running";
+            case STARTUP_STANDBY -> "On Standby & Ready to Run";
             case STARTUP_FAILED -> "Startup failed";
             case ERROR_LOAD -> "Load error";
             case ERROR_RUNTIME -> "Runtime error";

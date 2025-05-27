@@ -210,9 +210,20 @@ public class ClusterModule extends Module {
         // Secondary is now Primary, deactivate the heartbeat
         this.heartbeatManager.shutdown();
 
-        reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, Config.getInstance().getClusterConfigLoader().getSecondaryEnabledClusterNode().getId() + " promoted to " + ClusterNodeRole.PRIMARY.name() + ".");
+        new Thread(() -> {
+            try {
+                // Start RestApiModule (assuming the config has it enabled)
+                ModuleRegistry.startRestApiModule();
 
-        this.clusterNodeEventListener.onSecondaryNodePromotedToPrimary(localNode.getId());
+                // Start SmartModule (assuming the config has it enabled and at least one service is enabled)
+                ModuleRegistry.startSmartModule();
+
+                reportHealth(ModuleStatus.STARTUP_SUCCESSFUL, localNode.getId() + " promoted to PRIMARY.");
+                clusterNodeEventListener.onSecondaryNodePromotedToPrimary(localNode.getId());
+            } catch (Exception ex) {
+                LogHelper.getInstance().logError("Promotion thread failed");
+            }
+        }, "PromotionStartupThread").start();
     }
 
     public void clusterPing(ClusterNode node) {

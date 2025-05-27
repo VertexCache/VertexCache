@@ -15,6 +15,7 @@
  */
 package com.vertexcache.module.smart.service;
 
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.core.cache.exception.VertexCacheException;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.module.alert.model.AlertEvent;
@@ -75,12 +76,18 @@ public final class HotKeyWatcherAlertService extends BaseAlertService {
             details.put("hit_count", hits);
             details.put("hit_ratio_percent", String.format("%.2f", ratio));
             details.put("total_get_requests", totalGet);
-
-            this.getAlertModule().dispatch(new AlertEvent(
-                    AlertEventType.HOT_KEY_ALERT,
-                    Config.getInstance().getCoreConfigLoader().getLocalNodeId(),
-                    details
-            ));
+            if(Config.getInstance().getAlertConfigLoader().isEnableAlerting()) {
+                this.getAlertModule().dispatch(new AlertEvent(
+                        AlertEventType.HOT_KEY_ALERT,
+                        Config.getInstance().getCoreConfigLoader().getLocalNodeId(),
+                        details
+                ));
+            }
+            String logMessage = String.format(
+                    "[HOT_KEY_ALERT] key='%s' had %d hits, which is %.2f%% of all GET requests (total_get_requests=%d)",
+                    key, hits, ratio, totalGet
+            );
+            LogHelper.getInstance().logWarn(logMessage);
         }
     }
 }

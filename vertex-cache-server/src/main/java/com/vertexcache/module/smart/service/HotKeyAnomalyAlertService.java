@@ -15,6 +15,7 @@
  */
 package com.vertexcache.module.smart.service;
 
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.core.cache.exception.VertexCacheException;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.module.alert.model.AlertEvent;
@@ -46,11 +47,18 @@ public class HotKeyAnomalyAlertService extends BaseAlertService {
                         "previous_hits", before,
                         "increase_pct", before == 0 ? 1000 : (int) (((double) (now - before) / before) * 100)
                 );
-                this.getAlertModule().dispatch(new AlertEvent(
-                        AlertEventType.HOT_KEY_ANOMALY,
-                        Config.getInstance().getCoreConfigLoader().getLocalNodeId(),
-                        details
-                ));
+                if(Config.getInstance().getAlertConfigLoader().isEnableAlerting()) {
+                    this.getAlertModule().dispatch(new AlertEvent(
+                            AlertEventType.HOT_KEY_ANOMALY,
+                            Config.getInstance().getCoreConfigLoader().getLocalNodeId(),
+                            details
+                    ));
+                }
+                String logMessage = String.format(
+                        "[HOT_KEY_ANOMALY] key='%s', current_hits=%d, previous_hits=%d, increase_pct=%d%%",
+                        key, now, before, (before == 0 ? 1000 : (int) (((double) (now - before) / before) * 100))
+                );
+                LogHelper.getInstance().logWarn(logMessage);
             }
         }
 

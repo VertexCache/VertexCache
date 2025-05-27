@@ -213,7 +213,7 @@ alert_webhook_retry_count=3
 #####################################################
 # Smart Module, when enable_smart=true
 #####################################################
-enable_smart=false
+enable_smart=true
 enable_smart_index_cleanup=true
 enable_smart_hotkey_watcher_alert=true
 enable_smart_key_churn_alert=true

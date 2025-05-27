@@ -20,6 +20,8 @@ import com.vertexcache.core.cache.CacheAccessService;
 import com.vertexcache.core.command.BaseCommand;
 import com.vertexcache.core.command.CommandResponse;
 import com.vertexcache.core.command.argument.ArgumentParser;
+import com.vertexcache.core.validation.validators.KeyValidator;
+import com.vertexcache.module.restapi.model.ApiParameter;
 import com.vertexcache.server.session.ClientSessionContext;
 
 public class DelCommand extends BaseCommand<String> {
@@ -42,6 +44,14 @@ public class DelCommand extends BaseCommand<String> {
             }
 
             String key = argumentParser.getPrimaryArgument().getArgs().getFirst();
+
+            try {
+                new KeyValidator(ApiParameter.KEY.value(), key).validate();
+            } catch (Exception ex) {
+                response.setResponseError(ex.getMessage());
+                return response;
+            }
+
             CacheAccessService service = new CacheAccessService();
             service.remove(session, key);
             response.setResponseOK();

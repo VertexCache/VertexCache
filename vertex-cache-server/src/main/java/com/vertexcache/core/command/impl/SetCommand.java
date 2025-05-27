@@ -20,6 +20,10 @@ import com.vertexcache.core.cache.CacheAccessService;
 import com.vertexcache.core.command.BaseCommand;
 import com.vertexcache.core.command.CommandResponse;
 import com.vertexcache.core.command.argument.ArgumentParser;
+import com.vertexcache.core.validation.ValidationBatch;
+import com.vertexcache.core.validation.Validator;
+import com.vertexcache.core.validation.validators.KeyValidator;
+import com.vertexcache.module.restapi.model.ApiParameter;
 import com.vertexcache.server.session.ClientSessionContext;
 
 import java.util.ArrayList;
@@ -66,14 +70,43 @@ public class SetCommand extends BaseCommand<String> {
             boolean hasIdx2 = argumentParser.subArgumentExists(SUB_ARG_SECONDARY_INDEX_TWO)
                     && argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_TWO).getArgs().size() == 1;
 
+
+
             if (hasIdx1 && hasIdx2) {
                 String idx1 = argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_ONE).getArgs().getFirst();
                 String idx2 = argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_TWO).getArgs().getFirst();
+
+                ValidationBatch batch = new ValidationBatch();
+                batch.check(ApiParameter.KEY.value(), new KeyValidator(ApiParameter.KEY.value(), key));
+                batch.check(ApiParameter.IDX1.value(), new KeyValidator(ApiParameter.IDX1.value(), idx1));
+                batch.check(ApiParameter.IDX2.value(), new KeyValidator(ApiParameter.IDX2.value(), idx2));
+
+                if(batch.hasErrors()) {
+                    response.setResponseError(batch.getSummary());
+                    return response;
+                }
+
                 service.put(session, key, value, idx1, idx2);
             } else if (hasIdx1) {
                 String idx1 = argumentParser.getSubArgumentByName(SUB_ARG_SECONDARY_INDEX_ONE).getArgs().getFirst();
+
+                ValidationBatch batch = new ValidationBatch();
+                batch.check(ApiParameter.KEY.value(), new KeyValidator(ApiParameter.KEY.value(), key));
+                batch.check(ApiParameter.IDX1.value(), new KeyValidator(ApiParameter.IDX1.value(), idx1));
+
+                if(batch.hasErrors()) {
+                    response.setResponseError(batch.getSummary());
+                    return response;
+                }
+
                 service.put(session, key, value, idx1);
             } else {
+                try {
+                    new KeyValidator(ApiParameter.KEY.value(), key).validate();
+                } catch (Exception ex) {
+                    response.setResponseError(ex.getMessage());
+                    return response;
+                }
                 service.put(session, key, value);
             }
 

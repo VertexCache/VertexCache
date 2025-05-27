@@ -154,4 +154,20 @@ public class ModuleRegistry {
                 .getModule(MetricModule.class)
                 .map(MetricModule::getMetricAccess);
     }
+
+    public static void startRestApiModule() {
+        if(Config.getInstance().getRestApiConfigLoader().isEnableRestApi()) {
+            getInstance().getModule(RestApiModule.class).get().startService();
+        } else {
+            LogHelper.getInstance().logInfo("RestApiModule not enabled, will not start.");
+        }
+    }
+
+    public static void startSmartModule() {
+        if(Config.getInstance().getSmartConfigLoader().isEnableSmart()) {
+            getInstance().getModule(SmartModule.class).get().startService();
+        } else {
+            LogHelper.getInstance().logInfo("SmartModule not enabled, will not start.");
+        }
+    }
 }

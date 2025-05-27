@@ -17,6 +17,7 @@ package com.vertexcache.module.restapi.model;
 
 public enum ApiParameter {
     KEY("key"),
+    KEY_OR_PREFIX("key_or_prefix"),
     VALUE("value"),
     FORMAT("format"),
     IDX1("idx1"),

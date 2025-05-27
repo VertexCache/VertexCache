@@ -15,6 +15,7 @@
  */
 package com.vertexcache.module.smart.service;
 
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.core.cache.exception.VertexCacheException;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.module.alert.model.AlertEvent;
@@ -73,11 +74,18 @@ public class UnauthorizedAccessAlertService extends BaseAlertService implements 
         details.put("identifier", identifier);
         details.put("timestamp", Instant.now().toString());
 
-        this.getAlertModule().dispatch(new AlertEvent(
-                AlertEventType.UNAUTHORIZED_ACCESS_ATTEMPT,
-                Config.getInstance().getCoreConfigLoader().getLocalNodeId(),
-                details
-        ));
+        if(Config.getInstance().getAlertConfigLoader().isEnableAlerting()) {
+            this.getAlertModule().dispatch(new AlertEvent(
+                    AlertEventType.UNAUTHORIZED_ACCESS_ATTEMPT,
+                    Config.getInstance().getCoreConfigLoader().getLocalNodeId(),
+                    details
+            ));
+        }
+        String logMessage = String.format(
+                "[UNAUTHORIZED_ACCESS_ATTEMPT] Detected unauthorized access attempt for identifier='%s' at %s",
+                identifier, Instant.now().toString()
+        );
+        LogHelper.getInstance().logWarn(logMessage);
     }
 
     private boolean shouldTrigger(String identifier) {
