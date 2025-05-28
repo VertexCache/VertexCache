@@ -20,6 +20,7 @@ import com.vertexcache.core.command.impl.admin.ConfigCommand;
 import com.vertexcache.core.command.impl.admin.PurgeCommand;
 import com.vertexcache.core.command.impl.admin.ResetCommand;
 import com.vertexcache.core.command.impl.admin.SessionsCommand;
+import com.vertexcache.core.command.impl.internal.PeerPingCommand;
 import com.vertexcache.core.command.impl.internal.RoleChangeCommand;
 
 import java.util.Set;
@@ -63,6 +64,7 @@ public enum Role {
                     ).contains(command.toUpperCase());
 
             case NODE -> Set.of(
+                            PeerPingCommand.COMMAND_KEY,
                             RoleChangeCommand.COMMAND_KEY
                     ).contains(command.toUpperCase());
 

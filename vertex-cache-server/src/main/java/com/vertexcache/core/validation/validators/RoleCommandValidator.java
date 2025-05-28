@@ -15,10 +15,7 @@
  */
 package com.vertexcache.core.validation.validators;
 
-import com.vertexcache.core.command.impl.DelCommand;
-import com.vertexcache.core.command.impl.GetCommand;
-import com.vertexcache.core.command.impl.PingCommand;
-import com.vertexcache.core.command.impl.SetCommand;
+import com.vertexcache.core.command.impl.*;
 import com.vertexcache.core.command.impl.internal.PeerPingCommand;
 import com.vertexcache.core.command.impl.internal.RoleChangeCommand;
 import com.vertexcache.core.validation.Validator;
@@ -59,6 +56,8 @@ public class RoleCommandValidator implements Validator {
             case READ_WRITE -> {
                 if (!Set.of(
                         GetCommand.COMMAND_KEY,
+                        GetSecondaryIdxOneCommand.COMMAND_KEY,
+                        GetSecondaryIdxTwoCommand.COMMAND_KEY,
                         SetCommand.COMMAND_KEY,
                         DelCommand.COMMAND_KEY,
                         PingCommand.COMMAND_KEY
@@ -70,6 +69,8 @@ public class RoleCommandValidator implements Validator {
             case READ_ONLY -> {
                 if (!Set.of(
                         GetCommand.COMMAND_KEY,
+                        GetSecondaryIdxOneCommand.COMMAND_KEY,
+                        GetSecondaryIdxTwoCommand.COMMAND_KEY,
                         PingCommand.COMMAND_KEY
                 ).contains(normalized)) {
                     throw new VertexCacheValidationException("Command not permitted for role READ_ONLY: " + commandName);
