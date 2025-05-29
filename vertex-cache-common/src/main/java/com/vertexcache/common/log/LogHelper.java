@@ -22,6 +22,12 @@ import org.apache.logging.log4j.core.LoggerContext;
 import java.io.File;
 import java.net.URI;
 
+/**
+ * Centralized logging utility for consistent log formatting and behavior across the application.
+ *
+ * Intended to reduce boilerplate and encourage uniform logging practices throughout VertexCache.
+ * Built on top of standard SLF4J logging interfaces.
+ */
 public class LogHelper {
 
     private static volatile LogHelper instance;
@@ -162,4 +168,3 @@ public class LogHelper {
         logger.debug(message);
     }
 }
-

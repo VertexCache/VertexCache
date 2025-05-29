@@ -13,24 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.vertexcache.client.protocol;
+package com.vertexcache.sdk.transport;
 
-public enum CommandType {
-    PING("PING");
+public class TcpClientMock implements TcpClientInterface {
 
-    private final String keyword;
+    private final String mockResponse;
 
-    CommandType(String keyword) {
-        this.keyword = keyword;
-    }
-
-    public String keyword() {
-        return keyword;
+    public TcpClientMock(String mockResponse) {
+        this.mockResponse = mockResponse;
     }
 
     @Override
-    public String toString() {
-        return keyword;
+    public String send(String message) {
+        return mockResponse;
+    }
+
+    @Override
+    public boolean isConnected() {
+        return true;
+    }
+
+    @Override
+    public void close() {
+        // do nothing
     }
 }
 

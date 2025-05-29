@@ -19,6 +19,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * Utility class for retrieving the application version from the JAR manifest or POM metadata.
+ *
+ * This class is useful for:
+ *  - Extracting the implementation version embedded in the built JAR's manifest
+ *  - Providing a consistent way to expose version information programmatically
+ *  - Supporting diagnostic commands and API endpoints that report application version
+ *
+ * Note: The version is typically injected during build time from the Maven POM.
+ * If unavailable, fallback behavior may return null or a default.
+ */
 public class VersionUtil {
     public static String getAppVersion() {
         Properties properties = new Properties();

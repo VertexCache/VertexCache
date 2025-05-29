@@ -23,6 +23,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Abstract base class for all cache algorithm implementations.
+ *
+ * Defines the common interface and shared behavior required by eviction policy-specific caches
+ * such as LRU, LFU, FIFO, CLOCK, ARC, and others. Provides a foundation for core operations
+ * like `get`, `set`, and `delete`, while leaving eviction strategy details to concrete subclasses.
+ *
+ * Responsibilities may include:
+ * - Managing capacity constraints
+ * - Defining hooks for eviction triggers
+ * - Providing utility methods for statistics or introspection
+ *
+ * This class is intended to be extended by concrete cache implementations that apply specific
+ * eviction logic.
+ */
 abstract public class CacheBase<K, V> {
 
     protected static final int MAX_SECONDARY_INDEXES = 2;

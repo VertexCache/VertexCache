@@ -23,6 +23,18 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 import java.util.Base64;
 
+/**
+ * Utility class for performing AES-GCM encryption and decryption using a shared key.
+ *
+ * This class provides static helper methods:
+ * - `encrypt(byte[] data, byte[] key)`: Encrypts the given plaintext using AES-GCM with a 12-byte IV.
+ * - `decrypt(byte[] encryptedData, byte[] key)`: Decrypts AES-GCM-encrypted data back to plaintext.
+ *
+ * AES-GCM ensures both confidentiality and integrity of the data.
+ * The encrypted payload format includes the IV and authentication tag.
+ *
+ * Note: The caller is responsible for supplying a valid 128/192/256-bit AES key.
+ */
 public class GcmCryptoHelper {
 
     private static final String AES = "AES";

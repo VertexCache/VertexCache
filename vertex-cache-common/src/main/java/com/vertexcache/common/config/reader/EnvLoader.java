@@ -21,6 +21,9 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Utility class for loading and resolving environment variables used in VertexCache configuration.
+ */
 public class EnvLoader implements ConfigLoader {
     private final Map<String, String> envVariables;
 

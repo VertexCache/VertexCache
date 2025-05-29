@@ -15,6 +15,13 @@
  */
 package com.vertexcache.common.config.reader;
 
+/**
+ * Factory class for constructing and initializing configuration loaders in VertexCache.
+ *
+ * This class is responsible for:
+ *  - Creating config loader instances
+ *
+ */
 public class ConfigLoaderFactory {
     public static ConfigLoader getLoader(String filePath) {
         if (filePath.contains(".env")) {

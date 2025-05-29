@@ -21,6 +21,17 @@ import java.security.*;
 import java.security.spec.*;
 import java.util.Base64;
 
+/**
+ * Utility class for generating, saving, and loading RSA key pairs using standard Java libraries.
+ *
+ * This helper simplifies working with public and private keys by:
+ *  - Generating RSA key pairs using java.security.KeyPairGenerator
+ *  - Saving keys to PEM-style Base64-encoded files
+ *  - Loading keys from PEM-style files into usable PublicKey and PrivateKey objects
+ *
+ * Note: This is intended for development and testing use cases.
+ * In production environments, key material should be managed by a secure vault or HSM (Hardware Security Module).
+ */
 public class KeyPairHelper {
 
     private static final String ALGO_RSA = "RSA";

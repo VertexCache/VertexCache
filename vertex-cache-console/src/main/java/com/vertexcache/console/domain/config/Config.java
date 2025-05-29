@@ -26,6 +26,19 @@ import com.vertexcache.common.security.KeyPairHelper;
 
 import java.security.PublicKey;
 
+/**
+ * Core configuration class for VertexCache.
+ *
+ * This class is responsible for parsing and providing access to configuration properties
+ * defined via system environment variables, system properties, or `.env` files.
+ *
+ * It encapsulates logic to:
+ * - Load and resolve configuration values at startup
+ * - Provide type-safe access to configuration properties
+ * - Support default values and validation rules
+ *
+ * Note: This class is not related to HTML processing or rendering.
+ */
 public class Config extends ConfigBase {
 
     public static final String APP_NAME = "VertexCache Console";

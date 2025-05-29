@@ -15,6 +15,9 @@
  */
 package com.vertexcache.console.domain.config;
 
+/**
+ * Mapping to .env keys
+ */
 public class ConfigKey {
 
     public static final String LOG_FILEPATH = "log_filepath";

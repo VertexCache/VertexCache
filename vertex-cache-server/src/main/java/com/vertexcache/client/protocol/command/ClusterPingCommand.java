@@ -22,6 +22,13 @@ import com.vertexcache.module.cluster.ClusterModule;
 
 import java.util.Optional;
 
+/**
+ * Command used by standby-enabled cluster nodes to perform a "PING" check
+ * and verify whether a peer node is responsive.
+ *
+ * Note: This command is not issued by the primary node; it is only used by
+ * standby nodes for liveness detection.
+ */
 public class ClusterPingCommand extends BaseCommand<ClusterPingCommand> {
 
     private final String nodeId;

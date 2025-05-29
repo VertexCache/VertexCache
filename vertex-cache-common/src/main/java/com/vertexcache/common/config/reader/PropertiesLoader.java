@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * Utility class for loading configuration properties from files and environment variables.
+ */
 public class PropertiesLoader implements ConfigLoader {
 
     private Properties properties;

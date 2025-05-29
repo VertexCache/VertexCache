@@ -15,6 +15,12 @@
  */
 package com.vertexcache.common.util;
 
+/**
+ * Utility class for common string operations used across the application.
+ *
+ * Intended for internal use in simplifying common string checks.
+ * Uses only standard Java libraries with no external dependencies.
+ */
 public class StringUtil {
 
     public static final String esacpeQuote(String value) {

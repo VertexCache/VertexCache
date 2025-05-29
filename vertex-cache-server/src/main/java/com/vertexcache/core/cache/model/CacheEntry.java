@@ -17,6 +17,10 @@ package com.vertexcache.core.cache.model;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Represents a single value entry stored in the cache, associated with a specific key.
+ * This class encapsulates the actual value and metadata.
+ */
 public final class CacheEntry<V> {
     private V value;
     private final long createdAt;

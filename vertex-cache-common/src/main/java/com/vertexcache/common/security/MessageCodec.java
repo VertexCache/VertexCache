@@ -20,6 +20,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
+/**
+ * MessageCodec handles framing and deframing of messages transmitted over TCP.
+ *
+ * This utility class provides methods to:
+ * - `writeFramedMessage(OutputStream out, byte[] message)`: Prefixes the message with its 4-byte length and writes it to the stream.
+ * - `readFramedMessage(InputStream in)`: Reads the 4-byte length header, then reads the full message of that length from the stream.
+ *
+ * This framing protocol ensures message boundaries are preserved across TCP transmissions,
+ * which is essential since TCP is a stream-oriented protocol with no built-in message demarcation.
+ */
 public class MessageCodec {
 
     // 10 MB is probably enough, unless we really want to support images and videos...etc

@@ -17,6 +17,17 @@ package com.vertexcache.common.util;
 
 import java.util.function.Supplier;
 
+/**
+ * Lightweight utility for lazy initialization of values.
+ *
+ * This class provides:
+ *  - A thread-safe mechanism for computing a value only once on first access
+ *  - Support for deferred initialization using a Supplier<T>
+ *  - Simple caching behavior without third-party libraries or full memoization frameworks
+ *
+ * Useful for performance optimization, deferring expensive computations,
+ * or lazy-loading internal resources.
+ */
 public class Lazy<T> {
     private final Supplier<T> initializer;
     private T value;

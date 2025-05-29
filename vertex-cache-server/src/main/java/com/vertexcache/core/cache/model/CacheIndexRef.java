@@ -15,6 +15,13 @@
  */
 package com.vertexcache.core.cache.model;
 
+/**
+ * Represents a reference to a secondary or tertiary index associated with a cache entry.
+ * This object is used to maintain reverse mappings from index values (e.g., idx1, idx2)
+ * back to the primary cache key, enabling fast lookup and index-based retrieval.
+ *
+ * Typically managed internally by the indexing subsystem to support efficient multi-key access patterns.
+ */
 public class CacheIndexRef {
     public final Object idx1;
     public final Object idx2;

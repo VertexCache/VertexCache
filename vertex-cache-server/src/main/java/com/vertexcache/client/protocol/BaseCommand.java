@@ -18,6 +18,9 @@ package com.vertexcache.client.protocol;
 import com.vertexcache.client.exception.VertexCacheInternalClientException;
 import com.vertexcache.client.transport.TcpClientInterface;
 
+/**
+ * Superclass that encapsulates common logic for command implementations.
+ */
 public abstract class BaseCommand<T extends BaseCommand<T>> implements Command, CommandFailureHandler {
 
     private static String RESPONSE_OK = "OK";

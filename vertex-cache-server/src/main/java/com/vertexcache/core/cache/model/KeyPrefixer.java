@@ -18,6 +18,19 @@ package com.vertexcache.core.cache.model;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.server.session.ClientSessionContext;
 
+/**
+ * Utility class responsible for applying and stripping key prefixes to support multi-tenant cache isolation.
+ *
+ * Prefixing ensures that keys from different tenants or namespaces do not collide within the shared cache space.
+ * This is typically applied at the boundary of cache operations (e.g., get, set, delete).
+ *
+ * Example:
+ * - Input key: "user:123"
+ * - Tenant prefix: "tenantA"
+ * - Resulting stored key: "tenantA:user:123"
+ *
+ * The prefix strategy can be customized based on tenant identifiers, environments, or application domains.
+ */
 public class KeyPrefixer {
 
     private static final String SEPARATOR = "::";

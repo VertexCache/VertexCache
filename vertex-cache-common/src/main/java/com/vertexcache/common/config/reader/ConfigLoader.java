@@ -17,6 +17,15 @@ package com.vertexcache.common.config.reader;
 
 import java.util.Map;
 
+/**
+ * Interface for loading and validating configuration objects in VertexCache.
+ *
+ * Implementations of this interface are expected to:
+ *  - Load configuration values from environment variables or property files
+ *  - Return a fully initialized config object of the appropriate type
+ *
+ * Used by the ConfigLoaderFactory to instantiate concrete loaders for different modules.
+ */
 public interface ConfigLoader {
     boolean loadFromPath(String filePath);
     boolean isExist(String key);

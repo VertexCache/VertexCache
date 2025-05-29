@@ -25,6 +25,20 @@ import com.vertexcache.core.cache.model.EvictionPolicy;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Cache wrapper responsible for instantiating and delegating to the appropriate underlying
+ * cache implementation based on the configured eviction policy.
+ *
+ * This class abstracts the complexity of selecting and initializing eviction algorithms such as
+ * LRU, LFU, FIFO, ARC, CLOCK, etc., allowing the rest of the system to interact with a unified cache interface.
+ *
+ * It serves as the central entry point for cache operations (get, set, delete) and ensures that
+ * the selected policy is correctly applied according to runtime configuration.
+ *
+ * Example usage:
+ * - Configured policy: LRU → instantiates LruCache internally
+ * - Configured policy: TINYLFU → instantiates TinyLfuCache internally
+ */
 public class Cache<K, V> {
 
     private static volatile Cache<?, ?> instance;

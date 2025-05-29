@@ -29,6 +29,19 @@ import com.vertexcache.common.log.LogHelper;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Core service responsible for handling all cache access operations such as get, set, and delete.
+ *
+ * Acts as the main entry point for interacting with the underlying cache system, abstracting
+ * eviction policy details, index management, validation, and metrics tracking.
+ *
+ * Responsibilities include:
+ * - Routing operations to the correct internal cache instance
+ * - Applying key prefixing and validation rules
+ * - Managing index consistency for secondary and tertiary lookups
+ * - Recording metrics for cache activity (e.g., hits, misses, sets, deletions)
+ *
+ */
 public class CacheAccessService {
 
     public CacheAccessService() throws VertexCacheException {

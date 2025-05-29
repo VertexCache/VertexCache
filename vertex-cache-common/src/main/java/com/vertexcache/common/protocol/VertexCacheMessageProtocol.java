@@ -21,6 +21,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Defines the core binary message protocol used for communication between VertexCache clients and servers.
+ *
+ * Otherwise know as "VCMP"
+ *
+ * This class establishes:
+ *  - Constants for message opcodes and flags
+ *  - The binary layout for request and response framing
+ *  - Protocol-level settings such as header sizes, limits, and reserved values
+ *
+ * It serves as the foundation for parsing and constructing low-level messages in VertexCache,
+ * ensuring consistent wire format across all clients and server components.
+ *
+ * Note: This protocol is designed for efficiency and compactness, optimized for high-throughput cache access.
+ */
 public class VertexCacheMessageProtocol {
 
     private static final String SYSTEM_ERROR = "ERR, Unable to convert to bytes";

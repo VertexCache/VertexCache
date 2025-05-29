@@ -35,6 +35,11 @@ import java.security.cert.CertificateException;
 import java.util.Base64;
 import java.util.Scanner;
 
+/**
+ * Console CLI Terminal Client that interacts with VertexCache, key difference between this and the SDKs
+ * is that is display the raw VCMP protocol responses.  This is helpful for debugging and/or developing
+ * your TCP Client.
+ */
 public class ConsoleTerminal {
 
     private static final String CMD_EXIT = "exit";

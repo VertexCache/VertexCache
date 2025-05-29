@@ -15,6 +15,23 @@
  */
 package com.vertexcache.core.cache.model;
 
+/**
+ * Enum representing the eviction policy applied when the cache reaches its maximum capacity.
+ * Each policy defines a different strategy for selecting which entries to remove to make space.
+ *
+ * Supported policies include:
+ * - LRU: Least Recently Used
+ * - LFU: Least Frequently Used
+ * - FIFO: First-In-First-Out
+ * - MRU: Most Recently Used
+ * - CLOCK: Clock algorithm (approximation of LRU)
+ * - ARC: Adaptive Replacement Cache
+ * - RANDOM: Random entry eviction
+ * - TINYLFU: TinyLFU with admission filtering
+ * - NONE: No eviction; cache will reject inserts once full
+ *
+ * The selected policy impacts cache performance characteristics and should align with access patterns.
+ */
 public enum EvictionPolicy {
     NONE("None", "None", "No eviction"),
     RANDOM("RANDOM", "Random", "Evict randomly"),

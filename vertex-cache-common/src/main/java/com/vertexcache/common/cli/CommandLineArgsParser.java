@@ -18,6 +18,18 @@ package com.vertexcache.common.cli;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Utility class for parsing command-line arguments passed to the VertexCache application.
+ *
+ * This class is responsible for:
+ *  - Extracting key-value pairs from raw CLI arguments
+ *  - Providing simple lookup methods for specific flags or values
+ *  - Supporting optional and required argument use cases
+ *
+ * Used during early application startup to capture override settings such as config paths,
+ * debug modes, or environment targeting.
+ */
+
 public class CommandLineArgsParser {
     private final Map<String, String> keyValuePairs;
 

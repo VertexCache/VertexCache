@@ -15,6 +15,18 @@
  */
 package com.vertexcache.core.cache.model;
 
+/**
+ * Enum representing the format or type of data submitted to the cache via client requests.
+ * Used primarily to indicate how the cache should interpret and validate the value payload.
+ *
+ * Common formats include:
+ * - STRING: Plain text
+ * - BASE64: Binary data encoded as Base64
+ * - JSON: Structured JSON objects
+ * - XML: XML-formatted strings
+ *
+ * This classification allows format-specific validation, storage optimization, and tooling support.
+ */
 public enum DataType {
     STRING,
     JSON,

@@ -19,6 +19,14 @@ import com.vertexcache.console.domain.terminal.ConsoleTerminal;
 import com.vertexcache.console.domain.config.Config;
 import com.vertexcache.common.cli.CommandLineArgsParser;
 
+/**
+ * VertexCache Client Console Entry point
+ *
+ * Example Execution Run:
+ *
+ * java -Dlog4j.configurationFile=./vertex-cache-config/console/log4j2-vertexcache-console.xml \
+ *      -jar vertex-cache-console.jar --config=./vertex-cache-config/console/.env
+ */
 public class VertexCacheConsole {
 
     public static void main(String[] args) throws Exception {

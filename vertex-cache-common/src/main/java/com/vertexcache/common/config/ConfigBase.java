@@ -17,6 +17,9 @@ package com.vertexcache.common.config;
 
 import com.vertexcache.common.cli.CommandLineArgsParser;
 
+/**
+ * Abstract base class for configuration models in VertexCache.
+ */
 abstract public class ConfigBase {
 
   abstract public void loadPropertiesFromArgs(CommandLineArgsParser commandLineArgsParser);

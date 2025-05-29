@@ -31,6 +31,19 @@ import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Utility class for encoding and decoding PEM-formatted strings.
+ *
+ * This class provides convenience methods for:
+ *  - Encoding byte arrays as PEM strings with custom headers/footers
+ *  - Decoding PEM strings back into raw byte arrays
+ *  - Stripping PEM headers and formatting for parsing
+ *
+ * Commonly used when working with keys, certificates, and cryptographic material
+ * in Base64-encoded PEM format.
+ *
+ * Note: This utility uses standard Java libraries and does not depend on external providers.
+ */
 public class PemUtil {
 
     private static final Pattern PEM_PATTERN = Pattern.compile(

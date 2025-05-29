@@ -15,6 +15,17 @@
  */
 package com.vertexcache.common.config;
 
+/**
+ * Exception thrown when a configuration-related error occurs during VertexCache initialization or runtime.
+ *
+ * This exception is used to indicate:
+ *  - Missing, malformed, or invalid configuration values
+ *  - Issues parsing environment variables or configuration files
+ *  - Any condition that prevents successful configuration loading or validation
+ *
+ * Typically thrown by config loaders, validators, or startup routines.
+ * Intended to surface fatal misconfiguration early during application boot.
+ */
 public class VertexCacheConfigException extends RuntimeException {
     public VertexCacheConfigException(String message) {
         super(message);
