@@ -15,10 +15,22 @@
  */
 package com.vertexcache.core.validation.validators.cluster;
 
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 import com.vertexcache.module.cluster.model.ClusterNodeAvailability;
 
+/**
+ * Validator that ensures the provided cluster node availability state is valid.
+ *
+ * Verifies that the input string corresponds to a recognized enum value
+ * in {@code ClusterNodeAvailability}, such as:
+ * - PRIMARY
+ * - SECONDARY_ACTIVE
+ * - SECONDARY_STANDBY
+ *
+ * Throws a VertexCacheValidationException if the value is unrecognized.
+ * This is typically used to validate configuration input before initializing cluster state.
+ */
 public class ClusterNodeAvailabilityValidator implements Validator {
     private final String state;
 

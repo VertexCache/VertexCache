@@ -15,6 +15,13 @@
  */
 package com.vertexcache.module.metric.model;
 
+/**
+ * Enumeration of metric tag categories used to classify different types of metrics
+ * within the system. Tags include core operations, TTL distribution, value analysis,
+ * index usage, and hot key tracking.
+ *
+ * Provides a label for each tag and a utility method to resolve tags from string labels.
+ */
 public enum MetricTag {
     CORE("core"),
     TTL("ttl"),

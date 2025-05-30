@@ -18,6 +18,14 @@ package com.vertexcache.module.alert.model;
 import java.time.Instant;
 import java.util.Map;
 
+/**
+ * AlertEvent represents a triggered alert within the VertexCache system.
+ * It encapsulates details such as the alert type, timestamp, triggering context,
+ * and any associated metadata needed for downstream processing or dispatch.
+ *
+ * This class is used internally to pass alert information between components,
+ * such as from monitoring modules to webhook dispatchers or logging systems.
+ */
 public class AlertEvent {
     private final AlertEventType event;
     private final String timestamp;

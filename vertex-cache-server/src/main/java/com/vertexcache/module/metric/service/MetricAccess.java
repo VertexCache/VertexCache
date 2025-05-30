@@ -17,13 +17,52 @@ package com.vertexcache.module.metric.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vertexcache.core.module.ModuleRegistry;
-import com.vertexcache.core.util.RuntimeInfo;
+import com.vertexcache.core.util.runtime.RuntimeInfo;
 import com.vertexcache.module.metric.MetricModule;
+import com.vertexcache.module.metric.analysis.HotKeyTracker;
+import com.vertexcache.module.metric.analysis.MetricAnalysisHelper;
+import com.vertexcache.module.metric.core.MetricCollector;
+import com.vertexcache.module.metric.core.MetricRegistry;
+import com.vertexcache.module.metric.counter.ClientCommandCounters;
 import com.vertexcache.module.metric.model.MetricName;
 import com.vertexcache.module.metric.model.MetricViewKey;
 
 import java.util.*;
 
+/**
+ * Administrative command used to retrieve internal metrics from the VertexCache server.
+ *
+ * Provides visibility into cache performance, usage patterns, and operational statistics.
+ *
+ * Typical metrics include:
+ * === COMMAND USAGE ===
+ * Commands.del.total: 0
+ * Commands.set.total: 0
+ * Commands.get.total: 0
+ *
+ * === CACHE EFFECTIVENESS ===
+ * Cache.hit.count: 0
+ * Cache.hit.ratio: 0.0%
+ * Cache.miss.count: 0
+ * Cache.key.count: 0
+ *
+ * === INDEX USAGE ===
+ * Cache.index.usage.idx1: 0
+ * Cache.index.usage.idx2: 0
+ *
+ * === HOT KEYS ===
+ *  (list most used keys)
+ *
+ * === JVM MEMORY ===
+ * Memory.used.mb: 71
+ * Memory.free.mb: 952
+ * Memory.max.mb: 2048
+ * Memory.total.allocated.mb: 1024
+ * Uptime: 19 hours 32 minutes 46 seconds
+ *
+ * Supports optional "pretty" mode for human-readable formatted output,
+ * useful during manual inspection or CLI usage.
+ */
 public class MetricAccess {
 
     private MetricRegistry metricRegistry;

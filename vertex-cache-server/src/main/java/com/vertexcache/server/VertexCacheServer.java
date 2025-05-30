@@ -20,10 +20,20 @@ import com.vertexcache.common.cli.CommandLineArgsParser;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.module.ModuleRegistry;
 
+/**
+ * Main entry point for launching the VertexCache server application.
+ *
+ * Loads configuration from command-line arguments, initializes all enabled modules,
+ * and starts the core socket server to accept client connections.
+ *
+ * Registers a JVM shutdown hook to gracefully stop all modules on termination.
+ *
+ * Note: Currently designed as a standalone application; future support for embeddable use is planned.
+ */
 public class VertexCacheServer {
     public static void main(String[] args) throws Exception {
 
-        // TODO - Modify so this loadable to support Embeddable Java use
+        // Load Config data from .env
         Config.getInstance().loadPropertiesFromArgs(new CommandLineArgsParser(args));
 
         // Load all enabled modules

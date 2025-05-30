@@ -15,10 +15,19 @@
  */
 package com.vertexcache.core.validation.validators.cluster;
 
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 import com.vertexcache.module.cluster.model.ClusterNodeRole;
 
+/**
+ * Validator that checks whether a given cluster node role string is valid.
+ *
+ * Ensures the input maps to a recognized enum value in {@code ClusterNodeRole},
+ * such as PRIMARY or STANDBY.
+ *
+ * Throws a VertexCacheValidationException if the role is unrecognized or invalid.
+ * Typically used during configuration loading or peer validation in clustered environments.
+ */
 public class ClusterNodeRoleValidator implements Validator {
     private final String role;
 

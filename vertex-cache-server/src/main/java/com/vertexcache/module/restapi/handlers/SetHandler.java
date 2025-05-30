@@ -18,11 +18,20 @@ package com.vertexcache.module.restapi.handlers;
 import com.vertexcache.core.cache.CacheAccessService;
 import com.vertexcache.core.command.impl.SetCommand;
 import com.vertexcache.core.util.message.ResultCode;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 import com.vertexcache.core.validation.validators.KeyValidator;
 import com.vertexcache.core.validation.validators.ValueValidator;
 import com.vertexcache.module.restapi.model.ApiParameter;
 
+/**
+ * REST handler for processing cache insertion or update (SET) requests.
+ *
+ * Validates write access, required fields (key and value), and optional index fields.
+ * Ensures that idx2 is not provided without idx1. Performs format validation if specified.
+ *
+ * Stores the value in the cache under the specified key and optional indexes,
+ * and responds with a success status and echo of the value.
+ */
 public class SetHandler extends AbstractRestHandler {
 
     @Override

@@ -18,7 +18,7 @@ package com.vertexcache.module.restapi.server;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.security.PemUtil;
 import com.vertexcache.core.setting.Config;
-import com.vertexcache.core.setting.loader.RestApiConfigLoader;
+import com.vertexcache.core.setting.loaders.RestApiConfigLoader;
 import com.vertexcache.module.restapi.exception.VertexCacheRestApiException;
 import com.vertexcache.module.restapi.middleware.RestApiAuthMiddleware;
 import com.vertexcache.module.restapi.routes.ApiExceptionRoutes;
@@ -34,6 +34,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * REST API server implementation for VertexCache.
+ *
+ * Manages the lifecycle of the Javalin web server, including configuration,
+ * route registration, middleware setup, and optional TLS support.
+ *
+ * Supports starting with or without TLS based on configuration,
+ * CORS configuration, authentication middleware, and graceful shutdown.
+ */
 public class RestApiServer {
 
     public final static String API_PREFIX = "/api";

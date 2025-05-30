@@ -15,10 +15,18 @@
  */
 package com.vertexcache.core.validation.validators.restapi;
 
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 import com.vertexcache.module.restapi.model.TokenHeader;
 
+/**
+ * Validator that ensures the configured token header for REST API authentication is valid and explicitly allowed.
+ *
+ * Currently, the only supported header is {@code AUTHORIZATION}.
+ * Rejects values like {@code NONE}, {@code UNKNOWN}, or anything not matching known secure headers.
+ *
+ * This validator enforces that token extraction logic is both intentional and compliant with supported headers.
+ */
 public class TokenHeaderValidator implements Validator {
 
     private final TokenHeader header;
@@ -29,8 +37,8 @@ public class TokenHeaderValidator implements Validator {
 
     @Override
     public void validate() {
-        if (header == null || header == TokenHeader.NONE || header == TokenHeader.UNKNOWN) {
-            throw new VertexCacheValidationException("Token header must be specified and valid for REST API");
+        if (header == null || header != TokenHeader.AUTHORIZATION) {
+            throw new VertexCacheValidationException("REST API requires a valid token header (AUTHORIZATION).");
         }
     }
 }

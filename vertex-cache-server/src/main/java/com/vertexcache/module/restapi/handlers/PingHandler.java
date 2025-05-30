@@ -21,6 +21,11 @@ import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import com.vertexcache.module.restapi.model.ApiResponse;
 
+/**
+ * Simple REST handler for health checks and liveness probes.
+ *
+ * Responds with HTTP 200 and a "PONG" result code to indicate the service is running.
+ */
 public class PingHandler implements Handler {
 
     @Override

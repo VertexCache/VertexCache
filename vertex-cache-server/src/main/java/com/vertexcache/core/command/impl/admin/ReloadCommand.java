@@ -21,6 +21,19 @@ import com.vertexcache.core.module.ModuleRegistry;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.server.session.ClientSessionContext;
 
+/**
+ * Administrative command that triggers a configuration reload from disk.
+ *
+ * Reloads the active configuration file (e.g., .env or system properties)
+ * without restarting the server. This enables live updates to settings that
+ * support dynamic reloading.
+ *
+ * Requires ADMIN privileges to execute.
+ *
+ * Common use cases:
+ * - Applying updated configuration after manual edits
+ * - Syncing environment-based changes across cluster nodes
+ */
 public class ReloadCommand extends AdminCommand<String> {
 
     public static final String COMMAND_KEY = "RELOAD";

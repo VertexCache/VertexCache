@@ -15,6 +15,14 @@
  */
 package com.vertexcache.module.metric.model;
 
+/**
+ * Defines the types of metrics supported in the system.
+ *
+ * - COUNTER: Monotonic increasing value (e.g., command counts)
+ * - GAUGE: Variable value that can increase or decrease (e.g., current key count)
+ * - RECORDER: Used to collect and aggregate value samples (e.g., value sizes)
+ * - DERIVED: Computed from other metrics (e.g., hit ratio, average value size)
+ */
 public enum MetricType {
     COUNTER,     // Increments only
     GAUGE,       // Can go up/down (e.g., current key count)

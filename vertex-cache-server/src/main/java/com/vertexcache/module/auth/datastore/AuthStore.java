@@ -20,6 +20,14 @@ import com.vertexcache.module.auth.model.AuthEntry;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * AuthStore manages authentication credentials and token mappings within VertexCache.
+ * It provides lookup and verification mechanisms for client credentials, access tokens,
+ * and associated roles, enabling secure access control enforcement.
+ *
+ * This class serves as the central authority for authentication state,
+ * supporting both static configuration and potential dynamic credential loading.
+ */
 public class AuthStore {
     private final Map<String, AuthEntry> authMap = new ConcurrentHashMap<>();
 

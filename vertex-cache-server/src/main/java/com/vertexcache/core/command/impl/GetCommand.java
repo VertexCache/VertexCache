@@ -25,6 +25,17 @@ import com.vertexcache.core.validation.validators.KeyValidator;
 import com.vertexcache.module.restapi.model.ApiParameter;
 import com.vertexcache.server.session.ClientSessionContext;
 
+/**
+ * Command used to retrieve the value associated with a given key from the cache.
+ *
+ * Supports lookups by primary key only. Secondary and tertiary index retrievals
+ * are handled by separate commands.
+ *
+ * If the key exists, the value is returned as-is.
+ * Otherwise, a cache miss response is returned.
+ *
+ * Requires READ or higher privileges to execute.
+ */
 public class GetCommand extends BaseCommand<String> {
 
     public static final String COMMAND_KEY = "GET";

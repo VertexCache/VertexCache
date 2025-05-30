@@ -16,6 +16,10 @@
 package com.vertexcache.core.module;
 
 import com.vertexcache.common.log.LogHelper;
+import com.vertexcache.core.module.model.Module;
+import com.vertexcache.core.module.model.ModuleHandler;
+import com.vertexcache.core.module.model.ModuleName;
+import com.vertexcache.core.module.model.ModuleStatus;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.module.auth.AuthModule;
 import com.vertexcache.module.metric.service.MetricAccess;
@@ -30,6 +34,16 @@ import com.vertexcache.module.smart.SmartModule;
 import java.util.*;
 import java.util.function.Supplier;
 
+/**
+ * Central registry for all available modules in the VertexCache system.
+ *
+ * Maintains mappings between ModuleName enums and their corresponding module instances.
+ * Used by the ModuleHandler to initialize, start, shut down, and track status of each module.
+ *
+ * Also supports lookup operations, status inspection, and dependency resolution.
+ *
+ * Acts as the authoritative source for module discovery and lifecycle management.
+ */
 public class ModuleRegistry {
 
     private static final ModuleRegistry instance = new ModuleRegistry();

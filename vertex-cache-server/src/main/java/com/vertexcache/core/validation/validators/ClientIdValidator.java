@@ -15,9 +15,19 @@
  */
 package com.vertexcache.core.validation.validators;
 
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 
+/**
+ * Validator that ensures the client ID is non-blank and adheres to an accepted format.
+ *
+ * Enforces that the client ID:
+ * - Is not null or empty
+ * - Contains only alphanumeric characters, dots (.), dashes (-), or underscores (_)
+ *
+ * Used to validate client identity in authentication or session tracking contexts.
+ * Throws a VertexCacheValidationException if the client ID is invalid.
+ */
 public class ClientIdValidator implements Validator {
     private final String value;
 

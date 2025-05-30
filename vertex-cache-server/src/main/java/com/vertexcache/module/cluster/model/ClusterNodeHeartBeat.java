@@ -15,6 +15,14 @@
  */
 package com.vertexcache.module.cluster.model;
 
+/**
+ * ClusterNodeHeartBeat represents a periodic heartbeat signal sent by a node in the VertexCache cluster.
+ * It contains metadata such as the node ID, current role, config hash, and timestamp,
+ * allowing peers to assess liveness, configuration alignment, and role continuity.
+ *
+ * This class is a key component of cluster health monitoring and is used in determining
+ * node availability, triggering failover, and maintaining cluster consistency.
+ */
 public class ClusterNodeHeartBeat {
 
     private volatile long lastHeartbeatTime;

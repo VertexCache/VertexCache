@@ -15,6 +15,10 @@
  */
 package com.vertexcache.module.restapi.model;
 
+/**
+ * Defines constant keys used for storing and retrieving attributes
+ * within the REST API request context.
+ */
 public class RestApiContextKeys {
     public static final String AUTH_ENTRY = "authClient";
 }

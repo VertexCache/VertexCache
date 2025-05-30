@@ -21,13 +21,23 @@ import com.vertexcache.core.command.BaseCommand;
 import com.vertexcache.core.command.CommandResponse;
 import com.vertexcache.core.command.argument.ArgumentParser;
 import com.vertexcache.core.validation.ValidationBatch;
-import com.vertexcache.core.validation.Validator;
 import com.vertexcache.core.validation.validators.KeyValidator;
 import com.vertexcache.module.restapi.model.ApiParameter;
 import com.vertexcache.server.session.ClientSessionContext;
 
 import java.util.ArrayList;
 
+/**
+ * Command used to store or update a key-value entry in the cache.
+ *
+ * Supports optional indexing via secondary (idx1) and tertiary (idx2) keys,
+ * allowing for advanced lookup capabilities beyond the primary key.
+ *
+ * Overwrites any existing value for the same key.
+ *
+ * Requires READ_WRITE or higher privileges to execute.
+ *
+ */
 public class SetCommand extends BaseCommand<String> {
 
     private static final String SUB_ARG_SECONDARY_INDEX_ONE = "IDX1";

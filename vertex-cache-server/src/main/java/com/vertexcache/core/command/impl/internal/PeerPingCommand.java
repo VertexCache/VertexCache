@@ -29,7 +29,18 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * example peer_ping node-b 2ec68a38a74c9744bbbdb8135f9d9719f6ccf8300c7b759ce99930ae108fb825
+ * Internal cluster command used to check the liveness and configuration consistency of a peer node.
+ *
+ * Sent periodically by standby or monitoring nodes to other peers to:
+ * - Confirm the peer is reachable and responsive
+ * - Validate configuration hash consistency across the cluster
+ *
+ * Not used by primary nodes. This command is part of the internal heartbeat
+ * and health monitoring mechanism within the cluster.
+ *
+ * Not intended for external or client use.
+ *
+ * Example: peer_ping node-b 2ec68a38a74c9744bbbdb8135f9d9719f6ccf8300c7b759ce99930ae108fb825
  */
 public class PeerPingCommand extends BaseCommand<String> {
 

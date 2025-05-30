@@ -29,6 +29,14 @@ import com.vertexcache.module.auth.model.TenantId;
 
 import java.util.List;
 
+/**
+ * AuthInitializer is responsible for bootstrapping the authentication system in VertexCache.
+ * It loads authentication configuration, initializes the AuthStore, and prepares any
+ * supporting components required for secure client validation at runtime.
+ *
+ * This class is invoked during system startup to ensure that all authentication-related
+ * resources are properly configured and ready before accepting client requests.
+ */
 public class AuthInitializer {
 
     public static AuthService initializeFromEnv() {

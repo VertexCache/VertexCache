@@ -15,6 +15,14 @@
  */
 package com.vertexcache.core.util.retry;
 
+/**
+ * Interface defining a strategy for computing retry delays.
+ *
+ * Implementations determine how long to wait before retrying an operation
+ * based on the current attempt count.
+ *
+ * Can be used to plug in exponential backoff, fixed delay, or other custom logic.
+ */
 public interface RetryPolicy {
     int computeDelayForAttempt(int attempt);
 }

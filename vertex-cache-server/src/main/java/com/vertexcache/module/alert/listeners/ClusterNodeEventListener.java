@@ -15,6 +15,12 @@
  */
 package com.vertexcache.module.alert.listeners;
 
+/**
+ * ClusterNodeEventListener defines a callback interface for responding to specific
+ * cluster events in VertexCache. Currently, it provides a single method,
+ * {@code onSecondaryNodePromotedToPrimary}, which is invoked when a secondary node
+ * is promoted to the primary role.
+ */
 public interface ClusterNodeEventListener {
 
     void onSecondaryNodePromotedToPrimary(String nodeId);

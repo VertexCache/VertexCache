@@ -15,11 +15,23 @@
  */
 package com.vertexcache.core.validation.validators.cluster;
 
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 
 import java.util.regex.Pattern;
 
+/**
+ * Validator that checks whether a given cluster node host string is valid.
+ *
+ * Ensures that the host is:
+ * - Non-null and non-blank
+ * - Contains only alphanumeric characters, dots, and dashes
+ *
+ * This validator is typically used during configuration loading to verify
+ * that a cluster node's hostname or IP address meets basic format expectations.
+ *
+ * Throws a VertexCacheValidationException if the input is invalid.
+ */
 public class ClusterNodeHostValidator implements Validator {
     private final String host;
 

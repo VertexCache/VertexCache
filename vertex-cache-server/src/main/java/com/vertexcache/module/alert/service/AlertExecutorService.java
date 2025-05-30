@@ -21,6 +21,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
+/**
+ * AlertExecutorService is responsible for processing and dispatching alert events
+ * within the VertexCache system. It receives AlertEvent instances and executes
+ * the corresponding logic, such as invoking webhook handlers or logging alerts.
+ *
+ * This service acts as the core execution layer for the alerting pipeline,
+ * ensuring that alerts are handled asynchronously, reliably, and according to
+ * system configuration.
+ */
 public class AlertExecutorService {
     private static final Logger LOG = Logger.getLogger(AlertExecutorService.class.getSimpleName());
     private final AlertWebhookDispatcher dispatcher;

@@ -22,6 +22,14 @@ import com.vertexcache.module.cluster.service.coordination.FailoverManager;
 
 import java.util.concurrent.*;
 
+/**
+ * HeartbeatManager is responsible for managing the sending and receiving of heartbeat signals
+ * between nodes in the VertexCache cluster. It tracks peer liveness, monitors configuration hash consistency,
+ * and updates internal state based on heartbeat responses.
+ *
+ * This class plays a critical role in cluster coordination by detecting node failures,
+ * supporting role stability checks, and triggering failover or recovery actions when necessary.
+ */
 public class HeartbeatManager {
 
     private final static long INITIAL_DELAY = 10_000;

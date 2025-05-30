@@ -17,6 +17,14 @@ package com.vertexcache.module.alert;
 
 import com.vertexcache.module.alert.listeners.ClusterNodeEventListener;
 
+/**
+ * AlertModuleNoOp is a disabled or stub implementation of the alerting system
+ * in VertexCache. It is used when alerting is not enabled via configuration,
+ * allowing the system to operate without initializing the full alerting pipeline.
+ *
+ * This no-op module satisfies the same interface as the active AlertModule but
+ * performs no operations, effectively bypassing all alert dispatching logic.
+ */
 public class AlertModuleNoOp implements ClusterNodeEventListener {
     @Override
     public void onSecondaryNodePromotedToPrimary(String nodeId) {

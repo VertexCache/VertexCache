@@ -15,6 +15,12 @@
  */
 package com.vertexcache.module.restapi.model;
 
+/**
+ * Enumeration of standard HTTP methods supported by the REST API.
+ *
+ * Includes utility methods to compare method names ignoring case and to check
+ * if a method typically allows a request body (POST, PUT, PATCH).
+ */
 public enum HttpMethod {
     GET,
     POST,

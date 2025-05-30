@@ -17,6 +17,12 @@ package com.vertexcache.tool.auth;
 
 import java.util.UUID;
 
+/**
+ * Simple utility class to generate a random UUID token.
+ *
+ * Prints a newly generated token to standard output.
+ * Useful for creating unique identifiers for testing or authentication purposes.
+ */
 public class TokenGenerator {
 
     public static void main(String[] args) {

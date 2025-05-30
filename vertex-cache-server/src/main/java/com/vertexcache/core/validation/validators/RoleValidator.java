@@ -15,10 +15,18 @@
  */
 package com.vertexcache.core.validation.validators;
 
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 import com.vertexcache.module.auth.model.Role;
 
+/**
+ * RoleValidator is responsible for validating role identifiers provided in configuration
+ * or command inputs. It ensures that the specified role is recognized and supported
+ * by the VertexCache system.
+ *
+ * Typical roles include READ, READ_WRITE, ADMIN, and REST_API_ADMIN. This validator
+ * helps enforce security and correctness by rejecting invalid or unsupported roles.
+ */
 public class RoleValidator implements Validator {
     private final String value;
 
@@ -31,7 +39,7 @@ public class RoleValidator implements Validator {
         try {
             Role.valueOf(value.trim().toUpperCase());
         } catch (Exception e) {
-            throw new VertexCacheValidationException("Invalid role: " + value + " (must be ADMIN, READ_WRITE, or READ_ONLY)");
+            throw new VertexCacheValidationException("Invalid role: " + value + " (must be ADMIN, READ_WRITE, READ_ONLY, REST_API_READ_ONLY or REST_API_READ_WRITE)");
         }
     }
 }

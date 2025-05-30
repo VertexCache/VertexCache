@@ -25,6 +25,14 @@ import com.vertexcache.core.command.impl.internal.RoleChangeCommand;
 
 import java.util.Set;
 
+/**
+ * Role defines the set of access levels available to clients in the VertexCache system.
+ * Each enum constant represents a distinct permission tier, such as READ, READ_WRITE,
+ * ADMIN, or REST_API_ADMIN, and governs which operations a client is authorized to perform.
+ *
+ * This enum is central to the system’s role-based access control (RBAC) model, and is
+ * used during authentication, command validation, and route authorization.
+ */
 public enum Role {
 
     // TCP Roles

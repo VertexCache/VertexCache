@@ -15,6 +15,14 @@
  */
 package com.vertexcache.module.cluster.model;
 
+/**
+ * ClusterNode represents a member of a VertexCache cluster. It encapsulates identifying
+ * information such as node ID, hostname, port, and role (e.g., PRIMARY or SECONDARY),
+ * as well as state used for coordination and failover.
+ *
+ * This class is central to cluster membership tracking and is used in node discovery,
+ * peer communication, role promotion, and availability monitoring across the system.
+ */
 public class ClusterNode {
 
     private String id;

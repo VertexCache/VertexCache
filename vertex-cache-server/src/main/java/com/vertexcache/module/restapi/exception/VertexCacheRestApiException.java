@@ -15,6 +15,13 @@
  */
 package com.vertexcache.module.restapi.exception;
 
+/**
+ * Exception class for handling REST API-related errors in VertexCache.
+ *
+ * Used to represent various failure scenarios such as invalid input,
+ * processing errors, or unexpected conditions in REST request handling.
+ * Supports multiple constructors for flexibility in exception chaining.
+ */
 public class VertexCacheRestApiException extends Exception {
     public VertexCacheRestApiException() {
         super();

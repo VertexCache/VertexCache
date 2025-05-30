@@ -19,6 +19,16 @@ import com.vertexcache.module.restapi.handlers.*;
 import com.vertexcache.module.restapi.server.RestApiServer;
 import io.javalin.Javalin;
 
+/**
+ * Registers REST API route handlers with the Javalin web server.
+ *
+ * Defines endpoints for health checks (ping) and cache operations:
+ * - Set (POST /cache)
+ * - Get by primary key, secondary index 1, and secondary index 2 (GET)
+ * - Delete by primary key (DELETE)
+ *
+ * Routes are prefixed by the configured API base path.
+ */
 public class ApiRoutes {
 
     public static void register(Javalin app) {

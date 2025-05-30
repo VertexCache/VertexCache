@@ -24,6 +24,14 @@ import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import io.javalin.http.UnauthorizedResponse;
 
+/**
+ * Middleware handler for REST API authentication.
+ *
+ * Extracts a bearer token from the configured header, validates it,
+ * and authenticates the client via AuthService.
+ * On success, injects the authenticated client info into the request context.
+ * Throws UnauthorizedResponse on missing or invalid tokens.
+ */
 public class RestApiAuthMiddleware implements Handler {
 
     @Override

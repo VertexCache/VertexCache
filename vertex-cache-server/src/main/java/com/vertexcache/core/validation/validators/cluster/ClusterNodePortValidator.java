@@ -15,9 +15,17 @@
  */
 package com.vertexcache.core.validation.validators.cluster;
 
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 
+/**
+ * Validator that ensures a cluster node's port number falls within a valid range.
+ *
+ * Accepts only ports in the range 1024 to 65535, rejecting reserved or invalid values.
+ * Intended to enforce safe and non-conflicting port configurations for peer communication.
+ *
+ * Throws a VertexCacheValidationException if the port is out of range.
+ */
 public class ClusterNodePortValidator implements Validator {
     private final int port;
 

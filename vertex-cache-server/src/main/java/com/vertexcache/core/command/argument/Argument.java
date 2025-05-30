@@ -17,6 +17,14 @@ package com.vertexcache.core.command.argument;
 
 import java.util.List;
 
+/**
+ * Represents a single argument or parameter passed to a Command.
+ *
+ * Encapsulates raw byte data and provides utilities for decoding into
+ * strings, numbers, or other types as needed by the command logic.
+ *
+ * Used during command parsing to standardize input handling and reduce duplication.
+ */
 public class Argument {
     private String name;
     private List<String> args;

@@ -15,10 +15,19 @@
  */
 package com.vertexcache.core.validation.validators.cluster;
 
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 import com.vertexcache.module.cluster.model.ClusterNodeHealthStatus;
 
+/**
+ * Validator that ensures a given cluster node health status string is valid.
+ *
+ * Validates that the input corresponds to a supported enum value from {@code ClusterNodeHealthStatus},
+ * such as UP, DOWN, or UNKNOWN.
+ *
+ * Throws a VertexCacheValidationException if the status is invalid or unrecognized.
+ * Typically used to validate health state updates or configuration overrides in clustered environments.
+ */
 public class ClusterNodeStatusValidator implements Validator {
     private final String status;
 

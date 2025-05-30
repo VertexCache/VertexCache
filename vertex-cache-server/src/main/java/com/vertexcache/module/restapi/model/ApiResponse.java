@@ -18,6 +18,16 @@ package com.vertexcache.module.restapi.model;
 import com.google.gson.annotations.SerializedName;
 import com.vertexcache.core.util.message.ResultCode;
 
+/**
+ * Generic API response wrapper for REST endpoints.
+ *
+ * Encapsulates success status, message, optional data payload,
+ * a result code string, and an HTTP status code.
+ * Provides static factory methods for creating success and error responses,
+ * including variants using predefined ResultCode enums.
+ * Supports fluent modification of HTTP status.
+ *
+ */
 public class ApiResponse<T> {
 
     @SerializedName("success")

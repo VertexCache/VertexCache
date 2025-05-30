@@ -17,10 +17,10 @@ package com.vertexcache.module.smart;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.vertexcache.core.cache.exception.VertexCacheException;
-import com.vertexcache.core.module.Module;
-import com.vertexcache.core.module.ModuleStatus;
+import com.vertexcache.core.module.model.Module;
+import com.vertexcache.core.module.model.ModuleStatus;
 import com.vertexcache.core.setting.Config;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 import com.vertexcache.module.smart.service.*;
 
 import java.util.ArrayList;
@@ -28,6 +28,22 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+/**
+ * SmartModule coordinates a set of intelligent background services and alerts within VertexCache.
+ *
+ * It manages scheduled tasks such as:
+ * - Hot key watcher alerts
+ * - Reverse index cleanup
+ * - Key churn alerts
+ * - Unauthorized access alerts
+ * - Hot key anomaly detection
+ *
+ * On startup, it validates that the MetricModule is enabled, then initializes and
+ * starts configured alert and maintenance services based on user configuration.
+ * Services run on a dedicated single-threaded scheduled executor.
+ *
+ * On shutdown, it gracefully stops all running services and shuts down the scheduler.
+ */
 public class SmartModule extends Module {
 
     private final ScheduledExecutorService smartScheduler =

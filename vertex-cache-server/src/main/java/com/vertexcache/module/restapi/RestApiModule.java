@@ -15,16 +15,22 @@
  */
 package com.vertexcache.module.restapi;
 
-import com.vertexcache.common.log.LogHelper;
-import com.vertexcache.core.module.Module;
-import com.vertexcache.core.module.ModuleStatus;
+import com.vertexcache.core.module.model.Module;
+import com.vertexcache.core.module.model.ModuleStatus;
 import com.vertexcache.core.setting.Config;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 import com.vertexcache.core.validation.validators.PortValidator;
 import com.vertexcache.core.validation.validators.restapi.RestApiTlsValidator;
 import com.vertexcache.core.validation.validators.restapi.TokenHeaderValidator;
 import com.vertexcache.module.restapi.server.RestApiServer;
 
+/**
+ * Module responsible for managing the lifecycle of the REST API server.
+ *
+ * Validates REST API configuration including authentication, ports, and TLS settings.
+ * Starts the REST API server on primary cluster nodes and manages standby mode.
+ * Handles enabling/disabling based on configuration and ensures proper startup/shutdown status reporting.
+ */
 public class RestApiModule extends Module {
 
     private RestApiServer server;

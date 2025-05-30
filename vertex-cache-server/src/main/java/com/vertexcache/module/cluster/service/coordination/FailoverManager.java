@@ -20,8 +20,12 @@ import com.vertexcache.module.cluster.ClusterModule;
 import com.vertexcache.module.cluster.model.ClusterNode;
 
 /**
- * Coordinates automatic promotion of a standby node to primary
- * when the primary is considered unreachable. Runs as part of the heartbeat cycle.
+ * FailoverManager handles automatic role transitions and recovery procedures
+ * in the VertexCache cluster. It monitors node health and availability,
+ * promoting a SECONDARY node to PRIMARY when the current PRIMARY becomes unreachable.
+ *
+ * This class is central to high availability and resilience, ensuring
+ * continuous operation of the cluster by coordinating safe and timely failover events.
  */
 public class FailoverManager {
 

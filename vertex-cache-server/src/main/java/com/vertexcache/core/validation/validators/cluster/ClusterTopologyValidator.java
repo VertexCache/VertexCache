@@ -16,14 +16,32 @@
 package com.vertexcache.core.validation.validators.cluster;
 
 import com.vertexcache.core.validation.ValidationBatch;
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 import com.vertexcache.module.cluster.model.ClusterNode;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Validator that performs comprehensive validation on the defined cluster topology.
+ *
+ * Validates all cluster nodes using individual validators for:
+ * - Role (PRIMARY or SECONDARY)
+ * - Availability state
+ * - Host format
+ * - Port range
+ *
+ * Additionally enforces topology-wide constraints, including:
+ * - Exactly one PRIMARY node must be present
+ * - At least one SECONDARY node is required
+ * - Only one SECONDARY node may be enabled for failover at any given time
+ * - No duplicate host:port combinations across nodes
+ *
+ * This validator ensures the cluster configuration is logically sound and ready
+ * for safe initialization of peer coordination and failover behavior.
+ */
 public class ClusterTopologyValidator implements Validator {
     private final Map<String, ClusterNode> nodes;
 

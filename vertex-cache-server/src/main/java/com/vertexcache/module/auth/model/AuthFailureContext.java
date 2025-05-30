@@ -15,6 +15,14 @@
  */
 package com.vertexcache.module.auth.model;
 
+/**
+ * AuthFailureContext captures contextual information about a failed authentication attempt
+ * within VertexCache. It includes details such as the reason for failure, client identifier,
+ * and the source of the request, which can be used for logging, auditing, or alerting.
+ *
+ * This class helps provide meaningful diagnostics and traceability for security-related
+ * issues, enabling better analysis of authentication failures across the system.
+ */
 public class AuthFailureContext {
     private final String clientId;
     private final String ipAddress;

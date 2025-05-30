@@ -15,9 +15,17 @@
  */
 package com.vertexcache.module.admin;
 
-import com.vertexcache.core.module.Module;
-import com.vertexcache.core.module.ModuleStatus;
+import com.vertexcache.core.module.model.Module;
+import com.vertexcache.core.module.model.ModuleStatus;
 
+/**
+ * AdminModule provides administrative functionality for VertexCache, including runtime
+ * introspection, system status reporting, and execution of privileged commands.
+ *
+ * This module is tightly bound to the ADMIN role and will block all ADMIN-level commands
+ * if ADMIN access is disabled via system configuration. It acts as a safeguard to ensure
+ * that no administrative operations can be performed when such access is explicitly restricted.
+ */
 public class AdminModule extends Module {
 
     @Override

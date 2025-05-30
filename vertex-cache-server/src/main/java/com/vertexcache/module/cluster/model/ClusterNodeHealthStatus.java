@@ -15,6 +15,14 @@
  */
 package com.vertexcache.module.cluster.model;
 
+/**
+ * ClusterNodeHealthStatus represents the health assessment of a node within the VertexCache cluster.
+ * It captures detailed diagnostic information such as heartbeat responsiveness, config consistency,
+ * and role stability to determine whether a node is behaving as expected.
+ *
+ * This status is used internally by the cluster coordination logic to make decisions about
+ * failover, peer synchronization, and availability tracking.
+ */
 public enum ClusterNodeHealthStatus {
     ACTIVE,
     STANDBY,

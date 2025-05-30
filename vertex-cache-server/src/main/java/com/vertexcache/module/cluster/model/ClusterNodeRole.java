@@ -15,6 +15,14 @@
  */
 package com.vertexcache.module.cluster.model;
 
+/**
+ * ClusterNodeRole defines the possible roles a node can assume within the VertexCache cluster.
+ * Roles include PRIMARY and SECONDARY, and dictate the responsibilities and behavior
+ * of each node in terms of request handling, replication, and failover.
+ *
+ * This enum is central to cluster coordination and role transition logic,
+ * helping enforce correct system behavior under normal and degraded conditions.
+ */
 public enum ClusterNodeRole {
     PRIMARY,
     SECONDARY,

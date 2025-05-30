@@ -17,6 +17,14 @@ package com.vertexcache.module.cluster.util;
 
 import java.util.Set;
 
+/**
+ * ClusterCoordinationKeys defines internal key constants used for cluster coordination
+ * in VertexCache. These keys are reserved for system-level operations such as
+ * heartbeat tracking, role assertions, and failover signaling.
+ *
+ * This class centralizes coordination-related key naming to avoid collisions
+ * with user-defined keys and to ensure consistent usage across the cluster subsystem.
+ */
 public class ClusterCoordinationKeys {
     public static final Set<String> ACTIVE_KEYS = Set.of(
             "cluster_failover_enabled",

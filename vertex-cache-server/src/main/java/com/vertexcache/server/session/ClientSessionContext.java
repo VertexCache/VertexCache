@@ -18,6 +18,13 @@ package com.vertexcache.server.session;
 import com.vertexcache.module.auth.model.Role;
 import com.vertexcache.module.auth.model.TenantId;
 
+/**
+ * Holds session context information for a connected client.
+ *
+ * Tracks the client's identifier, associated tenant, and security role.
+ * Provides convenience method to check if the client’s role permits execution
+ * of a given command.
+ */
 public class ClientSessionContext {
     private String clientId;
     private TenantId tenantId;

@@ -29,6 +29,16 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Abstract base class for alert services within VertexCache.
+ *
+ * Manages periodic scheduling of alert evaluations using a shared executor.
+ * Provides hooks for starting, stopping, and performing alert logic via the
+ * abstract {@code evaluate()} method, which subclasses must implement.
+ *
+ * Integrates with AlertModule and MetricModule if they are enabled and available,
+ * and provides access to CacheAccessService for cache-related queries.
+ */
 abstract public class BaseAlertService {
 
     private ScheduledFuture<?> scheduledFuture;

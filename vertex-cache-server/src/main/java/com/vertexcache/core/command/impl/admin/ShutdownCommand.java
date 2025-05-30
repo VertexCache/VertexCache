@@ -20,6 +20,19 @@ import com.vertexcache.core.command.CommandResponse;
 import com.vertexcache.core.command.argument.ArgumentParser;
 import com.vertexcache.server.session.ClientSessionContext;
 
+/**
+ * Administrative command that triggers a graceful shutdown of the VertexCache server.
+ *
+ * Initiates an orderly shutdown process, including:
+ * - Closing all client connections
+ * - Flushing any pending operations (if applicable)
+ * - Releasing internal resources
+ *
+ * This command is intended for controlled maintenance workflows or scripted shutdowns.
+ * It does not restart the process—external process supervision is required to bring the server back up.
+ *
+ * Requires ADMIN privileges and explicit confirmation (e.g., SHUTDOWN CONFIRM) to execute.
+ */
 public class ShutdownCommand extends AdminCommand<String> {
 
     public static final String COMMAND_KEY = "SHUTDOWN";

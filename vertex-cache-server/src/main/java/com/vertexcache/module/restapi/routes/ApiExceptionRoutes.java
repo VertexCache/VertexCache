@@ -21,6 +21,14 @@ import io.javalin.Javalin;
 import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.UnauthorizedResponse;
 
+/**
+ * Registers global exception handlers for REST API routes.
+ *
+ * Maps common HTTP error responses like Unauthorized and Forbidden to
+ * appropriate JSON error responses with status codes.
+ * Includes a catch-all handler for unexpected exceptions that logs
+ * the error and returns a generic 500 Internal Server Error response.
+ */
 public class ApiExceptionRoutes {
 
     public static void register(Javalin app) {

@@ -15,7 +15,7 @@
  */
 package com.vertexcache.module.auth.util;
 
-import com.vertexcache.core.module.ModuleName;
+import com.vertexcache.core.module.model.ModuleName;
 import com.vertexcache.core.module.ModuleRegistry;
 import com.vertexcache.module.auth.AuthModule;
 import com.vertexcache.module.auth.service.AuthService;

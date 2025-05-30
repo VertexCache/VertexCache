@@ -15,12 +15,21 @@
  */
 package com.vertexcache.core.validation.validators;
 
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**
+ * UrlValidator validates that a given string is a well-formed URL.
+ * It checks for valid syntax, supported schemes (such as http or https),
+ * and may optionally enforce additional constraints like presence of a host.
+ *
+ * This validator is typically used in configuration fields where external
+ * URLs are required, such as webhook endpoints or remote service URLs,
+ * ensuring reliability and correctness at system startup.
+ */
 public class UrlValidator implements Validator {
 
     private final String url;

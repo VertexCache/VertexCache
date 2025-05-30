@@ -15,9 +15,17 @@
  */
 package com.vertexcache.core.validation.validators;
 
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 
+/**
+ * TimeoutMsValidator is used to validate timeout values expressed in milliseconds.
+ * It ensures the input is a non-negative integer, typically used for configuration
+ * settings that control operation timeouts such as network calls or retries.
+ *
+ * This validator helps enforce safe timeout boundaries and prevents misconfigurations
+ * that could lead to indefinite waits or overly aggressive timeouts in VertexCache.
+ */
 public class TimeoutMsValidator implements Validator {
 
     private final int value;

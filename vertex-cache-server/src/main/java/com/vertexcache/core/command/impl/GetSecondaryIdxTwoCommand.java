@@ -25,6 +25,16 @@ import com.vertexcache.core.validation.validators.KeyValidator;
 import com.vertexcache.module.restapi.model.ApiParameter;
 import com.vertexcache.server.session.ClientSessionContext;
 
+/**
+ * Command used to retrieve all cache entries that match a given tertiary index (idx2).
+ *
+ * This lookup is only valid when a secondary index (idx1) has also been associated
+ * with the entries, as idx2 is dependent on idx1.
+ *
+ * Returns a collection of values whose primary keys are indexed by the specified idx1 and idx2 values.
+ *
+ * Requires READ or higher privileges to execute.
+ */
 public class GetSecondaryIdxTwoCommand extends BaseCommand<String> {
 
     public static final String COMMAND_KEY = "GETIDX2";

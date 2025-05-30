@@ -16,9 +16,17 @@
 package com.vertexcache.core.validation.validators;
 
 import com.vertexcache.core.setting.Config;
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 
+/**
+ * TenantIdValidator validates the tenant identifier string used in multi-tenant deployments
+ * of VertexCache. It ensures the tenant ID is non-null, non-empty, and adheres to any
+ * formatting rules defined for isolation and namespacing.
+ *
+ * This validator helps enforce tenant-level separation by verifying the integrity
+ * and correctness of tenant identifiers provided by clients or configuration.
+ */
 public class TenantIdValidator implements Validator {
     private final String tenantId;
     private static final String RESERVED_DEFAULT = "default";

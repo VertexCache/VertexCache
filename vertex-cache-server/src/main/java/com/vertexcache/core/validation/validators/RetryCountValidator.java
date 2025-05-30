@@ -15,9 +15,17 @@
  */
 package com.vertexcache.core.validation.validators;
 
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 
+/**
+ * RetryCountValidator validates input strings that represent the maximum number of retry attempts.
+ * It ensures that the value is a non-negative integer, with optional handling of special cases
+ * like zero retries or unlimited retries depending on configuration.
+ *
+ * This validator is commonly used in modules that perform retry logic, such as alert dispatching
+ * or network communication, to ensure safe and bounded retry behavior.
+ */
 public class RetryCountValidator implements Validator {
 
     private final int value;

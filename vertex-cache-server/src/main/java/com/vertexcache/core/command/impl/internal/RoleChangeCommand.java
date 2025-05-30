@@ -19,7 +19,7 @@ import com.vertexcache.core.command.BaseCommand;
 import com.vertexcache.core.command.CommandResponse;
 import com.vertexcache.core.command.argument.ArgumentParser;
 import com.vertexcache.core.module.ModuleRegistry;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 import com.vertexcache.core.validation.validators.cluster.ClusterNodeRoleValidator;
 import com.vertexcache.core.validation.validators.cluster.NodeIdExistsValidator;
 import com.vertexcache.module.cluster.ClusterModule;
@@ -27,6 +27,17 @@ import com.vertexcache.server.session.ClientSessionContext;
 
 import java.util.Optional;
 
+/**
+ * Internal cluster command used to trigger a role change on a peer node.
+ *
+ * Instructs the target node to transition its role, typically from STANDBY to PRIMARY,
+ * as part of failover handling or manual promotion.
+ *
+ * This command is issued by the cluster coordinator and ensures that role transitions
+ * are explicitly coordinated across the cluster.
+ *
+ * Not intended for client or external use. Requires internal trust between cluster nodes.
+ */
 public class RoleChangeCommand extends BaseCommand<String> {
 
     public static final String COMMAND_KEY = "ROLE_CHANGE";

@@ -24,6 +24,15 @@ import com.vertexcache.core.validation.validators.KeyValidator;
 import com.vertexcache.module.restapi.model.ApiParameter;
 import com.vertexcache.server.session.ClientSessionContext;
 
+/**
+ * Command used to delete a key and its associated value from the cache.
+ *
+ * Removes the primary key and, if applicable, cleans up any secondary or
+ * tertiary index references associated with the entry.
+ *
+ * This operation is irreversible and will evict the entry immediately.
+ * Requires READ_WRITE or higher privileges to execute.
+ */
 public class DelCommand extends BaseCommand<String> {
 
     public static final String COMMAND_KEY = "DEL";

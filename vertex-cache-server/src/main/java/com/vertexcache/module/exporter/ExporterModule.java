@@ -15,9 +15,19 @@
  */
 package com.vertexcache.module.exporter;
 
-import com.vertexcache.core.module.Module;
-import com.vertexcache.core.module.ModuleStatus;
+import com.vertexcache.core.module.model.Module;
+import com.vertexcache.core.module.model.ModuleStatus;
 
+/**
+ * ** TO BE IMPLEMENTED (yet to be decided for future releases)
+ *
+ * ExporterModule is responsible for exposing internal VertexCache metrics and status data
+ * to external systems for monitoring and observability. It integrates with metric registries
+ * and may support various export formats or endpoints, such as Prometheus or custom sinks.
+ *
+ * This module enables operators to gain insight into system behavior, performance trends,
+ * and alerting signals by periodically or on-demand exporting telemetry data.
+ */
 public class ExporterModule extends Module {
 
     @Override

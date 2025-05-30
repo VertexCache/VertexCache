@@ -15,6 +15,14 @@
  */
 package com.vertexcache.module.cluster.model;
 
+/**
+ * ClusterNodeAvailability defines the availability states of a node within the VertexCache cluster.
+ * It indicates whether a node is currently reachable and eligible for participation in
+ * cluster operations such as coordination, promotion, or failover.
+ *
+ * Typical states may include UP, DOWN, or UNKNOWN, and are used during health checks,
+ * peer state evaluations, and cluster coordination decisions.
+ */
 public enum ClusterNodeAvailability {
     ENABLED,
     DISABLED,

@@ -15,6 +15,14 @@
  */
 package com.vertexcache.module.alert.model;
 
+/**
+ * AlertEventType defines the set of alert categories that can be triggered
+ * within the VertexCache system. Each enum value represents a specific type
+ * of alert condition, such as memory pressure, node failure, or rate limit breaches.
+ *
+ * These event types are used to classify and route AlertEvents to the appropriate
+ * handlers, such as logging subsystems or external webhook integrations.
+ */
 public enum AlertEventType {
     PRIMARY_PROMOTED,
     PRIMARY_DEMOTED,

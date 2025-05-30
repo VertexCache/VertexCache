@@ -21,6 +21,15 @@ import com.vertexcache.core.command.Command;
 import com.vertexcache.core.command.CommandResponse;
 import com.vertexcache.server.session.ClientSessionContext;
 
+/**
+ * Fallback command used when an unrecognized or unsupported command is received.
+ *
+ * Acts as a catch-all to handle invalid or malformed input gracefully,
+ * providing a clear error response rather than causing protocol disruption.
+ *
+ * Typically triggered when the command name does not match any registered handlers.
+ * Useful for logging, debugging, and maintaining robustness against client errors.
+ */
 public class UnknownCommand extends BaseCommand<String> {
 
     public static final String COMMAND_KEY = "UNKNOWN";

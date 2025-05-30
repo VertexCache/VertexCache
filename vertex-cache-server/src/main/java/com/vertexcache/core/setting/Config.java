@@ -21,9 +21,18 @@ import com.vertexcache.common.config.reader.ConfigLoaderFactory;
 import com.vertexcache.common.cli.CommandLineArgsParser;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.config.VertexCacheConfigException;
-import com.vertexcache.core.setting.loader.*;
-import com.vertexcache.core.setting.loader.ClusterConfigLoader;
+import com.vertexcache.core.setting.loaders.*;
+import com.vertexcache.core.setting.loaders.ClusterConfigLoader;
 
+/**
+ * Central configuration holder for the VertexCache runtime environment.
+ *
+ * Loads and exposes validated configuration values from the .env file or system properties.
+ * Provides typed access to all server, cache, clustering, and module settings.
+ *
+ * This class acts as the global source of truth for all configuration-driven behavior,
+ * ensuring consistent value retrieval and default fallbacks across the application.
+ */
 public class Config extends ConfigBase {
     private boolean configLoaded = false;
     private boolean configError = false;

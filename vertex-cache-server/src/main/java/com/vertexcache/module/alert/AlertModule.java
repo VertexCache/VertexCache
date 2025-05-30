@@ -16,10 +16,10 @@
 package com.vertexcache.module.alert;
 
 import com.vertexcache.common.log.LogHelper;
-import com.vertexcache.core.module.Module;
-import com.vertexcache.core.module.ModuleStatus;
+import com.vertexcache.core.module.model.Module;
+import com.vertexcache.core.module.model.ModuleStatus;
 import com.vertexcache.core.setting.Config;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 import com.vertexcache.core.validation.validators.RetryCountValidator;
 import com.vertexcache.core.validation.validators.TimeoutMsValidator;
 import com.vertexcache.core.validation.validators.UrlValidator;
@@ -29,8 +29,15 @@ import com.vertexcache.module.alert.model.AlertEventType;
 import com.vertexcache.module.alert.service.AlertExecutorService;
 import com.vertexcache.module.alert.service.AlertWebhookDispatcher;
 
-import java.util.Map;
-
+/**
+ * AlertModule initializes and manages the alerting infrastructure within VertexCache.
+ * It wires together components such as the AlertExecutorService, AlertWebhookDispatcher,
+ * and relevant configuration settings to enable end-to-end alert processing.
+ *
+ * This module is responsible for registering alert types, handling lifecycle hooks,
+ * and ensuring that alert events are reliably dispatched to external systems
+ * based on runtime conditions and user-defined settings.
+ */
 public class AlertModule  extends Module implements ClusterNodeEventListener {
 
     private AlertExecutorService executorService;

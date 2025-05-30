@@ -15,6 +15,18 @@
  */
 package com.vertexcache.module.metric.model;
 
+/**
+ * Defines string constants used as metric view keys for internal tracking and reporting.
+ * <p>
+ * Keys are grouped into categories:
+ * - Command metrics (e.g., get/set/del totals)
+ * - Cache performance metrics (e.g., hit/miss count, hit ratio)
+ * - Index usage metrics (idx1, idx2)
+ * - JVM-level system metrics (e.g., memory usage, uptime)
+ * - Hot key tracking prefixes for detailed per-key statistics
+ *
+ * This class is non-instantiable and serves as a centralized reference for all metric keys.
+ */
 public final class MetricViewKey {
     private MetricViewKey() {} // prevent instantiation
 

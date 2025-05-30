@@ -20,6 +20,14 @@ import java.security.MessageDigest;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * ClusterHashUtil provides utility methods for computing and verifying configuration hashes
+ * within the VertexCache cluster. These hashes are used to detect configuration drift
+ * between nodes and ensure consistency during coordination and heartbeat checks.
+ *
+ * This utility class supports functions such as generating hash digests from cluster
+ * settings and comparing hashes across nodes to validate synchronization.
+ */
 public class ClusterHashUtil {
 
     public static String computeCoordinationHash(Map<String, String> coordinationSettings) {

@@ -17,17 +17,34 @@ package com.vertexcache.core.status;
 
 import com.vertexcache.common.security.EncryptionMode;
 import com.vertexcache.common.version.VersionUtil;
-import com.vertexcache.core.module.ModuleHandler;
+import com.vertexcache.core.module.model.ModuleHandler;
 import com.vertexcache.core.module.ModuleRegistry;
-import com.vertexcache.core.module.ModuleStatus;
+import com.vertexcache.core.module.model.ModuleStatus;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.server.socket.SocketServer;
-import com.vertexcache.core.module.Module;
+import com.vertexcache.core.module.model.Module;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Aggregates and formats detailed runtime status information about the VertexCache server.
+ *
+ * Used primarily by the STATUS command and administrative tools to generate diagnostic reports
+ * in both flat (machine-readable) and pretty (human-readable) formats.
+ *
+ * Reports include:
+ * - Server status and version
+ * - TLS and encryption settings
+ * - Module lifecycle states and health
+ * - Cluster participation and peer config
+ * - REST API and alert module summaries
+ * - Memory usage statistics
+ *
+ * Designed for both startup logs and on-demand introspection, this utility centralizes
+ * all relevant system health data into structured views for operational visibility.
+ */
 public class SystemStatusReport {
 
     public static List<String> getFullSystemReportAsFlat() {

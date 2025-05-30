@@ -28,6 +28,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.*;
 
+/**
+ * Alert service that monitors key churn — the rate of unique key activity over a short time window.
+ *
+ * Works by tracking unique keys seen within a fixed interval (10 seconds).
+ * On each evaluation, it compares the count of recent unique keys against a dynamic threshold:
+ * - Threshold = BASE_THRESHOLD + 1% of total cache size, capped at MAX_CACHE_SIZE.
+ *
+ * If the unique key count exceeds the threshold and a cooldown period (30 seconds) has passed
+ * since the last alert, it triggers an alert event and logs a warning.
+ *
+ * The service then clears the set of recent keys to start fresh for the next interval.
+ * This helps detect unusually high churn that could indicate issues like cache storms or hot key thrashing.
+ */
 public class KeyChurnAlertService extends BaseAlertService {
 
     private static final int CHURN_WINDOW_SEC = 10;

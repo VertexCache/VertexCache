@@ -30,6 +30,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * AuthService provides the core authentication logic for VertexCache.
+ * It verifies client credentials, validates tokens, and enforces role-based
+ * access control (RBAC) based on the authenticated identity.
+ *
+ * This service acts as the primary interface for authentication checks
+ * across the system, supporting both static credential validation and
+ * token-based authentication workflows.
+ */
 public class AuthService {
 
     private static AuthService instance;
@@ -62,14 +71,6 @@ public class AuthService {
         }
         return instance;
     }
-
-    /*
-    public Optional<AuthEntry> authenticate(String clientId, String token) {
-        Optional<AuthEntry> entry = store.get(clientId);
-        return entry.isPresent() && token.equals(entry.get().getToken())
-                ? entry
-                : Optional.empty();
-    }*/
 
     public Optional<AuthEntry> authenticate(String clientId, String token) {
         Optional<AuthEntry> entry = store.get(clientId);
@@ -131,7 +132,7 @@ public class AuthService {
     private void initAuthFailerListener() {
         if(authFailureListener == null) {
             Optional<SmartModule> optSmartModule = ModuleRegistry.getInstance().getModule(SmartModule.class);
-            authFailureListener = (AuthFailureListener) (optSmartModule.get()).getUnauthorizedAccessAlertService();
+            authFailureListener = (optSmartModule.get()).getUnauthorizedAccessAlertService();
         }
     }
 }

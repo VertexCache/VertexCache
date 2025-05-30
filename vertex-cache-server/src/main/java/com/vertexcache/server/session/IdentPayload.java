@@ -15,6 +15,11 @@
  */
 package com.vertexcache.server.session;
 
+/**
+ * Data transfer object representing client identification payload.
+ *
+ * Contains the client identifier and authentication token used for client validation.
+ */
 public class IdentPayload {
     public String client_id;
     public String token;

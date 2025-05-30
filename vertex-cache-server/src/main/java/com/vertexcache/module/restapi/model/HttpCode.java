@@ -15,6 +15,16 @@
  */
 package com.vertexcache.module.restapi.model;
 
+/**
+ * Enumeration of standard HTTP status codes used by the REST API.
+ *
+ * Categorized into:
+ * - 2xx Success responses
+ * - 4xx Client error responses
+ * - 5xx Server error responses
+ *
+ * Provides numeric code values and string representation for each status.
+ */
 public enum HttpCode {
 
     // --- 2xx Success ---

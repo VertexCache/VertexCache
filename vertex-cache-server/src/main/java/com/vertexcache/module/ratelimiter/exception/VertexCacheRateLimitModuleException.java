@@ -15,6 +15,11 @@
  */
 package com.vertexcache.module.ratelimiter.exception;
 
+/**
+ * Exception thrown when the RateLimitModule encounters an error condition.
+ * Used to signal misconfiguration, initialization failure, or runtime issues
+ * specific to the rate limiting subsystem.
+ */
 public class VertexCacheRateLimitModuleException extends RuntimeException {
     public VertexCacheRateLimitModuleException(String message) {
             super(message);

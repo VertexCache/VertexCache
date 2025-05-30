@@ -20,6 +20,11 @@ import com.vertexcache.common.protocol.VertexCacheMessageProtocol;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+/**
+ * Represents the standard response returned after executing a Command.
+ *
+ * Encapsulates the outcome of command processing such as Success or error status
+ */
 public class CommandResponse {
 
     private static final String RESPONSE_OK = "OK";

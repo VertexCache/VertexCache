@@ -17,6 +17,14 @@ package com.vertexcache.module.auth.model;
 
 import static com.vertexcache.module.auth.model.Role.*;
 
+/**
+ * AuthEntry represents a single authentication record within VertexCache.
+ * It encapsulates the client's identifier, associated secret or token,
+ * assigned role, and any relevant metadata used during access validation.
+ *
+ * This class serves as the core data structure for credential management
+ * in the AuthStore and is used during authentication and authorization checks.
+ */
 public class AuthEntry {
 
     private final String clientId;

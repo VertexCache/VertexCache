@@ -15,11 +15,25 @@
  */
 package com.vertexcache.module.metric;
 
-import com.vertexcache.core.module.Module;
-import com.vertexcache.core.module.ModuleStatus;
-import com.vertexcache.core.util.RuntimeInfo;
+import com.vertexcache.core.module.model.Module;
+import com.vertexcache.core.module.model.ModuleStatus;
+import com.vertexcache.core.util.runtime.RuntimeInfo;
+import com.vertexcache.module.metric.analysis.HotKeyTracker;
+import com.vertexcache.module.metric.analysis.MetricAnalysisHelper;
+import com.vertexcache.module.metric.core.collectors.DefaultMetricCollector;
+import com.vertexcache.module.metric.core.MetricRegistry;
+import com.vertexcache.module.metric.counter.ClientCommandCounters;
 import com.vertexcache.module.metric.service.*;
 
+/**
+ * Initializes and manages all metric-related components in VertexCache.
+ *
+ * Sets up the metric registry, collectors, analysis helpers, and hot key tracking.
+ * Exposes these via MetricAccess for other components to record and retrieve metrics.
+ *
+ * onStart() handles setup of all components and sets startup status.
+ * onStop() updates the module status to indicate a successful shutdown.
+ */
 public class MetricModule extends Module {
 
     private MetricAccess metricAccess;

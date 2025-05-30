@@ -20,7 +20,7 @@ import com.google.gson.JsonParser;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.core.cache.model.DataType;
 import com.vertexcache.core.util.message.ResultCode;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 import com.vertexcache.module.auth.model.AuthEntry;
 import com.vertexcache.module.restapi.model.ApiResponse;
 import com.vertexcache.module.restapi.model.HttpCode;
@@ -29,6 +29,17 @@ import com.vertexcache.module.restapi.model.RestApiContextKeys;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 
+/**
+ * Abstract base class for handling REST API requests in VertexCache.
+ *
+ * Provides a common framework for parsing input, validating authorization,
+ * logging request/response data, and sending structured responses.
+ *
+ * Subclasses implement the _handle() method to define specific behavior.
+ * This class handles JSON body parsing (for non-GET/DELETE methods),
+ * normalizes input keys, performs authorization checks, and wraps
+ * responses using ApiResponse and HTTP status codes.
+ */
 public abstract class AbstractRestHandler implements Handler {
 
     private static final int MAX_BODY_LOG_OUTPUT = 500;

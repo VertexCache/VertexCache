@@ -15,9 +15,16 @@
  */
 package com.vertexcache.core.validation.validators;
 
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 
+/**
+ * PortValidator is used to validate that a given input string represents a valid TCP/UDP port number.
+ * It ensures the value is a numeric string within the valid port range of 1 to 65535.
+ *
+ * This validator is commonly used in configuration and cluster settings to confirm that
+ * network ports are correctly specified before the system attempts to bind or connect.
+ */
 public class PortValidator implements Validator {
 
     private final int port;

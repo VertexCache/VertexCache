@@ -15,11 +15,20 @@
  */
 package com.vertexcache.core.validation.validators;
 
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 
 import java.util.UUID;
 
+/**
+ * UUIDValidator ensures that a given input string is a valid UUID in standard format.
+ * It checks for proper length, character composition, and dash placement as per
+ * RFC 4122 specifications.
+ *
+ * This validator is typically used to verify identifiers such as client IDs,
+ * session tokens, or correlation IDs where UUIDs are expected for uniqueness
+ * and traceability within the VertexCache system.
+ */
 public class UUIDValidator implements Validator {
     private final String value;
 

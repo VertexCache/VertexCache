@@ -19,6 +19,17 @@ import com.vertexcache.common.log.LogHelper;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Default implementation of RetryPolicy that uses exponential backoff with optional jitter.
+ *
+ * Computes retry delays based on:
+ * - A base delay (e.g., 100ms)
+ * - A maximum cap to prevent unbounded wait times
+ * - A JitterStrategy to introduce randomness if needed
+ *
+ * Useful for retrying transient operations such as network calls, alert dispatches,
+ * or metric exports in a controlled and resilient manner.
+ */
 public class RetryBackoffService implements RetryPolicy {
 
     private final int baseDelayMs;

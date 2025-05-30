@@ -17,6 +17,14 @@ package com.vertexcache.module.auth.model;
 
 import java.util.Objects;
 
+/**
+ * TenantId represents the unique identifier for a tenant in a multi-tenant
+ * VertexCache deployment. It encapsulates tenant scoping information used
+ * for key prefixing, isolation, and access control enforcement.
+ *
+ * This class ensures that tenant-aware operations are consistently and securely
+ * namespaced, enabling reliable multi-tenant behavior across the system.
+ */
 public final class TenantId {
 
     public static final TenantId DEFAULT = new TenantId("default");

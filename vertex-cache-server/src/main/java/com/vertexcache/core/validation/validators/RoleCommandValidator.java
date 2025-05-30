@@ -15,10 +15,19 @@
  */
 package com.vertexcache.core.validation.validators;
 
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 import com.vertexcache.module.auth.model.Role;
 
+/**
+ * RoleCommandValidator ensures that only commands appropriate for a given user role
+ * are accepted and processed. It verifies that the command being executed is permitted
+ * under the current role's authorization level.
+ *
+ * This validator is critical for enforcing role-based access control (RBAC) within
+ * VertexCache, helping to prevent unauthorized operations from being performed
+ * by clients with limited permissions.
+ */
 public class RoleCommandValidator implements Validator {
 
     private final Role role;

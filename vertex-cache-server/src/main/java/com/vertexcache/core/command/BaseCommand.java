@@ -15,6 +15,13 @@
  */
 package com.vertexcache.core.command;
 
+/**
+ * Base class for all commands in the VertexCache protocol.
+ *
+ * Defines the common structure and behavior shared by all command types.
+ *
+ * All concrete commands must extend this class and implement their specific logic.
+ */
 public abstract class BaseCommand<T> implements Command<T> {
 
     protected abstract String getCommandKey(); // required by subclass

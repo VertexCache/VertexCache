@@ -17,6 +17,20 @@ package com.vertexcache.core.util.message;
 
 import java.util.Locale;
 
+/**
+ * Enum defining standardized result codes used throughout VertexCache to represent command outcomes.
+ *
+ * Each result code consists of a numeric string and a default message, used to consistently
+ * classify and communicate responses across command processing, REST APIs, and internal logic.
+ *
+ * Categories include:
+ * - Success Codes: e.g., OK, CACHE_HIT, VALUE_SET
+ * - Client Errors: e.g., MISSING_AUTH_TOKEN, INVALID_COMMAND, KEY_NOT_FOUND
+ * - Server/Internal Errors: e.g., INTERNAL_ERROR, MODULE_DISABLED, TIMEOUT
+ *
+ * These codes enable structured feedback, simplify debugging, and support future localization (i18n).
+ */
+
 public enum ResultCode {
 
     // --- Success Codes ---

@@ -24,6 +24,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Administrative command that returns information about active client sessions.
+ *
+ * Provides visibility into currently connected clients, including:
+ * - Connection identifiers
+ * - Assigned roles (e.g., READ, READ_WRITE)
+ * - Session durations and activity state
+ *
+ * Supports optional "pretty" mode for human-readable formatted output,
+ * useful for CLI inspection or manual debugging.
+ *
+ * Requires ADMIN privileges to execute.
+ */
 public class SessionsCommand extends AdminCommand<String> {
 
     public static final String COMMAND_KEY = "SESSIONS";

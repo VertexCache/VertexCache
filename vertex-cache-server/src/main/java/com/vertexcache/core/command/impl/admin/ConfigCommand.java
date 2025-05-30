@@ -24,6 +24,13 @@ import com.vertexcache.server.session.ClientSessionContext;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Administrative command used to retrieve or update VertexCache configuration values.
+ *
+ * Supports read operations on dynamic or runtime-configurable properties.
+ * Requires ADMIN privileges to view.
+ *
+ */
 public class ConfigCommand extends AdminCommand<String> {
 
     public static final String COMMAND_KEY = "CONFIG";

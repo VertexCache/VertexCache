@@ -18,6 +18,11 @@ package com.vertexcache.core.command;
 import com.vertexcache.core.command.argument.ArgumentParser;
 import com.vertexcache.server.session.ClientSessionContext;
 
+/**
+ * Interface for all VertexCache command types.
+ *
+ * This abstraction allows the command processing pipeline to operate on all commands uniformly.
+ */
 public interface Command<T> {
     CommandResponse execute(ArgumentParser argumentParser, ClientSessionContext session) throws Exception;
     String getCommandName();

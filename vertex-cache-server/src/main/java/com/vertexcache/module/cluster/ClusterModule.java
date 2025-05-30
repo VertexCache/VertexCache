@@ -19,11 +19,11 @@ import com.vertexcache.client.VertexCacheInternalClient;
 import com.vertexcache.client.VertexCacheInternalClientOptions;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.security.EncryptionMode;
-import com.vertexcache.core.module.Module;
+import com.vertexcache.core.module.model.Module;
 import com.vertexcache.core.module.ModuleRegistry;
-import com.vertexcache.core.module.ModuleStatus;
+import com.vertexcache.core.module.model.ModuleStatus;
 import com.vertexcache.core.setting.Config;
-import com.vertexcache.core.setting.loader.ClusterConfigLoader;
+import com.vertexcache.core.setting.loaders.ClusterConfigLoader;
 import com.vertexcache.core.validation.validators.cluster.*;
 import com.vertexcache.module.alert.AlertModule;
 import com.vertexcache.module.alert.AlertModuleNoOp;
@@ -38,6 +38,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * ClusterModule initializes and manages the core clustering functionality in VertexCache.
+ * It coordinates node discovery, role assignment, heartbeat exchange, and failover handling,
+ * enabling high availability and distributed operation.
+ *
+ * This module orchestrates the lifecycle of cluster participants, integrates with
+ * HeartbeatManager and FailoverManager, and ensures consistent cluster state
+ * through periodic synchronization and health evaluation.
+ */
 public class ClusterModule extends Module {
 
     private ClusterConfigLoader clusterConfig;

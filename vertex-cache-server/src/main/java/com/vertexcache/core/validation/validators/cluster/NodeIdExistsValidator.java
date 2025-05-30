@@ -15,10 +15,19 @@
  */
 package com.vertexcache.core.validation.validators.cluster;
 
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 import com.vertexcache.core.setting.Config;
 
+/**
+ * Validator that checks whether a given cluster node ID exists in the current configuration.
+ *
+ * Ensures that the provided node ID is present in the configured cluster node map.
+ * Typically used for validating input to internal commands or configuration overrides
+ * that reference specific peer nodes.
+ *
+ * Throws a VertexCacheValidationException if the node ID is not defined in the cluster topology.
+ */
 public class NodeIdExistsValidator implements Validator {
     private final String nodeId;
 

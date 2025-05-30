@@ -16,9 +16,19 @@
 package com.vertexcache.core.validation.validators.restapi;
 
 import com.vertexcache.core.setting.Config;
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 
+/**
+ * Validator that ensures required TLS settings are present when the REST API mandates TLS.
+ *
+ * If REST API configuration specifies that TLS is required, this validator checks:
+ * - A non-blank TLS certificate is configured
+ * - A non-blank TLS private key is configured
+ *
+ * Throws a VertexCacheValidationException if any required TLS file is missing.
+ * Ensures that secure REST API access is correctly enforced at startup.
+ */
 public class RestApiTlsValidator implements Validator {
 
     @Override

@@ -20,6 +20,15 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Utility class for parsing and validating command arguments.
+ *
+ * Provides helper methods to:
+ * - Extract typed values from a list of Argument objects
+ * - Simplify argument handling for command implementations
+ *
+ * Ensures consistent and robust parsing logic across all commands.
+ */
 public class ArgumentParser {
 
     private String argumentString;

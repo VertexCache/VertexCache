@@ -26,6 +26,22 @@ import com.vertexcache.server.session.ClientSessionContext;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Administrative command used to purge specific keys or key prefixes from the cache.
+ *
+ * This operation performs a targeted deletion of entries that match the given key
+ * or prefix, including associated metadata and reverse index structures.
+ *
+ * Unlike ResetCommand, this does not affect metrics, alert state, or client usage statistics.
+ * It is intended for fine-grained control over cache contents without resetting the system state.
+ *
+ * Requires ADMIN privileges to execute.
+ *
+ * Typical use cases include:
+ * - Manually clearing a subset of cached data
+ * - Invalidating application-specific entries
+ * - Cleaning up test data by prefix
+ */
 public class PurgeCommand extends AdminCommand<String> {
 
     public static final String COMMAND_KEY = "PURGE";

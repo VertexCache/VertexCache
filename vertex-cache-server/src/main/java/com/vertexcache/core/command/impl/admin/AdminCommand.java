@@ -18,12 +18,22 @@ package com.vertexcache.core.command.impl.admin;
 import com.vertexcache.core.command.BaseCommand;
 import com.vertexcache.core.command.CommandResponse;
 import com.vertexcache.core.command.argument.ArgumentParser;
-import com.vertexcache.core.module.Module;
-import com.vertexcache.core.module.ModuleName;
+import com.vertexcache.core.module.model.Module;
+import com.vertexcache.core.module.model.ModuleName;
 import com.vertexcache.core.module.ModuleRegistry;
-import com.vertexcache.core.module.ModuleStatus;
+import com.vertexcache.core.module.model.ModuleStatus;
 import com.vertexcache.server.session.ClientSessionContext;
 
+/**
+ * Base class for all administrative commands in VertexCache.
+ *
+ * Extends the general BaseCommand and adds behavior or restrictions specific to
+ * commands requiring ADMIN privileges, such as configuration changes, failover control,
+ * or cluster coordination.
+ *
+ * All admin-only commands should inherit from this class to ensure consistent
+ * permission checks and command classification.
+ */
 public abstract class AdminCommand<T> extends BaseCommand<T> {
 
     @Override

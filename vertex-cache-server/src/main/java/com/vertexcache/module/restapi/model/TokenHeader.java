@@ -15,6 +15,12 @@
  */
 package com.vertexcache.module.restapi.model;
 
+/**
+ * Enumeration representing possible HTTP headers used for token authentication.
+ *
+ * Provides a method to parse a header name string into a TokenHeader enum,
+ * and a case-insensitive equality check.
+ */
 public enum TokenHeader {
     AUTHORIZATION,
     NONE,

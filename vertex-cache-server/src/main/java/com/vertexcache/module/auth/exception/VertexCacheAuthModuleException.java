@@ -15,6 +15,14 @@
  */
 package com.vertexcache.module.auth.exception;
 
+/**
+ * VertexCacheAuthModuleException represents exceptions specific to the authentication
+ * module within VertexCache. It is used to signal errors related to credential validation,
+ * token parsing, role mismatches, and other authentication failures.
+ *
+ * This exception type helps isolate auth-related errors from other system exceptions,
+ * allowing for more precise handling and logging in security-sensitive contexts.
+ */
 public class VertexCacheAuthModuleException extends RuntimeException {
     public VertexCacheAuthModuleException(String message) {
             super(message);

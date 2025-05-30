@@ -15,11 +15,23 @@
  */
 package com.vertexcache.core.validation;
 
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
+ * Utility class for aggregating and executing multiple validators as a batch.
+ *
+ * Allows grouping of related validation steps and running them together,
+ * throwing the first encountered VertexCacheValidationException if any check fails.
+ *
+ * Useful for scenarios where multiple fields or parameters must be validated in tandem,
+ * such as command argument parsing or configuration block validation.
+ *
+ *
  * ValidationBatch Use
  *
  *   Non-Batch Use: just call .validate() directly on a Validator

@@ -15,9 +15,14 @@
  */
 package com.vertexcache.core.validation.validators;
 
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 
+/**
+ * KeyValidator is responsible for validating the primary cache key provided by clients.
+ * It ensures the key is non-null, non-empty, and conforms to the constraints expected
+ * by the VertexCache system, such as length or character encoding rules.
+ */
 public class KeyValidator implements Validator {
 
     private final String fieldName;

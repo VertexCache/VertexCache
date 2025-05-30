@@ -21,6 +21,13 @@ import com.vertexcache.core.util.message.ResultCode;
 import com.vertexcache.core.validation.validators.KeyValidator;
 import com.vertexcache.module.restapi.model.ApiParameter;
 
+/**
+ * REST handler for processing cache delete (DEL) requests.
+ *
+ * Validates write access and the presence of a valid key path parameter.
+ * If validation passes, deletes the key for the current tenant via CacheAccessService
+ * and responds with a success result. Returns appropriate error responses otherwise.
+ */
 public class DelHandler extends AbstractRestHandler {
 
     @Override

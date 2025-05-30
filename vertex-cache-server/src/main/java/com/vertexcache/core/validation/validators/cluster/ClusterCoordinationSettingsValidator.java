@@ -15,12 +15,25 @@
  */
 package com.vertexcache.core.validation.validators.cluster;
 
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 import com.vertexcache.module.cluster.util.ClusterCoordinationKeys;
 
 import java.util.Map;
 
+/**
+ * Validator responsible for checking the correctness of cluster coordination settings.
+ *
+ * Validates key coordination parameters such as:
+ * - Role assignments (e.g., PRIMARY, STANDBY)
+ * - Peer node configurations
+ * - Failover enablement and related flags
+ *
+ * Ensures that all required settings are present and logically consistent
+ * before cluster coordination is initialized.
+ *
+ * Prevents invalid or ambiguous configurations that could lead to cluster instability.
+ */
 public class ClusterCoordinationSettingsValidator implements Validator {
 
     private final Map<String, String> settings;

@@ -18,12 +18,22 @@ package com.vertexcache.server.socket;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.security.PemUtil;
 import com.vertexcache.core.setting.Config;
+import com.vertexcache.server.exception.VertexCacheSSLServerSocketException;
 
 import javax.net.ssl.*;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
+/**
+ * Utility class for creating an SSLServerSocket with TLS configuration.
+ *
+ * Loads server certificate and private key from configured PEM files,
+ * initializes key and trust managers, and sets up SSLContext with TLSv1.2 protocol
+ * and a specific cipher suite.
+ *
+ * Throws VertexCacheSSLServerSocketException on any failure during setup.
+ */
 public class ServerSecurityHelper {
 
     public static SSLServerSocket createSecureSocket(int port) throws VertexCacheSSLServerSocketException {

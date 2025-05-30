@@ -16,13 +16,25 @@
 package com.vertexcache.core.validation.validators;
 
 import com.vertexcache.core.setting.Config;
-import com.vertexcache.core.setting.loader.ClusterConfigLoader;
-import com.vertexcache.core.validation.Validator;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.setting.loaders.ClusterConfigLoader;
+import com.vertexcache.core.validation.model.Validator;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 import com.vertexcache.module.cluster.model.ClusterNode;
 
 import java.util.Map;
 
+/**
+ * Validator that ensures the provided client ID is valid and not reserved for internal cluster use.
+ *
+ * Combines basic client ID format validation with runtime checks against the cluster configuration.
+ * Specifically:
+ * - Delegates to ClientIdValidator for syntactic checks
+ * - Verifies that the ID does not match any known cluster node ID (unless it's the local node)
+ *
+ * This ensures that external clients do not accidentally or maliciously impersonate internal cluster nodes.
+ *
+ * Throws a VertexCacheValidationException if the client ID is invalid or reserved.
+ */
 public class IdentValidator implements Validator {
 
     private final String clientId;

@@ -15,6 +15,19 @@
  */
 package com.vertexcache.core.util.retry;
 
+/**
+ * Enum representing the jitter strategy to apply during retry backoff calculations.
+ *
+ * Jitter is used to randomize retry delays and avoid thundering herd problems when multiple
+ * clients retry simultaneously.
+ *
+ * Available strategies:
+ * - NONE: No jitter, fixed exponential delay
+ * - FULL: Random delay between 0 and the computed maximum
+ * - EQUAL: Half the delay ± a small randomized range
+ *
+ * Used by RetryBackoffService to add randomness to retry intervals.
+ */
 public enum JitterStrategy {
     NONE,      // Deterministic exponential delay
     FULL,      // Random between 0 and capped

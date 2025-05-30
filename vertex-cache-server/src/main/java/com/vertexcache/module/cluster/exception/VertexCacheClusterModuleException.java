@@ -15,6 +15,14 @@
  */
 package com.vertexcache.module.cluster.exception;
 
+/**
+ * VertexCacheClusterModuleException represents errors specific to the clustering
+ * subsystem within VertexCache. It is used to signal failures related to node discovery,
+ * cluster coordination, role transitions, or replication consistency.
+ *
+ * This exception type allows for clear separation of clustering-related issues,
+ * aiding in targeted debugging, alerting, and fault isolation during runtime.
+ */
 public class VertexCacheClusterModuleException extends RuntimeException {
     public VertexCacheClusterModuleException(String message) {
             super(message);

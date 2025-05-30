@@ -24,6 +24,15 @@ import com.vertexcache.module.alert.model.AlertEventType;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Alert service that detects anomalies in hot key access patterns.
+ *
+ * Runs periodically (every 10 seconds) to compare current top key hit counts
+ * against the previous snapshot. Triggers an alert if a key's hits exceed
+ * defined thresholds (e.g., a 5x increase or 1000+ absolute increase above 500 hits).
+ *
+ * When enabled, dispatches an AlertEvent and logs a warning with anomaly details.
+ */
 public class HotKeyAnomalyAlertService extends BaseAlertService {
 
     private Map<String, Long> previousSnapshot = new HashMap<>();

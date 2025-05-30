@@ -15,13 +15,21 @@
  */
 package com.vertexcache.module.auth;
 
-import com.vertexcache.core.module.Module;
-import com.vertexcache.core.module.ModuleStatus;
+import com.vertexcache.core.module.model.Module;
+import com.vertexcache.core.module.model.ModuleStatus;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.module.auth.exception.VertexCacheAuthModuleException;
 import com.vertexcache.module.auth.service.AuthInitializer;
 import com.vertexcache.module.auth.service.AuthService;
 
+/**
+ * AuthModule initializes and manages the authentication infrastructure in VertexCache.
+ * It wires together the AuthService, AuthStore, and related components based on
+ * system configuration, enabling secure access control across all client interactions.
+ *
+ * This module is responsible for loading authentication settings, validating
+ * credentials at runtime, and enforcing role-based permissions system-wide.
+ */
 public class AuthModule extends Module {
 
     private AuthService authService;

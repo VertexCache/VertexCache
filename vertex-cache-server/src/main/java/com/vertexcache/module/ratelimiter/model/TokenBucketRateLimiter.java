@@ -17,6 +17,18 @@ package com.vertexcache.module.ratelimiter.model;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * A simple thread-safe token bucket rate limiter implementation.
+ *
+ * Controls request flow by allowing a fixed number of tokens per second.
+ * Each allowed request consumes one token. Tokens are refilled at a
+ * constant rate based on elapsed time since the last refill.
+ *
+ * - maxTokens: maximum burst capacity
+ * - refillRatePerSecond: steady refill rate
+ *
+ * Thread-safe via synchronization in the allowRequest() method.
+ */
 public class TokenBucketRateLimiter {
     private static final long ONE_SECOND_NANOS = 1_000_000_000L;
     private final int maxTokens;

@@ -18,6 +18,14 @@ package com.vertexcache.server.session;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Thread-safe registry managing active client sessions.
+ *
+ * Provides static methods to register, unregister, query, and list client session contexts
+ * by connection identifier. Supports checking if a client is currently connected.
+ *
+ * Uses a concurrent hash map to allow safe concurrent access.
+ */
 public class SessionRegistry {
 
     private static final Map<String, ClientSessionContext> sessions = new ConcurrentHashMap<>();

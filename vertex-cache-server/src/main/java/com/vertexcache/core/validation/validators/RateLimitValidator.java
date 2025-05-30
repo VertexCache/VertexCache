@@ -16,9 +16,17 @@
 package com.vertexcache.core.validation.validators;
 
 import com.vertexcache.core.setting.Config;
-import com.vertexcache.core.validation.Validator;
+import com.vertexcache.core.validation.model.Validator;
 import com.vertexcache.module.ratelimiter.exception.VertexCacheRateLimitModuleException;
 
+/**
+ * RateLimitValidator validates string inputs intended to represent rate limit values,
+ * such as requests per second or burst limits. It ensures the input is either a valid
+ * positive number or a special keyword like "unlimited" if supported.
+ *
+ * This validator is typically used in the context of rate limiting configurations
+ * to prevent misconfigured or invalid rate values from being accepted at startup.
+ */
 public class RateLimitValidator implements Validator {
 
     private final String rateStr;

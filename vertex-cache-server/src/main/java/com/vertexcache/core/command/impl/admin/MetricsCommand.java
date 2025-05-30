@@ -25,6 +25,20 @@ import com.vertexcache.server.session.ClientSessionContext;
 
 import java.util.Optional;
 
+/**
+ * Administrative command used to retrieve internal metrics from the VertexCache server.
+ *
+ * Provides visibility into cache performance, usage patterns, and operational statistics.
+ * Requires ADMIN privileges to execute.
+ *
+ * Typical metrics include:
+ * - Command counts (get/set/del)
+ * - Hit/miss ratios
+ * - Evictions, expirations, and key counts
+ * - Index and value size distributions
+ *
+ * Useful for monitoring, debugging, and capacity planning.
+ */
 public class MetricsCommand extends AdminCommand<String> {
 
     public static final String COMMAND_KEY = "METRICS";

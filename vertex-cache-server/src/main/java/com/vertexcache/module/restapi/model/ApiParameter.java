@@ -15,6 +15,12 @@
  */
 package com.vertexcache.module.restapi.model;
 
+/**
+ * Enumeration of standard REST API parameter names used across handlers.
+ *
+ * Provides a centralized source of truth for parameter keys like 'key', 'value',
+ * index identifiers, client ID, and token, ensuring consistency in request parsing.
+ */
 public enum ApiParameter {
     KEY("key"),
     KEY_OR_PREFIX("key_or_prefix"),

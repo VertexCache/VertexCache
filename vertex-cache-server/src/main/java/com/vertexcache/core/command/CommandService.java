@@ -19,13 +19,22 @@ import com.vertexcache.core.command.argument.ArgumentParser;
 import com.vertexcache.core.command.impl.PingCommand;
 import com.vertexcache.core.command.impl.UnknownCommand;
 import com.vertexcache.core.setting.Config;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 import com.vertexcache.core.validation.validators.RoleCommandValidator;
 import com.vertexcache.module.ratelimiter.service.RateLimiterManager;
 import com.vertexcache.server.session.ClientSessionContext;
 
 import java.util.Set;
 
+/**
+ * Service responsible for processing and executing incoming Command instances.
+ *
+ * Acts as the central dispatch mechanism that:
+ * - Validates incoming commands
+ * - Delegates execution to the appropriate command handler
+ * - Manages command lifecycle, including logging and error handling
+ *
+ */
 public class CommandService {
 
     private static final Set<String> UNSECURED_COMMANDS = Set.of(

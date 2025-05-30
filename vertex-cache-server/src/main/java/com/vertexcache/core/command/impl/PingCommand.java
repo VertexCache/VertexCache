@@ -21,6 +21,20 @@ import com.vertexcache.core.command.Command;
 import com.vertexcache.core.command.CommandResponse;
 import com.vertexcache.server.session.ClientSessionContext;
 
+/**
+ * Lightweight command used to verify that the VertexCache server is reachable and responsive.
+ *
+ * This is typically used by clients or monitoring systems to check basic liveness
+ * without performing any cache operations.
+ *
+ * Responds with a simple acknowledgment (e.g., "PONG") if the server is healthy.
+ * Requires no authentication or elevated privileges.
+ *
+ * Common use cases include:
+ * - Health checks
+ * - Connection readiness probes
+ * - Network connectivity validation
+ */
 public class PingCommand extends BaseCommand<String> {
 
     public static final String COMMAND_KEY = "PING";

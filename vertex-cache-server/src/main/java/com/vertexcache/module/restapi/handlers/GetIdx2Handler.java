@@ -21,6 +21,12 @@ import com.vertexcache.core.util.message.ResultCode;
 import com.vertexcache.core.validation.validators.KeyValidator;
 import com.vertexcache.module.restapi.model.ApiParameter;
 
+/**
+ * REST handler for retrieving cache values using the tertiary index idx2.
+ *
+ * Validates read access and the idx2 path parameter before querying the cache.
+ * Responds with the corresponding value if found, or a not-found error otherwise.
+ */
 public class GetIdx2Handler extends AbstractRestHandler {
 
     @Override

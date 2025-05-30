@@ -16,17 +16,24 @@
 package com.vertexcache.core.validation.validators;
 
 import com.vertexcache.core.cache.model.DataType;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+/**
+ * ValueValidator is responsible for validating the content of cache values submitted by clients.
+ * It supports checks based on the specified data format (e.g., string, JSON, XML, base64),
+ * ensuring the input conforms to the expected structure and encoding rules.
+ *
+ * This validator helps enforce data integrity in VertexCache by rejecting malformed
+ * or unsupported value formats during set operations.
+ */
 public class ValueValidator {
 
     private final String fieldName;

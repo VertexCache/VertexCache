@@ -22,6 +22,14 @@ import okhttp3.*;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+/**
+ * AlertWebhookDispatcher is responsible for delivering alert events to the configured
+ * external webhook endpoint. It serializes AlertEvent data and performs the HTTP POST
+ * operation, handling any network or response errors according to retry policy.
+ *
+ * This class is a key component of the alerting infrastructure in VertexCache,
+ * enabling integration with external monitoring, notification, or incident response systems.
+ */
 public class AlertWebhookDispatcher {
     private static final Logger LOG = Logger.getLogger(AlertWebhookDispatcher.class.getSimpleName());
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");

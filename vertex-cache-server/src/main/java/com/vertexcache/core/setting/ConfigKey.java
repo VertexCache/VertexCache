@@ -15,6 +15,17 @@
  */
 package com.vertexcache.core.setting;
 
+/**
+ * Enum representing all supported configuration keys in VertexCache.
+ *
+ * Defines the canonical names, expected types, and default values for each
+ * configuration property loaded at startup.
+ *
+ * Used by the Config loader to validate and normalize incoming settings from
+ * the environment, .env files, or system properties.
+ *
+ * Ensures consistency, type safety, and discoverability of available config options.
+ */
 public class ConfigKey {
 
     public static final String LOG_FILEPATH = "log_filepath";

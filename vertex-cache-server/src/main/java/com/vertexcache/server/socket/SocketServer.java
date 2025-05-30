@@ -18,11 +18,12 @@ package com.vertexcache.server.socket;
 import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.security.EncryptionMode;
 import com.vertexcache.core.cache.Cache;
-import com.vertexcache.core.module.Module;
-import com.vertexcache.core.module.ModuleStatus;
+import com.vertexcache.core.module.model.Module;
+import com.vertexcache.core.module.model.ModuleStatus;
 import com.vertexcache.core.setting.Config;
 import com.vertexcache.core.command.CommandService;
 import com.vertexcache.core.status.SystemStatusReport;
+import com.vertexcache.server.exception.VertexCacheSSLServerSocketException;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -31,6 +32,17 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.*;
 
+/**
+ * Core server module that listens for incoming socket connections and dispatches client handlers.
+ *
+ * Supports optional TLS transport encryption via ServerSecurityHelper.
+ * Utilizes a fixed-size thread pool sized based on available processors to handle clients concurrently.
+ *
+ * Manages server socket lifecycle including startup, shutdown, and error handling.
+ * Logs client connection details including transport type and message encryption status.
+ *
+ * Provides static accessors for startup status and messages for external monitoring.
+ */
 public class SocketServer extends Module {
 
     private static final int MAX_THREADS = Runtime.getRuntime().availableProcessors() * 2;

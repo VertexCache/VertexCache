@@ -21,6 +21,13 @@ import com.vertexcache.core.util.message.ResultCode;
 import com.vertexcache.core.validation.validators.KeyValidator;
 import com.vertexcache.module.restapi.model.ApiParameter;
 
+/**
+ * REST handler for processing cache retrieval (GET) requests.
+ *
+ * Validates read access and the key path parameter before attempting to fetch
+ * the value from the cache. Responds with the value if found, or a not-found
+ * error if the key does not exist.
+ */
 public class GetHandler extends AbstractRestHandler {
 
     @Override

@@ -26,12 +26,20 @@ import com.vertexcache.module.auth.model.Role;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
 /**
- * Register Commands, note commands are not entirely accessible to everyone, if Auth is enabled, then client
- * role matters
+ *  Factory responsible for creating Command instances based on input type identifiers.
  *
- * Manual at the moment, maybe revisit if list of commands get unfeasible to manage to dynamically load
- * but do need to consider performance and do want added behaviour for disabling a command at
- * run-time - Command Registry similar to the ModuleRegistry
+ *  Used during decoding to instantiate the appropriate Command implementation
+ *  for incoming requests from clients or peer nodes.
+ *
+ *  This factory ensures decoupling between the command parsing layer and
+ *  concrete command implementations.
+ *
+ *  Note commands are not entirely accessible to everyone, if Auth is enabled, then client
+ *  role matters
+ *
+ *  Manual at the moment, maybe revisit if list of commands get unfeasible to manage to dynamically load
+ *  but do need to consider performance and do want added behaviour for disabling a command at
+ *  run-time - Command Registry similar to the ModuleRegistry
  *
  * @see Role
  */

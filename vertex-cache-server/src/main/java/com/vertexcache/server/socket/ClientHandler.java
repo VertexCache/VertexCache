@@ -22,7 +22,7 @@ import com.vertexcache.common.security.MessageCodec;
 import com.vertexcache.common.security.GcmCryptoHelper;
 import com.vertexcache.core.command.CommandService;
 import com.vertexcache.core.setting.Config;
-import com.vertexcache.core.validation.VertexCacheValidationException;
+import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 import com.vertexcache.core.validation.validators.IdentValidator;
 import com.vertexcache.module.auth.model.AuthEntry;
 import com.vertexcache.module.auth.model.Role;
@@ -41,6 +41,22 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
+/**
+ * Handles individual client connections to the VertexCache server.
+ *
+ * Manages the client socket lifecycle, including reading framed messages,
+ * decrypting input based on configured encryption mode, authenticating clients,
+ * processing commands, and sending responses.
+ *
+ * Supports idle timeouts, with extended timeout for ADMIN role clients.
+ * Tracks session context and registers/unregisters sessions in SessionRegistry.
+ *
+ * Processes IDENT commands for client identification and authentication,
+ * including legacy and JSON payload formats. Enforces authentication if enabled.
+ *
+ * Logs requests and responses when verbose mode is enabled.
+ * Handles exceptions and ensures proper resource cleanup on disconnect.
+ */
 public class ClientHandler implements Runnable {
 
     private static final long DEFAULT_IDLE_TIMEOUT_MS = 30_000;
