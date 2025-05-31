@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.vertexcache.sdk.protocol.command;
+package com.vertexcache.sdk.command.impl;
 
 import com.vertexcache.sdk.exception.VertexCacheSdkException;
 import com.vertexcache.sdk.transport.TcpClientMock;

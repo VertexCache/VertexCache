@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.vertexcache.sdk.protocol.command;
+package com.vertexcache.sdk.command.impl;
 
-import com.vertexcache.sdk.protocol.BaseCommand;
-import com.vertexcache.sdk.protocol.CommandType;
+import com.vertexcache.sdk.command.BaseCommand;
+import com.vertexcache.sdk.command.CommandType;
 import com.vertexcache.sdk.exception.VertexCacheSdkException;
 
 /**

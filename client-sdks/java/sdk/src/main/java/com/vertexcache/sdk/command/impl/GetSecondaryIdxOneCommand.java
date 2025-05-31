@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.vertexcache.sdk.protocol.command;
+package com.vertexcache.sdk.command.impl;
 
-import com.vertexcache.sdk.protocol.BaseCommand;
+import com.vertexcache.sdk.command.BaseCommand;
 import com.vertexcache.sdk.exception.VertexCacheSdkException;
 
 /**
- * Handles the GET command in VertexCache.
+ * Handles the GET Secondary Idx (idx1) command in VertexCache.
  *
  * Retrieves the value for a given key from the cache.
  * Returns an error if the key is missing or expired.
@@ -27,21 +27,21 @@ import com.vertexcache.sdk.exception.VertexCacheSdkException;
  * Requires the client to have READ, READ_WRITE, or ADMIN access.
  * This command supports primary key lookups only.
  */
-public class GetCommand extends BaseCommand<GetCommand> {
+public class GetSecondaryIdxOneCommand extends BaseCommand<GetSecondaryIdxOneCommand> {
 
     private final String key;
     private String value;
 
-    public GetCommand(String key) {
+    public GetSecondaryIdxOneCommand(String key) {
         if (key == null || key.isBlank()) {
-            throw new VertexCacheSdkException("GET command requires a non-empty key");
+            throw new VertexCacheSdkException("GET By Secondary Index (idx1) command requires a non-empty key");
         }
         this.key = key;
     }
 
     @Override
     protected String buildCommand() {
-        return "GET " + key;
+        return "GETIDX1 " + key;
     }
 
     @Override
@@ -52,12 +52,11 @@ public class GetCommand extends BaseCommand<GetCommand> {
         }
 
         if (responseBody.startsWith("ERR")) {
-            setFailure("GET failed: " + responseBody);
+            setFailure("GETIDX1 failed: " + responseBody);
         } else {
             this.value = responseBody;
         }
     }
-
 
     public String getValue() {
         return value;

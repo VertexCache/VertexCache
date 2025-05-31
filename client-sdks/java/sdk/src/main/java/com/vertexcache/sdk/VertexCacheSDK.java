@@ -15,7 +15,7 @@
  */
 package com.vertexcache.sdk;
 
-import com.vertexcache.sdk.protocol.command.*;
+import com.vertexcache.sdk.command.impl.*;
 import com.vertexcache.sdk.result.CommandResult;
 import com.vertexcache.sdk.result.GetResult;
 import com.vertexcache.sdk.setting.ClientOption;

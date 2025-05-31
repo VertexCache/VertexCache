@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.vertexcache.sdk.protocol;
+package com.vertexcache.sdk.command;
 
 /**
  * Enum representing the different types of commands supported by the VertexCache SDK.
