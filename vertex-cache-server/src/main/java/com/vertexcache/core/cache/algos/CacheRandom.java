@@ -17,26 +17,16 @@ package com.vertexcache.core.cache.algos;
 
 import com.vertexcache.core.cache.CacheBase;
 import com.vertexcache.core.cache.exception.VertexCacheTypeException;
-import java.util.Random;
+
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/*
- * A cache implementation that uses random eviction when capacity is exceeded.
+/**
+ * A cache implementation that uses constant-time random eviction when capacity is exceeded.
  *
- * When the number of entries reaches the defined sizeCapacity, a random key is
- * selected from the cache and evicted to make room for the new entry. This strategy
- * is extremely simple and avoids the bookkeeping overhead of LRU, LFU, or CLOCK,
- * but does not guarantee retention of the most valuable data.
- *
- * Key characteristics:
- * - Eviction is triggered when the cache is full
- * - A random entry is removed to free space
- * - Suitable for scenarios where usage patterns are unpredictable
- *   or fairness among keys is acceptable
- *
- * Secondary indexes (idx1, idx2) and reverse indexing are supported,
- * ensuring proper cleanup of associated mappings upon eviction.
+ * Maintains a parallel list of keys for fast indexed access, allowing true O(1) random eviction.
+ * Also supports secondary indexes (idx1, idx2) and proper cleanup on removal.
  */
 public class CacheRandom<K, V> extends CacheBase<K, V> {
 
@@ -44,20 +34,32 @@ public class CacheRandom<K, V> extends CacheBase<K, V> {
     private final int sizeCapacity;
     private final Random random;
 
+    // Tracks keys for O(1) random access
+    private final List<K> keyList;
+    private final Map<K, Integer> keyIndexMap;
+
     public CacheRandom(int sizeCapacity) {
         this.sizeCapacity = sizeCapacity;
         this.setPrimaryCache(new ConcurrentHashMap<>());
         this.setSecondaryIndexOne(new ConcurrentHashMap<>());
         this.setSecondaryIndexTwo(new ConcurrentHashMap<>());
         this.random = new Random();
+
+        this.keyList = new ArrayList<>(sizeCapacity);
+        this.keyIndexMap = new HashMap<>(sizeCapacity);
     }
 
     @Override
     public void put(K primaryKey, V value, Object... secondaryKeys) throws VertexCacheTypeException {
         lock.writeLock().lock();
         try {
-            if (this.getPrimaryCache().size() >= this.sizeCapacity) {
-                evictRandom(); // eviction is now safe
+            if (!this.getPrimaryCache().containsKey(primaryKey)) {
+                if (this.getPrimaryCache().size() >= this.sizeCapacity) {
+                    evictRandom();
+                }
+                // Only track new keys
+                keyList.add(primaryKey);
+                keyIndexMap.put(primaryKey, keyList.size() - 1);
             }
 
             this.putDefaultImpl(primaryKey, value, secondaryKeys);
@@ -69,14 +71,25 @@ public class CacheRandom<K, V> extends CacheBase<K, V> {
     }
 
     private void evictRandom() {
-        if (this.getPrimaryCache().isEmpty()) return;
+        if (keyList.isEmpty()) return;
 
-        K[] keys = this.getPrimaryCache().keySet().toArray((K[]) new Object[0]);
-        int randomIndex = random.nextInt(keys.length);
-        K keyToRemove = keys[randomIndex];
+        int index = random.nextInt(keyList.size());
+        K keyToRemove = keyList.get(index);
 
+        // Remove from map and indexes
         this.getPrimaryCache().remove(keyToRemove);
         this.cleanupIndexFor(keyToRemove);
+
+        // Swap with last element in list and pop
+        int lastIndex = keyList.size() - 1;
+        if (index != lastIndex) {
+            K lastKey = keyList.get(lastIndex);
+            keyList.set(index, lastKey);
+            keyIndexMap.put(lastKey, index);
+        }
+
+        keyList.remove(lastIndex);
+        keyIndexMap.remove(keyToRemove);
     }
 
     @Override
@@ -93,8 +106,20 @@ public class CacheRandom<K, V> extends CacheBase<K, V> {
     public void remove(K primaryKey) {
         lock.writeLock().lock();
         try {
-            this.getPrimaryCache().remove(primaryKey);
-            this.cleanupIndexFor(primaryKey);
+            if (this.getPrimaryCache().remove(primaryKey) != null) {
+                this.cleanupIndexFor(primaryKey);
+
+                Integer index = keyIndexMap.remove(primaryKey);
+                if (index != null && index < keyList.size()) {
+                    int lastIndex = keyList.size() - 1;
+                    if (index != lastIndex) {
+                        K lastKey = keyList.get(lastIndex);
+                        keyList.set(index, lastKey);
+                        keyIndexMap.put(lastKey, index);
+                    }
+                    keyList.remove(lastIndex);
+                }
+            }
         } finally {
             lock.writeLock().unlock();
         }
