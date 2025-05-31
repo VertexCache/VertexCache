@@ -145,6 +145,10 @@ public class Cache<K, V> {
         cache.clear();
     }
 
+    public static void destroy() {
+        instance = null;
+    }
+
     public Set<String> keySet() {
         return (Set<String>) cache.keySet();
     }
