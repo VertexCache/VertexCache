@@ -19,7 +19,9 @@ import com.vertexcache.core.cache.CacheBase;
 import com.vertexcache.core.cache.exception.VertexCacheTypeException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -64,15 +66,16 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class CacheClock<K, V> extends CacheBase<K, V> {
 
+    private final List<K> keyRing = new ArrayList<>();
     private int sizeCapacity;
-    private final boolean[] clockBits;
+    private Map<K, Boolean> clockBits = new HashMap<>();
     private final ReentrantReadWriteLock lock;
     private int hand;
 
     public CacheClock(int sizeCapacity) {
         this.sizeCapacity = sizeCapacity;
         this.setPrimaryCache(new ConcurrentHashMap<>());
-        this.clockBits = new boolean[sizeCapacity];
+        this.clockBits = new HashMap<>();
         this.lock = new ReentrantReadWriteLock();
         this.setSecondaryIndexOne(new ConcurrentHashMap<>());
         this.setSecondaryIndexTwo(new ConcurrentHashMap<>());
@@ -90,24 +93,28 @@ public class CacheClock<K, V> extends CacheBase<K, V> {
             }
 
             // Eviction check
-            if (this.getPrimaryCache().size() >= this.sizeCapacity) {
-                List<K> keys = new ArrayList<>(this.getPrimaryCache().keySet());
 
+            if (this.getPrimaryCache().size() >= this.sizeCapacity) {
                 int attempts = 0;
                 while (attempts < sizeCapacity * 2) {
-                    int index = hand % keys.size();
-                    K candidateKey = keys.get(index);
-
-                    if (!clockBits[index]) {
-                        this.getPrimaryCache().remove(candidateKey);
-                        this.cleanupIndexFor(candidateKey);
-                        clockBits[index] = true;
-                        break; // Ready to insert new key
-                    } else {
-                        clockBits[index] = false;
+                    if (keyRing.isEmpty()) {
+                        throw new VertexCacheTypeException("Clock put() failed: keyRing unexpectedly empty.");
                     }
 
-                    hand = (hand + 1) % sizeCapacity;
+                    K candidateKey = keyRing.get(hand);
+                    Boolean bit = clockBits.getOrDefault(candidateKey, false);
+
+                    if (!bit) {
+                        this.getPrimaryCache().remove(candidateKey);
+                        this.cleanupIndexFor(candidateKey);
+                        clockBits.remove(candidateKey);
+                        keyRing.remove(hand);
+                        if (hand >= keyRing.size()) hand = 0;
+                        break;
+                    } else {
+                        clockBits.put(candidateKey, false);
+                        hand = (hand + 1) % keyRing.size();
+                    }
                     attempts++;
                 }
 
@@ -116,6 +123,8 @@ public class CacheClock<K, V> extends CacheBase<K, V> {
                 }
             }
 
+            keyRing.add(primaryKey);
+            clockBits.put(primaryKey, true);
             this.putDefaultImpl(primaryKey, value, secondaryKeys);
 
         } finally {
