@@ -19,27 +19,24 @@ import com.vertexcache.core.cache.CacheBase;
 import com.vertexcache.core.cache.exception.VertexCacheTypeException;
 
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/*
- *  MRU uses LinkedHashMap with access-ordering enabled (accessOrder set to true). This allows the map to maintain
- *  the order based on the access history, with the most recently accessed item at the end. Then, in the
- *  removeEldestEntry method, by overriding the default behavior to remove the eldest (most recently used) entry when
- *  the size exceeds the capacity. This effectively makes it an MRU cache.
- *
+/**
+ * MRU (Most Recently Used) eviction policy with full O(1) access and eviction.
+ * Maintains internal access-order using a doubly-linked list and a map for node lookups.
  */
 public class CacheMRU<K, V> extends CacheBase<K, V> {
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    private final LinkedHashMap<K, V> primaryCache;
-    private int sizeCapacity;
+    private final Map<K, Node<K>> nodeMap = new HashMap<>();
+    private final DoublyLinkedList<K> accessList = new DoublyLinkedList<>();
+    private final int sizeCapacity;
 
     public CacheMRU(int sizeCapacity) {
         this.sizeCapacity = sizeCapacity;
-        this.primaryCache = new LinkedHashMap<>(sizeCapacity, 0.75f, true);
-        this.setPrimaryCache(Collections.synchronizedMap(primaryCache));
+        this.setPrimaryCache(Collections.synchronizedMap(new HashMap<>()));
     }
 
     @Override
@@ -47,13 +44,45 @@ public class CacheMRU<K, V> extends CacheBase<K, V> {
         lock.writeLock().lock();
         try {
             if (this.getPrimaryCache().size() >= this.sizeCapacity) {
-                K mostRecentKey = getMostRecentlyUsedKey();
-                if (mostRecentKey != null) {
-                    this.getPrimaryCache().remove(mostRecentKey);
-                    this.cleanupIndexFor(mostRecentKey);
+                K mruKey = accessList.getHeadKey();
+                if (mruKey != null) {
+                    this.getPrimaryCache().remove(mruKey);
+                    this.cleanupIndexFor(mruKey);
+                    accessList.removeHead();
+                    nodeMap.remove(mruKey);
                 }
             }
+
+            boolean isUpdate = this.containsKey(primaryKey);
             this.putDefaultImpl(primaryKey, value, secondaryKeys);
+
+            if (isUpdate) {
+                Node<K> node = nodeMap.get(primaryKey);
+                if (node != null) {
+                    accessList.moveToFront(node);
+                }
+            } else {
+                Node<K> node = new Node<>(primaryKey);
+                accessList.addFirst(node);
+                nodeMap.put(primaryKey, node);
+            }
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    @Override
+    public V get(K primaryKey) {
+        lock.writeLock().lock();
+        try {
+            V value = this.getDefaultImpl(primaryKey);
+            if (value != null) {
+                Node<K> node = nodeMap.get(primaryKey);
+                if (node != null) {
+                    accessList.moveToFront(node);
+                }
+            }
+            return value;
         } finally {
             lock.writeLock().unlock();
         }
@@ -61,24 +90,15 @@ public class CacheMRU<K, V> extends CacheBase<K, V> {
 
     @Override
     public void remove(K primaryKey) {
-        this.removeDefaultImpl(primaryKey);
-    }
-
-    @Override
-    public V get(K primaryKey) {
-        return this.getDefaultImpl(primaryKey);
-    }
-
-    private K getMostRecentlyUsedKey() {
-        synchronized (this.getPrimaryCache()) {
-            if (this.getPrimaryCache().isEmpty()) return null;
-
-            Iterator<K> it = this.getPrimaryCache().keySet().iterator();
-            K current = null;
-            while (it.hasNext()) {
-                current = it.next(); // Iterate to the end
+        lock.writeLock().lock();
+        try {
+            this.removeDefaultImpl(primaryKey);
+            Node<K> node = nodeMap.remove(primaryKey);
+            if (node != null) {
+                accessList.remove(node);
             }
-            return current;
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
@@ -90,7 +110,10 @@ public class CacheMRU<K, V> extends CacheBase<K, V> {
                 K key = this.getSecondaryIndexOne().get(secondaryKey);
                 V value = this.getPrimaryCache().get(key);
                 if (value != null) {
-                    this.getPrimaryCache().put(key, value); // maintain MRU status
+                    Node<K> node = nodeMap.get(key);
+                    if (node != null) {
+                        accessList.moveToFront(node);
+                    }
                 }
                 return value;
             }
@@ -108,7 +131,10 @@ public class CacheMRU<K, V> extends CacheBase<K, V> {
                 K key = this.getSecondaryIndexTwo().get(secondaryKey);
                 V value = this.getPrimaryCache().get(key);
                 if (value != null) {
-                    this.getPrimaryCache().put(key, value); // Reinsert the accessed entry to maintain its MRU status
+                    Node<K> node = nodeMap.get(key);
+                    if (node != null) {
+                        accessList.moveToFront(node);
+                    }
                 }
                 return value;
             }
@@ -117,5 +143,55 @@ public class CacheMRU<K, V> extends CacheBase<K, V> {
             lock.writeLock().unlock();
         }
     }
-}
 
+    // ==== Internal Doubly Linked List ====
+
+    private static class Node<K> {
+        final K key;
+        Node<K> prev;
+        Node<K> next;
+
+        Node(K key) {
+            this.key = key;
+        }
+    }
+
+    private static class DoublyLinkedList<K> {
+        private Node<K> head;
+        private Node<K> tail;
+
+        void addFirst(Node<K> node) {
+            node.next = head;
+            if (head != null) head.prev = node;
+            head = node;
+            if (tail == null) tail = head;
+        }
+
+        void moveToFront(Node<K> node) {
+            if (node == head) return;
+            remove(node);
+            addFirst(node);
+        }
+
+        void remove(Node<K> node) {
+            if (node.prev != null) node.prev.next = node.next;
+            if (node.next != null) node.next.prev = node.prev;
+            if (node == head) head = node.next;
+            if (node == tail) tail = node.prev;
+            node.prev = node.next = null;
+        }
+
+        void removeHead() {
+            if (head != null) {
+                Node<K> next = head.next;
+                if (next != null) next.prev = null;
+                if (head == tail) tail = null;
+                head = next;
+            }
+        }
+
+        K getHeadKey() {
+            return head != null ? head.key : null;
+        }
+    }
+}
