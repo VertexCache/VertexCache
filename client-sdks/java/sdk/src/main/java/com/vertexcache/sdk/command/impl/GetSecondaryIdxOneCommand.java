@@ -40,7 +40,7 @@ public class GetSecondaryIdxOneCommand extends BaseCommand<GetSecondaryIdxOneCom
     }
 
     @Override
-    protected String buildCommand() {
+    public String buildCommand() {
         return "GETIDX1 " + key;
     }
 
