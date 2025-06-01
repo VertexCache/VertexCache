@@ -38,28 +38,18 @@ import java.util.StringJoiner;
  */
 public class DelCommand extends BaseCommand<DelCommand> {
 
-    private final List<String> keys;
+    private final String key;
 
-    public DelCommand(List<String> keys) {
-        if (keys == null || keys.isEmpty()) {
-            throw new VertexCacheSdkException("DEL command requires at least one key");
+    public DelCommand(String key) {
+        if (key == null || key.isBlank()) {
+            throw new VertexCacheSdkException("GET command requires a non-empty key");
         }
-        this.keys = keys;
-    }
-
-    public static DelCommand of(String key) {
-        return new DelCommand(Collections.singletonList(key));
+        this.key = key;
     }
 
     @Override
-    protected String buildCommand() {
-        StringJoiner sj = new StringJoiner(" ");
-        sj.add(CommandType.DEL.toString());
-        for (String key : keys) {
-            sj.add(key);
-        }
-        return sj.toString();
-    }
+    protected String buildCommand() { return "DEL " + key; }
+
 
     @Override
     protected void parseResponse(String responseBody) {

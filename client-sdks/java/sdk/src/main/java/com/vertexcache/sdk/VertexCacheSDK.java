@@ -82,12 +82,7 @@ public class VertexCacheSDK {
     }
 
     public CommandResult del(String key) {
-        DelCommand cmd = (DelCommand) DelCommand.of(key).execute(tcpClient);
-        return new CommandResult(cmd.isSuccess(), cmd.getStatusMessage());
-    }
-
-    public CommandResult del(List<String> keys) {
-        DelCommand cmd = (DelCommand) new DelCommand(keys).execute(tcpClient);
+        DelCommand cmd = (DelCommand) new DelCommand(key).execute(tcpClient);
         return new CommandResult(cmd.isSuccess(), cmd.getStatusMessage());
     }
 
