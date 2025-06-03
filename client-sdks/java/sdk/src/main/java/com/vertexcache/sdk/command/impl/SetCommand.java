@@ -15,9 +15,9 @@
  */
 package com.vertexcache.sdk.command.impl;
 
-import com.vertexcache.sdk.command.BaseCommand;
+import com.vertexcache.sdk.command.CommandBase;
 import com.vertexcache.sdk.command.CommandType;
-import com.vertexcache.sdk.exception.VertexCacheSdkException;
+import com.vertexcache.sdk.model.VertexCacheSdkException;
 
 /**
  * Handles the SET command in VertexCache.
@@ -32,7 +32,7 @@ import com.vertexcache.sdk.exception.VertexCacheSdkException;
  * - Key and value are required arguments.
  * - Optional arguments may include index fields and TTL metadata.
  */
-public class SetCommand extends BaseCommand<SetCommand> {
+public class SetCommand extends CommandBase<SetCommand> {
 
     private final String primaryKey;
     private final String value;
@@ -66,8 +66,8 @@ public class SetCommand extends BaseCommand<SetCommand> {
     @Override
     protected String buildCommand() {
         StringBuilder sb = new StringBuilder();
-        sb.append(CommandType.SET).append(BaseCommand.COMMAND_SPACER)
-                .append(primaryKey).append(BaseCommand.COMMAND_SPACER)
+        sb.append(CommandType.SET).append(CommandBase.COMMAND_SPACER)
+                .append(primaryKey).append(CommandBase.COMMAND_SPACER)
                 .append(value);
 
         if (secondaryKey != null && !secondaryKey.isBlank()) {

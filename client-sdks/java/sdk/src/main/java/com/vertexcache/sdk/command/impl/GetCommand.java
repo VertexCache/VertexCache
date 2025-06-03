@@ -15,8 +15,8 @@
  */
 package com.vertexcache.sdk.command.impl;
 
-import com.vertexcache.sdk.command.BaseCommand;
-import com.vertexcache.sdk.exception.VertexCacheSdkException;
+import com.vertexcache.sdk.command.CommandBase;
+import com.vertexcache.sdk.model.VertexCacheSdkException;
 
 /**
  * Handles the GET command in VertexCache.
@@ -27,7 +27,7 @@ import com.vertexcache.sdk.exception.VertexCacheSdkException;
  * Requires the client to have READ, READ_WRITE, or ADMIN access.
  * This command supports primary key lookups only.
  */
-public class GetCommand extends BaseCommand<GetCommand> {
+public class GetCommand extends CommandBase<GetCommand> {
 
     private final String key;
     private String value;

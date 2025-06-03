@@ -15,13 +15,9 @@
  */
 package com.vertexcache.sdk.command.impl;
 
-import com.vertexcache.sdk.command.BaseCommand;
+import com.vertexcache.sdk.command.CommandBase;
 import com.vertexcache.sdk.command.CommandType;
-import com.vertexcache.sdk.exception.VertexCacheSdkException;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.StringJoiner;
+import com.vertexcache.sdk.model.VertexCacheSdkException;
 
 /**
  * Handles the DEL command in VertexCache.
@@ -36,19 +32,19 @@ import java.util.StringJoiner;
  * Configuration:
  * - del_command_idempotent: when true, deletion of missing keys does not result in an error.
  */
-public class DelCommand extends BaseCommand<DelCommand> {
+public class DelCommand extends CommandBase<DelCommand> {
 
     private final String key;
 
     public DelCommand(String key) {
         if (key == null || key.isBlank()) {
-            throw new VertexCacheSdkException("GET command requires a non-empty key");
+            throw new VertexCacheSdkException(CommandType.DEL + " command requires a non-empty key");
         }
         this.key = key;
     }
 
     @Override
-    protected String buildCommand() { return "DEL " + key; }
+    protected String buildCommand() { return CommandType.DEL + " " + key; }
 
 
     @Override

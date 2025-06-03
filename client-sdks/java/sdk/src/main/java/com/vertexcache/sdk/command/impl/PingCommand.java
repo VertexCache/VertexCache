@@ -15,7 +15,7 @@
  */
 package com.vertexcache.sdk.command.impl;
 
-import com.vertexcache.sdk.command.BaseCommand;
+import com.vertexcache.sdk.command.CommandBase;
 
 /**
  * Handles the PING command in VertexCache.
@@ -26,7 +26,7 @@ import com.vertexcache.sdk.command.BaseCommand;
  * PING is always allowed regardless of authentication state or client role.
  * It does not require access validation or key arguments.
  */
-public class PingCommand extends BaseCommand<PingCommand> {
+public class PingCommand extends CommandBase<PingCommand> {
 
     @Override
     protected String buildCommand() {

@@ -1,8 +1,8 @@
 package com.vertexcache.sdk.command.impl;
 
-import com.vertexcache.sdk.exception.VertexCacheSdkException;
-import com.vertexcache.sdk.transport.TcpClientInterface;
-import com.vertexcache.sdk.transport.TcpClientMock;
+import com.vertexcache.sdk.comm.TcpClientInterface;
+import com.vertexcache.sdk.comm.TcpClientMock;
+import com.vertexcache.sdk.model.VertexCacheSdkException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

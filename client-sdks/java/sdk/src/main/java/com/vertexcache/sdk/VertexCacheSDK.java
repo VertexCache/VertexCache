@@ -15,14 +15,12 @@
  */
 package com.vertexcache.sdk;
 
+import com.vertexcache.sdk.comm.TcpClient;
+import com.vertexcache.sdk.comm.TcpClientInterface;
 import com.vertexcache.sdk.command.impl.*;
-import com.vertexcache.sdk.result.CommandResult;
-import com.vertexcache.sdk.result.GetResult;
-import com.vertexcache.sdk.setting.ClientOption;
-import com.vertexcache.sdk.transport.TcpClient;
-import com.vertexcache.sdk.transport.TcpClientInterface;
-
-import java.util.List;
+import com.vertexcache.sdk.model.CommandResult;
+import com.vertexcache.sdk.model.GetResult;
+import com.vertexcache.sdk.model.ClientOption;
 
 /**
  * VertexCacheSDK serves as the main entry point for interacting with the VertexCache server.
@@ -34,31 +32,14 @@ import java.util.List;
  */
 public class VertexCacheSDK {
 
-    private ClientOption clientOption;
     private TcpClientInterface tcpClient;
 
     public VertexCacheSDK(ClientOption clientOption) {
-        this.clientOption = clientOption;
-
-        this.tcpClient = new TcpClient(
-                clientOption.getServerHost(),
-                clientOption.getServerPort(),
-                clientOption.isEnableTlsEncryption(),
-                clientOption.isVerifyCertificate(),
-                clientOption.getTlsCertificate(),
-                clientOption.getConnectTimeout(),
-                clientOption.getReadTimeout(),
-                clientOption.getEncryptionMode(),
-                clientOption.getPublicKey(),
-                clientOption.getSharedEncryptionKey(),
-                clientOption.getClientId(),
-                clientOption.getClientToken()
-        );
+        this.tcpClient = new TcpClient(clientOption);
     }
 
-    protected VertexCacheSDK (ClientOption clientOption, TcpClientInterface tcpClient) {
-        this.clientOption = clientOption;
-        this.tcpClient = tcpClient;
+    public void openConnection() {
+       this.tcpClient.connect();
     }
 
     public CommandResult ping() {

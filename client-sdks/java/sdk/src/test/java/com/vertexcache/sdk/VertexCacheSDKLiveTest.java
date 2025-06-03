@@ -15,11 +15,11 @@
  */
 package com.vertexcache.sdk;
 
-import com.vertexcache.sdk.result.GetResult;
-import com.vertexcache.sdk.exception.VertexCacheSdkException;
-import com.vertexcache.sdk.setting.ClientOption;
-import com.vertexcache.sdk.result.CommandResult;
-import com.vertexcache.sdk.transport.crypto.EncryptionMode;
+import com.vertexcache.sdk.model.GetResult;
+import com.vertexcache.sdk.model.ClientOption;
+import com.vertexcache.sdk.model.CommandResult;
+import com.vertexcache.sdk.comm.EncryptionMode;
+import com.vertexcache.sdk.model.VertexCacheSdkException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
@@ -83,6 +83,7 @@ class VertexCacheSDKLiveTest {
         //clientOption.setSharedEncryptionKey(TEST_SHARED_KEY);
 
         sdk = new VertexCacheSDK(clientOption);
+        sdk.openConnection();
     }
 
     @AfterEach
@@ -175,21 +176,21 @@ class VertexCacheSDKLiveTest {
         assertEquals("value-123", result.getValue(), "Value should match what was set");
     }
 
+
     @Test
     @Order(10)
     public void testFailedHost() {
         ClientOption clientOption = new ClientOption();
         clientOption.setClientId(CLIENT_ID);
         clientOption.setClientToken(CLIENT_TOKEN);
-        clientOption.setServerHost("bad-host"); // intentionally invalid
+        clientOption.setServerHost("bad-host"); // Bad Host
         clientOption.setServerPort(VERTEXCACHE_SERVER_PORT);
         clientOption.setEnableTlsEncryption(ENABLE_TLS);
         clientOption.setTlsCertificate(TEST_TLS_CERT);
         clientOption.setEncryptionMode(ENABLE_PUBLIC_PRIVATE_KEY_USE);
         clientOption.setPublicKey(TEST_PUBLIC_KEY);
-
         assertThrows(VertexCacheSdkException.class, () -> {
-            new VertexCacheSDK(clientOption);
+            (new VertexCacheSDK(clientOption)).openConnection();
         });
     }
 
@@ -199,23 +200,19 @@ class VertexCacheSDKLiveTest {
         ClientOption clientOption = new ClientOption();
         clientOption.setClientId(CLIENT_ID);
         clientOption.setClientToken(CLIENT_TOKEN);
-        clientOption.setServerHost(VERTEXCACHE_SERVER_HOST); // intentionally invalid
-        clientOption.setServerPort(0);
+        clientOption.setServerHost(VERTEXCACHE_SERVER_HOST);
+        clientOption.setServerPort(0); // Bad Port
         clientOption.setEnableTlsEncryption(ENABLE_TLS);
         clientOption.setTlsCertificate(TEST_TLS_CERT);
         clientOption.setEncryptionMode(ENABLE_PUBLIC_PRIVATE_KEY_USE);
         clientOption.setPublicKey(TEST_PUBLIC_KEY);
-
         assertThrows(VertexCacheSdkException.class, () -> {
-            new VertexCacheSDK(clientOption);
+            (new VertexCacheSDK(clientOption)).openConnection();
         });
     }
 
     @Test
     @Order(12)
-    /*
-     * Test TLS Cert used, will always fail, to pass this you need a legitimate TLS Certificate
-     */
     public void testFailedSecureTLS() {
         ClientOption clientOption = new ClientOption();
         clientOption.setClientId(CLIENT_ID);
@@ -227,24 +224,18 @@ class VertexCacheSDKLiveTest {
         clientOption.setTlsCertificate(TEST_TLS_CERT);
         clientOption.setEncryptionMode(ENABLE_PUBLIC_PRIVATE_KEY_USE);
         clientOption.setPublicKey(TEST_PUBLIC_KEY);
-
         VertexCacheSdkException ex = assertThrows(VertexCacheSdkException.class, () -> {
-            new VertexCacheSDK(clientOption);
+            (new VertexCacheSDK(clientOption)).openConnection();
         });
-
         assertTrue(
-                ex.getMessage().contains("TLS verification failed"),
+                ex.getMessage().contains("Failed to create Secure Socket"),
                 "Expected TLS failure message"
         );
     }
 
+
     @Test
     @Order(13)
-    /*
-     * TLS encryption is still active even without a certificate because verifyCertificate is false.
-     * In this mode, the client accepts any server certificate without validation,
-     * enabling encrypted but unauthenticated communication. Yes, even null will work.
-     */
     public void testNonSecureTLS() {
         ClientOption clientOption = new ClientOption();
         clientOption.setClientId(CLIENT_ID);
@@ -253,11 +244,9 @@ class VertexCacheSDKLiveTest {
         clientOption.setServerPort(VERTEXCACHE_SERVER_PORT);
         clientOption.setEnableTlsEncryption(ENABLE_TLS);
         clientOption.setVerifyCertificate(false);
-        clientOption.setTlsCertificate(null); // Intentionally bad
+        clientOption.setTlsCertificate(null); // Intentionally bad and it doesn't care, there is no validation
         clientOption.setEncryptionMode(ENABLE_PUBLIC_PRIVATE_KEY_USE);
         clientOption.setPublicKey(TEST_PUBLIC_KEY);
-
-        new VertexCacheSDK(clientOption);
     }
 
     @Test
@@ -272,38 +261,35 @@ class VertexCacheSDKLiveTest {
         clientOption.setVerifyCertificate(false);
         clientOption.setTlsCertificate(TEST_TLS_CERT);
         clientOption.setEncryptionMode(ENABLE_PUBLIC_PRIVATE_KEY_USE);
-        clientOption.setPublicKey(TEST_PUBLIC_KEY + "_BAD");
-
-        VertexCacheSdkException ex = assertThrows(VertexCacheSdkException.class, () -> {
-            new VertexCacheSDK(clientOption);
-        });
-
+        VertexCacheSdkException ex = assertThrows(
+                VertexCacheSdkException.class,
+                () -> clientOption.setPublicKey(TEST_PUBLIC_KEY + "_BAD")
+        );
         assertTrue(
                 ex.getMessage().contains("Invalid public key"),
-                "Expected Public Key failure message"
+                "Expected public key failure message"
         );
     }
 
     @Test
-    @Order(14)
-    public void testInvalidEncryptionMode() {
+    @Order(15)
+    public void testInvalidSharedKey() {
         ClientOption clientOption = new ClientOption();
         clientOption.setClientId(CLIENT_ID);
         clientOption.setClientToken(CLIENT_TOKEN);
         clientOption.setServerHost(VERTEXCACHE_SERVER_HOST);
         clientOption.setServerPort(VERTEXCACHE_SERVER_PORT);
         clientOption.setEnableTlsEncryption(ENABLE_TLS);
+        clientOption.setVerifyCertificate(false);
         clientOption.setTlsCertificate(TEST_TLS_CERT);
-        clientOption.setEncryptionMode(ENABLE_SHARED_ENCRYPTION_KEY);
-        clientOption.setSharedEncryptionKey(TEST_PUBLIC_KEY);
-
-        VertexCacheSdkException ex = assertThrows(VertexCacheSdkException.class, () -> {
-            new VertexCacheSDK(clientOption);
-        });
-
+        clientOption.setEncryptionMode(EncryptionMode.SYMMETRIC);
+        VertexCacheSdkException ex = assertThrows(
+                VertexCacheSdkException.class,
+                () -> clientOption.setSharedEncryptionKey("_BAD_SHARED_KEY")
+        );
         assertTrue(
-                ex.getMessage().contains("Invalid encryption"),
-                "Expected Encryption failure message"
+                ex.getMessage().contains("Invalid shared key"),
+                "Expected shared key failure message"
         );
     }
 }
