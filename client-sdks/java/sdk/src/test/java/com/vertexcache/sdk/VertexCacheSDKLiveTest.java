@@ -18,7 +18,7 @@ package com.vertexcache.sdk;
 import com.vertexcache.sdk.model.GetResult;
 import com.vertexcache.sdk.model.ClientOption;
 import com.vertexcache.sdk.model.CommandResult;
-import com.vertexcache.sdk.comm.EncryptionMode;
+import com.vertexcache.sdk.model.EncryptionMode;
 import com.vertexcache.sdk.model.VertexCacheSdkException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;

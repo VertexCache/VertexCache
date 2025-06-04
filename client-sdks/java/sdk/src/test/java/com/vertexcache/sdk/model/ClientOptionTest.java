@@ -16,7 +16,6 @@
 
 package com.vertexcache.sdk.model;
 
-import com.vertexcache.sdk.comm.EncryptionMode;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

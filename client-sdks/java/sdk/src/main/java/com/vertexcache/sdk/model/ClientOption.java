@@ -15,7 +15,6 @@
  */
 package com.vertexcache.sdk.model;
 
-import com.vertexcache.sdk.comm.EncryptionMode;
 import com.vertexcache.sdk.comm.KeyParserHelper;
 
 import java.security.PublicKey;

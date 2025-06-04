@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.vertexcache.sdk.comm;
+package com.vertexcache.sdk.model;
 
-import com.vertexcache.sdk.comm.EncryptionMode;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
