@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="vendor/autoload.php">
-    <testsuites>
-        <testsuite name="VertexCacheSDK Test Suite">
-            <directory>sdk/tests</directory>
-        </testsuite>
-    </testsuites>
-</phpunit>

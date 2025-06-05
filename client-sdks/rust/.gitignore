@@ -1,0 +1,35 @@
+# Rust/Cargo build output
+/target/
+**/*.rs.bk
+
+# Executables and binaries
+*.exe
+*.dll
+*.so
+*.dylib
+
+# IDE/editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.bak
+
+# macOS-specific
+.DS_Store
+
+# Byproducts of `cargo doc`
+/doc/
+
+# Logs
+*.log
+
+# Backup files
+*~
+
+# Test/coverage artifacts
+/coverage/
+*.profraw
+
+# Dependency lockfile (optional for libraries)
+# Cargo.lock

@@ -1,0 +1,16 @@
+[package]
+name = "vertexcache_sdk"
+version = "1.0.0"
+edition = "2021"
+authors = ["Jason Lam <your-email@example.com>"]
+license = "Apache-2.0"
+description = "VertexCache Rust SDK"
+repository = "https://github.com/vertexcache/client-sdks"
+
+[lib]
+path = "sdk/vertexcache_sdk.rs"
+
+[dependencies]
+
+[dev-dependencies]
+serial_test = "3.0.0"

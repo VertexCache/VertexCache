@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "vertexcache-sdk"
+version = "1.0.0"
+description = "Official Python SDK for VertexCache"
+authors = ["Jason Lam"]
+license = "Apache-2.0"
+readme = "README.md"
+packages = [{ include = "sdk" }]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.group.poetry.dev-dependencies]
+pytest = "^8.2.0"

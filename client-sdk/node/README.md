@@ -1,1 +1,0 @@
-# VertexCache Node Client SDK

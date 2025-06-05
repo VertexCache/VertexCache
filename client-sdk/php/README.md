@@ -1,1 +1,0 @@
-# VertexCache PHP Client SDK

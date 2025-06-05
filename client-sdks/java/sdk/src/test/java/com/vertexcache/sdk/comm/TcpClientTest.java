@@ -70,31 +70,6 @@ public class TcpClientTest {
             s.close(); // unblocks accept()
         } catch (IOException ignored) {}
     }
-
-    /*
-    @Test
-    public void testPlainSendAndReceive() {
-        TcpClient client = new TcpClient(
-                "localhost",
-                PORT,
-                false,     // useTls
-                false,     // verifyCert
-                null,      // cert
-                3000,
-                3000,
-                EncryptionMode.NONE,
-                null,
-                null,
-                "junit",
-                "token"
-        );
-
-        String response = client.send("ping");
-        assertEquals("echo:ping", response);
-        client.close();
-    }
-
-     */
 }
 
 

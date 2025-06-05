@@ -39,9 +39,8 @@ import java.net.Socket;
 public class TcpClient implements TcpClientInterface {
 
     private Socket socket;
-    private OutputStream out;
-    private InputStream in;
-
+    private OutputStream writer;
+    private InputStream reader;
     private ClientOption options;
 
     public TcpClient(ClientOption options) {
@@ -68,11 +67,11 @@ public class TcpClient implements TcpClientInterface {
             } else {
                 this.socket = SocketHelper.createSocketNonTLS(options);
             }
-            this.out = new BufferedOutputStream(socket.getOutputStream());
-            this.in = new BufferedInputStream(socket.getInputStream());
-            MessageCodec.writeFramedMessage(out, encryptIfEnabled(this.options.getIdentCommand().getBytes()));
-            out.flush();
-            byte[] identResponse = MessageCodec.readFramedMessage(in);
+            this.writer = new BufferedOutputStream(socket.getOutputStream());
+            this.reader = new BufferedInputStream(socket.getInputStream());
+            MessageCodec.writeFramedMessage(writer, encryptIfEnabled(this.options.getIdentCommand().getBytes()));
+            writer.flush();
+            byte[] identResponse = MessageCodec.readFramedMessage(reader);
             if(identResponse == null || !(new String(identResponse)).startsWith("+OK")) {
                 throw new VertexCacheSdkException("Authorization failed");
             }
@@ -101,9 +100,9 @@ public class TcpClient implements TcpClientInterface {
     public synchronized String send(String message) {
         try {
             byte[] toSend = encryptIfEnabled(message.getBytes());
-            MessageCodec.writeFramedMessage(out, toSend);
-            out.flush();
-            byte[] response = MessageCodec.readFramedMessage(in);
+            MessageCodec.writeFramedMessage(writer, toSend);
+            writer.flush();
+            byte[] response = MessageCodec.readFramedMessage(reader);
             if (response == null) {
                 throw new VertexCacheSdkException("Connection closed by server");
             }

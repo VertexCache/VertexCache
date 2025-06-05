@@ -1,1 +1,0 @@
-# VertexCache Java Client SDK
