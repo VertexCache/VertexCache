@@ -4,6 +4,7 @@
 
 # Gradle-specific
 .gradle/
+/gradle
 !gradle/wrapper/gradle-wrapper.jar
 !gradle/wrapper/gradle-wrapper.properties
 
