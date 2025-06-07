@@ -33,7 +33,7 @@ public class ClientOptionTest {
         assertEquals(3000, option.getReadTimeout());
         assertEquals(3000, option.getConnectTimeout());
         assertEquals(EncryptionMode.NONE, option.getEncryptionMode());
-        assertNotNull(option.getIdentCommand());
+        assertNotNull(option.buildIdentCommand());
     }
 
     @Test
@@ -68,7 +68,7 @@ public class ClientOptionTest {
         option.setClientId("my-id");
         option.setClientToken("my-token");
         String expected = "IDENT {\"client_id\":\"my-id\", \"token\":\"my-token\"}";
-        assertEquals(expected, option.getIdentCommand());
+        assertEquals(expected, option.buildIdentCommand());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class ClientOptionTest {
         ClientOption option = new ClientOption();
         option.setClientId(null);
         option.setClientToken(null);
-        String ident = option.getIdentCommand();
+        String ident = option.buildIdentCommand();
         assertTrue(ident.contains("\"client_id\":\"\""));
         assertTrue(ident.contains("\"token\":\"\""));
     }

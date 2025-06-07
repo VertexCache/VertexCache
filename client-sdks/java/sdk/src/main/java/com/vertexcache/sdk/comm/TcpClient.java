@@ -69,7 +69,7 @@ public class TcpClient implements TcpClientInterface {
             }
             this.writer = new BufferedOutputStream(socket.getOutputStream());
             this.reader = new BufferedInputStream(socket.getInputStream());
-            MessageCodec.writeFramedMessage(writer, encryptIfEnabled(this.options.getIdentCommand().getBytes()));
+            MessageCodec.writeFramedMessage(writer, encryptIfEnabled(this.options.buildIdentCommand().getBytes()));
             writer.flush();
             byte[] identResponse = MessageCodec.readFramedMessage(reader);
             if(identResponse == null || !(new String(identResponse)).startsWith("+OK")) {

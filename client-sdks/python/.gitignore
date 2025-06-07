@@ -26,6 +26,7 @@ htmlcov/
 coverage.xml
 nosetests.xml
 pytest_cache/
+.pytest_cache/
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints

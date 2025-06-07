@@ -1,10 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Version>1.0.0</Version>
     <Authors>Jason Lam</Authors>
     <Company>VertexCache</Company>
     <Description>VertexCache SDK for .NET</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 </Project>

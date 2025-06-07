@@ -3,13 +3,13 @@ package com.vertexcache.sdk.comm;
 import com.vertexcache.sdk.model.VertexCacheSdkException;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.security.PublicKey;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class KeyParserHelperTest {
 
-    // This is test key, DO NOT USE for REAL USE
     private static final String VALID_PUBLIC_KEY_PEM = ""
             + "-----BEGIN PUBLIC KEY-----\n"
             + "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnwwKN2M7niJj+Vd0+w9Q\n"
@@ -35,6 +35,12 @@ class KeyParserHelperTest {
     }
 
     @Test
+    void configPublicKeyIfEnabled_shouldReturnRSAAlgorithm() {
+        PublicKey key = KeyParserHelper.configPublicKeyIfEnabled(VALID_PUBLIC_KEY_PEM);
+        assertEquals("RSA", key.getAlgorithm(), "Expected RSA algorithm");
+    }
+
+    @Test
     void configPublicKeyIfEnabled_shouldFailWithInvalidPEM() {
         VertexCacheSdkException ex = assertThrows(VertexCacheSdkException.class, () -> {
             KeyParserHelper.configPublicKeyIfEnabled(INVALID_PUBLIC_KEY_PEM);
@@ -49,6 +55,13 @@ class KeyParserHelperTest {
             assertNotNull(key);
             assertEquals(16, key.length); // "abcdefghijklmnop"
         });
+    }
+
+    @Test
+    void configSharedKeyIfEnabled_shouldReturnCorrectBytes() {
+        byte[] expected = "abcdefghijklmnop".getBytes(StandardCharsets.UTF_8);
+        byte[] actual = KeyParserHelper.configSharedKeyIfEnabled(VALID_SHARED_KEY_BASE64);
+        assertArrayEquals(expected, actual, "Byte content mismatch");
     }
 
     @Test

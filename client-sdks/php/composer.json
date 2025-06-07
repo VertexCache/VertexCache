@@ -13,6 +13,10 @@
       "VertexCache\\": "sdk/VertexCache/"
     }
   },
+  "scripts": {
+    "start": "php -S localhost:8080 -t public",
+    "test" : "vendor/bin/phpunit --stderr"
+  },
   "require": {
     "php": "^8.2"
   },

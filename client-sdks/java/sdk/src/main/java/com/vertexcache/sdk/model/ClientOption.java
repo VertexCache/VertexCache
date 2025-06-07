@@ -66,7 +66,7 @@ public class ClientOption {
     public String getClientToken() {
         return clientToken != null ? clientToken : "";
     }
-    public String getIdentCommand() {
+    public String buildIdentCommand() {
         return String.format(
                 "IDENT {\"client_id\":\"%s\", \"token\":\"%s\"}",
                 this.getClientId(),

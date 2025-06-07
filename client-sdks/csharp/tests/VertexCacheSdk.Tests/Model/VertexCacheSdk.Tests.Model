@@ -1,0 +1,88 @@
+// ------------------------------------------------------------------------------
+// Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache)
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// ------------------------------------------------------------------------------
+
+using VertexCacheSdk.Model;
+using Xunit;
+
+namespace VertexCacheSdk.Tests.Model
+{
+    public class ClientOptionTests
+    {
+        [Fact]
+        public void TestDefaults()
+        {
+            var option = new ClientOption();
+            Assert.Equal("sdk-client", option.ClientId);
+            Assert.Equal("", option.ClientToken);
+            Assert.Equal("127.0.0.1", option.ServerHost);
+            Assert.Equal(50505, option.ServerPort);
+            Assert.False(option.EnableTlsEncryption);
+            Assert.False(option.VerifyCertificate);
+            Assert.Equal(3000, option.ReadTimeout);
+            Assert.Equal(3000, option.ConnectTimeout);
+            Assert.Equal(EncryptionMode.None, option.EncryptionMode);
+            Assert.NotNull(option.BuildIdentCommand());
+        }
+
+        [Fact]
+        public void TestSetValues()
+        {
+            var option = new ClientOption();
+            option.SetClientId("test-client");
+            option.SetClientToken("token123");
+            option.ServerHost = "192.168.1.100";
+            option.ServerPort = 9999;
+            option.EnableTlsEncryption = true;
+            option.VerifyCertificate = true;
+            option.TlsCertificate = "cert";
+            option.ConnectTimeout = 1234;
+            option.ReadTimeout = 5678;
+            option.EncryptionMode = EncryptionMode.Symmetric;
+
+            Assert.Equal("test-client", option.ClientId);
+            Assert.Equal("token123", option.ClientToken);
+            Assert.Equal("192.168.1.100", option.ServerHost);
+            Assert.Equal(9999, option.ServerPort);
+            Assert.True(option.EnableTlsEncryption);
+            Assert.True(option.VerifyCertificate);
+            Assert.Equal("cert", option.TlsCertificate);
+            Assert.Equal(1234, option.ConnectTimeout);
+            Assert.Equal(5678, option.ReadTimeout);
+            Assert.Equal(EncryptionMode.Symmetric, option.EncryptionMode);
+        }
+
+        [Fact]
+        public void TestIdentCommandGeneration()
+        {
+            var option = new ClientOption();
+            option.SetClientId("my-id");
+            option.SetClientToken("my-token");
+            var expected = "IDENT {\"client_id\":\"my-id\", \"token\":\"my-token\"}";
+            Assert.Equal(expected, option.BuildIdentCommand());
+        }
+
+        [Fact]
+        public void TestNullTokenAndIdFallback()
+        {
+            var option = new ClientOption();
+            option.SetClientId(null);
+            option.SetClientToken(null);
+            var ident = option.BuildIdentCommand();
+            Assert.Contains("\"client_id\":\"\"", ident);
+            Assert.Contains("\"token\":\"\"", ident);
+        }
+    }
+}

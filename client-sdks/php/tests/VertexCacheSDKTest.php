@@ -18,6 +18,7 @@
 use PHPUnit\Framework\TestCase;
 use VertexCache\VertexCacheSDK;
 
+
 class VertexCacheSDKTest extends TestCase
 {
     public function testPingShouldReturnTrue()

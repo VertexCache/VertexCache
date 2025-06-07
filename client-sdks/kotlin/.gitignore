@@ -1,7 +1,15 @@
 # 💡 Ignore Gradle build outputs
 /build/
+**/build/
+
+# Gradle-specific
 .gradle/
 !gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# Ignore Gradle downloaded files but NOT wrapper
+.gradle/
+gradle-app.setting
 
 # 💡 Ignore IntelliJ IDEA and Android Studio project files
 .idea/

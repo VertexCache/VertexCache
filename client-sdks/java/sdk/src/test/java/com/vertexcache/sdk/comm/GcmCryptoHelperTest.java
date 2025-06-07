@@ -16,8 +16,10 @@
 package com.vertexcache.sdk.comm;
 
 import com.vertexcache.sdk.comm.GcmCryptoHelper;
+import org.apache.commons.codec.binary.Hex;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
 
@@ -79,5 +81,22 @@ public class GcmCryptoHelperTest {
         byte[] c2 = GcmCryptoHelper.encrypt(message, key);
 
         assertNotEquals(Base64.getEncoder().encodeToString(c1), Base64.getEncoder().encodeToString(c2));
+    }
+
+    @Test
+    public void testEncryptWithFixedIvShouldDecryptCorrectly() throws Exception {
+        byte[] key = new byte[16];
+        byte[] iv = new byte[12];
+        byte[] data = "VertexCacheGCMTest".getBytes(StandardCharsets.UTF_8);
+
+        byte[] encrypted = GcmCryptoHelperRecon.encryptWithIv(data, key, iv);
+        byte[] decrypted = GcmCryptoHelperRecon.decryptWithIv(encrypted, key, iv);
+
+        assertArrayEquals(data, decrypted);
+
+        System.out.println("Plaintext: " + new String(data));
+        System.out.println("Key (hex): " + Hex.encodeHexString(key));
+        System.out.println("IV (hex): " + Hex.encodeHexString(iv));
+        System.out.println("Encrypted (hex): " + Hex.encodeHexString(encrypted));
     }
 }

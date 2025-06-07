@@ -17,13 +17,12 @@
 package tests
 
 import (
+	"github.com/vertexcache/client-sdks/go/sdk"
 	"testing"
-
-	"github.com/vertexcache/client-sdks/go/sdk/vertexcache"
 )
 
 func TestPing(t *testing.T) {
-	sdk := vertexcache.NewSDK()
+	sdk := sdk.NewSDK()
 	resp := sdk.Ping()
 
 	if resp == "" {

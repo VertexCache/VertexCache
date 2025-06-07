@@ -8,7 +8,9 @@ readme = "README.md"
 packages = [{ include = "sdk" }]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.9,<4.0"
+cryptography = { version = "^45.0.3", markers = "python_version != '3.9.0' and python_version != '3.9.1'" }
+
 
 [tool.group.poetry.dev-dependencies]
 pytest = "^8.2.0"
