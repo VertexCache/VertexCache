@@ -12,5 +12,8 @@ python = ">=3.9,<4.0"
 cryptography = { version = "^45.0.3", markers = "python_version != '3.9.0' and python_version != '3.9.1'" }
 
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.0"
+
 [tool.group.poetry.dev-dependencies]
 pytest = "^8.2.0"

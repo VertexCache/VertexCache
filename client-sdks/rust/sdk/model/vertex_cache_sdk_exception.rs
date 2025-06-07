@@ -13,7 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // ------------------------------------------------------------------------------
+
 use std::fmt;
+use std::io;
 
 #[derive(Debug, Clone)]
 pub struct VertexCacheSdkException {
@@ -39,3 +41,9 @@ impl fmt::Display for VertexCacheSdkException {
 }
 
 impl std::error::Error for VertexCacheSdkException {}
+
+impl From<io::Error> for VertexCacheSdkException {
+    fn from(err: io::Error) -> Self {
+        VertexCacheSdkException::new(&format!("IO error: {}", err))
+    }
+}
