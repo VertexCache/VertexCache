@@ -68,4 +68,53 @@ public class MessageCodecTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         assertThrows(IOException.class, () -> MessageCodec.writeFramedMessage(out, bigPayload));
     }
+
+    @Test
+    public void testWriteEmptyPayloadThenReadShouldFail() throws IOException {
+        byte[] payload = new byte[0];
+
+        // Writing should be allowed
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        MessageCodec.writeFramedMessage(out, payload);
+        byte[] framed = out.toByteArray();
+        assertEquals(5, framed.length); // 4-byte length + 1 version
+
+        // Reading should fail due to invalid message length (0)
+        ByteArrayInputStream in = new ByteArrayInputStream(framed);
+        assertThrows(IOException.class, () -> MessageCodec.readFramedMessage(in));
+    }
+
+    @Test
+    public void testUtf8MultibytePayload() throws IOException {
+        String original = "你好, VertexCache 🚀";
+        byte[] payload = original.getBytes("UTF-8");
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        MessageCodec.writeFramedMessage(out, payload);
+
+        ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+        byte[] result = MessageCodec.readFramedMessage(in);
+
+        assertNotNull(result);
+        assertEquals(original, new String(result, "UTF-8"));
+    }
+
+    @Test
+    public void testHexDumpForInterSdkComparison() throws IOException {
+        byte[] payload = "ping".getBytes(); // Keep simple
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        MessageCodec.writeFramedMessage(out, payload);
+
+        byte[] framed = out.toByteArray();
+        System.out.println("Framed hex: " + bytesToHex(framed));
+    }
+
+    private String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02X", b));
+        }
+        return sb.toString();
+    }
+
 }
