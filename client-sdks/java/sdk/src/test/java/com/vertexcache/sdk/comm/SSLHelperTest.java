@@ -53,6 +53,22 @@ class SSLHelperTest {
     }
 
     @Test
+    void createVerifiedSocketFactory_shouldFailWithEmptyCert() {
+        VertexCacheSdkException ex = assertThrows(VertexCacheSdkException.class, () -> {
+            SSLHelper.createVerifiedSocketFactory("");
+        });
+        assertEquals("Failed to create secure socket connection", ex.getMessage());
+    }
+
+    @Test
+    void createVerifiedSocketFactory_shouldFailWithRandomText() {
+        VertexCacheSdkException ex = assertThrows(VertexCacheSdkException.class, () -> {
+            SSLHelper.createVerifiedSocketFactory("this is not even PEM");
+        });
+        assertEquals("Failed to create secure socket connection", ex.getMessage());
+    }
+
+    @Test
     void createInsecureSocketFactory_shouldSucceed() {
         assertDoesNotThrow(() -> {
             SSLSocketFactory factory = SSLHelper.createInsecureSocketFactory();
