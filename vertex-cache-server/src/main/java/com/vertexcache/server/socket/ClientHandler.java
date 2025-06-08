@@ -133,16 +133,20 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private byte[] processInputData(byte[] data, Cipher rsaCipher, byte[] aesKeyBytes) throws Exception {
+    private byte[] processInputData(byte[] data, Cipher rsaCipher, byte[] aesKeyBytes)  {
         byte[] decrypted;
 
-        if (config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.ASYMMETRIC) {
-            rsaCipher.init(Cipher.DECRYPT_MODE, config.getSecurityConfigLoader().getPrivateKey());
-            decrypted = rsaCipher.doFinal(data);
-        } else if (config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.SYMMETRIC) {
-            decrypted = GcmCryptoHelper.decrypt(data, aesKeyBytes);
-        } else {
-            decrypted = data;
+        try {
+            if (config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.ASYMMETRIC) {
+                rsaCipher.init(Cipher.DECRYPT_MODE, config.getSecurityConfigLoader().getPrivateKey());
+                decrypted = rsaCipher.doFinal(data);
+            } else if (config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.SYMMETRIC) {
+                decrypted = GcmCryptoHelper.decrypt(data, aesKeyBytes);
+            } else {
+                decrypted = data;
+            }
+        } catch(Exception e) {
+            return ("-ERR ENCRYPTION MODE Failed: " + e.getMessage()).getBytes(StandardCharsets.UTF_8);
         }
 
         String input = new String(decrypted, StandardCharsets.UTF_8).trim();
