@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.UUID;
 
 /**
  * SSLHelper provides SSL/TLS socket factory utilities for use within the VertexCache SDK.
@@ -50,14 +51,14 @@ public class SSLHelper {
      * @throws VertexCacheSdkException if the certificate is invalid or SSL context creation fails
      */
     public static SSLSocketFactory createVerifiedSocketFactory(String pemCert) throws VertexCacheSdkException {
-        try {
+        try (InputStream certInputStream = new ByteArrayInputStream(pemCert.getBytes())) {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            InputStream certInputStream = new ByteArrayInputStream(pemCert.getBytes());
             X509Certificate cert = (X509Certificate) cf.generateCertificate(certInputStream);
 
             KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
             ks.load(null);
-            ks.setCertificateEntry("server", cert);
+            String alias = "cert-" + System.currentTimeMillis();
+            ks.setCertificateEntry(alias, cert);
 
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             tmf.init(ks);
@@ -65,7 +66,6 @@ public class SSLHelper {
             SSLContext ctx = SSLContext.getInstance("TLS");
             ctx.init(null, tmf.getTrustManagers(), null);
             return ctx.getSocketFactory();
-
         } catch (Exception e) {
             throw new VertexCacheSdkException("Failed to create secure socket connection");
         }
