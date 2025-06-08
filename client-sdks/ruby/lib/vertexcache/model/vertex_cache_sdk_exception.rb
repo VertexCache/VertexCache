@@ -14,10 +14,9 @@
 # limitations under the License.
 # ------------------------------------------------------------------------------
 
-module VertexCacheSdk
+module VertexCache
   module Model
-    class VertexCacheSdkException < StandardError
-    end
+    class VertexCacheSdkException < StandardError; end
   end
 end
 

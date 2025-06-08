@@ -31,7 +31,7 @@ defmodule VertexcacheSdk.MixProject do
 
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger, :ssl, :public_key]
     ]
   end
 end

@@ -16,7 +16,8 @@
 use vertexcache_sdk::comm::key_parser_helper::{
     config_public_key_if_enabled, config_shared_key_if_enabled,
 };
-use vertexcache_sdk::model::vertex_cache_sdk_exception::VertexCacheSdkException;
+
+use vertexcache_sdk::model::vertex_cache_sdk_exception;
 
 const VALID_PEM: &str = "
 -----BEGIN PUBLIC KEY-----

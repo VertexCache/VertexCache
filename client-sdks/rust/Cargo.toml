@@ -18,6 +18,8 @@ rand = "0.8"
 base64 = "0.22"
 rsa = "0.9"
 hex = "0.4"
+native-tls = "0.2"
+tempfile = "3.10"
 
 [dev-dependencies]
 serial_test = "3.0.0"

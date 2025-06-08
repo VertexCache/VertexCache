@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SocketHelperTest {
 
-    private static final boolean ENABLE_LIVE_TLS_TESTS = false;
+    private static final boolean ENABLE_LIVE_TLS_TESTS = true;
 
     private static final int MOCK_PORT = 18888;
     private static final int UNUSED_PORT = 65534; // adjust if in use
