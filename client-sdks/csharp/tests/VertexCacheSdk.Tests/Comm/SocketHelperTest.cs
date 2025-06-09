@@ -81,7 +81,7 @@ MIIDgDCCAmigAwIBAgIJAPjdssRy18IjMA0GCSqGSIb3DQEBDAUAMG4xEDAOBgNV
             serverRunning = false;
 
             // Unblock accept() if needed
-            try { new TcpClient("localhost", MOCK_PORT).Close(); } catch { }
+            try { new System.Net.Sockets.TcpClient("localhost", MOCK_PORT).Close(); } catch { }
 
             if (mockServerThread != null && mockServerThread.IsAlive)
             {

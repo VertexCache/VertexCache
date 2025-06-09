@@ -55,7 +55,7 @@ public class ClientConnectorLiveTlsTest {
         opt.setEncryptionMode(EncryptionMode.ASYMMETRIC);
         opt.setPublicKey(TEST_PUBLIC_KEY);
 
-        ClientConnectorConnector client = new ClientConnectorConnector(opt);
+        ClientConnector client = new ClientConnector(opt);
         client.connect();
         assertTrue(client.isConnected());
 

@@ -36,7 +36,7 @@ import java.net.Socket;
  *  - Wraps exceptions into meaningful SDK-specific types for better debugging
  *  - Configuration (host, port, TLS, encryption mode, etc.) is provided via the ClientOption class.
  */
-public class TcpClient implements TcpClientInterface {
+public class ClientConnector implements ClientConnectorInterface {
 
     private Socket socket;
     private OutputStream writer;
@@ -44,7 +44,7 @@ public class TcpClient implements TcpClientInterface {
     private ClientOption options;
     private boolean connected = false;
 
-    public TcpClient(ClientOption options) {
+    public ClientConnector(ClientOption options) {
         this.options = options;
     }
 

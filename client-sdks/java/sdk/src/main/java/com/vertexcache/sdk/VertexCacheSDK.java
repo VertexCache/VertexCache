@@ -15,7 +15,7 @@
  */
 package com.vertexcache.sdk;
 
-import com.vertexcache.sdk.comm.ClientConnectorConnector;
+import com.vertexcache.sdk.comm.ClientConnector;
 import com.vertexcache.sdk.comm.ClientConnectorInterface;
 import com.vertexcache.sdk.command.impl.*;
 import com.vertexcache.sdk.model.CommandResult;
@@ -35,7 +35,7 @@ public class VertexCacheSDK {
     private ClientConnectorInterface tcpClient;
 
     public VertexCacheSDK(ClientOption clientOption) {
-        this.tcpClient = new ClientConnectorConnector(clientOption);
+        this.tcpClient = new ClientConnector(clientOption);
     }
 
     public void openConnection() {

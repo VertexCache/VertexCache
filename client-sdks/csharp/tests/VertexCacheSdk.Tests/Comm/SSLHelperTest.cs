@@ -102,7 +102,7 @@ qwwA44GZv7zAa89WHNpbIMAA8keexZkPzJBIQNSKy2d9dhcP
         {
             if (!ENABLE_LIVE_TLS_TESTS) return;
 
-            using var client = new TcpClient("localhost", 50505);
+            using var client = new System.Net.Sockets.TcpClient("localhost", 50505);
             var stream = client.GetStream();
 
             var sslStream = SSLHelper.CreateVerifiedSocketFactory(stream, VALID_PEM_CERT);
@@ -117,7 +117,7 @@ qwwA44GZv7zAa89WHNpbIMAA8keexZkPzJBIQNSKy2d9dhcP
         {
             if (!ENABLE_LIVE_TLS_TESTS) return;
 
-            using var client = new TcpClient("localhost", 50505);
+            using var client = new System.Net.Sockets.TcpClient("localhost", 50505);
             var stream = client.GetStream();
 
             var sslStream = SSLHelper.CreateInsecureSocketFactory(stream);

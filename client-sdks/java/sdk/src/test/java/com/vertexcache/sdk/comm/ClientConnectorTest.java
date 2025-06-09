@@ -93,7 +93,7 @@ public class ClientConnectorTest {
         opt.setEncryptionMode(EncryptionMode.SYMMETRIC);
         opt.setSharedEncryptionKey(TEST_SHARED_KEY);
 
-        ClientConnectorConnector client = new ClientConnectorConnector(opt);
+        ClientConnector client = new ClientConnector(opt);
         client.connect();
         assertTrue(client.isConnected());
 
@@ -147,7 +147,7 @@ public class ClientConnectorTest {
         opt.setServerPort(65530);
         opt.setEncryptionMode(EncryptionMode.NONE);
 
-        ClientConnectorConnector client = new ClientConnectorConnector(opt);
+        ClientConnector client = new ClientConnector(opt);
         VertexCacheSdkException ex = assertThrows(VertexCacheSdkException.class, client::connect);
         assertNotNull(ex.getMessage());
     }
@@ -175,7 +175,7 @@ public class ClientConnectorTest {
         opt.setServerPort(TEMP_PORT);
         opt.setEncryptionMode(EncryptionMode.NONE);
 
-        ClientConnectorConnector client = new ClientConnectorConnector(opt);
+        ClientConnector client = new ClientConnector(opt);
         VertexCacheSdkException ex = assertThrows(VertexCacheSdkException.class, client::connect);
         assertTrue(ex.getMessage().contains("Authorization failed"));
     }

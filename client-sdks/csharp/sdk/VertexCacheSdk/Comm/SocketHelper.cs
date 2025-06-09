@@ -27,7 +27,7 @@ namespace VertexCacheSdk.Comm
         {
             try
             {
-                var tcpClient = new TcpClient();
+                var tcpClient = new System.Net.Sockets.TcpClient();
                 tcpClient.Connect(options.ServerHost, options.ServerPort);
                 tcpClient.ReceiveTimeout = options.ReadTimeout;
                 tcpClient.SendTimeout = options.ReadTimeout;
