@@ -15,7 +15,7 @@
  */
 package com.vertexcache.sdk.command;
 
-import com.vertexcache.sdk.comm.TcpClientInterface;
+import com.vertexcache.sdk.comm.ClientConnectorInterface;
 import com.vertexcache.sdk.model.VertexCacheSdkException;
 
 /**
@@ -40,7 +40,7 @@ public abstract class CommandBase<T extends CommandBase<T>> implements CommandIn
     private String error;
 
     @Override
-    public CommandInterface execute(TcpClientInterface client) {
+    public CommandInterface execute(ClientConnectorInterface client) {
         try {
             String raw = client.send(buildCommand()).trim();
 

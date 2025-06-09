@@ -1,7 +1,7 @@
 package com.vertexcache.sdk.command.impl;
 
-import com.vertexcache.sdk.comm.TcpClientInterface;
-import com.vertexcache.sdk.comm.TcpClientMock;
+import com.vertexcache.sdk.comm.ClientConnectorInterface;
+import com.vertexcache.sdk.comm.ClientConnectorMock;
 import com.vertexcache.sdk.model.VertexCacheSdkException;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +11,7 @@ class GetSecondaryIdxOneCommandTest {
 
     @Test
     void execute_shouldSucceedWhenResponseStartsWithValue() {
-        TcpClientInterface mock = new TcpClientMock("+{\"role\":\"editor\"}");
+        ClientConnectorInterface mock = new ClientConnectorMock("+{\"role\":\"editor\"}");
         GetSecondaryIdxOneCommand cmd = (GetSecondaryIdxOneCommand)
                 new GetSecondaryIdxOneCommand("team:1").execute(mock);
 
@@ -22,7 +22,7 @@ class GetSecondaryIdxOneCommandTest {
 
     @Test
     void execute_shouldReturnNullValueWhenIdxIsNil() {
-        TcpClientInterface mock = new TcpClientMock("+(nil)");
+        ClientConnectorInterface mock = new ClientConnectorMock("+(nil)");
         GetSecondaryIdxOneCommand cmd = (GetSecondaryIdxOneCommand)
                 new GetSecondaryIdxOneCommand("missing:idx").execute(mock);
 

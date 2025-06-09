@@ -15,7 +15,7 @@
  */
 package com.vertexcache.sdk.command;
 
-import com.vertexcache.sdk.comm.TcpClientInterface;
+import com.vertexcache.sdk.comm.ClientConnectorInterface;
 
 /**
  * Command represents a generic interface for all command types that can be executed by the VertexCache SDK.
@@ -27,7 +27,7 @@ import com.vertexcache.sdk.comm.TcpClientInterface;
  * enabling streamlined processing and execution logic within the SDK's transport layer.
  */
 public interface CommandInterface {
-    CommandInterface execute(TcpClientInterface client);
+    CommandInterface execute(ClientConnectorInterface client);
     boolean isSuccess();
     String getResponse();
     String getError();

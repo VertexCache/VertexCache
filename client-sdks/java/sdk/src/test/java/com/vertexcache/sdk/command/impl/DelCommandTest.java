@@ -15,8 +15,8 @@
  */
 package com.vertexcache.sdk.command.impl;
 
-import com.vertexcache.sdk.comm.TcpClientInterface;
-import com.vertexcache.sdk.comm.TcpClientMock;
+import com.vertexcache.sdk.comm.ClientConnectorInterface;
+import com.vertexcache.sdk.comm.ClientConnectorMock;
 import com.vertexcache.sdk.model.VertexCacheSdkException;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ class DelCommandTest {
 
     @Test
     void execute_shouldSucceedWhenResponseIsOK() {
-        TcpClientInterface mock = new TcpClientMock("+OK");
+        ClientConnectorInterface mock = new ClientConnectorMock("+OK");
         DelCommand cmd = (DelCommand) new DelCommand("key123").execute(mock);
 
         assertTrue(cmd.isSuccess());
@@ -36,7 +36,7 @@ class DelCommandTest {
 
     @Test
     void execute_shouldFailWhenResponseIsNotOK() {
-        TcpClientInterface mock = new TcpClientMock("+FAIL");
+        ClientConnectorInterface mock = new ClientConnectorMock("+FAIL");
         DelCommand cmd = (DelCommand) new DelCommand("key123").execute(mock);
 
         assertFalse(cmd.isSuccess());

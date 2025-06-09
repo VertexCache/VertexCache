@@ -15,8 +15,8 @@
  */
 package com.vertexcache.sdk.command.impl;
 
-import com.vertexcache.sdk.comm.TcpClientInterface;
-import com.vertexcache.sdk.comm.TcpClientMock;
+import com.vertexcache.sdk.comm.ClientConnectorInterface;
+import com.vertexcache.sdk.comm.ClientConnectorMock;
 import com.vertexcache.sdk.model.VertexCacheSdkException;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ class GetCommandTest {
 
     @Test
     void execute_shouldSucceedWhenResponseStartsWithValue() {
-        TcpClientInterface mock = new TcpClientMock("+{\"name\":\"Alice\"}");
+        ClientConnectorInterface mock = new ClientConnectorMock("+{\"name\":\"Alice\"}");
         GetCommand cmd = (GetCommand) new GetCommand("user:1").execute(mock);
 
         assertTrue(cmd.isSuccess());
@@ -36,7 +36,7 @@ class GetCommandTest {
 
     @Test
     void execute_shouldReturnNullValueWhenKeyIsNil() {
-        TcpClientInterface mock = new TcpClientMock("+(nil)");
+        ClientConnectorInterface mock = new ClientConnectorMock("+(nil)");
         GetCommand cmd = (GetCommand) new GetCommand("missing:key").execute(mock);
 
         assertEquals("No matching key found, +(nil)",cmd.getResponse());

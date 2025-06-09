@@ -15,8 +15,8 @@
  */
 package com.vertexcache.sdk.command.impl;
 
-import com.vertexcache.sdk.comm.TcpClientInterface;
-import com.vertexcache.sdk.comm.TcpClientMock;
+import com.vertexcache.sdk.comm.ClientConnectorInterface;
+import com.vertexcache.sdk.comm.ClientConnectorMock;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +25,7 @@ class PingCommandTest {
 
     @Test
     void execute_shouldSucceedWhenResponseIsOK() {
-        TcpClientInterface mock = new TcpClientMock("+PONG");
+        ClientConnectorInterface mock = new ClientConnectorMock("+PONG");
         PingCommand cmd = (PingCommand) new PingCommand().execute(mock);
 
         assertTrue(cmd.isSuccess());
@@ -35,7 +35,7 @@ class PingCommandTest {
 
     @Test
     void execute_shouldFailWhenResponseIsNotOK() {
-        TcpClientInterface mock = new TcpClientMock("+WRONG");
+        ClientConnectorInterface mock = new ClientConnectorMock("+WRONG");
         PingCommand cmd = (PingCommand) new PingCommand().execute(mock);
 
         assertFalse(cmd.isSuccess());

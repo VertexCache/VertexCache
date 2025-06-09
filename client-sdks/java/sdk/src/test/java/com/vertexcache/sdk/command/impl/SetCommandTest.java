@@ -16,7 +16,7 @@
 package com.vertexcache.sdk.command.impl;
 
 import com.vertexcache.sdk.model.VertexCacheSdkException;
-import com.vertexcache.sdk.comm.TcpClientMock;
+import com.vertexcache.sdk.comm.ClientConnectorMock;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,7 +32,7 @@ class SetCommandTest {
 
     @Test
     void execute_shouldFailWhenResponseIsNotOK() {
-        TcpClientMock mock = new TcpClientMock("+NOT_OK");
+        ClientConnectorMock mock = new ClientConnectorMock("+NOT_OK");
         SetCommand cmd = (SetCommand) new SetCommand("key", "value").execute(mock);
 
         assertFalse(cmd.isSuccess());
