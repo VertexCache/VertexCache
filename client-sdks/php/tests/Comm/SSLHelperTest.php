@@ -51,13 +51,14 @@ CERT;
         $this->assertIsResource($context);
         $options = stream_context_get_options($context);
         $this->assertTrue($options['ssl']['verify_peer']);
+        $this->assertTrue($options['ssl']['verify_peer_name']);
         $this->assertFileExists($options['ssl']['cafile']);
     }
 
     public function testCreateVerifiedContext_invalidCert_shouldThrow()
     {
         $this->expectException(VertexCacheSdkException::class);
-        SSLHelper::createVerifiedSocketContext("not a cert");
+        SSLHelper::createVerifiedSocketContext("invalid pem string");
     }
 
     public function testCreateInsecureContext_shouldSucceed()
@@ -66,6 +67,8 @@ CERT;
         $this->assertIsResource($context);
         $options = stream_context_get_options($context);
         $this->assertFalse($options['ssl']['verify_peer']);
+        $this->assertFalse($options['ssl']['verify_peer_name']);
+        $this->assertTrue($options['ssl']['allow_self_signed']);
     }
 
     /**

@@ -31,78 +31,65 @@ class SSLHelper
      * @return resource
      * @throws VertexCacheSdkException
      */
+    /**
+     * Creates a PHP stream context that enforces TLS server certificate validation
+     * against a specific PEM-encoded certificate.
+     *
+     * @param string $pemCert PEM-encoded X.509 certificate content
+     * @return resource Stream context for use with stream_socket_client
+     * @throws VertexCacheSdkException
+     */
     public static function createVerifiedSocketContext(string $pemCert)
     {
-        try {
-            if (empty($pemCert) || strpos($pemCert, 'BEGIN CERTIFICATE') === false) {
-                throw new \InvalidArgumentException("Invalid certificate format");
-            }
-
-            $pemFile = self::createTempPemFile($pemCert);
-            $options = [
-                'ssl' => [
-                    'verify_peer' => true,
-                    'cafile' => $pemFile,
-                    'verify_peer_name' => true,
-                ]
-            ];
-
-            $context = stream_context_create($options);
-            if (!is_resource($context)) {
-                throw new \RuntimeException("stream_context_create() failed");
-            }
-
-            return $context;
-        } catch (\Throwable $e) {
-            throw new VertexCacheSdkException("Failed to create secure socket connection");
+        // Save to a temporary cert file
+        $tempCertFile = tempnam(sys_get_temp_dir(), 'vc_cert_');
+        if ($tempCertFile === false || @file_put_contents($tempCertFile, $pemCert) === false) {
+            throw new VertexCacheSdkException("Failed to write PEM certificate to temp file");
         }
+
+        if (openssl_x509_read($pemCert) === false) {
+            throw new VertexCacheSdkException("Invalid PEM certificate");
+        }
+
+        $contextOptions = [
+            'ssl' => [
+                'verify_peer'      => true,
+                'verify_peer_name' => true,
+                'allow_self_signed' => false,
+                'cafile'           => $tempCertFile,
+            ],
+        ];
+
+        $context = stream_context_create($contextOptions);
+        if (!$context) {
+            throw new VertexCacheSdkException("Failed to create secure stream context");
+        }
+
+        return $context;
     }
 
     /**
-     * Creates an insecure stream context that bypasses certificate validation.
+     * Creates a PHP stream context that disables all TLS verification.
+     * This is insecure and should only be used in development or test environments.
      *
-     * @return resource
+     * @return resource Stream context for use with stream_socket_client
      * @throws VertexCacheSdkException
      */
     public static function createInsecureSocketContext()
     {
-        try {
-            $contextOptions = [
-                'ssl' => [
-                    'verify_peer' => false,
-                    'verify_peer_name' => false
-                ]
-            ];
-            $context = stream_context_create($contextOptions);
-            if (!is_resource($context)) {
-                throw new \RuntimeException("stream_context_create() failed");
-            }
+        $contextOptions = [
+            'ssl' => [
+                'verify_peer'       => false,
+                'verify_peer_name'  => false,
+                'allow_self_signed' => true,
+            ],
+        ];
 
-            return $context;
-        } catch (\Throwable $e) {
-            throw new VertexCacheSdkException("Failed to create non secure socket connection");
-        }
-    }
-
-    /**
-     * Writes the PEM cert to a temporary file and returns the path.
-     *
-     * @param string $pemCert
-     * @return string
-     * @throws \RuntimeException
-     */
-    private static function createTempPemFile(string $pemCert): string
-    {
-        $tempFile = tempnam(sys_get_temp_dir(), 'cert_');
-        if (!$tempFile) {
-            throw new \RuntimeException("Failed to create temporary file for cert");
+        $context = stream_context_create($contextOptions);
+        if (!$context) {
+            throw new VertexCacheSdkException("Failed to create non secure stream context");
         }
 
-        $bytesWritten = file_put_contents($tempFile, $pemCert);
-        if ($bytesWritten === false || $bytesWritten === 0) {
-            throw new \RuntimeException("Failed to write PEM certificate to temporary file");
-        }
-
-        return $tempFile;
+        return $context;
     }
 }

@@ -14,11 +14,11 @@
 // limitations under the License.
 // ------------------------------------------------------------------------------
 
-const { expect } = require('chai');
-const tls = require('tls');
-const net = require('net');
-const { SSLHelper } = require('../../sdk/comm/ssl_helper');
-const { VertexCacheSdkException } = require('../../sdk/model/vertex_cache_sdk_exception');
+const { expect } = require("chai");
+const {
+    createVerifiedSocketFactory,
+    createInsecureSocketFactory,
+} = require("../../sdk/comm/ssl_helper");
 
 const VALID_PEM_CERT = `
 -----BEGIN CERTIFICATE-----
@@ -44,46 +44,25 @@ qwwA44GZv7zAa89WHNpbIMAA8keexZkPzJBIQNSKy2d9dhcP
 -----END CERTIFICATE-----
 `;
 
-describe('SSLHelper', () => {
-
-    it('createVerifiedSocketOptions returns valid options for valid cert', () => {
-        const options = SSLHelper.createVerifiedSocketOptions(VALID_PEM_CERT);
-        expect(options).to.have.property('ca');
-        expect(options).to.have.property('rejectUnauthorized', true);
+describe("SSLHelper", () => {
+    it("createVerifiedSocketFactory should succeed with valid cert", () => {
+        const config = createVerifiedSocketFactory(VALID_PEM_CERT);
+        expect(config).to.be.an("object");
+        expect(config.ca).to.be.an.instanceOf(Buffer);
+        expect(config.rejectUnauthorized).to.be.true;
     });
 
-    it('createVerifiedSocketOptions throws on invalid cert', () => {
-        expect(() => {
-            SSLHelper.createVerifiedSocketOptions('not a cert');
-        }).to.throw(VertexCacheSdkException, 'Failed to create secure socket connection');
+    it("createVerifiedSocketFactory should fail with empty cert", () => {
+        expect(() => createVerifiedSocketFactory("")).to.throw("Failed to create secure socket connection");
     });
 
-    it('createInsecureSocketOptions returns valid options', () => {
-        const options = SSLHelper.createInsecureSocketOptions();
-        expect(options).to.have.property('rejectUnauthorized', false);
+    it("createVerifiedSocketFactory should fail with invalid cert", () => {
+        expect(() => createVerifiedSocketFactory("not a cert")).to.throw("Failed to create secure socket connection");
     });
 
-    it('createInsecureSocketOptions connects to localhost TLS (optional)', (done) => {
-        const ENABLE_LIVE = false;
-        if (!ENABLE_LIVE) {
-            return done(); // skip without error
-        }
-
-        const tlsOptions = SSLHelper.createInsecureSocketOptions();
-        tlsOptions.host = 'localhost';
-        tlsOptions.port = 50505;
-        tlsOptions.timeout = 1000;
-
-        const socket = tls.connect(tlsOptions, () => {
-            expect(socket.authorized).to.be.false;
-            socket.end();
-            done();
-        });
-
-        socket.on('error', (err) => {
-            console.warn(`⚠️  TLS connect error (expected if no server): ${err.message}`);
-            done(); // still count as pass
-        });
+    it("createInsecureSocketFactory should succeed", () => {
+        const config = createInsecureSocketFactory();
+        expect(config).to.be.an("object");
+        expect(config.rejectUnauthorized).to.be.false;
     });
-
 });

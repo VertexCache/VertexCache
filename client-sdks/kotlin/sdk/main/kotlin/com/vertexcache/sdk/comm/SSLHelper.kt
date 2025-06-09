@@ -16,7 +16,7 @@
 
 package com.vertexcache.sdk.comm
 
-import vertexcache.sdk.model.VertexCacheSdkException
+import com.vertexcache.sdk.model.VertexCacheSdkException
 import java.io.ByteArrayInputStream
 import java.security.KeyStore
 import java.security.SecureRandom

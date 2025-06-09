@@ -16,7 +16,7 @@
 
 package com.vertexcache.sdk.comm
 
-import vertexcache.sdk.model.VertexCacheSdkException
+import com.vertexcache.sdk.model.VertexCacheSdkException
 import java.security.KeyFactory
 import java.security.PublicKey
 import java.security.spec.X509EncodedKeySpec

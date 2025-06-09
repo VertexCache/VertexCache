@@ -17,16 +17,13 @@
 package comm_test
 
 import (
-	"crypto/tls"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/vertexcache/client-sdks/go/sdk/comm"
-	"net"
-	"testing"
-	"time"
 )
 
-const (
-	validTestCert = `-----BEGIN CERTIFICATE-----
+const validPemCert = `-----BEGIN CERTIFICATE-----
 MIIDgDCCAmigAwIBAgIJAPjdssRy18IjMA0GCSqGSIb3DQEBDAUAMG4xEDAOBgNV
 BAYTB1Vua25vd24xEDAOBgNVBAgTB1Vua25vd24xEDAOBgNVBAcTB1Vua25vd24x
 EDAOBgNVBAoTB1Vua25vd24xEDAOBgNVBAsTB1Vua25vd24xEjAQBgNVBAMTCWxv
@@ -47,43 +44,38 @@ iAUrhcZ1+iYjelrERk8MPj9FQIzQ8FwwF4oB8ShNDhDNWCOVbSdLXwMOLH84u/ul
 v/I4U/5/mqGGTtwNyyzFS0GYgrYua4H7Aqer2g4wv8PUYwkaAfQ49CWm9kFQxgD4
 qwwA44GZv7zAa89WHNpbIMAA8keexZkPzJBIQNSKy2d9dhcP
 -----END CERTIFICATE-----`
-)
 
-func TestCreateVerifiedTLSConfig_ValidCert(t *testing.T) {
-	tlsConfig, err := comm.CreateVerifiedTLSConfig(validTestCert)
+const invalidPemCert = `-----BEGIN CERTIFICATE-----
+INVALID DATA
+-----END CERTIFICATE-----`
+
+func TestCreateVerifiedSocketFactory_WithValidCert(t *testing.T) {
+	tlsConfig, err := comm.CreateVerifiedSocketFactory(validPemCert, "localhost")
 	assert.NoError(t, err)
 	assert.NotNil(t, tlsConfig)
-	assert.True(t, tlsConfig.InsecureSkipVerify == false)
+	assert.False(t, tlsConfig.InsecureSkipVerify)
 }
 
-func TestCreateVerifiedTLSConfig_InvalidCert(t *testing.T) {
-	_, err := comm.CreateVerifiedTLSConfig("not a cert")
+func TestCreateVerifiedSocketFactory_WithInvalidCert(t *testing.T) {
+	tlsConfig, err := comm.CreateVerifiedSocketFactory(invalidPemCert, "localhost")
+	assert.Nil(t, tlsConfig)
 	assert.Error(t, err)
 }
 
-func TestCreateInsecureTLSConfig_ReturnsValid(t *testing.T) {
-	tlsConfig := comm.CreateInsecureTLSConfig()
-	assert.NotNil(t, tlsConfig)
-	assert.True(t, tlsConfig.InsecureSkipVerify)
+func TestCreateVerifiedSocketFactory_WithEmptyCert(t *testing.T) {
+	tlsConfig, err := comm.CreateVerifiedSocketFactory("", "localhost")
+	assert.Nil(t, tlsConfig)
+	assert.Error(t, err)
 }
 
-func TestInsecureTLSConnectionToLocalhost(t *testing.T) {
-	const enableLive = false
-	if !enableLive {
-		t.Skip("Skipping live TLS test; enableLive = false")
-	}
+func TestCreateVerifiedSocketFactory_WithRandomText(t *testing.T) {
+	tlsConfig, err := comm.CreateVerifiedSocketFactory("this is not even PEM", "localhost")
+	assert.Nil(t, tlsConfig)
+	assert.Error(t, err)
+}
 
-	tlsConfig := comm.CreateInsecureTLSConfig()
-	conn, err := tls.DialWithDialer(&net.Dialer{Timeout: 1 * time.Second}, "tcp", "localhost:50505", tlsConfig)
-	if err != nil {
-		t.Logf("⚠️  TLS connection attempt failed (as expected if no server running): %v", err)
-		return // graceful exit
-	}
-	defer conn.Close()
-
-	if !conn.ConnectionState().HandshakeComplete {
-		t.Log("⚠️  TLS handshake did not complete")
-	} else {
-		t.Log("✅ TLS connection and handshake successful")
-	}
+func TestCreateInsecureSocketFactory_ShouldSucceed(t *testing.T) {
+	tlsConfig := comm.CreateInsecureSocketFactory("localhost")
+	assert.NotNil(t, tlsConfig)
+	assert.True(t, tlsConfig.InsecureSkipVerify)
 }

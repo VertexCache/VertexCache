@@ -20,46 +20,34 @@ const crypto = require('crypto');
 const { VertexCacheSdkException } = require('../model/vertex_cache_sdk_exception');
 
 /**
- * SSLHelper provides SSL/TLS socket configuration utilities for the VertexCache SDK.
+ * Creates a verified TLS context from a PEM certificate.
+ *
+ * @param {string} pemCert - The PEM-encoded certificate string.
+ * @returns {tls.SecureContext} - A configured secure context.
+ * @throws {VertexCacheSdkException}
  */
-const SSLHelper = {
-    /**
-     * Creates a TLS configuration that verifies the server certificate against a provided PEM certificate.
-     *
-     * @param {string} pemCert - PEM-encoded certificate to trust
-     * @returns {object} TLS connection options
-     * @throws {VertexCacheSdkException} if the cert is invalid
-     */
-    createVerifiedSocketOptions(pemCert) {
-        try {
-            if (!pemCert || typeof pemCert !== 'string' || !pemCert.includes('-----BEGIN CERTIFICATE-----')) {
-                throw new VertexCacheSdkException('Failed to create secure socket connection');
-            }
-
-            return {
-                ca: pemCert,
-                rejectUnauthorized: true
-            };
-        } catch (e) {
-            throw new VertexCacheSdkException('Failed to create secure socket connection');
+function createVerifiedSocketFactory(pemCert) {
+    try {
+        if (!pemCert || typeof pemCert !== "string" || !pemCert.includes("BEGIN CERTIFICATE")) {
+            throw new Error("Invalid PEM certificate");
         }
-    },
 
-    /**
-     * Creates a TLS configuration that disables certificate verification (insecure).
-     *
-     * @returns {object} Insecure TLS connection options
-     * @throws {VertexCacheSdkException}
-     */
-    createInsecureSocketOptions() {
-        try {
-            return {
-                rejectUnauthorized: false
-            };
-        } catch (e) {
-            throw new VertexCacheSdkException('Failed to create non secure socket connection');
-        }
+        return {
+            ca: Buffer.from(pemCert, "utf-8"),
+            rejectUnauthorized: true,
+        };
+    } catch (e) {
+        throw new Error("Failed to create secure socket connection");
     }
-};
+}
 
-module.exports = { SSLHelper };
+function createInsecureSocketFactory() {
+    return {
+        rejectUnauthorized: false,
+    };
+}
+
+module.exports = {
+    createVerifiedSocketFactory,
+    createInsecureSocketFactory
+};

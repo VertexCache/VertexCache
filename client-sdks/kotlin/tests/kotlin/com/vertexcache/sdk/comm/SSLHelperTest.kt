@@ -16,8 +16,9 @@
 
 package com.vertexcache.sdk.comm
 
+import com.vertexcache.sdk.model.VertexCacheSdkException
 import org.junit.jupiter.api.*
-import vertexcache.sdk.model.VertexCacheSdkException
+
 import java.net.Socket
 import javax.net.ssl.SSLSocketFactory
 import kotlin.test.assertEquals

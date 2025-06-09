@@ -24,14 +24,10 @@ class SSLHelper:
     def create_verified_socket_context(pem_cert: str) -> ssl.SSLContext:
         try:
             if not pem_cert or "BEGIN CERTIFICATE" not in pem_cert:
-                raise ValueError("Invalid certificate format")
-
-            temp_cert = tempfile.NamedTemporaryFile(delete=False, mode='w', suffix=".crt")
-            temp_cert.write(pem_cert)
-            temp_cert.close()
+                raise VertexCacheSdkException("Invalid certificate format")
 
             context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-            context.load_verify_locations(cafile=temp_cert.name)
+            context.load_verify_locations(cadata=pem_cert)
             return context
         except Exception:
             raise VertexCacheSdkException("Failed to create secure socket connection")

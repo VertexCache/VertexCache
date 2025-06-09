@@ -16,9 +16,9 @@
 
 package com.vertexcache.sdk.comm
 
+import com.vertexcache.sdk.model.VertexCacheSdkException
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import vertexcache.sdk.model.VertexCacheSdkException
 import java.nio.charset.StandardCharsets
 
 class KeyParserHelperTest {

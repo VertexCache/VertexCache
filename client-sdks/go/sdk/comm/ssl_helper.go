@@ -22,7 +22,7 @@ import (
 	"errors"
 )
 
-func CreateVerifiedTLSConfig(pemCert string) (*tls.Config, error) {
+func CreateVerifiedSocketFactory(pemCert string, serverHost string) (*tls.Config, error) {
 	pool := x509.NewCertPool()
 	ok := pool.AppendCertsFromPEM([]byte(pemCert))
 	if !ok {
@@ -31,13 +31,14 @@ func CreateVerifiedTLSConfig(pemCert string) (*tls.Config, error) {
 
 	return &tls.Config{
 		RootCAs:            pool,
-		ServerName:         "localhost",
 		InsecureSkipVerify: false,
+		ServerName:         serverHost,
 	}, nil
 }
 
-func CreateInsecureTLSConfig() *tls.Config {
+func CreateInsecureSocketFactory(serverHost string) *tls.Config {
 	return &tls.Config{
 		InsecureSkipVerify: true,
+		ServerName:         serverHost,
 	}
 }
