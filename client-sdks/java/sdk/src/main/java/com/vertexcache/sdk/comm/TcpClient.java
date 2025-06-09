@@ -17,6 +17,7 @@ package com.vertexcache.sdk.comm;
 
 import com.vertexcache.sdk.model.ClientOption;
 import com.vertexcache.sdk.model.VertexCacheSdkException;
+
 import javax.crypto.Cipher;
 import java.io.*;
 import java.net.Socket;
@@ -34,7 +35,6 @@ import java.net.Socket;
  *  - Handles reconnect and retry logic on I/O failures
  *  - Wraps exceptions into meaningful SDK-specific types for better debugging
  *  - Configuration (host, port, TLS, encryption mode, etc.) is provided via the ClientOption class.
- *
  */
 public class TcpClient implements TcpClientInterface {
 
@@ -42,6 +42,7 @@ public class TcpClient implements TcpClientInterface {
     private OutputStream writer;
     private InputStream reader;
     private ClientOption options;
+    private boolean connected = false;
 
     public TcpClient(ClientOption options) {
         this.options = options;
@@ -72,9 +73,11 @@ public class TcpClient implements TcpClientInterface {
             MessageCodec.writeFramedMessage(writer, encryptIfEnabled(this.options.buildIdentCommand().getBytes()));
             writer.flush();
             byte[] identResponse = MessageCodec.readFramedMessage(reader);
-            if(identResponse == null || !(new String(identResponse)).startsWith("+OK")) {
-                throw new VertexCacheSdkException("Authorization failed");
+            String identStr = identResponse == null ? "" : new String(identResponse).trim();
+            if (!identStr.startsWith("+OK")) {
+                throw new VertexCacheSdkException("Authorization failed: " + identStr);
             }
+            this.connected = true;
         } catch (Exception e) {
             throw new VertexCacheSdkException(e.getMessage());
         }
@@ -153,7 +156,8 @@ public class TcpClient implements TcpClientInterface {
      * @return true if the socket is in a valid connected state, false otherwise
      */
     public boolean isConnected() {
-        return socket != null && socket.isConnected() && !socket.isClosed() && !socket.isInputShutdown() && !socket.isOutputShutdown();
+        return connected && socket != null && socket.isConnected()
+                && !socket.isClosed() && !socket.isInputShutdown() && !socket.isOutputShutdown();
     }
 
     /**
@@ -166,5 +170,6 @@ public class TcpClient implements TcpClientInterface {
         try {
             if (socket != null) socket.close();
         } catch (IOException ignored) {}
+        connected = false;
     }
 }
