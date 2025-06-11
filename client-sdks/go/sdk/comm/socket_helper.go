@@ -30,26 +30,33 @@ func CreateSecureSocket(opt model.ClientOption) (net.Conn, error) {
 	var err error
 
 	if opt.VerifyCertificate {
+		fmt.Println("TLS mode: VERIFY")
 		if opt.TLSCertificate == "" {
-			return nil, model.NewVertexCacheSdkException("Failed to create Secure Socket")
+			fmt.Println("Missing TLSCertificate with Verify=true")
+			return nil, model.NewVertexCacheSdkException("TLS verification enabled but certificate is missing")
 		}
 		tlsConfig, err = CreateVerifiedSocketFactory(opt.TLSCertificate, opt.ServerHost)
 		if err != nil {
+			fmt.Printf("CreateVerifiedSocketFactory failed: %v\n", err)
 			return nil, model.NewVertexCacheSdkException("Failed to create Secure Socket")
 		}
 	} else {
+		fmt.Println("TLS mode: INSECURE (skip verify)")
 		tlsConfig = CreateInsecureSocketFactory(opt.ServerHost)
 	}
 
 	addr := fmt.Sprintf("%s:%d", opt.ServerHost, opt.ServerPort)
+	fmt.Printf("Dialing TLS socket to %s\n", addr)
 	conn, err := tls.DialWithDialer(&net.Dialer{
 		Timeout: time.Duration(opt.ConnectTimeout) * time.Millisecond,
 	}, "tcp", addr, tlsConfig)
 
 	if err != nil {
+		fmt.Printf("tls.DialWithDialer failed: %v\n", err)
 		return nil, model.NewVertexCacheSdkException("Failed to create Secure Socket")
 	}
 
+	fmt.Println("TLS connection succeeded")
 	return conn, nil
 }
 
