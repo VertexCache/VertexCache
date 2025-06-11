@@ -32,7 +32,6 @@ import java.net.Socket;
  *  - Supports both secure and insecure TLS modes
  *  - Automatically sends an IDENT command with client credentials
  *  - Encrypts all outgoing payloads based on configured encryption mode (could be NONE if NONE set)
- *  - Handles reconnect and retry logic on I/O failures
  *  - Wraps exceptions into meaningful SDK-specific types for better debugging
  *  - Configuration (host, port, TLS, encryption mode, etc.) is provided via the ClientOption class.
  */
