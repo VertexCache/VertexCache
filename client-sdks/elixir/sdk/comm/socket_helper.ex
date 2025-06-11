@@ -50,10 +50,15 @@ defmodule VertexCacheSdk.Comm.SocketHelper do
   """
   def create_secure_socket(%ClientOption{} = opts) do
     ssl_opts_result =
-      if opts.verify_certificate and opts.tls_certificate != nil do
-        SSLHelper.create_verified_socket_opts(opts.tls_certificate)
-      else
-        {:ok, SSLHelper.create_insecure_socket_opts()}
+      cond do
+        opts.verify_certificate and is_binary(opts.tls_certificate) ->
+          SSLHelper.create_verified_socket_opts(opts.tls_certificate)
+
+        opts.verify_certificate and is_nil(opts.tls_certificate) ->
+          {:error, "TLS certificate is required when verify_certificate is true"}
+
+        true ->
+          {:ok, SSLHelper.create_insecure_socket_opts(String.to_charlist(opts.server_host))}
       end
 
     case ssl_opts_result do

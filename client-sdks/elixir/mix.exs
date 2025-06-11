@@ -23,9 +23,9 @@ defmodule VertexcacheSdk.MixProject do
       version: "1.0.0",
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
-      elixirc_paths: ["sdk"],
-      test_paths: ["tests"],   # <--- Add this line
-      deps: []
+      elixirc_paths: elixirc_paths(Mix.env()),
+      test_paths: ["tests"],
+      deps: deps()
     ]
   end
 
@@ -34,4 +34,14 @@ defmodule VertexcacheSdk.MixProject do
       extra_applications: [:logger, :ssl, :public_key]
     ]
   end
+
+  defp elixirc_paths(:test), do: ["sdk", "tests"]
+  defp elixirc_paths(_), do: ["sdk"]
+
+  defp deps do
+    [
+      {:meck, "~> 0.9", only: :test}
+    ]
+  end
 end
+
