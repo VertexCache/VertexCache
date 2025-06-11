@@ -60,8 +60,14 @@ public class ServerSecurityHelper {
             SSLServerSocketFactory factory = sslContext.getServerSocketFactory();
             SSLServerSocket serverSocket = (SSLServerSocket) factory.createServerSocket(port);
 
-            serverSocket.setEnabledProtocols(new String[]{"TLSv1.2"});
-            serverSocket.setEnabledCipherSuites(new String[]{"TLS_RSA_WITH_AES_256_CBC_SHA256"});
+            serverSocket.setEnabledProtocols(new String[]{"TLSv1.2", "TLSv1.3"});
+            serverSocket.setEnabledCipherSuites(new String[] {
+                    "TLS_RSA_WITH_AES_256_GCM_SHA384",
+                    "TLS_RSA_WITH_AES_128_GCM_SHA256",
+                    "TLS_RSA_WITH_AES_256_CBC_SHA256",
+                    "TLS_RSA_WITH_AES_256_CBC_SHA",
+                    "TLS_RSA_WITH_AES_128_CBC_SHA"
+            });
 
             return serverSocket;
 
