@@ -14,7 +14,7 @@
 // limitations under the License.
 // ------------------------------------------------------------------------------
 
-package sdk.comm
+package com.vertexcache.sdk.comm
 
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -82,3 +82,4 @@ object MessageCodec {
         return input.readNBytes(length)
     }
 }
+

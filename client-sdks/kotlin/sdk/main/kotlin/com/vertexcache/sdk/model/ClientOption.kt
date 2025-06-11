@@ -16,6 +16,9 @@
 
 package com.vertexcache.sdk.model
 
+import com.vertexcache.sdk.comm.KeyParserHelper
+import java.security.PublicKey
+
 /**
  * Configuration container for initializing the VertexCache SDK client.
  *
@@ -54,6 +57,9 @@ class ClientOption {
 
     var readTimeout: Int = DEFAULT_READ_TIMEOUT
     var connectTimeout: Int = DEFAULT_CONNECT_TIMEOUT
+
+    fun getPublicKeyAsObject(): PublicKey = KeyParserHelper.configPublicKeyIfEnabled(publicKey ?: "")
+    fun getSharedEncryptionKeyAsBytes(): ByteArray = KeyParserHelper.configSharedKeyIfEnabled(sharedEncryptionKey ?: "")
 
     fun buildClientId(): String {
         return clientId ?: ""
