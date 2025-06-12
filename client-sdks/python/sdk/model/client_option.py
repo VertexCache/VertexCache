@@ -15,7 +15,10 @@
 # ------------------------------------------------------------------------------
 
 from sdk.model.encryption_mode import EncryptionMode
-
+from sdk.model.vertex_cache_sdk_exception import VertexCacheSdkException
+from sdk.comm import key_parser_helper
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.backends import default_backend
 
 class ClientOption:
     DEFAULT_CLIENT_ID = "sdk-client"
@@ -59,3 +62,20 @@ class ClientOption:
 
     def set_shared_encryption_key(self, shared_key: str):
         self.shared_encryption_key = shared_key
+
+    def get_encryption_mode(self) -> EncryptionMode:
+        return self.encryption_mode
+
+    def get_public_key_as_object(self):
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.backends import default_backend
+        try:
+            return serialization.load_pem_public_key(
+                self.public_key.encode("utf-8"),
+                backend=default_backend()
+            )
+        except Exception:
+            raise VertexCacheSdkException("Invalid public key")
+
+    def get_shared_encryption_key_as_bytes(self) -> bytes:
+        return key_parser_helper.config_shared_key_if_enabled(self.shared_encryption_key)
