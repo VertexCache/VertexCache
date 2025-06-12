@@ -62,11 +62,23 @@ public class ServerSecurityHelper {
 
             serverSocket.setEnabledProtocols(new String[]{"TLSv1.2", "TLSv1.3"});
             serverSocket.setEnabledCipherSuites(new String[] {
-                    "TLS_RSA_WITH_AES_256_GCM_SHA384",
+                    // Modern AEAD + Forward Secure (best choices)
+                    "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+                    "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+                    "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256", // Only supported if OpenSSL/Java supports it
+
+                    // CBC-based ECDHE (still useful fallback)
+                    "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
+                    "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
+
+                    // RSA-based AEAD (less preferred, but widely supported)
                     "TLS_RSA_WITH_AES_128_GCM_SHA256",
-                    "TLS_RSA_WITH_AES_256_CBC_SHA256",
+                    "TLS_RSA_WITH_AES_256_GCM_SHA384",
+
+                    // RSA-based CBC (for compatibility with older Java and Python)
+                    "TLS_RSA_WITH_AES_128_CBC_SHA",
                     "TLS_RSA_WITH_AES_256_CBC_SHA",
-                    "TLS_RSA_WITH_AES_128_CBC_SHA"
+                    "TLS_RSA_WITH_AES_256_CBC_SHA256"
             });
 
             return serverSocket;
