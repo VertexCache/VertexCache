@@ -49,30 +49,35 @@ class MessageCodec
      * @return array|null [payload, remaining] or null if too short
      * @throws \Exception
      */
-    public static function readFramedMessage(string $buffer): ?array
+    public static function readFramedMessage($stream): ?string
     {
-        if (strlen($buffer) < 5) {
+        // 4-byte length + 1-byte version header
+        $header = fread($stream, 5);
+        if ($header === false || strlen($header) < 5) {
             return null;
         }
 
-        $unpacked = unpack('Nlength/Cversion', substr($buffer, 0, 5));
-        $length = $unpacked['length'];
-        $version = $unpacked['version'];
+        $length = unpack('N', substr($header, 0, 4))[1];
+
+        $version = ord($header[4]);
 
         if ($version !== self::PROTOCOL_VERSION) {
-            throw new \Exception("Unsupported protocol version: $version");
+            throw new \Exception("Invalid protocol version: $version");
         }
 
-        if ($length <= 0 || $length > self::MAX_MESSAGE_SIZE) {
-            throw new \Exception("Invalid message length: $length");
+        if ($length > self::MAX_MESSAGE_SIZE) {
+            throw new \Exception("Framed message too large: $length bytes");
         }
 
-        if (strlen($buffer) < 5 + $length) {
-            return null;
+        $payload = '';
+        while (strlen($payload) < $length) {
+            $chunk = fread($stream, $length - strlen($payload));
+            if ($chunk === false || $chunk === '') {
+                return null;
+            }
+            $payload .= $chunk;
         }
 
-        $payload = substr($buffer, 5, $length);
-        $remaining = substr($buffer, 5 + $length);
-        return [$payload, $remaining];
+        return $payload;
     }
 }

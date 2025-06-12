@@ -1,6 +1,6 @@
 <?php
 // ------------------------------------------------------------------------------
-// Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache)
+// Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache/vertexcache)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -73,6 +73,16 @@ class ClientOption
             $this->getClientId(),
             $this->getClientToken()
         );
+    }
+
+    public function getPublicKeyAsObject()
+    {
+        $key = $this->getPublicKey();
+        $res = openssl_pkey_get_public($key);
+        if ($res === false) {
+            throw new VertexCacheSdkException("Invalid public key format");
+        }
+        return $res;
     }
 
     // Getters/setters follow the same order as fields
