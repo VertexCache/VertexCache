@@ -77,7 +77,7 @@ public class SocketServer extends Module {
 
             ServerSocket serverSocket;
             if (Config.getInstance().getSecurityConfigLoader().isEncryptTransport()) {
-                serverSocket = ServerSecurityHelper.createSecureSocket(port);
+                serverSocket = TLSHelper.createSecureSocket(port);
             } else {
                 serverSocket = new ServerSocket(port);
             }
