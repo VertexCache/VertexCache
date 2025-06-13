@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache/vertexcache)
+// Copyright 2025 to Present, Jason Lam - VertexCache
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,24 +26,29 @@ import (
 
 const (
 	MaxMessageSize  = 10 * 1024 * 1024 // 10MB
-	ProtocolVersion = byte(0x01)
+	ProtocolVersion = 0x00000101
 )
 
-// WriteFramedMessage encodes the given payload and writes it to the writer with:
-// - 4-byte length (big-endian)
-// - 1-byte protocol version
-// - payload data
+// WriteFramedMessage writes a framed message:
+// [4 bytes length][4 bytes protocol version][payload]
 func WriteFramedMessage(w io.Writer, payload []byte) error {
 	if len(payload) > MaxMessageSize {
 		return fmt.Errorf("message too large: %d", len(payload))
 	}
 
 	var header bytes.Buffer
+
+	// Write length (int32, big-endian)
 	if err := binary.Write(&header, binary.BigEndian, int32(len(payload))); err != nil {
 		return err
 	}
-	header.WriteByte(ProtocolVersion)
 
+	// Write protocol version (uint32, big-endian)
+	if err := binary.Write(&header, binary.BigEndian, uint32(ProtocolVersion)); err != nil {
+		return err
+	}
+
+	// Write header + payload
 	if _, err := w.Write(header.Bytes()); err != nil {
 		return err
 	}
@@ -53,29 +58,20 @@ func WriteFramedMessage(w io.Writer, payload []byte) error {
 	return nil
 }
 
-// ReadFramedMessage reads a framed message from the reader according to the VertexCache protocol.
-//
-// The framing format is:
-// - 4 bytes (big-endian) for message length
-// - 1 byte for protocol version
-// - N bytes payload
-//
-// Returns:
-// - payload ([]byte) if complete and valid
-// - nil, nil if the header is too short or incomplete (matches Java/Elixir behavior)
-// - error if protocol version is invalid, length is out of bounds, or I/O fails
+// ReadFramedMessage reads a framed message:
+// [4 bytes length][4 bytes protocol version][payload]
 func ReadFramedMessage(r io.Reader) ([]byte, error) {
-	header := make([]byte, 5)
+	header := make([]byte, 8)
 	n, err := io.ReadFull(r, header)
 	if err != nil {
-		if err == io.ErrUnexpectedEOF || err == io.EOF || n < 5 {
-			return nil, nil // treat short header as non-fatal: return nil like Java/Elixir
+		if err == io.ErrUnexpectedEOF || err == io.EOF || n < 8 {
+			return nil, nil // treat short header as non-fatal
 		}
 		return nil, err
 	}
 
 	length := int32(binary.BigEndian.Uint32(header[0:4]))
-	version := header[4]
+	version := binary.BigEndian.Uint32(header[4:8])
 
 	if version != ProtocolVersion {
 		return nil, errors.New("unsupported protocol version")

@@ -62,7 +62,7 @@ def test_create_insecure_socket_context_should_succeed():
 
 
 def test_insecure_tls_connection_to_localhost_if_enabled():
-    enable_live = True
+    enable_live = False
     if not enable_live:
         pytest.skip("Live TLS test skipped; enable_live = False")
 

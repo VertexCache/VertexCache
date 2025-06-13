@@ -20,6 +20,7 @@ import (
 	"github.com/vertexcache/client-sdks/go/sdk/comm"
 	"github.com/vertexcache/client-sdks/go/sdk/model"
 	"net"
+	"os"
 	"testing"
 )
 
@@ -121,9 +122,9 @@ func TestCreateSecureSocketShouldFailWithBadCertificate(t *testing.T) {
 }
 
 func TestCreateSecureSocketShouldSucceedWithLiveServer(t *testing.T) {
-	//if os.Getenv("ENABLE_LIVE_TLS_TESTS") != "true" {
-	//	t.Skip("Skipping live TLS test unless ENABLE_LIVE_TLS_TESTS=true")
-	//}
+	if os.Getenv("VC_LIVE_TEST") != "true" {
+		t.Skip("Skipping live test unless VC_LIVE_TEST=true")
+	}
 
 	opt := model.ClientOption{
 		ServerHost:        "localhost",

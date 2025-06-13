@@ -49,9 +49,9 @@ CERT;
 
     protected function setUp(): void
     {
-        if (getenv('VC_LIVE_TEST') !== 'true') {
-            $this->markTestSkipped('VC_LIVE_TEST not enabled');
-        }
+       // if (getenv('VC_LIVE_TEST') !== 'true') {
+       //     $this->markTestSkipped('VC_LIVE_TEST not enabled');
+       // }
     }
 
     public function testLiveConnectAndPing_shouldSucceed(): void

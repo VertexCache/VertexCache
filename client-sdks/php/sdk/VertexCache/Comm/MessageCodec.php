@@ -1,6 +1,6 @@
 <?php
 // ------------------------------------------------------------------------------
-// Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache/vertexcache)
+// Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ namespace VertexCache\Comm;
 class MessageCodec
 {
     public const MAX_MESSAGE_SIZE = 10485760; // 10MB
-    public const PROTOCOL_VERSION = 0x01;
+    public const PROTOCOL_VERSION = 0x00000101;
 
     /**
-     * Writes a framed message to binary format: [length(4)][version(1)][payload]
+     * Writes a framed message to binary format: [length(4)][version(4)][payload]
      *
      * @param string $payload
      * @return string
@@ -36,37 +36,36 @@ class MessageCodec
             throw new \Exception("Message too large: $length");
         }
 
-        $frame = pack('N', $length);                 // 4-byte big-endian length
-        $frame .= chr(self::PROTOCOL_VERSION);       // 1-byte version
+        $frame  = pack('N', $length);                // 4-byte big-endian length
+        $frame .= pack('N', self::PROTOCOL_VERSION); // 4-byte big-endian version
         $frame .= $payload;                          // payload
         return $frame;
     }
 
     /**
-     * Reads a framed message from the given binary buffer.
+     * Reads a framed message from the given binary stream.
      *
-     * @param string $buffer
-     * @return array|null [payload, remaining] or null if too short
+     * @param resource $stream
+     * @return string|null
      * @throws \Exception
      */
     public static function readFramedMessage($stream): ?string
     {
-        // 4-byte length + 1-byte version header
-        $header = fread($stream, 5);
-        if ($header === false || strlen($header) < 5) {
+        $header = fread($stream, 8); // 4 bytes length + 4 bytes version
+        if ($header === false || strlen($header) < 8) {
             return null;
         }
 
-        $length = unpack('N', substr($header, 0, 4))[1];
-
-        $version = ord($header[4]);
+        $parts = unpack('Nlength/Nversion', $header);
+        $length = $parts['length'];
+        $version = $parts['version'];
 
         if ($version !== self::PROTOCOL_VERSION) {
-            throw new \Exception("Invalid protocol version: $version");
+            throw new \Exception("Invalid protocol version: 0x" . dechex($version));
         }
 
-        if ($length > self::MAX_MESSAGE_SIZE) {
-            throw new \Exception("Framed message too large: $length bytes");
+        if ($length <= 0 || $length > self::MAX_MESSAGE_SIZE) {
+            throw new \Exception("Invalid framed message length: $length bytes");
         }
 
         $payload = '';

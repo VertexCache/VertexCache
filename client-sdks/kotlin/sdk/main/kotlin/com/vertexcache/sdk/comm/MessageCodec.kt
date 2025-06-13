@@ -16,7 +16,6 @@
 
 package com.vertexcache.sdk.comm
 
-import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -27,14 +26,12 @@ import java.nio.ByteBuffer
  *
  * Framing format:
  * - 4-byte big-endian payload length
- * - 1-byte protocol version
+ * - 4-byte big-endian protocol version
  * - N-byte payload
- *
- * This ensures message boundaries are preserved across TCP.
  */
 object MessageCodec {
     const val MAX_MESSAGE_SIZE = 10 * 1024 * 1024
-    const val PROTOCOL_VERSION: Byte = 0x01
+    const val PROTOCOL_VERSION = 0x00000101
 
     /**
      * Writes a framed message to the output stream.
@@ -49,9 +46,9 @@ object MessageCodec {
             throw IOException("Message too large: ${data.size}")
         }
 
-        val buffer = ByteBuffer.allocate(4 + 1 + data.size)
+        val buffer = ByteBuffer.allocate(4 + 4 + data.size)
         buffer.putInt(data.size)
-        buffer.put(PROTOCOL_VERSION)
+        buffer.putInt(PROTOCOL_VERSION)
         buffer.put(data)
         out.write(buffer.array())
     }
@@ -65,14 +62,15 @@ object MessageCodec {
      */
     @Throws(IOException::class)
     fun readFramedMessage(input: InputStream): ByteArray? {
-        val header = input.readNBytes(5)
-        if (header.size < 5) return null
+        val header = input.readNBytes(8)
+        if (header.size < 8) return null
 
-        val length = ByteBuffer.wrap(header, 0, 4).int
-        val version = header[4]
+        val buffer = ByteBuffer.wrap(header)
+        val length = buffer.int
+        val version = buffer.int
 
         if (version != PROTOCOL_VERSION) {
-            throw IOException("Unsupported protocol version: $version")
+            throw IOException("Unsupported protocol version: 0x${version.toUInt().toString(16)}")
         }
 
         if (length <= 0 || length > MAX_MESSAGE_SIZE) {
@@ -82,4 +80,3 @@ object MessageCodec {
         return input.readNBytes(length)
     }
 }
-

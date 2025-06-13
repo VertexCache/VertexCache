@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 
-//@EnabledIfEnvironmentVariable(named = "VC_LIVE_TEST", matches = "true")
+@EnabledIfEnvironmentVariable(named = "VC_LIVE_TEST", matches = "true")
 class ClientConnectorLiveTest {
 
     companion object {

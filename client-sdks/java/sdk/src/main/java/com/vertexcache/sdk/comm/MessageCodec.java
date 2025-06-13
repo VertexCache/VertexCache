@@ -35,31 +35,59 @@ public class MessageCodec {
     // 10 MB is probably enough, unless we really want to support images and videos...etc
     public static final int MAX_MESSAGE_SIZE = 10 * 1024 * 1024; // 10MB
 
-    // Future Proof, for breaking versions
-    public static final byte PROTOCOL_VERSION = 0x01;
 
-    /**
-     * Reads a framed message from the given input stream according to the VertexCache protocol.
-     *
-     * The framing format consists of a 4-byte integer indicating the message length,
-     * followed by a 1-byte protocol version, and then the message payload.
-     * This method validates the protocol version and ensures the message length
-     * is within acceptable bounds before reading the payload.
-     *
-     * @param in the {@link InputStream} to read the message from
-     * @return the message payload as a byte array, or {@code null} if the stream ends prematurely
-     * @throws IOException if the version is unsupported, the length is invalid, or an I/O error occurs
-     */
+    // CMSRTPEV bit layout for framing flags (32-bit int)
+    // C = Compression, M = Multipart, S = Signed, R = Request ACK
+    // T = Tracing, P = Protocol Format, E = Encryption Hint, V = Version
+
+    // Default protocol flag: Version 1 + RSA_PKCS1, no compression, no multipart, etc.
+    public static final int PROTOCOL_VERSION_DEFAULT = 0x00000101;
+
+    // Alternate supported variants with Version 1
+    public static final int PROTOCOL_VERSION_RSA_PKCS1     = 0x00000101;
+    public static final int PROTOCOL_VERSION_RSA_OAEP_SHA256 = 0x00000201;
+    public static final int PROTOCOL_VERSION_RSA_OAEP_SHA1   = 0x00000301;
+
+    private static int protocolVersion = PROTOCOL_VERSION_DEFAULT;
+
+    public static int extractProtocolVersion() {
+        return protocolVersion & 0x000000FF; // V
+    }
+
+    public static int extractEncryptionHint() {
+        return (protocolVersion >> 8) & 0x000000FF; // E
+    }
+
+    public static int extractProtocolFormat() {
+        return (protocolVersion >> 16) & 0x0000000F; // P
+    }
+
+    public static boolean isTracingEnabled() {
+        return (protocolVersion & 0x00100000) != 0; // T
+    }
+
+    public static boolean isAckRequested() {
+        return (protocolVersion & 0x00080000) != 0; // R
+    }
+
+    public static boolean isSignedMessage() {
+        return (protocolVersion & 0x00040000) != 0; // S
+    }
+
+    public static boolean isMultipartMessage() {
+        return (protocolVersion & 0x00020000) != 0; // M
+    }
+
+    public static boolean isCompressed() {
+        return (protocolVersion & 0x00010000) != 0; // C
+    }
+
     public static byte[] readFramedMessage(InputStream in) throws IOException {
-        byte[] header = in.readNBytes(5);
-        if (header.length < 5) return null;
+        byte[] header = in.readNBytes(8); // 4 bytes length + 4 bytes version
+        if (header.length < 8) return null;
 
         int length = ByteBuffer.wrap(header, 0, 4).getInt();
-        byte version = header[4];
-
-        if (version != PROTOCOL_VERSION) {
-            throw new IOException("Unsupported protocol version: " + version);
-        }
+        protocolVersion = ByteBuffer.wrap(header, 4, 4).getInt(); // 4-byte version field
 
         if (length <= 0 || length > MAX_MESSAGE_SIZE) {
             throw new IOException("Invalid message length: " + length);
@@ -68,29 +96,15 @@ public class MessageCodec {
         return in.readNBytes(length);
     }
 
-    /**
-     * Writes a framed message to the given output stream using the VertexCache protocol.
-     *
-     * The message is framed as follows:
-     * - A 4-byte integer representing the length of the payload
-     * - A 1-byte protocol version
-     * - The message payload itself
-     *
-     * This method validates that the message size does not exceed the allowed maximum
-     * before writing the data to the stream in a single buffer.
-     *
-     * @param out the {@link OutputStream} to write the framed message to
-     * @param data the message payload to send
-     * @throws IOException if the message size exceeds the maximum or a write error occurs
-     */
     public static void writeFramedMessage(OutputStream out, byte[] data) throws IOException {
         if (data.length > MAX_MESSAGE_SIZE) {
             throw new IOException("Message too large: " + data.length);
         }
-        ByteBuffer buffer = ByteBuffer.allocate(4 + 1 + data.length);
+        ByteBuffer buffer = ByteBuffer.allocate(4 + 4 + data.length); // 4 bytes for length + 4 bytes for version
         buffer.putInt(data.length);
-        buffer.put(PROTOCOL_VERSION);
+        buffer.putInt(PROTOCOL_VERSION_DEFAULT); // 4-byte version
         buffer.put(data);
         out.write(buffer.array());
     }
+
 }

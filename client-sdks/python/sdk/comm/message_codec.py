@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache/vertexcache)
+# Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 import struct
 
 MAX_MESSAGE_SIZE = 10 * 1024 * 1024  # 10MB
-PROTOCOL_VERSION = 0x01
+PROTOCOL_VERSION = 0x00000101
 
 
 def write_framed_message(payload: bytes) -> bytes:
@@ -25,19 +25,12 @@ def write_framed_message(payload: bytes) -> bytes:
     Writes a framed message using the VertexCache protocol format.
 
     Format:
-    - 4 bytes big-endian integer representing the payload length
-    - 1 byte protocol version
-    - N bytes payload data
-
-    Args:
-        payload (bytes): The message payload.
+    - 4 bytes big-endian payload length
+    - 4 bytes big-endian protocol version
+    - N bytes payload
 
     Returns:
         bytes: The framed binary message.
-
-    Raises:
-        TypeError: If payload is not a bytes object.
-        ValueError: If the payload exceeds the maximum allowed size.
     """
     if not isinstance(payload, bytes):
         raise TypeError("Payload must be bytes")
@@ -46,44 +39,36 @@ def write_framed_message(payload: bytes) -> bytes:
         raise ValueError(f"Message too large: {len(payload)}")
 
     length_bytes = struct.pack(">I", len(payload))
-    version_byte = struct.pack("B", PROTOCOL_VERSION)
-    return length_bytes + version_byte + payload
+    version_bytes = struct.pack(">I", PROTOCOL_VERSION)
+    return length_bytes + version_bytes + payload
 
 
 def read_framed_message(buffer: bytes):
     """
-    Reads a framed message from a byte buffer using the VertexCache protocol.
-
-    Format:
-    - 4 bytes big-endian integer representing the payload length
-    - 1 byte protocol version
-    - N bytes payload data
-
-    Args:
-        buffer (bytes): The raw byte buffer to decode.
+    Reads a framed message from a byte buffer.
 
     Returns:
         tuple[bytes, bytes] | None:
-            - A tuple (payload, remaining) if a complete message is decoded
-            - None if the buffer is too short to decode the header or full payload
+            - (payload, remaining) if complete and valid
+            - None if buffer too short
 
     Raises:
-        ValueError: If the protocol version is unsupported or the message length is invalid.
+        ValueError: If the version is unsupported or length is invalid
     """
-    if len(buffer) < 5:
+    if len(buffer) < 8:
         return None
 
-    length, version = struct.unpack(">IB", buffer[:5])
+    length, version = struct.unpack(">II", buffer[:8])
 
     if version != PROTOCOL_VERSION:
-        raise ValueError(f"Unsupported protocol version: {version}")
+        raise ValueError(f"Unsupported protocol version: 0x{version:08X}")
 
     if length <= 0 or length > MAX_MESSAGE_SIZE:
         raise ValueError(f"Invalid message length: {length}")
 
-    if len(buffer) < 5 + length:
+    if len(buffer) < 8 + length:
         return None
 
-    payload = buffer[5:5+length]
-    remaining = buffer[5+length:]
+    payload = buffer[8:8 + length]
+    remaining = buffer[8 + length:]
     return payload, remaining

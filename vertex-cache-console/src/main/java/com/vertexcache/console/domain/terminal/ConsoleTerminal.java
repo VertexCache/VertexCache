@@ -128,7 +128,7 @@ public class ConsoleTerminal {
             return cipher.doFinal(plainText);
         } else if (config.getEncryptionMode() == EncryptionMode.SYMMETRIC) {
             byte[] keyBytes = Base64.getDecoder().decode(config.getSharedEncryptionKey());
-            return GcmCryptoHelper.encrypt(plainText, keyBytes);
+            return GcmCryptoHelper.encrypt(plainText, keyBytes, "AES/GCM/NoPadding");
         } else {
             return plainText;
         }

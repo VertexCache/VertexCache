@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache/vertexcache)
+# Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,12 +20,12 @@ defmodule VertexCacheSdk.Comm.MessageCodec do
 
   Format:
     - 4 bytes big-endian payload length
-    - 1 byte protocol version
+    - 4 bytes big-endian protocol version
     - N bytes payload
   """
 
   @max_message_size 10 * 1024 * 1024
-  @protocol_version 0x01
+  @protocol_version 0x00000101
 
   @doc """
   Encodes the given payload as a framed binary.
@@ -38,9 +38,7 @@ defmodule VertexCacheSdk.Comm.MessageCodec do
       raise ArgumentError, "Message too large: #{byte_size(payload)}"
     end
 
-    length = <<byte_size(payload)::32-big>>
-    version = <<@protocol_version>>
-    length <> version <> payload
+    <<byte_size(payload)::32-big, @protocol_version::32-big, payload::binary>>
   end
 
   @doc """
@@ -51,7 +49,7 @@ defmodule VertexCacheSdk.Comm.MessageCodec do
     - `:error` if header is incomplete
     - `{:error, reason}` if validation fails
   """
-  def read_framed_message(<<len::32-big, version::8, rest::binary>>) do
+  def read_framed_message(<<len::32-big, version::32-big, rest::binary>>) do
     cond do
       version != @protocol_version ->
         {:error, :unsupported_version}
@@ -60,7 +58,7 @@ defmodule VertexCacheSdk.Comm.MessageCodec do
         {:error, :invalid_length}
 
       byte_size(rest) < len ->
-        :error  # wait for more data
+        :error
 
       true ->
         <<payload::binary-size(len), remaining::binary>> = rest

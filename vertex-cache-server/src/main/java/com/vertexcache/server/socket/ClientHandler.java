@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
@@ -71,11 +72,18 @@ public class ClientHandler implements Runnable {
     private String clientName = null;
     private String connectionId;
 
+    private Cipher rsaCipher;
+
+    private String aesTransformation;
+    private byte[] aesKeyBytes = null;
+
     public ClientHandler(Socket clientSocket, Config config, CommandService commandProcessor) {
         this.clientSocket = clientSocket;
         this.config = config;
         this.commandProcessor = commandProcessor;
         this.connectionId = clientSocket.getRemoteSocketAddress().toString();
+        this.rsaCipher = null;
+        this.aesTransformation = null;
     }
 
     @Override
@@ -86,14 +94,10 @@ public class ClientHandler implements Runnable {
         try (InputStream inputStream = clientSocket.getInputStream();
              OutputStream outputStream = clientSocket.getOutputStream()) {
 
-            Cipher rsaCipher = config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.ASYMMETRIC
-                    ? Cipher.getInstance("RSA/ECB/PKCS1Padding")
-                    : null;
-
-            byte[] aesKeyBytes = null;
-            if (config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.SYMMETRIC) {
-                aesKeyBytes = GcmCryptoHelper.decodeBase64Key(config.getSecurityConfigLoader().getSharedEncryptionKey());
-            }
+            //byte[] aesKeyBytes = null;
+            //if (config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.SYMMETRIC) {
+              //  aesKeyBytes = GcmCryptoHelper.decodeBase64Key(config.getSecurityConfigLoader().getSharedEncryptionKey());
+            //}
 
             while (true) {
                 if ((System.currentTimeMillis() - lastActivityTime) > maxIdle) {
@@ -102,14 +106,27 @@ public class ClientHandler implements Runnable {
                 }
 
                 clientSocket.setSoTimeout(1000); // short poll window
-                byte[] framedRequest;
+                byte[] framedRequest = null;
 
                 try {
                     framedRequest = MessageCodec.readFramedMessage(inputStream);
-                    if (framedRequest == null) break;
+
+                    if (rsaCipher == null && config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.ASYMMETRIC) {
+                        rsaCipher = CipherHelper.getCipherFromId(MessageCodec.extractEncryptionHint(), config.getSecurityConfigLoader().getPrivateKey());
+                    } else if (aesTransformation == null && config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.SYMMETRIC) {
+                        aesTransformation = CipherHelper.getSymmetricTransformation(MessageCodec.extractEncryptionHint());
+                        aesKeyBytes = GcmCryptoHelper.decodeBase64Key(config.getSecurityConfigLoader().getSharedEncryptionKey());
+                    }
+
+                    if (framedRequest == null) {
+                        break;
+                    }
                     lastActivityTime = System.currentTimeMillis();
+                } catch (SocketTimeoutException timeout) {
+                    // True read timeout; re-check idle
+                    continue;
                 } catch (IOException e) {
-                    continue; // likely timeout, re-check idle
+                    break;
                 }
 
                 // Check for ADMIN role and extend idle timeout
@@ -117,7 +134,7 @@ public class ClientHandler implements Runnable {
                     maxIdle = ADMIN_IDLE_TIMEOUT_MS;
                 }
 
-                byte[] response = processInputData(framedRequest, rsaCipher, aesKeyBytes);
+                byte[] response = processInputData(framedRequest);
                 MessageCodec.writeFramedMessage(outputStream, response);
             }
 
@@ -133,15 +150,14 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private byte[] processInputData(byte[] data, Cipher rsaCipher, byte[] aesKeyBytes)  {
+    private byte[] processInputData(byte[] data)  {
         byte[] decrypted;
 
         try {
             if (config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.ASYMMETRIC) {
-                rsaCipher.init(Cipher.DECRYPT_MODE, config.getSecurityConfigLoader().getPrivateKey());
                 decrypted = rsaCipher.doFinal(data);
             } else if (config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.SYMMETRIC) {
-                decrypted = GcmCryptoHelper.decrypt(data, aesKeyBytes);
+                decrypted = GcmCryptoHelper.decrypt(data, this.aesKeyBytes, this.aesTransformation);
             } else {
                 decrypted = data;
             }
@@ -247,5 +263,9 @@ public class ClientHandler implements Runnable {
         }
 
         return response;
+    }
+
+    private byte[] errorToBytes(String message) {
+        return ("-ERR " + message).getBytes(StandardCharsets.UTF_8);
     }
 }
