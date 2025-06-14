@@ -15,32 +15,48 @@
 // ------------------------------------------------------------------------------
 
 const crypto = require("crypto");
+const { VertexCacheSdkException } = require("../model/vertex_cache_sdk_exception");
 
 const GCM_IV_LENGTH = 12; // 96 bits
 const GCM_TAG_LENGTH = 16; // bytes
 
 function encrypt(plaintext, key) {
     const iv = crypto.randomBytes(GCM_IV_LENGTH);
-    const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
-    const encrypted = Buffer.concat([cipher.update(plaintext), cipher.final()]);
-    const tag = cipher.getAuthTag();
+    return encryptWithFixedIv(plaintext, key, iv);
+}
 
-    return Buffer.concat([iv, encrypted, tag]);
+function encryptWithFixedIv(plaintext, key, iv) {
+    if (!Buffer.isBuffer(iv) || iv.length !== GCM_IV_LENGTH) {
+        throw new VertexCacheSdkException("Invalid IV length");
+    }
+
+    try {
+        const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
+        const encrypted = Buffer.concat([cipher.update(plaintext), cipher.final()]);
+        const tag = cipher.getAuthTag();
+        return Buffer.concat([iv, encrypted, tag]);
+    } catch {
+        throw new VertexCacheSdkException("Encryption failed");
+    }
 }
 
 function decrypt(encrypted, key) {
     if (encrypted.length < GCM_IV_LENGTH + GCM_TAG_LENGTH) {
-        throw new Error("Invalid encrypted data: too short");
+        throw new VertexCacheSdkException("Invalid encrypted data: too short");
     }
 
-    const iv = encrypted.subarray(0, GCM_IV_LENGTH);
-    const tag = encrypted.subarray(encrypted.length - GCM_TAG_LENGTH);
-    const ciphertext = encrypted.subarray(GCM_IV_LENGTH, encrypted.length - GCM_TAG_LENGTH);
+    try {
+        const iv = encrypted.subarray(0, GCM_IV_LENGTH);
+        const tag = encrypted.subarray(encrypted.length - GCM_TAG_LENGTH);
+        const ciphertext = encrypted.subarray(GCM_IV_LENGTH, encrypted.length - GCM_TAG_LENGTH);
 
-    const decipher = crypto.createDecipheriv("aes-256-gcm", key, iv);
-    decipher.setAuthTag(tag);
+        const decipher = crypto.createDecipheriv("aes-256-gcm", key, iv);
+        decipher.setAuthTag(tag);
 
-    return Buffer.concat([decipher.update(ciphertext), decipher.final()]);
+        return Buffer.concat([decipher.update(ciphertext), decipher.final()]);
+    } catch {
+        throw new VertexCacheSdkException("Decryption failed");
+    }
 }
 
 function encodeBase64Key(key) {
@@ -57,6 +73,7 @@ function generateBase64Key() {
 
 module.exports = {
     encrypt,
+    encryptWithFixedIv,
     decrypt,
     encodeBase64Key,
     decodeBase64Key,

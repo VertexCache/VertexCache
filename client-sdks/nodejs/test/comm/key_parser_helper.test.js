@@ -18,21 +18,20 @@ const { expect } = require('chai');
 const {
     configPublicKeyIfEnabled,
     configSharedKeyIfEnabled,
+    encryptWithRsa,
 } = require('../../sdk/comm/key_parser_helper');
 const { VertexCacheSdkException } = require('../../sdk/model/vertex_cache_sdk_exception');
 
 describe('KeyParserHelper', () => {
-    const validPem = `
-  -----BEGIN PUBLIC KEY-----
-  MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnwwKN2M7niJj+Vd0+w9Q
-  bw5gw5TzAWw2PUBl5rnepgn5QrLmvQ0s4aoDL6JGsnyx+GpSo6UmkrvXknObW+AI
-  UzsHLc7bFe9qe/urSvgLKzThl9kb/KN4NueDVJ+s33sDA9z+rRA9+sjp8Pc2Ycmm
-  GzN1lC22KM+oPSxHQvRcT5dQ7u6NGg7pX81DJ1ZsCXReE3vGoCQRyJoRPdLA54oR
-  NwC82/xKm9cRfghjRKqvnkmpS3FfCj0sLPy4W7ARBWU+RbhU0UmdUutB3Ce1LfIo
-  6DpmfhgHJ1P1yd/0ic8qfkqjvwUoxRUhR5+dWIakA8KZYQ95gP6oawmXiu2PcPeV
-  EwIDAQAB
-  -----END PUBLIC KEY-----
-  `;
+    const validPem = `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnwwKN2M7niJj+Vd0+w9Q
+bw5gw5TzAWw2PUBl5rnepgn5QrLmvQ0s4aoDL6JGsnyx+GpSo6UmkrvXknObW+AI
+UzsHLc7bFe9qe/urSvgLKzThl9kb/KN4NueDVJ+s33sDA9z+rRA9+sjp8Pc2Ycmm
+GzN1lC22KM+oPSxHQvRcT5dQ7u6NGg7pX81DJ1ZsCXReE3vGoCQRyJoRPdLA54oR
+NwC82/xKm9cRfghjRKqvnkmpS3FfCj0sLPy4W7ARBWU+RbhU0UmdUutB3Ce1LfIo
+6DpmfhgHJ1P1yd/0ic8qfkqjvwUoxRUhR5+dWIakA8KZYQ95gP6oawmXiu2PcPeV
+EwIDAQAB
+-----END PUBLIC KEY-----`;
 
     const invalidPem = '-----BEGIN PUBLIC KEY-----INVALID-----END PUBLIC KEY-----';
     const validBase64 = 'YWJjZGVmZ2hpamtsbW5vcA=='; // "abcdefghijklmnop"
@@ -63,5 +62,15 @@ describe('KeyParserHelper', () => {
             expect(err).to.be.instanceOf(VertexCacheSdkException);
             expect(err.message).to.equal('Invalid shared key');
         }
+    });
+
+    it('encryptWithRsa should succeed with valid key and plaintext', () => {
+        const encrypted = encryptWithRsa(validPem, Buffer.from('test data'));
+        expect(encrypted).to.be.instanceOf(Buffer);
+        expect(encrypted.length).to.be.greaterThan(0);
+    });
+
+    it('encryptWithRsa should fail with invalid key', () => {
+        expect(() => encryptWithRsa(invalidPem, Buffer.from('test'))).to.throw('RSA encryption failed');
     });
 });

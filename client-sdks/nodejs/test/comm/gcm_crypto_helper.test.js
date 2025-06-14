@@ -71,9 +71,20 @@ describe("GcmCryptoHelper", () => {
 
         expect(decrypted.equals(message)).to.be.true;
 
-        console.log("[RECON] Plaintext:", message.toString());
-        console.log("[RECON] Key (hex):", key.toString("hex"));
-        console.log("[RECON] IV (hex):", iv.toString("hex"));
-        console.log("[RECON] Encrypted (hex):", combined.toString("hex"));
+        //console.log("[RECON] Plaintext:", message.toString());
+        //console.log("[RECON] Key (hex):", key.toString("hex"));
+        //console.log("[RECON] IV (hex):", iv.toString("hex"));
+        //console.log("[RECON] Encrypted (hex):", combined.toString("hex"));
+    });
+
+    it('encryptWithFixedIv should round-trip with decrypt', () => {
+        const key = crypto.randomBytes(32);
+        const iv = crypto.randomBytes(12);
+        const data = Buffer.from('vertexcache test');
+
+        const encrypted = helper.encryptWithFixedIv(data, key, iv);
+        const decrypted = helper.decrypt(encrypted, key);
+
+        expect(decrypted.toString()).to.equal('vertexcache test');
     });
 });

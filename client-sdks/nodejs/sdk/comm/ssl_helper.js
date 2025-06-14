@@ -14,22 +14,19 @@
 // limitations under the License.
 // ------------------------------------------------------------------------------
 
-const tls = require('tls');
-const fs = require('fs');
-const crypto = require('crypto');
 const { VertexCacheSdkException } = require('../model/vertex_cache_sdk_exception');
 
 /**
  * Creates a verified TLS context from a PEM certificate.
  *
  * @param {string} pemCert - The PEM-encoded certificate string.
- * @returns {tls.SecureContext} - A configured secure context.
+ * @returns {Object} TLS options for a secure socket
  * @throws {VertexCacheSdkException}
  */
 function createVerifiedSocketFactory(pemCert) {
     try {
         if (!pemCert || typeof pemCert !== "string" || !pemCert.includes("BEGIN CERTIFICATE")) {
-            throw new Error("Invalid PEM certificate");
+            throw new VertexCacheSdkException("Invalid certificate format");
         }
 
         return {
@@ -37,17 +34,23 @@ function createVerifiedSocketFactory(pemCert) {
             rejectUnauthorized: true,
         };
     } catch (e) {
-        throw new Error("Failed to create secure socket connection");
+        throw new VertexCacheSdkException("Failed to create secure socket connection");
     }
 }
 
+/**
+ * Creates an insecure TLS socket factory (no certificate validation).
+ *
+ * @returns {Object} TLS options
+ */
 function createInsecureSocketFactory() {
     return {
         rejectUnauthorized: false,
+        // Note: checkServerIdentity can be added if hostname checks fail in some environments.
     };
 }
 
 module.exports = {
     createVerifiedSocketFactory,
-    createInsecureSocketFactory
+    createInsecureSocketFactory,
 };

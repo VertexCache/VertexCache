@@ -34,14 +34,33 @@ function configPublicKeyIfEnabled(pemString) {
 
 function configSharedKeyIfEnabled(sharedKey) {
     const result = Buffer.from(sharedKey, 'base64');
-    // Check if decoding actually succeeded
     if (sharedKey.trim() === '' || result.toString('base64') !== sharedKey.replace(/\s+/g, '')) {
         throw new VertexCacheSdkException('Invalid shared key');
     }
     return result;
 }
 
+function encryptWithRsa(publicKeyPem, plaintextBuffer) {
+    try {
+        if (!publicKeyPem || typeof publicKeyPem !== 'string') {
+            throw new VertexCacheSdkException('Invalid public key');
+        }
+        const encrypted = crypto.publicEncrypt(
+            {
+                key: publicKeyPem.trim().replace(/\\r/g, '').replace(/\\n\\s+/g, '\n'),
+                padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+                oaepHash: 'sha256',
+            },
+            plaintextBuffer
+        );
+        return encrypted;
+    } catch (err) {
+        throw new VertexCacheSdkException('RSA encryption failed');
+    }
+}
+
 module.exports = {
     configPublicKeyIfEnabled,
     configSharedKeyIfEnabled,
+    encryptWithRsa,
 };
