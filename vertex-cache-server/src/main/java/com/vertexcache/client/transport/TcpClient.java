@@ -206,7 +206,7 @@ public class TcpClient implements TcpClientInterface {
                     cipher.init(Cipher.ENCRYPT_MODE, publicKey);
                     return cipher.doFinal(plainText);
                 case SYMMETRIC:
-                    return GcmCryptoHelper.encrypt(plainText, sharedKeyBytes);
+                    return GcmCryptoHelper.encrypt(plainText, sharedKeyBytes,GcmCryptoHelper.AES_GCM_NO_PADDING);
                 case NONE:
                 default:
                     return plainText;

@@ -2,7 +2,7 @@
 name = "vertexcache_sdk"
 version = "1.0.0"
 edition = "2021"
-authors = ["Jason Lam <your-email@example.com>"]
+authors = ["Jason Lam"]
 license = "Apache-2.0"
 description = "VertexCache Rust SDK"
 repository = "https://github.com/vertexcache/client-sdks"
