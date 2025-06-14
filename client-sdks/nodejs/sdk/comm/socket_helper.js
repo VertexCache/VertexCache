@@ -48,14 +48,13 @@ function createSecureSocket(options) {
                 servername: options.serverHost,
             });
 
-            // Resolve on TLS handshake success
             const onConnect = () => {
-                tlsSocket.removeListener("error", onError);
+                tlsSocket.setKeepAlive(true);
+                tlsSocket.setNoDelay(true);
                 resolve(tlsSocket);
             };
 
             const onError = (err) => {
-                tlsSocket.removeListener("secureConnect", onConnect);
                 reject(new VertexCacheSdkException("Failed to create Secure Socket"));
             };
 
@@ -76,12 +75,12 @@ function createSocketNonTLS(options) {
             const socket = new net.Socket();
 
             const onConnect = () => {
-                socket.removeListener("error", onError);
+                socket.setKeepAlive(true);
+                socket.setNoDelay(true);
                 resolve(socket);
             };
 
             const onError = () => {
-                socket.removeListener("connect", onConnect);
                 socket.destroy();
                 reject(new VertexCacheSdkException("Failed to create Non Secure Socket"));
             };

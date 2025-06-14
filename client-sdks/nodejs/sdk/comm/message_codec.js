@@ -10,23 +10,22 @@
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 // ------------------------------------------------------------------------------
+
+const { EncryptionMode } = require("../model/encryption_mode");
 
 const PROTOCOL_VERSION_RSA_OAEP_SHA256 = 0x00000201;
 const PROTOCOL_VERSION_AES_GCM = 0x00000801;
+const DEFAULT_PROTOCOL_VERSION = 0x00000001;
 
 const MAX_MESSAGE_SIZE = 10 * 1024 * 1024; // 10MB
 
-let currentProtocolVersion = PROTOCOL_VERSION_RSA_OAEP_SHA256;
+let currentProtocolVersion = DEFAULT_PROTOCOL_VERSION;
 
 /**
  * Writes a framed message: [length(4)][version(4)][payload]
- * @param {Buffer} payload
- * @returns {Buffer}
  */
-function writeFramedMessage(payload) {
+function writeFramedMessage(payload, version = currentProtocolVersion) {
     if (!Buffer.isBuffer(payload)) {
         throw new Error("Payload must be a Buffer");
     }
@@ -36,43 +35,91 @@ function writeFramedMessage(payload) {
 
     const header = Buffer.alloc(8);
     header.writeUInt32BE(payload.length, 0);
-    header.writeUInt32BE(currentProtocolVersion, 4);
+    header.writeUInt32BE(version, 4);
     return Buffer.concat([header, payload]);
 }
 
 /**
- * Reads a framed message from the given buffer.
- * @param {Buffer} buffer
- * @returns {{payload: Buffer, remaining: Buffer, version: number}|null}
+ * Reads a framed message from the stream (async)
  */
-function readFramedMessage(buffer) {
-    if (!Buffer.isBuffer(buffer) || buffer.length < 8) return null;
+function readFramedMessage(stream) {
+    return new Promise((resolve, reject) => {
+        let buffer = Buffer.alloc(0);
 
-    const length = buffer.readUInt32BE(0);
-    const version = buffer.readUInt32BE(4);
+        const tryRead = () => {
+            let chunk;
+            while ((chunk = stream.read())) {
+                buffer = Buffer.concat([buffer, chunk]);
 
-    if (![PROTOCOL_VERSION_RSA_OAEP_SHA256, PROTOCOL_VERSION_AES_GCM].includes(version)) {
-        throw new Error(`Unsupported protocol version: ${version}`);
-    }
+                // Not enough for header
+                if (buffer.length < 8) continue;
 
-    if (length <= 0 || length > MAX_MESSAGE_SIZE) {
-        throw new Error(`Invalid message length: ${length}`);
-    }
+                const length = buffer.readUInt32BE(0);
+                const version = buffer.readUInt32BE(4);
 
-    if (buffer.length < 8 + length) return null;
+                if (![PROTOCOL_VERSION_RSA_OAEP_SHA256, PROTOCOL_VERSION_AES_GCM, DEFAULT_PROTOCOL_VERSION].includes(version)) {
+                    cleanup();
+                    return reject(new Error(`Unsupported protocol version: ${version}`));
+                }
 
-    const payload = buffer.slice(8, 8 + length);
-    const remaining = buffer.slice(8 + length);
-    return { payload, remaining };
+                if (length <= 0 || length > MAX_MESSAGE_SIZE) {
+                    cleanup();
+                    return reject(new Error(`Invalid message length: ${length}`));
+                }
+
+                if (buffer.length >= 8 + length) {
+                    const payload = buffer.slice(8, 8 + length);
+                    cleanup();
+                    return resolve(payload);
+                }
+            }
+        };
+
+        const onEnd = () => {
+            cleanup();
+            resolve(null); // stream ended before enough bytes
+        };
+
+        const onError = (err) => {
+            cleanup();
+            reject(err);
+        };
+
+        const cleanup = () => {
+            stream.removeListener("readable", tryRead);
+            stream.removeListener("end", onEnd);
+            stream.removeListener("error", onError);
+        };
+
+        stream.on("readable", tryRead);
+        stream.once("end", onEnd);
+        stream.once("error", onError);
+    });
 }
 
-// Dynamic protocol version switching
+// Dynamic switching helpers
 function useRsaProtocol() {
     currentProtocolVersion = PROTOCOL_VERSION_RSA_OAEP_SHA256;
 }
 
 function useSymmetricProtocol() {
     currentProtocolVersion = PROTOCOL_VERSION_AES_GCM;
+}
+
+function useRawProtocol() {
+    currentProtocolVersion = DEFAULT_PROTOCOL_VERSION;
+}
+
+function resolveProtocolVersion(mode) {
+    switch (mode) {
+        case EncryptionMode.ASYMMETRIC:
+            return PROTOCOL_VERSION_RSA_OAEP_SHA256;
+        case EncryptionMode.SYMMETRIC:
+            return PROTOCOL_VERSION_AES_GCM;
+        case EncryptionMode.NONE:
+        default:
+            return DEFAULT_PROTOCOL_VERSION;
+    }
 }
 
 module.exports = {
@@ -82,5 +129,7 @@ module.exports = {
     writeFramedMessage,
     readFramedMessage,
     useRsaProtocol,
-    useSymmetricProtocol
+    useSymmetricProtocol,
+    useRawProtocol,
+    resolveProtocolVersion
 };

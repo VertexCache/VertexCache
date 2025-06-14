@@ -10,46 +10,48 @@
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 // ------------------------------------------------------------------------------
 
 const { expect } = require('chai');
+const { Readable } = require('stream');
 const {
     writeFramedMessage,
     readFramedMessage,
     MAX_MESSAGE_SIZE
 } = require('../../sdk/comm/message_codec');
 
+function bufferToStream(buffer) {
+    return Readable.from(buffer);
+}
+
 describe('MessageCodec', () => {
-    it('should write then read framed message', () => {
+    it('should write then read framed message', async () => {
         const payload = Buffer.from('Hello VertexCache');
         const framed = writeFramedMessage(payload);
-        const result = readFramedMessage(framed);
+        const result = await readFramedMessage(bufferToStream(framed));
 
         expect(result).to.not.be.null;
-        expect(result.payload.equals(payload)).to.be.true;
-        expect(result.remaining.length).to.equal(0);
+        expect(result.equals(payload)).to.be.true;
     });
 
-    it('should throw on invalid protocol version (4-byte version)', () => {
+    it('should throw on invalid protocol version (4-byte version)', async () => {
         const invalidVersion = 0xDEADBEEF;
-        const length = 3;
         const header = Buffer.alloc(8);
-        header.writeUInt32BE(length, 0);          // message length = 3
-        header.writeUInt32BE(invalidVersion, 4);  // unsupported version
+        header.writeUInt32BE(3, 0); // payload length
+        header.writeUInt32BE(invalidVersion, 4);
+        const framed = Buffer.concat([header, Buffer.from('abc')]);
 
-        const frame = Buffer.concat([
-            header,
-            Buffer.from('abc')
-        ]);
-
-        expect(() => readFramedMessage(frame)).to.throw('Unsupported protocol version');
+        try {
+            await readFramedMessage(bufferToStream(framed));
+            throw new Error("Expected to throw");
+        } catch (err) {
+            expect(err.message).to.include('Unsupported protocol version');
+        }
     });
 
-    it('should return null on too short header', () => {
+    it('should return null on too short header', async () => {
         const short = Buffer.from([0x01, 0x02]);
-        const result = readFramedMessage(short);
+        const result = await readFramedMessage(bufferToStream(short));
         expect(result).to.be.null;
     });
 
@@ -58,19 +60,24 @@ describe('MessageCodec', () => {
         expect(() => writeFramedMessage(big)).to.throw('Message too large');
     });
 
-    it('should throw when reading empty payload', () => {
+    it('should throw when reading empty payload', async () => {
         const framed = writeFramedMessage(Buffer.alloc(0));
-        expect(() => readFramedMessage(framed)).to.throw('Invalid message length');
+        try {
+            await readFramedMessage(bufferToStream(framed));
+            throw new Error("Expected exception was not thrown");
+        } catch (err) {
+            expect(err.message).to.include('Invalid message length');
+        }
     });
 
-    it('should handle utf-8 multibyte payload', () => {
+    it('should handle utf-8 multibyte payload', async () => {
         const original = '你好, VertexCache 🚀';
         const payload = Buffer.from(original, 'utf8');
         const framed = writeFramedMessage(payload);
-        const result = readFramedMessage(framed);
+        const result = await readFramedMessage(bufferToStream(framed));
 
         expect(result).to.not.be.null;
-        expect(result.payload.toString('utf8')).to.equal(original);
+        expect(result.toString('utf8')).to.equal(original);
     });
 
     it('should output hex for cross-SDK comparison', () => {

@@ -110,15 +110,32 @@ public class ClientHandler implements Runnable {
 
                 try {
                     framedRequest = MessageCodec.readFramedMessage(inputStream);
+                    LogHelper.getInstance().logInfo("[DEBUG] Received framedRequest (hex): " + HexHelper.bytesToHex(framedRequest));
 
-                    if (rsaCipher == null && config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.ASYMMETRIC) {
-                        rsaCipher = CipherHelper.getCipherFromId(MessageCodec.extractEncryptionHint(), config.getSecurityConfigLoader().getPrivateKey());
+
+
+
+                    if (config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.ASYMMETRIC) {
+                        int versionHint = MessageCodec.extractEncryptionHint();
+                        LogHelper.getInstance().logInfo("[DEBUG] Extracted Protocol Version Hint: " + versionHint);
+                        if (versionHint > 0 && rsaCipher == null) {
+                            rsaCipher = CipherHelper.getCipherFromId(versionHint, config.getSecurityConfigLoader().getPrivateKey());
+                            if (rsaCipher == null) {
+                                LogHelper.getInstance().logFatal("RSA cipher is null for version hint: " + versionHint);
+                                break;
+                            }
+                        }
+                        //if (rsaCipher == null && config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.ASYMMETRIC) {
+                        //rsaCipher = CipherHelper.getCipherFromId(MessageCodec.extractEncryptionHint(), config.getSecurityConfigLoader().getPrivateKey());
                     } else if (aesTransformation == null && config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.SYMMETRIC) {
                         aesTransformation = CipherHelper.getSymmetricTransformation(MessageCodec.extractEncryptionHint());
                         aesKeyBytes = GcmCryptoHelper.decodeBase64Key(config.getSecurityConfigLoader().getSharedEncryptionKey());
+                    } else {
+                        LogHelper.getInstance().logInfo("[DEBUG] Encryption is NONE for Message Layer");
                     }
 
                     if (framedRequest == null) {
+                        LogHelper.getInstance().logDebug("[DEBUG] Null framedRequest encountered, likely client closed connection");
                         break;
                     }
                     lastActivityTime = System.currentTimeMillis();
@@ -135,6 +152,12 @@ public class ClientHandler implements Runnable {
                 }
 
                 byte[] response = processInputData(framedRequest);
+
+                if (response == null) {
+                    LogHelper.getInstance().logFatal("Response is null. Skipping write to avoid crash.");
+                    break;
+                }
+
                 MessageCodec.writeFramedMessage(outputStream, response);
             }
 
@@ -147,6 +170,15 @@ public class ClientHandler implements Runnable {
             } catch (IOException e) {
                 LogHelper.getInstance().logFatal("Socket close error: " + e.getMessage());
             }
+        }
+    }
+
+    public class HexHelper {
+        public static String bytesToHex(byte[] bytes) {
+            StringBuilder sb = new StringBuilder();
+            for (byte b : bytes)
+                sb.append(String.format("%02X", b));
+            return sb.toString();
         }
     }
 
@@ -166,6 +198,13 @@ public class ClientHandler implements Runnable {
         }
 
         String input = new String(decrypted, StandardCharsets.UTF_8).trim();
+        LogHelper.getInstance().logInfo("[DEBUG] Decrypted input: " + input);
+
+        LogHelper.getInstance().logInfo("[DEBUG] Encryption Mode: " + config.getSecurityConfigLoader().getEncryptionMode());
+        LogHelper.getInstance().logInfo("[DEBUG] Extracted Protocol Version Hint: " + MessageCodec.extractProtocolVersion());
+        LogHelper.getInstance().logInfo("[DEBUG] Extracted Encryption Hint: " + MessageCodec.extractEncryptionHint());
+
+
         String logTag = "[client:" + (clientName != null ? clientName : clientSocket.getRemoteSocketAddress()) + "]";
 
         if(Config.getInstance().getClusterConfigLoader().isSecondaryNode() && !Config.getInstance().getClusterConfigLoader().getSecondaryEnabledClusterNode().isPromotedToPrimary()) {
@@ -256,7 +295,14 @@ public class ClientHandler implements Runnable {
             LogHelper.getInstance().logInfo(logTag + " Request: " + input);
         }
 
-        byte[] response = commandProcessor.execute(decrypted, this.session);
+        byte[] response;
+
+        try {
+            response = commandProcessor.execute(decrypted, this.session);
+        } catch (Exception e) {
+            LogHelper.getInstance().logFatal("Command execution failed: " + e.getMessage(), e);
+            return errorToBytes("Command execution error: " + e.getMessage());
+        }
 
         if (config.getCoreConfigLoader().isEnableVerbose()) {
             LogHelper.getInstance().logInfo(logTag + " Response: " + new String(response, StandardCharsets.UTF_8));
