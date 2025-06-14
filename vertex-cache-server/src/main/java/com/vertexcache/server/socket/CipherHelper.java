@@ -15,13 +15,14 @@
  */
 package com.vertexcache.server.socket;
 
+import com.vertexcache.common.security.MessageCodec;
 import com.vertexcache.core.cache.exception.VertexCacheException;
 
 import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.GCMParameterSpec;
-import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.OAEPParameterSpec;
+import javax.crypto.spec.PSource;
 import java.security.PrivateKey;
+import java.security.spec.MGF1ParameterSpec;
 import java.util.Map;
 
 /**
@@ -49,7 +50,17 @@ public class CipherHelper {
 
         try {
             Cipher cipher = Cipher.getInstance(transformation);
-            cipher.init(Cipher.DECRYPT_MODE, privateKey);
+            if (cipherId == MessageCodec.ENCRYPTION_HINT_RSA_OAEP_SHA256) {
+                OAEPParameterSpec oaepParams = new OAEPParameterSpec(
+                        "SHA-256",
+                        "MGF1",
+                        MGF1ParameterSpec.SHA256,
+                        PSource.PSpecified.DEFAULT
+                );
+                cipher.init(Cipher.DECRYPT_MODE, privateKey, oaepParams);
+            } else {
+                cipher.init(Cipher.DECRYPT_MODE, privateKey);
+            }
             return cipher;
         } catch (Exception e) {
             throw new VertexCacheException("Failed to initialize RSA cipher: " + e.getMessage(), e);

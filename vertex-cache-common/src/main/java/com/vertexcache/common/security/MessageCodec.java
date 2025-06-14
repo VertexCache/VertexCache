@@ -53,6 +53,9 @@ public class MessageCodec {
 
     private static int protocolVersion = PROTOCOL_VERSION_DEFAULT;
 
+    // Encryption hint indicating RSA OAEP with SHA-256 padding (used in CMSRTPEV protocol bit layout)
+    public static final int ENCRYPTION_HINT_RSA_OAEP_SHA256 = 0x02;
+
     public static int extractProtocolVersion() {
         return protocolVersion & 0x000000FF; // V
     }
