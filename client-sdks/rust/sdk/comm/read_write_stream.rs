@@ -14,20 +14,7 @@
 // limitations under the License.
 // ------------------------------------------------------------------------------
 
-/// Defines the supported encryption modes for securing communication
-/// between the VertexCache SDK client and server.
-///
-/// Modes:
-/// - NONE: No encryption is applied; data is sent in plaintext.
-/// - SYMMETRIC: Uses a shared secret key (e.g., AES-GCM) for encryption.
-/// - ASYMMETRIC: Uses public/private key encryption (e.g., RSA).
-///
-/// This enum is used to guide how data is encrypted and decrypted throughout
-/// the client's message layer.
+use std::io::{Read, Write};
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-pub enum EncryptionMode {
-    NONE,
-    ASYMMETRIC, // RSA public/private
-    SYMMETRIC,  // AES shared key
-}
+pub trait ReadWriteStream: Read + Write + Send {}
+impl<T: Read + Write + Send> ReadWriteStream for T {}

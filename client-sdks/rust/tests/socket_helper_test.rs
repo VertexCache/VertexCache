@@ -75,6 +75,7 @@ fn test_create_secure_socket_should_fail_due_to_missing_tls_context() {
 
 #[test]
 fn test_create_secure_socket_should_fail_with_bad_certificate() {
+
     let mut option = ClientOption::new();
     option.set_server_host("127.0.0.1".to_string());
     option.set_server_port(50505);
@@ -87,13 +88,33 @@ fn test_create_secure_socket_should_fail_with_bad_certificate() {
     assert!(result.is_err());
 
     let err = result.unwrap_err();
-    eprintln!("❗ Observed error message: {}", err.message()); // 👈 log it
+    eprintln!("❗ Secure socket error: {}", err.message());
     assert!(
         err.message().contains("Secure Socket") ||
         err.message().contains("secure socket connection") ||
         err.message().contains("TLS handshake failed") ||
         err.message().contains("Invalid certificate format")
     );
+}
+
+#[test]
+fn test_create_secure_socket_insecure_mode_should_succeed() {
+    let enable_live = false;
+    if !enable_live {
+        eprintln!("Insecure TLS test skipped");
+        return;
+    }
+
+    let mut option = ClientOption::new();
+    option.set_server_host("127.0.0.1".to_string());
+    option.set_server_port(50505);
+    option.set_connect_timeout(1000);
+    option.set_read_timeout(1000);
+    option.set_verify_certificate(false); // 🔑 Insecure mode
+    option.set_tls_certificate(None);     // 🔓 No PEM needed
+
+    let result = create_secure_socket(&option);
+    assert!(result.is_ok());
 }
 
 #[test]

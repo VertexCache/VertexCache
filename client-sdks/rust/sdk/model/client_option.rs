@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache)
+// Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache/vertexcache)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
 // ------------------------------------------------------------------------------
 
 use crate::model::encryption_mode::EncryptionMode;
+use crate::model::vertex_cache_sdk_exception::VertexCacheSdkException;
+use rsa::{pkcs8::DecodePublicKey, RsaPublicKey};
+use std::str;
 
 pub struct ClientOption {
     client_id: Option<String>,
@@ -62,6 +65,33 @@ impl ClientOption {
             read_timeout: Self::DEFAULT_READ_TIMEOUT,
             connect_timeout: Self::DEFAULT_CONNECT_TIMEOUT,
         }
+    }
+
+    pub fn resolve_protocol_version(&self) -> u32 {
+        match self.encryption_mode() {
+            EncryptionMode::ASYMMETRIC => 0x00000201,
+            EncryptionMode::SYMMETRIC => 0x00000801,
+            EncryptionMode::NONE => 0x00000001,
+        }
+    }
+
+    pub fn public_key_as_object(&self) -> Result<RsaPublicKey, VertexCacheSdkException> {
+        let pem = self.public_key.as_ref().ok_or_else(|| {
+            VertexCacheSdkException::new("Missing public key for asymmetric encryption")
+        })?;
+
+        RsaPublicKey::from_public_key_pem(pem).map_err(|_| {
+            VertexCacheSdkException::new("Failed to parse RSA public key from PEM")
+        })
+    }
+
+    pub fn shared_encryption_key_as_bytes(&self) -> Result<&[u8], VertexCacheSdkException> {
+        self.shared_encryption_key
+            .as_ref()
+            .map(|key| key.as_bytes())
+            .ok_or_else(|| {
+                VertexCacheSdkException::new("Missing shared encryption key for symmetric mode")
+        })
     }
 
     pub fn get_client_id(&self) -> String {

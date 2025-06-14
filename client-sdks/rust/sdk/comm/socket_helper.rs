@@ -16,11 +16,10 @@
 
 use std::net::TcpStream;
 use std::time::Duration;
-use native_tls::TlsStream;
-
 use crate::model::client_option::ClientOption;
 use crate::model::vertex_cache_sdk_exception::VertexCacheSdkException;
 use crate::comm::ssl_helper::SSLHelper;
+use crate::comm::read_write_stream::ReadWriteStream;
 
 /// Establishes a TLS-encrypted socket connection to the VertexCache server using the provided client options.
 ///
@@ -33,77 +32,83 @@ use crate::comm::ssl_helper::SSLHelper;
 /// # Returns
 /// * `Result<TlsStream<TcpStream>, VertexCacheSdkException>` - A connected secure stream
 ///
-pub fn create_secure_socket(
-    option: &ClientOption,
-) -> Result<TlsStream<TcpStream>, VertexCacheSdkException> {
-    let address = format!("{}:{}", option.server_host(), option.server_port());
 
-    // Connect TCP socket with timeout
-    let tcp_stream = TcpStream::connect_timeout(
-        &address
-            .parse()
-            .map_err(|_| VertexCacheSdkException::new("Invalid server address"))?,
-        Duration::from_millis(option.connect_timeout() as u64),
-    )
-    .map_err(|_| VertexCacheSdkException::new("Failed to connect TCP socket"))?;
 
-    tcp_stream
-        .set_read_timeout(Some(Duration::from_millis(option.read_timeout() as u64)))
-        .ok(); // silently ignore if fails
-    tcp_stream
-        .set_write_timeout(Some(Duration::from_millis(option.read_timeout() as u64)))
-        .ok();
+pub struct SocketHelper;
 
-    // Get TLS connector
-    let connector = if option.verify_certificate() {
-        let cert = option
-            .tls_certificate()
-            .ok_or_else(|| VertexCacheSdkException::new("Failed to create Secure Socket"))?;
-        SSLHelper::create_verified_tls_connector(cert)
-    } else {
-        SSLHelper::create_insecure_tls_connector()
-    }?;
+impl SocketHelper {pub fn create_secure_socket(
+                           option: &ClientOption,
+                       ) -> Result<Box<dyn ReadWriteStream>, VertexCacheSdkException> {
+                           let address = format!("{}:{}", option.server_host(), option.server_port());
 
-    // Perform TLS handshake
-    let tls_stream = connector
-        .connect(option.server_host(), tcp_stream)
-        .map_err(|_| VertexCacheSdkException::new("TLS handshake failed"))?;
+                           // Connect TCP socket with timeout
+                           let tcp_stream = TcpStream::connect_timeout(
+                               &address
+                                   .parse()
+                                   .map_err(|_| VertexCacheSdkException::new("Invalid server address"))?,
+                               Duration::from_millis(option.connect_timeout() as u64),
+                           )
+                           .map_err(|_| VertexCacheSdkException::new("Failed to connect TCP socket"))?;
 
-    Ok(tls_stream)
-}
+                           tcp_stream
+                               .set_read_timeout(Some(Duration::from_millis(option.read_timeout() as u64)))
+                               .ok();
+                           tcp_stream
+                               .set_write_timeout(Some(Duration::from_millis(option.read_timeout() as u64)))
+                               .ok();
 
-/// Establishes a plain (non-TLS) TCP socket connection to the VertexCache server using the provided client options.
-///
-/// This method connects a standard TCP socket and applies the specified connect and read timeouts.
-/// It is typically used for development or environments where encryption is not required.
-///
-/// # Arguments
-/// * `option` - The client connection configuration
-///
-/// # Returns
-/// * `Result<TcpStream, VertexCacheSdkException>` - A connected plain socket stream
-///
-pub fn create_socket_non_tls(
-    option: &ClientOption,
-) -> Result<TcpStream, VertexCacheSdkException> {
-    let address = format!("{}:{}", option.server_host(), option.server_port());
+                           // TLS connector
+                           let connector = if option.verify_certificate() {
+                               let cert = option
+                                   .tls_certificate()
+                                   .ok_or_else(|| VertexCacheSdkException::new("Failed to create Secure Socket"))?;
+                               SSLHelper::create_verified_tls_connector(cert)
+                           } else {
+                               SSLHelper::create_insecure_tls_connector()
+                           }?;
 
-    // Connect with timeout
-    let tcp_stream = TcpStream::connect_timeout(
-        &address
-            .parse()
-            .map_err(|_| VertexCacheSdkException::new("Invalid server address"))?,
-        Duration::from_millis(option.connect_timeout() as u64),
-    )
-    .map_err(|_| VertexCacheSdkException::new("Failed to connect Non Secure Socket"))?;
+                           // TLS handshake
+                           let tls_stream = connector
+                               .connect(option.server_host(), tcp_stream)
+                               .map_err(|_| VertexCacheSdkException::new("TLS handshake failed"))?;
 
-    // Set timeouts
-    tcp_stream
-        .set_read_timeout(Some(Duration::from_millis(option.read_timeout() as u64)))
-        .ok();
-    tcp_stream
-        .set_write_timeout(Some(Duration::from_millis(option.read_timeout() as u64)))
-        .ok();
+                           Ok(Box::new(tls_stream))
+                       }
 
-    Ok(tcp_stream)
+                       /// Establishes a plain (non-TLS) TCP socket connection to the VertexCache server using the provided client options.
+                       ///
+                       /// This method connects a standard TCP socket and applies the specified connect and read timeouts.
+                       /// It is typically used for development or environments where encryption is not required.
+                       ///
+                       /// # Arguments
+                       /// * `option` - The client connection configuration
+                       ///
+                       /// # Returns
+                       /// * `Result<TcpStream, VertexCacheSdkException>` - A connected plain socket stream
+                       ///
+                       pub fn create_socket_non_tls(
+                           option: &ClientOption,
+                       ) -> Result<Box<dyn ReadWriteStream>, VertexCacheSdkException> {
+                           let address = format!("{}:{}", option.server_host(), option.server_port());
+
+                           // Connect with timeout
+                           let tcp_stream = TcpStream::connect_timeout(
+                               &address
+                                   .parse()
+                                   .map_err(|_| VertexCacheSdkException::new("Invalid server address"))?,
+                               Duration::from_millis(option.connect_timeout() as u64),
+                           )
+                           .map_err(|_| VertexCacheSdkException::new("Failed to connect Non Secure Socket"))?;
+
+                           // Set timeouts
+                           tcp_stream
+                               .set_read_timeout(Some(Duration::from_millis(option.read_timeout() as u64)))
+                               .ok();
+                           tcp_stream
+                               .set_write_timeout(Some(Duration::from_millis(option.read_timeout() as u64)))
+                               .ok();
+
+                           Ok(Box::new(tcp_stream))
+                       }
+
 }

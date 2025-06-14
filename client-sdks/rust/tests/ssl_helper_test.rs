@@ -61,7 +61,36 @@ fn test_create_insecure_tls_connector_should_succeed() {
 }
 
 #[test]
-fn test_insecure_tls_connection_to_localhost_if_enabled() {
+fn test_live_tls_connection_verified_mode_should_succeed() {
+    let enable_live = false;
+    if !enable_live {
+        eprintln!("Verified TLS test skipped; enable_live = false");
+        return;
+    }
+
+    let connector = SSLHelper::create_verified_tls_connector(VALID_PEM_CERT)
+        .expect("Failed to create verified TLS connector");
+
+    let stream = TcpStream::connect("127.0.0.1:50505")
+        .expect("Failed to connect to localhost:50505");
+
+    let tls_stream = connector.connect("localhost", stream);
+
+    match tls_stream {
+        Ok(mut stream) => {
+            use std::io::Write;
+            let _ = stream.write_all(b"PING\n");
+            assert!(true);
+        }
+        Err(err) => {
+            eprintln!("Verified TLS connection failed: {:?}", err);
+            assert!(false, "Verified TLS handshake failed");
+        }
+    }
+}
+
+#[test]
+fn test_live_tls_connection_insecure_mode_should_succeed() {
     let enable_live = false; // flip to true to run real test
     if !enable_live {
         eprintln!("Live TLS test skipped; enable_live = false");

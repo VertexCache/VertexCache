@@ -17,6 +17,9 @@ use vertexcache_sdk::comm::key_parser_helper::{
     config_public_key_if_enabled, config_shared_key_if_enabled,
 };
 
+use rsa::pkcs8::DecodePublicKey;
+use rsa::{Pkcs1v15Encrypt, RsaPublicKey};
+use rand::thread_rng;
 use vertexcache_sdk::model::vertex_cache_sdk_exception;
 
 const VALID_PEM: &str = "
@@ -59,4 +62,34 @@ fn test_config_shared_key_if_enabled_valid() {
 fn test_config_shared_key_if_enabled_invalid() {
     let err = config_shared_key_if_enabled(INVALID_BASE64).unwrap_err();
     assert_eq!(err.message(), "Invalid shared key");
+}
+
+#[test]
+fn test_public_key_can_encrypt_data() {
+    let key_bytes = config_public_key_if_enabled(VALID_PEM).unwrap();
+    let public_key = rsa::RsaPublicKey::from_public_key_der(&key_bytes).unwrap();
+    let padding = rsa::Pkcs1v15Encrypt;
+    let mut rng = rand::thread_rng();
+    let encrypted = public_key.encrypt(&mut rng, padding, b"VertexTest").unwrap();
+    assert!(!encrypted.is_empty());
+}
+
+#[test]
+fn test_config_public_key_if_enabled_empty() {
+    let err = config_public_key_if_enabled("").unwrap_err();
+    assert_eq!(err.message(), "Invalid public key");
+}
+
+#[test]
+fn test_config_shared_key_if_enabled_empty() {
+    let err = config_shared_key_if_enabled("").unwrap_err();
+    assert_eq!(err.message(), "Invalid shared key");
+}
+
+#[test]
+fn test_shared_key_round_trip() {
+    let key = b"1234567890ABCDEF";
+    let encoded = base64::encode(key);
+    let decoded = config_shared_key_if_enabled(&encoded).unwrap();
+    assert_eq!(decoded, key);
 }

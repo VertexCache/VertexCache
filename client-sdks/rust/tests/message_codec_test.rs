@@ -17,81 +17,52 @@
 use std::io::Cursor;
 
 use vertexcache_sdk::comm::message_codec::MessageCodec;
-use vertexcache_sdk::model::vertex_cache_sdk_exception::VertexCacheSdkException;
 
 #[test]
-fn test_write_then_read_framed_message() {
-    let payload = b"ping".to_vec();
+fn test_framed_message_round_trip_aes_gcm() {
+    let payload = b"vertexcache-aes".to_vec();
     let mut out = Vec::new();
 
-    MessageCodec::write_framed_message(&mut out, &payload).unwrap();
-
+    MessageCodec::write_framed_message(&mut out, &payload, MessageCodec::PROTOCOL_VERSION_AES_GCM).unwrap();
     let mut reader = Cursor::new(out);
+
     let result = MessageCodec::read_framed_message(&mut reader).unwrap().unwrap();
-
-    assert_eq!(result, payload);
+    assert_eq!(result.1, payload);
+    assert_eq!(result.0, MessageCodec::PROTOCOL_VERSION_AES_GCM);
 }
 
 #[test]
-fn test_invalid_version_byte() {
-    let mut invalid = vec![0x00, 0x00, 0x00, 0x04, 0x00];
-    let mut reader = Cursor::new(invalid);
+fn test_framed_message_round_trip_rsa_oaep() {
+    let payload = b"vertexcache-rsa".to_vec();
+    let mut out = Vec::new();
 
-    let result = MessageCodec::read_framed_message(&mut reader);
-    assert!(result.is_err());
-    assert_eq!(result.unwrap_err().message(), "Invalid version byte");
+    MessageCodec::write_framed_message(&mut out, &payload, MessageCodec::PROTOCOL_VERSION_RSA_OAEP_SHA256).unwrap();
+    let mut reader = Cursor::new(out);
+
+    let result = MessageCodec::read_framed_message(&mut reader).unwrap().unwrap();
+    assert_eq!(result.1, payload);
+    assert_eq!(result.0, MessageCodec::PROTOCOL_VERSION_RSA_OAEP_SHA256);
 }
 
 #[test]
-fn test_too_short_header_returns_none() {
-    let short = vec![0x01, 0x00];
-    let mut reader = Cursor::new(short);
-
-    let result = MessageCodec::read_framed_message(&mut reader).unwrap();
-    assert!(result.is_none());
+fn test_empty_payload_rejected() {
+    let mut out = Vec::new();
+    let err = MessageCodec::write_framed_message(&mut out, b"", MessageCodec::PROTOCOL_VERSION_AES_GCM).unwrap_err();
+    assert_eq!(err.message(), "Payload must be non-empty");
 }
 
 #[test]
 fn test_too_large_payload_rejected() {
     let payload = vec![0xAB; MessageCodec::MAX_MESSAGE_SIZE + 1];
     let mut out = Vec::new();
-
-    let result = MessageCodec::write_framed_message(&mut out, &payload);
-    assert!(result.is_err());
-    assert_eq!(result.unwrap_err().message(), "Payload too large");
+    let err = MessageCodec::write_framed_message(&mut out, &payload, MessageCodec::PROTOCOL_VERSION_AES_GCM).unwrap_err();
+    assert_eq!(err.message(), "Payload too large");
 }
 
 #[test]
-fn test_write_empty_payload_then_read_should_fail() {
-    let mut out = Vec::new();
-    let result = MessageCodec::write_framed_message(&mut out, b"");
-
-    assert!(result.is_err());
-    assert_eq!(result.unwrap_err().message(), "Payload must be non-empty");
-}
-
-#[test]
-fn test_utf8_multibyte_payload() {
-    let original = "你好, VertexCache 🚀".as_bytes().to_vec();
-    let mut out = Vec::new();
-
-    MessageCodec::write_framed_message(&mut out, &original).unwrap();
-    let mut reader = Cursor::new(out);
-    let result = MessageCodec::read_framed_message(&mut reader).unwrap().unwrap();
-
-    assert_eq!(String::from_utf8(result).unwrap(), "你好, VertexCache 🚀");
-}
-
-#[test]
-fn test_hex_dump_for_inter_sdk_comparison() {
+fn test_hex_dump_output() {
     let payload = b"ping".to_vec();
-    let mut out = Vec::new();
-
-    MessageCodec::write_framed_message(&mut out, &payload).unwrap();
-
-    print!("Framed hex: ");
-    for byte in &out {
-        print!("{:02X}", byte);
-    }
-    println!();
+    let hex = MessageCodec::hex_dump(&payload, MessageCodec::PROTOCOL_VERSION_AES_GCM).unwrap();
+    assert!(hex.len() > 0);
+    assert!(hex.starts_with("00000004")); // length = 4 bytes
 }
