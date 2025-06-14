@@ -70,31 +70,29 @@ impl ClientConnector {
         Ok(())
     }
 
-pub fn send(&mut self, message: &str) -> Result<String, VertexCacheSdkException> {
-    let to_send = self.encrypt_if_enabled(message.as_bytes())?;
-    let protocol_version = self.resolve_protocol_version();
+    pub fn send(&mut self, message: &str) -> Result<String, VertexCacheSdkException> {
+        let to_send = self.encrypt_if_enabled(message.as_bytes())?;
+        let protocol_version = self.resolve_protocol_version();
 
-    if let Some(stream) = &mut self.stream {
-        // Write message
-        {
-            let mut writer = BufWriter::new(&mut **stream);
-            MessageCodec::write_framed_message(&mut writer, &to_send, protocol_version)?;
-            writer.flush()?;
+        if let Some(stream) = &mut self.stream {
+            // Write message
+            {
+                let mut writer = BufWriter::new(&mut **stream);
+                MessageCodec::write_framed_message(&mut writer, &to_send, protocol_version)?;
+                writer.flush()?;
+            }
+
+            // Read response
+            {
+                let mut reader = BufReader::new(&mut **stream);
+                let response = MessageCodec::read_framed_message(&mut reader)?;
+                let (_, payload) = response.ok_or_else(|| VertexCacheSdkException::new("Missing payload"))?;
+                return Ok(String::from_utf8_lossy(&payload).to_string());
+            }
         }
 
-        // Read response
-        {
-            let mut reader = BufReader::new(&mut **stream);
-            let response = MessageCodec::read_framed_message(&mut reader)?;
-            let (_, payload) = response.ok_or_else(|| VertexCacheSdkException::new("Missing payload"))?;
-            return Ok(String::from_utf8_lossy(&payload).to_string());
-        }
+        Err(VertexCacheSdkException::new("No active connection"))
     }
-
-    Err(VertexCacheSdkException::new("No active connection"))
-}
-
-
 
     fn encrypt_if_enabled(&self, plain: &[u8]) -> Result<Vec<u8>, VertexCacheSdkException> {
         match self.options.encryption_mode() {

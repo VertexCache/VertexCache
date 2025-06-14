@@ -17,6 +17,7 @@
 use vertexcache_sdk::comm::client_connector::ClientConnector;
 use vertexcache_sdk::model::client_option::ClientOption;
 use vertexcache_sdk::model::encryption_mode::EncryptionMode;
+use std::env;
 
 const HOST: &str = "127.0.0.1";
 const PORT: u16 = 50505;
