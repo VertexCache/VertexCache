@@ -32,11 +32,18 @@ describe('MessageCodec', () => {
         expect(result.remaining.length).to.equal(0);
     });
 
-    it('should throw on invalid version byte', () => {
+    it('should throw on invalid protocol version (4-byte version)', () => {
+        const invalidVersion = 0xDEADBEEF;
+        const length = 3;
+        const header = Buffer.alloc(8);
+        header.writeUInt32BE(length, 0);          // message length = 3
+        header.writeUInt32BE(invalidVersion, 4);  // unsupported version
+
         const frame = Buffer.concat([
-            Buffer.from([0x00, 0x00, 0x00, 0x03, 0x02]),
+            header,
             Buffer.from('abc')
         ]);
+
         expect(() => readFramedMessage(frame)).to.throw('Unsupported protocol version');
     });
 
