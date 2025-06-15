@@ -20,25 +20,20 @@ require 'vertexcache/comm/message_codec'
 
 RSpec.describe VertexCache::Comm::MessageCodec do
   let(:codec) { VertexCache::Comm::MessageCodec }
+  let(:version) { codec::DEFAULT_PROTOCOL_VERSION }
 
   it 'writes then reads a framed message' do
     original = "Hello VertexCache"
     out = StringIO.new
-    codec.write_framed_message(out, original)
+    codec.write_framed_message(out, original, version)
     out.rewind
 
     result = codec.read_framed_message(out)
-    expect(result).to eq(original)
-  end
-
-  it 'raises on invalid version byte' do
-    bad = [3].pack('N') + [0x02].pack('C') + "abc"
-    io = StringIO.new(bad)
-    expect { codec.read_framed_message(io) }.to raise_error(IOError, /Invalid version/)
+    expect(result).to eq([version, original])
   end
 
   it 'returns nil if header too short' do
-    io = StringIO.new("\x01\x02")
+    io = StringIO.new("\x00\x01")
     result = codec.read_framed_message(io)
     expect(result).to be_nil
   end
@@ -46,32 +41,41 @@ RSpec.describe VertexCache::Comm::MessageCodec do
   it 'raises if payload is too large' do
     too_big = "A" * (codec::MAX_MESSAGE_SIZE + 1)
     out = StringIO.new
-    expect { codec.write_framed_message(out, too_big) }.to raise_error(IOError, /Payload too large/)
+    expect {
+      codec.write_framed_message(out, too_big, version)
+    }.to raise_error(VertexCache::Model::VertexCacheSdkException, /Payload too large/)
   end
 
-  it 'writes empty payload but fails to read' do
+  it 'raises if payload is empty' do
     out = StringIO.new
-    codec.write_framed_message(out, "")
-    out.rewind
+    expect {
+      codec.write_framed_message(out, "", version)
+    }.to raise_error(VertexCache::Model::VertexCacheSdkException, /Payload must be non-empty/)
+  end
 
-    expect { codec.read_framed_message(out) }.to raise_error(IOError, /Invalid message length/)
+  it 'raises on invalid message length during read' do
+    length = codec::MAX_PAYLOAD_SIZE + 100
+    header = [length].pack('N') + [version].pack('N')
+    io = StringIO.new(header + "X" * 10)
+    expect {
+      codec.read_framed_message(io)
+    }.to raise_error(VertexCache::Model::VertexCacheSdkException, /Invalid message length/)
   end
 
   it 'handles UTF-8 multibyte payloads correctly' do
     original = "你好, VertexCache 🚀"
     out = StringIO.new
-    codec.write_framed_message(out, original)
+    codec.write_framed_message(out, original, version)
     out.rewind
 
     result = codec.read_framed_message(out)
-    expect(result.force_encoding("UTF-8")).to eq(original)
+    expect(result[1].force_encoding("UTF-8")).to eq(original)
   end
 
   it 'prints hex dump for inter-SDK comparison' do
     payload = "ping"
-    out = StringIO.new
-    codec.write_framed_message(out, payload)
-    hex = out.string.unpack1("H*").upcase
+    hex = codec.hex_dump(payload, version)
+    expect(hex).to match(/[A-F0-9]+/)
     puts "Framed hex: #{hex}"
   end
 end

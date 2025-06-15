@@ -14,47 +14,50 @@
 # limitations under the License.
 # ------------------------------------------------------------------------------
 
+require 'stringio'
+require 'vertexcache/model/vertex_cache_sdk_exception'
+
 module VertexCache
   module Comm
     class MessageCodec
-      VERSION_BYTE = 0x01
-      MAX_MESSAGE_SIZE = 1024 * 1024 # 1MB
+      HEADER_LEN = 8
+      MAX_PAYLOAD_SIZE = 10 * 1024 * 1024
+      MAX_MESSAGE_SIZE = 4 * 1024 * 1024
 
-      # Writes a framed message with a 4-byte length prefix and a version byte.
-      # Format: [4-byte length][1-byte version][payload]
-      def self.write_framed_message(io, payload)
-        raise IOError, "Payload too large" if payload.bytesize > MAX_MESSAGE_SIZE
+      PROTOCOL_VERSION_RSA_PKCS1 = 0x00000101
+      PROTOCOL_VERSION_AES_GCM   = 0x00000801
+      DEFAULT_PROTOCOL_VERSION   = 0x00000001
 
-        total_length = payload.bytesize + 1
-        header = [total_length].pack('N') + VERSION_BYTE.chr
-        io.write(header)
-        io.write(payload)
+      def self.write_framed_message(io, payload, version)
+        raise VertexCache::Model::VertexCacheSdkException, 'Payload must be non-empty' if payload.nil? || payload.empty?
+        raise VertexCache::Model::VertexCacheSdkException, 'Payload too large' if payload.bytesize > MAX_MESSAGE_SIZE
+
+        length_prefix = [payload.bytesize].pack('N')     # 4 bytes big-endian
+        version_bytes = [version].pack('N')              # 4 bytes big-endian
+        io.write(length_prefix + version_bytes + payload)
+        io.flush
       end
 
-      # Reads a framed message and returns the payload.
-      # Raises IOError if the format is invalid or incomplete.
       def self.read_framed_message(io)
-        header = io.read(5)
-        return nil if header.nil? || header.bytesize < 5
+        header = io.read(HEADER_LEN)
+        return nil if header.nil? || header.bytesize < HEADER_LEN
 
-        total_length = header[0, 4].unpack1('N')
-        version = header.getbyte(4)
+        length = header[0, 4].unpack1('N')
+        version = header[4, 4].unpack1('N')
 
-        raise IOError, "Invalid version byte" unless version == VERSION_BYTE
-        raise IOError, "Invalid message length" if total_length <= 1 || total_length > MAX_MESSAGE_SIZE
+        raise VertexCache::Model::VertexCacheSdkException, 'Invalid message length' if length <= 0 || length > MAX_PAYLOAD_SIZE
 
-        payload = io.read(total_length - 1, "")
-        raise IOError, "Unexpected end of payload" if payload.nil? || payload.bytesize != total_length - 1
+        payload = io.read(length)
+        raise VertexCache::Model::VertexCacheSdkException, 'Unexpected end of payload' if payload.nil? || payload.bytesize != length
 
-        payload
+        [version, payload]
       end
 
-      # Returns a hex dump of a framed message, useful for inter-SDK test comparison.
-      def self.hex_dump(payload)
+      def self.hex_dump(payload, version)
         io = StringIO.new
-        write_framed_message(io, payload)
+        write_framed_message(io, payload, version)
         io.rewind
-        io.read.unpack1('H*')
+        io.read.unpack1('H*').upcase
       end
     end
   end
