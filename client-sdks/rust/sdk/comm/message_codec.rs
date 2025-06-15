@@ -20,8 +20,8 @@ use crate::model::vertex_cache_sdk_exception::VertexCacheSdkException;
 pub struct MessageCodec;
 
 // Active protocol versions
-pub const PROTOCOL_VERSION_RSA_OAEP_SHA256: u32 = 0x00000201;
-pub const PROTOCOL_VERSION_AES_GCM: u32 = 0x00000801;
+pub const PROTOCOL_VERSION_RSA_OAEP_SHA256: u32 = 0x00000111;
+pub const PROTOCOL_VERSION_AES_GCM: u32 = 0x00000181;
 pub const DEFAULT_PROTOCOL_VERSION: u32 = 0x00000001;
 
 impl MessageCodec {
