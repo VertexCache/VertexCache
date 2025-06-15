@@ -110,32 +110,19 @@ public class ClientHandler implements Runnable {
 
                 try {
                     framedRequest = MessageCodec.readFramedMessage(inputStream);
-                    LogHelper.getInstance().logInfo("[DEBUG] Received framedRequest (hex): " + HexHelper.bytesToHex(framedRequest));
+                   // LogHelper.getInstance().logInfo("[DEBUG] Received framedRequest (hex): " + HexHelper.bytesToHex(framedRequest));
 
-
-
-
-                    if (config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.ASYMMETRIC) {
-                        int versionHint = MessageCodec.extractEncryptionHint();
-                        LogHelper.getInstance().logInfo("[DEBUG] Extracted Protocol Version Hint: " + versionHint);
-                        if (versionHint > 0 && rsaCipher == null) {
-                            rsaCipher = CipherHelper.getCipherFromId(versionHint, config.getSecurityConfigLoader().getPrivateKey());
-                            if (rsaCipher == null) {
-                                LogHelper.getInstance().logFatal("RSA cipher is null for version hint: " + versionHint);
-                                break;
-                            }
-                        }
-                        //if (rsaCipher == null && config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.ASYMMETRIC) {
-                        //rsaCipher = CipherHelper.getCipherFromId(MessageCodec.extractEncryptionHint(), config.getSecurityConfigLoader().getPrivateKey());
+                    if (rsaCipher == null && config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.ASYMMETRIC) {
+                        rsaCipher = CipherHelper.getCipherFromId(MessageCodec.extractEncryptionHint(), config.getSecurityConfigLoader().getPrivateKey());
                     } else if (aesTransformation == null && config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.SYMMETRIC) {
                         aesTransformation = CipherHelper.getSymmetricTransformation(MessageCodec.extractEncryptionHint());
                         aesKeyBytes = GcmCryptoHelper.decodeBase64Key(config.getSecurityConfigLoader().getSharedEncryptionKey());
                     } else {
-                        LogHelper.getInstance().logInfo("[DEBUG] Encryption is NONE for Message Layer");
+                        //LogHelper.getInstance().logInfo("[DEBUG] Encryption is NONE for Message Layer");
                     }
 
                     if (framedRequest == null) {
-                        LogHelper.getInstance().logDebug("[DEBUG] Null framedRequest encountered, likely client closed connection");
+                       // LogHelper.getInstance().logDebug("[DEBUG] Null framedRequest encountered, likely client closed connection");
                         break;
                     }
                     lastActivityTime = System.currentTimeMillis();
@@ -198,11 +185,10 @@ public class ClientHandler implements Runnable {
         }
 
         String input = new String(decrypted, StandardCharsets.UTF_8).trim();
-        LogHelper.getInstance().logInfo("[DEBUG] Decrypted input: " + input);
-
-        LogHelper.getInstance().logInfo("[DEBUG] Encryption Mode: " + config.getSecurityConfigLoader().getEncryptionMode());
-        LogHelper.getInstance().logInfo("[DEBUG] Extracted Protocol Version Hint: " + MessageCodec.extractProtocolVersion());
-        LogHelper.getInstance().logInfo("[DEBUG] Extracted Encryption Hint: " + MessageCodec.extractEncryptionHint());
+        //LogHelper.getInstance().logInfo("[DEBUG] Decrypted input: " + input);
+        //LogHelper.getInstance().logInfo("[DEBUG] Encryption Mode: " + config.getSecurityConfigLoader().getEncryptionMode());
+        //LogHelper.getInstance().logInfo("[DEBUG] Extracted Protocol Version Hint: " + MessageCodec.extractProtocolVersion());
+        //LogHelper.getInstance().logInfo("[DEBUG] Extracted Encryption Hint: " + MessageCodec.extractEncryptionHint());
 
 
         String logTag = "[client:" + (clientName != null ? clientName : clientSocket.getRemoteSocketAddress()) + "]";
