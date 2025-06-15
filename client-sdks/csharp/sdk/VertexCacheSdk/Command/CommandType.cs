@@ -14,32 +14,23 @@
 // limitations under the License.
 // ------------------------------------------------------------------------------
 
-using VertexCacheSdk.Command;
-
-namespace VertexCacheSdk.Command.Impl
+namespace VertexCacheSdk.Command
 {
     /// <summary>
-    /// Handles the PING command in VertexCache.
+    /// Enum representing the different types of commands supported by the VertexCache SDK.
     ///
-    /// This command is used to check server availability and latency.
-    /// It returns a basic "PONG" response and can be used by clients to verify liveness.
+    /// Each command type corresponds to a specific cache operation or internal SDK operation,
+    /// such as GET, SET, DELETE, or IDENT (used for client identification and authentication).
     ///
-    /// PING is always allowed regardless of authentication state or client role.
-    /// It does not require access validation or key arguments.
+    /// This enum is used throughout the SDK to identify and validate command behavior,
+    /// facilitate routing, and enforce permission checks based on role capabilities.
     /// </summary>
-    public class PingCommand : CommandBase<PingCommand>
+    public enum CommandType
     {
-        protected override string BuildCommand()
-        {
-            return "PING";
-        }
-
-        protected override void ParseResponse(string responseBody)
-        {
-            if (string.IsNullOrWhiteSpace(responseBody) || !responseBody.Equals("PONG", StringComparison.OrdinalIgnoreCase))
-            {
-                SetFailure("PONG not received");
-            }
-        }
+        PING,
+        SET,
+        DEL,
+        IDX1,
+        IDX2
     }
 }

@@ -14,32 +14,25 @@
 // limitations under the License.
 // ------------------------------------------------------------------------------
 
-using VertexCacheSdk.Command;
+using VertexCacheSdk.Comm;
 
-namespace VertexCacheSdk.Command.Impl
+namespace VertexCacheSdk.Command
 {
     /// <summary>
-    /// Handles the PING command in VertexCache.
+    /// CommandInterface represents a generic interface for all command types that can be executed by the VertexCache SDK.
     ///
-    /// This command is used to check server availability and latency.
-    /// It returns a basic "PONG" response and can be used by clients to verify liveness.
+    /// Implementations of this interface must define how a command is executed against the connector,
+    /// and how results such as success status and message output are exposed.
     ///
-    /// PING is always allowed regardless of authentication state or client role.
-    /// It does not require access validation or key arguments.
+    /// This abstraction allows polymorphic handling of different commands (e.g., GET, SET, DEL)
+    /// in a unified way, enabling streamlined processing within the SDK's transport layer.
     /// </summary>
-    public class PingCommand : CommandBase<PingCommand>
+    public interface CommandInterface
     {
-        protected override string BuildCommand()
-        {
-            return "PING";
-        }
-
-        protected override void ParseResponse(string responseBody)
-        {
-            if (string.IsNullOrWhiteSpace(responseBody) || !responseBody.Equals("PONG", StringComparison.OrdinalIgnoreCase))
-            {
-                SetFailure("PONG not received");
-            }
-        }
+        CommandInterface Execute(ClientConnector client);
+        bool IsSuccess();
+        string GetResponse();
+        string GetError();
+        string GetStatusMessage();
     }
 }

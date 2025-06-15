@@ -14,18 +14,30 @@
 // limitations under the License.
 // ------------------------------------------------------------------------------
 
-using VertexCacheSdk.Command.Impl;
-using Xunit;
-
-namespace VertexCacheSdk.Tests.Command.Impl
+namespace VertexCacheSdk.Model
 {
-    public class PingCommandTests
+    /// <summary>
+    /// Specialized result class for handling GET command responses from VertexCache.
+    ///
+    /// Extends <see cref="CommandResult"/> by adding a `value` field which contains the
+    /// actual cached value associated with the requested key, if present.
+    ///
+    /// This class is typically used when calling `sdk.Get(key)` to retrieve a value
+    /// from the cache and determine its presence and contents.
+    /// </summary>
+    public class GetResult : CommandResult
     {
-        [Fact]
-        public void Ping_ShouldReturnPong()
+        private readonly string value;
+
+        public GetResult(bool success, string message, string value)
+            : base(success, message)
         {
-            var ping = new PingCommand();
-            Assert.Equal("PONG", ping.Ping());
+            this.value = value;
+        }
+
+        public string GetValue()
+        {
+            return value;
         }
     }
 }

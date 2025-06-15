@@ -14,32 +14,37 @@
 // limitations under the License.
 // ------------------------------------------------------------------------------
 
-using VertexCacheSdk.Command;
-
-namespace VertexCacheSdk.Command.Impl
+namespace VertexCacheSdk.Model
 {
     /// <summary>
-    /// Handles the PING command in VertexCache.
+    /// Represents the result of executing a cache command in the VertexCache SDK.
     ///
-    /// This command is used to check server availability and latency.
-    /// It returns a basic "PONG" response and can be used by clients to verify liveness.
+    /// This class encapsulates the response status, message, and optional payload returned
+    /// from the server after executing a command such as GET, SET, or DEL.
     ///
-    /// PING is always allowed regardless of authentication state or client role.
-    /// It does not require access validation or key arguments.
+    /// It is used by SDK consumers to inspect whether the command succeeded and to retrieve
+    /// associated values or error details. Utility methods like `IsSuccess()` help simplify
+    /// response handling in client logic.
     /// </summary>
-    public class PingCommand : CommandBase<PingCommand>
+    public class CommandResult
     {
-        protected override string BuildCommand()
+        private readonly bool success;
+        private readonly string message;
+
+        public CommandResult(bool success, string message)
         {
-            return "PING";
+            this.success = success;
+            this.message = message;
         }
 
-        protected override void ParseResponse(string responseBody)
+        public bool IsSuccess()
         {
-            if (string.IsNullOrWhiteSpace(responseBody) || !responseBody.Equals("PONG", StringComparison.OrdinalIgnoreCase))
-            {
-                SetFailure("PONG not received");
-            }
+            return success;
+        }
+
+        public string GetMessage()
+        {
+            return message;
         }
     }
 }

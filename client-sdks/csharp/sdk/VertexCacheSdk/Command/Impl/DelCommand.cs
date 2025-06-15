@@ -15,30 +15,46 @@
 // ------------------------------------------------------------------------------
 
 using VertexCacheSdk.Command;
+using VertexCacheSdk.Model;
 
 namespace VertexCacheSdk.Command.Impl
 {
     /// <summary>
-    /// Handles the PING command in VertexCache.
+    /// Handles the DEL command in VertexCache.
     ///
-    /// This command is used to check server availability and latency.
-    /// It returns a basic "PONG" response and can be used by clients to verify liveness.
+    /// Deletes a key and its associated value from the cache.
+    /// If the system is configured to allow idempotent deletes,
+    /// then attempting to delete a non-existent key will still
+    /// return a success response ("OK DEL (noop)").
     ///
-    /// PING is always allowed regardless of authentication state or client role.
-    /// It does not require access validation or key arguments.
+    /// Requires the client to have WRITE or ADMIN access.
+    ///
+    /// Configuration:
+    /// - del_command_idempotent: when true, deletion of missing keys does not result in an error.
     /// </summary>
-    public class PingCommand : CommandBase<PingCommand>
+    public class DelCommand : CommandBase<DelCommand>
     {
+        private readonly string key;
+
+        public DelCommand(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new VertexCacheSdkException(CommandType.DEL + " command requires a non-empty key");
+            }
+            this.key = key;
+        }
+
         protected override string BuildCommand()
         {
-            return "PING";
+            return CommandType.DEL + " " + key;
         }
 
         protected override void ParseResponse(string responseBody)
         {
-            if (string.IsNullOrWhiteSpace(responseBody) || !responseBody.Equals("PONG", StringComparison.OrdinalIgnoreCase))
+            if (!responseBody.Equals("OK", StringComparison.OrdinalIgnoreCase))
             {
-                SetFailure("PONG not received");
+                SetFailure("DEL failed: " + responseBody);
             }
         }
     }
