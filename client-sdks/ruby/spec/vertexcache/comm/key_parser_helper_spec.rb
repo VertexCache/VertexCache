@@ -17,7 +17,7 @@ require 'spec_helper'
 require 'vertexcache/comm/key_parser_helper'
 require 'vertexcache/model/vertex_cache_sdk_exception'
 
-RSpec.describe VertexCacheSdk::Comm::KeyParserHelper do
+RSpec.describe VertexCache::Comm::KeyParserHelper do
   let(:valid_pem) do
     <<~PEM
       -----BEGIN PUBLIC KEY-----
@@ -45,7 +45,7 @@ RSpec.describe VertexCacheSdk::Comm::KeyParserHelper do
   it 'config_public_key_if_enabled should fail with invalid PEM' do
     expect {
       described_class.config_public_key_if_enabled(invalid_pem)
-    }.to raise_error(VertexCacheSdk::Model::VertexCacheSdkException, 'Invalid public key')
+    }.to raise_error(VertexCache::Model::VertexCacheSdkException, 'Invalid public key')
   end
 
   it 'config_shared_key_if_enabled should succeed with valid base64' do
@@ -57,6 +57,6 @@ RSpec.describe VertexCacheSdk::Comm::KeyParserHelper do
   it 'config_shared_key_if_enabled should fail with invalid base64' do
     expect {
       described_class.config_shared_key_if_enabled(invalid_shared_key)
-    }.to raise_error(VertexCacheSdk::Model::VertexCacheSdkException, 'Invalid shared key')
+    }.to raise_error(VertexCache::Model::VertexCacheSdkException, 'Invalid shared key')
   end
 end

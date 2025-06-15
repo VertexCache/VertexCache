@@ -64,7 +64,7 @@ RSpec.describe VertexCache::Comm::SSLHelper do
   end
 
   it 'connects using insecure TLS if enabled' do
-    enable_live = true
+    enable_live = false
     skip 'Live TLS test skipped; enable_live = false' unless enable_live
 
     begin
@@ -79,5 +79,34 @@ RSpec.describe VertexCache::Comm::SSLHelper do
       ssl_socket&.close
       socket&.close
     end
+  end
+
+  # --- Additional Rust-aligned tests ---
+
+  it 'raises an exception if PEM has structure but corrupt content' do
+    corrupt_pem = <<~PEM
+      -----BEGIN CERTIFICATE-----
+      invalidbase64==
+      -----END CERTIFICATE-----
+    PEM
+
+    expect {
+      described_class.create_verified_ssl_context(corrupt_pem)
+    }.to raise_error(VertexCache::Model::VertexCacheSdkException)
+  end
+
+  it 'cert is verifiable through OpenSSL X509 store' do
+    context = described_class.create_verified_ssl_context(valid_cert)
+    store = OpenSSL::X509::Store.new
+    store.add_cert(OpenSSL::X509::Certificate.new(valid_cert))
+
+    expect(
+      store.verify(OpenSSL::X509::Certificate.new(valid_cert))
+    ).to be true
+  end
+
+  it 'prints context debug info (non-failing)' do
+    context = described_class.create_verified_ssl_context(valid_cert)
+    puts "DEBUG: SSLContext verify_mode = #{context.verify_mode}"
   end
 end

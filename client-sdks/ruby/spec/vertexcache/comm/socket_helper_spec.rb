@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache)
+# Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache/vertexcache)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # http://www.apache.org/licenses/LICENSE-2.0
@@ -8,6 +8,7 @@
 require 'vertexcache/comm/socket_helper'
 require 'vertexcache/model/client_option'
 require 'vertexcache/model/vertex_cache_sdk_exception'
+require 'vertexcache/comm/read_write_stream'
 
 RSpec.describe VertexCache::Comm::SocketHelper do
   let(:invalid_port) { 65534 } # assumed unused port
@@ -76,4 +77,54 @@ RSpec.describe VertexCache::Comm::SocketHelper do
     expect(socket).not_to be_nil
     socket.close
   end
+
+  it 'connects to live TLS server with verify_certificate=false', if: ENV['ENABLE_LIVE_TLS_TESTS'] == 'true' do
+    option = VertexCache::Model::ClientOption.new
+    option.server_host = 'localhost'
+    option.server_port = 50505
+    option.connect_timeout = 1000
+    option.read_timeout = 1000
+    option.verify_certificate = false
+    option.tls_certificate = nil
+
+    socket = VertexCache::Comm::SocketHelper.create_secure_socket(option)
+    expect(socket).not_to be_nil
+    socket.close
+  end
+
+  it 'connects to live non-TLS server', if: ENV['ENABLE_LIVE_TLS_TESTS'] == 'true' do
+    option = VertexCache::Model::ClientOption.new
+    option.server_host = 'localhost'
+    option.server_port = 50505
+    option.connect_timeout = 1000
+    option.read_timeout = 1000
+
+    socket = VertexCache::Comm::SocketHelper.create_socket_non_tls(option)
+    expect(socket).not_to be_nil
+    socket.close
+  end
+
+  it 'wraps socket and exposes read/write/close correctly' do
+    server = TCPServer.new(0)
+    port = server.addr[1]
+
+    thread = Thread.new do
+      client = server.accept
+      client.puts "hello"
+      client.close
+    end
+
+    socket = TCPSocket.new('localhost', port)
+    stream = VertexCache::Comm::ReadWriteStream.new(socket)
+
+    data = stream.read(5)
+    expect(data).to eq("hello")
+
+    stream.close
+    expect(stream.closed?).to be true
+
+    thread.join
+  end
+
+
 end

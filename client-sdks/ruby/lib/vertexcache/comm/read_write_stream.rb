@@ -14,4 +14,36 @@
 # limitations under the License.
 # ------------------------------------------------------------------------------
 
-require "rspec"
+module VertexCache
+  module Comm
+    class ReadWriteStream
+      def initialize(io)
+        @io = io
+      end
+
+      def read(n)
+        @io.read(n)
+      end
+
+      def write(data)
+        @io.write(data)
+      end
+
+      def flush
+        @io.flush
+      end
+
+      def close
+        @io.close
+      end
+
+      def closed?
+        @io.closed?
+      end
+
+      def io
+        @io
+      end
+    end
+  end
+end

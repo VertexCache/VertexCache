@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # ------------------------------------------------------------------------------
 
-module VertexCacheSDK
+module VertexCache
   VERSION = "1.0.0"
 
   def self.ping

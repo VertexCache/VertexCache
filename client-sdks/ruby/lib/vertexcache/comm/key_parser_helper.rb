@@ -18,7 +18,8 @@ require 'base64'
 require 'openssl'
 require 'vertexcache/model/vertex_cache_sdk_exception'
 
-module VertexCacheSdk
+
+module VertexCache
   module Comm
     class KeyParserHelper
       def self.config_public_key_if_enabled(pem_string)
@@ -30,7 +31,7 @@ module VertexCacheSdk
           OpenSSL::PKey.read(decoded)
           decoded
         rescue
-          raise VertexCacheSdk::Model::VertexCacheSdkException.new('Invalid public key')
+          raise VertexCache::Model::VertexCacheSdkException.new('Invalid public key')
         end
       end
 
@@ -38,11 +39,11 @@ module VertexCacheSdk
         begin
           decoded = Base64.strict_decode64(base64_string)
           if Base64.strict_encode64(decoded) != base64_string.gsub(/\s+/, '')
-            raise VertexCacheSdk::Model::VertexCacheSdkException.new('Invalid shared key')
+            raise VertexCache::Model::VertexCacheSdkException.new('Invalid shared key')
           end
           decoded
         rescue
-          raise VertexCacheSdk::Model::VertexCacheSdkException.new('Invalid shared key')
+          raise VertexCache::Model::VertexCacheSdkException.new('Invalid shared key')
         end
       end
     end

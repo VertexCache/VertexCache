@@ -15,7 +15,6 @@
 # ------------------------------------------------------------------------------
 
 require 'openssl'
-require 'tempfile'
 require 'vertexcache/model/vertex_cache_sdk_exception'
 
 module VertexCache
@@ -28,20 +27,22 @@ module VertexCache
       # @raise [VertexCache::Model::VertexCacheSdkException] if context creation fails.
       def self.create_verified_ssl_context(pem_cert)
         begin
-          if pem_cert.nil? || !pem_cert.include?('BEGIN CERTIFICATE')
-            raise ArgumentError, 'PEM certificate is empty or invalid'
+          if pem_cert.nil? || pem_cert.strip.empty? || !pem_cert.include?('BEGIN CERTIFICATE')
+            raise VertexCache::Model::VertexCacheSdkException, 'Invalid certificate format'
           end
 
-          file = Tempfile.new('cert')
-          file.write(pem_cert)
-          file.close
+          cert = OpenSSL::X509::Certificate.new(pem_cert)
+          store = OpenSSL::X509::Store.new
+          store.add_cert(cert)
 
           ctx = OpenSSL::SSL::SSLContext.new
-          ctx.ca_file = file.path
+          ctx.cert_store = store
           ctx.verify_mode = OpenSSL::SSL::VERIFY_PEER
           return ctx
-        rescue => _e
-          raise VertexCache::Model::VertexCacheSdkException, 'Failed to create secure socket context'
+        rescue OpenSSL::X509::CertificateError
+          raise VertexCache::Model::VertexCacheSdkException, 'Failed to parse PEM certificate'
+        rescue => _
+          raise VertexCache::Model::VertexCacheSdkException, 'Failed to build secure socket context'
         end
       end
 

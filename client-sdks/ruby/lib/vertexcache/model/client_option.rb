@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache)
+# Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache/vertexcache)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
 # ------------------------------------------------------------------------------
 
 require_relative 'encryption_mode'
+require 'vertexcache/comm/message_codec'
+require 'vertexcache/comm/key_parser_helper'
+require 'vertexcache/model/vertex_cache_sdk_exception'
 
 module VertexCache
   module Model
@@ -67,6 +70,37 @@ module VertexCache
 
       def build_ident_command
         "IDENT {\"client_id\":\"#{get_client_id}\", \"token\":\"#{get_client_token}\"}"
+      end
+
+      def resolve_protocol_version
+        case @encryption_mode
+        when EncryptionMode::ASYMMETRIC
+          VertexCache::Comm::MessageCodec::PROTOCOL_VERSION_RSA_PKCS1
+        when EncryptionMode::SYMMETRIC
+          VertexCache::Comm::MessageCodec::PROTOCOL_VERSION_AES_GCM
+        else
+          VertexCache::Comm::MessageCodec::DEFAULT_PROTOCOL_VERSION
+        end
+      end
+
+      def public_key_as_object
+        raise VertexCache::Model::VertexCacheSdkException.new('Missing public key for asymmetric encryption') if @public_key.nil?
+
+        begin
+          OpenSSL::PKey.read(Base64.decode64(@public_key))
+        rescue
+          raise VertexCache::Model::VertexCacheSdkException.new('Failed to parse RSA public key from PEM')
+        end
+      end
+
+      def shared_encryption_key_as_bytes
+        raise VertexCache::Model::VertexCacheSdkException.new('Missing shared encryption key for symmetric mode') if @shared_encryption_key.nil?
+
+        begin
+          Base64.strict_decode64(@shared_encryption_key)
+        rescue
+          raise VertexCache::Model::VertexCacheSdkException.new('Invalid shared key format')
+        end
       end
     end
   end
