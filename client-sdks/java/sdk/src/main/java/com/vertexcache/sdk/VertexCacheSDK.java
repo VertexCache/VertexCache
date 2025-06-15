@@ -32,61 +32,61 @@ import com.vertexcache.sdk.model.ClientOption;
  */
 public class VertexCacheSDK {
 
-    private ClientConnectorInterface tcpClient;
+    private ClientConnectorInterface clientConnector;
 
     public VertexCacheSDK(ClientOption clientOption) {
-        this.tcpClient = new ClientConnector(clientOption);
+        this.clientConnector = new ClientConnector(clientOption);
     }
 
     public void openConnection() {
-       this.tcpClient.connect();
+       this.clientConnector.connect();
     }
 
     public CommandResult ping() {
-        PingCommand cmd = (PingCommand) new PingCommand().execute(tcpClient);
+        PingCommand cmd = (PingCommand) new PingCommand().execute(clientConnector);
         return new CommandResult(cmd.isSuccess(), cmd.getStatusMessage());
     }
 
     public CommandResult set(String key, String value) {
-        SetCommand cmd = (SetCommand) new SetCommand(key, value).execute(tcpClient);
+        SetCommand cmd = (SetCommand) new SetCommand(key, value).execute(clientConnector);
         return new CommandResult(cmd.isSuccess(), cmd.getStatusMessage());
     }
 
     public CommandResult set(String key, String value, String secondaryIndexKey) {
-        SetCommand cmd = (SetCommand) new SetCommand(key, value,secondaryIndexKey).execute(tcpClient);
+        SetCommand cmd = (SetCommand) new SetCommand(key, value,secondaryIndexKey).execute(clientConnector);
         return new CommandResult(cmd.isSuccess(), cmd.getStatusMessage());
     }
 
     public CommandResult set(String key, String value, String secondaryIndexKey, String tertiaryIndexKey) {
-        SetCommand cmd = (SetCommand) new SetCommand(key, value, secondaryIndexKey, tertiaryIndexKey).execute(tcpClient);
+        SetCommand cmd = (SetCommand) new SetCommand(key, value, secondaryIndexKey, tertiaryIndexKey).execute(clientConnector);
         return new CommandResult(cmd.isSuccess(), cmd.getStatusMessage());
     }
 
     public CommandResult del(String key) {
-        DelCommand cmd = (DelCommand) new DelCommand(key).execute(tcpClient);
+        DelCommand cmd = (DelCommand) new DelCommand(key).execute(clientConnector);
         return new CommandResult(cmd.isSuccess(), cmd.getStatusMessage());
     }
 
     public GetResult get(String key) {
-        GetCommand cmd = (GetCommand) new GetCommand(key).execute(tcpClient);
+        GetCommand cmd = (GetCommand) new GetCommand(key).execute(clientConnector);
         return new GetResult(cmd.isSuccess(), cmd.getStatusMessage(), cmd.getValue());
     }
 
     public GetResult getBySecondaryIndex(String key) {
-        GetSecondaryIdxOneCommand cmd = (GetSecondaryIdxOneCommand) new GetSecondaryIdxOneCommand(key).execute(tcpClient);
+        GetSecondaryIdxOneCommand cmd = (GetSecondaryIdxOneCommand) new GetSecondaryIdxOneCommand(key).execute(clientConnector);
         return new GetResult(cmd.isSuccess(), cmd.getStatusMessage(), cmd.getValue());
     }
 
     public GetResult getByTertiaryIndex(String key) {
-        GetSecondaryIdxTwoCommand cmd = (GetSecondaryIdxTwoCommand) new GetSecondaryIdxTwoCommand(key).execute(tcpClient);
+        GetSecondaryIdxTwoCommand cmd = (GetSecondaryIdxTwoCommand) new GetSecondaryIdxTwoCommand(key).execute(clientConnector);
         return new GetResult(cmd.isSuccess(), cmd.getStatusMessage(), cmd.getValue());
     }
 
     public boolean isConnected() {
-        return tcpClient.isConnected();
+        return clientConnector.isConnected();
     }
 
     public void close() {
-        tcpClient.close();
+        clientConnector.close();
     }
 }
