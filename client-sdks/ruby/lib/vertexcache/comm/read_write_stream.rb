@@ -44,6 +44,10 @@ module VertexCache
       def io
         @io
       end
+
+      def to_io
+        @io
+      end
     end
   end
 end

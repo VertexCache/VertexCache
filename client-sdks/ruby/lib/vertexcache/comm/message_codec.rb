@@ -25,7 +25,7 @@ module VertexCache
       MAX_MESSAGE_SIZE = 4 * 1024 * 1024
 
       PROTOCOL_VERSION_RSA_PKCS1 = 0x00000101
-      PROTOCOL_VERSION_AES_GCM   = 0x00000801
+      PROTOCOL_VERSION_AES_GCM   = 0x00000181
       DEFAULT_PROTOCOL_VERSION   = 0x00000001
 
       def self.write_framed_message(io, payload, version)

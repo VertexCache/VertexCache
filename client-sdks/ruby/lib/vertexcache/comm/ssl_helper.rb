@@ -32,8 +32,6 @@ module VertexCache
         "TLS_RSA_WITH_AES_256_GCM_SHA384"
       ].join(":")
 
-      MODERN_PROTOCOLS = :TLS_CLIENT # Ruby 3+ uses symbolic constants
-
       def self.create_verified_ssl_context(pem_cert)
         raise_invalid_cert unless valid_cert_format?(pem_cert)
 
@@ -41,7 +39,7 @@ module VertexCache
         store = OpenSSL::X509::Store.new
         store.add_cert(cert)
 
-        ctx = OpenSSL::SSL::SSLContext.new(MODERN_PROTOCOLS)
+        ctx = OpenSSL::SSL::SSLContext.new
         ctx.cert_store = store
         ctx.verify_mode = OpenSSL::SSL::VERIFY_PEER
         ctx.ciphers = MODERN_CIPHERS
@@ -55,7 +53,7 @@ module VertexCache
       end
 
       def self.create_insecure_ssl_context
-        ctx = OpenSSL::SSL::SSLContext.new(MODERN_PROTOCOLS)
+        ctx = OpenSSL::SSL::SSLContext.new
         ctx.verify_mode = OpenSSL::SSL::VERIFY_NONE
         ctx.ciphers = MODERN_CIPHERS
         ctx.min_version = OpenSSL::SSL::TLS1_2_VERSION

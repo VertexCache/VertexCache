@@ -46,6 +46,17 @@ module VertexCache
           raise VertexCache::Model::VertexCacheSdkException.new('Invalid shared key')
         end
       end
+
+      def self.encrypt_with_rsa(pem_string, plaintext)
+        begin
+          public_key = OpenSSL::PKey::RSA.new(pem_string)
+          cipher_text = public_key.public_encrypt(plaintext, OpenSSL::PKey::RSA::PKCS1_PADDING)
+          cipher_text
+        rescue
+          raise VertexCache::Model::VertexCacheSdkException.new('RSA encryption failed')
+        end
+      end
+
     end
   end
 end
