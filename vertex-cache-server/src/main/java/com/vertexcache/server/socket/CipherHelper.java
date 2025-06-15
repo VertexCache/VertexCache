@@ -15,6 +15,7 @@
  */
 package com.vertexcache.server.socket;
 
+import com.vertexcache.common.log.LogHelper;
 import com.vertexcache.common.security.MessageCodec;
 import com.vertexcache.core.cache.exception.VertexCacheException;
 
@@ -23,6 +24,7 @@ import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
 import java.security.PrivateKey;
 import java.security.spec.MGF1ParameterSpec;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -31,9 +33,9 @@ import java.util.Map;
 public class CipherHelper {
 
     private static final Map<Integer, String> ASYMMETRIC_CIPHER_MAP = Map.of(
-            1, "RSA/ECB/PKCS1Padding",
-            2, "RSA/ECB/OAEPWithSHA-256AndMGF1Padding",
-            3, "RSA/ECB/OAEPWithSHA-1AndMGF1Padding"
+            0, "RSA/ECB/PKCS1Padding",
+            1, "RSA/ECB/OAEPWithSHA-256AndMGF1Padding",
+            2, "RSA/ECB/OAEPWithSHA-1AndMGF1Padding"
     );
 
     // Symmetric Ciphers (AES)
