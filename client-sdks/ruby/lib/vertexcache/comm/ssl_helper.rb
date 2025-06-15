@@ -20,39 +20,55 @@ require 'vertexcache/model/vertex_cache_sdk_exception'
 module VertexCache
   module Comm
     class SSLHelper
-      # Creates an SSLContext with certificate verification enabled using a PEM cert string.
-      #
-      # @param pem_cert [String] PEM-encoded certificate.
-      # @return [OpenSSL::SSL::SSLContext]
-      # @raise [VertexCache::Model::VertexCacheSdkException] if context creation fails.
+      # Modern secure cipher suites aligned with server and industry standards
+      MODERN_CIPHERS = [
+        "TLS_AES_128_GCM_SHA256",
+        "TLS_AES_256_GCM_SHA384",
+        "TLS_CHACHA20_POLY1305_SHA256",
+        "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+        "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+        "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
+        "TLS_RSA_WITH_AES_128_GCM_SHA256",
+        "TLS_RSA_WITH_AES_256_GCM_SHA384"
+      ].join(":")
+
+      MODERN_PROTOCOLS = :TLS_CLIENT # Ruby 3+ uses symbolic constants
+
       def self.create_verified_ssl_context(pem_cert)
-        begin
-          if pem_cert.nil? || pem_cert.strip.empty? || !pem_cert.include?('BEGIN CERTIFICATE')
-            raise VertexCache::Model::VertexCacheSdkException, 'Invalid certificate format'
-          end
+        raise_invalid_cert unless valid_cert_format?(pem_cert)
 
-          cert = OpenSSL::X509::Certificate.new(pem_cert)
-          store = OpenSSL::X509::Store.new
-          store.add_cert(cert)
+        cert = OpenSSL::X509::Certificate.new(pem_cert)
+        store = OpenSSL::X509::Store.new
+        store.add_cert(cert)
 
-          ctx = OpenSSL::SSL::SSLContext.new
-          ctx.cert_store = store
-          ctx.verify_mode = OpenSSL::SSL::VERIFY_PEER
-          return ctx
-        rescue OpenSSL::X509::CertificateError
-          raise VertexCache::Model::VertexCacheSdkException, 'Failed to parse PEM certificate'
-        rescue => _
-          raise VertexCache::Model::VertexCacheSdkException, 'Failed to build secure socket context'
-        end
+        ctx = OpenSSL::SSL::SSLContext.new(MODERN_PROTOCOLS)
+        ctx.cert_store = store
+        ctx.verify_mode = OpenSSL::SSL::VERIFY_PEER
+        ctx.ciphers = MODERN_CIPHERS
+        ctx.min_version = OpenSSL::SSL::TLS1_2_VERSION
+        ctx.max_version = OpenSSL::SSL::TLS1_3_VERSION
+        ctx
+      rescue OpenSSL::X509::CertificateError
+        raise VertexCache::Model::VertexCacheSdkException, 'Failed to parse PEM certificate'
+      rescue => e
+        raise VertexCache::Model::VertexCacheSdkException, 'Failed to build secure socket context'
       end
 
-      # Creates an insecure SSLContext that bypasses certificate validation.
-      #
-      # @return [OpenSSL::SSL::SSLContext]
       def self.create_insecure_ssl_context
-        OpenSSL::SSL::SSLContext.new.tap do |ctx|
-          ctx.verify_mode = OpenSSL::SSL::VERIFY_NONE
-        end
+        ctx = OpenSSL::SSL::SSLContext.new(MODERN_PROTOCOLS)
+        ctx.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        ctx.ciphers = MODERN_CIPHERS
+        ctx.min_version = OpenSSL::SSL::TLS1_2_VERSION
+        ctx.max_version = OpenSSL::SSL::TLS1_3_VERSION
+        ctx
+      end
+
+      def self.valid_cert_format?(pem_cert)
+        pem_cert && pem_cert.include?("BEGIN CERTIFICATE")
+      end
+
+      def self.raise_invalid_cert
+        raise VertexCache::Model::VertexCacheSdkException, "Invalid certificate format"
       end
     end
   end
