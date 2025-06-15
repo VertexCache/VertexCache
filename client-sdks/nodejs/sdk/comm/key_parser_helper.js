@@ -42,20 +42,19 @@ function configSharedKeyIfEnabled(sharedKey) {
 
 function encryptWithRsa(publicKeyPem, plaintextBuffer) {
     try {
-        if (!publicKeyPem || typeof publicKeyPem !== 'string') {
-            throw new VertexCacheSdkException('Invalid public key');
+        if (!publicKeyPem.includes("BEGIN PUBLIC KEY")) {
+            throw new VertexCacheSdkException('Invalid PEM format');
         }
-        const encrypted = crypto.publicEncrypt(
+
+        return crypto.publicEncrypt(
             {
-                key: publicKeyPem.trim().replace(/\\r/g, '').replace(/\\n\\s+/g, '\n'),
-                padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-                oaepHash: 'sha256',
+                key: publicKeyPem,
+                padding: crypto.constants.RSA_PKCS1_PADDING
             },
             plaintextBuffer
         );
-        return encrypted;
     } catch (err) {
-        throw new VertexCacheSdkException('RSA encryption failed');
+        throw new VertexCacheSdkException('RSA encryption failed: ' + err.message);
     }
 }
 

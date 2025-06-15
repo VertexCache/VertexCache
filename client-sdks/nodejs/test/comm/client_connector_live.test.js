@@ -20,7 +20,7 @@ const { ClientOption } = require("../../sdk/model/client_option");
 const { ClientConnector } = require("../../sdk/comm/client_connector");
 const { EncryptionMode } = require("../../sdk/model/encryption_mode");
 
-const HOST = "127.0.0.1";
+const HOST = "localhost";
 const PORT = 50505;
 const CLIENT_ID = "sdk-client-nodejs";
 const CLIENT_TOKEN = "2c9962b5-559f-450a-a411-71859055fdc0";
@@ -30,7 +30,7 @@ const TEST_PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAO
 const TLS_CERT = `-----BEGIN CERTIFICATE-----\nMIIDgDCCAmigAwIBAgIJAPjdssRy18IjMA0GCSqGSIb3DQEBDAUAMG4xEDAOBgNV\nBAYTB1...`;
 
 describe("ClientConnector Live TLS Test", function () {
-    //if (process.env.VC_LIVE_TEST !== "true") return;
+    if (process.env.VC_LIVE_TEST !== "true") return;
 
     it("should connect and send PING", async function () {
         const opt = new ClientOption();
@@ -38,10 +38,10 @@ describe("ClientConnector Live TLS Test", function () {
         opt.clientToken = CLIENT_TOKEN;
         opt.serverHost = HOST;
         opt.serverPort = PORT;
-        opt.enableTlsEncryption = false;
+        opt.enableTlsEncryption = true;
         opt.verifyCertificate = false; // Set to true if verifying
         opt.tlsCertificate = TLS_CERT;
-        opt.encryptionMode = EncryptionMode.NONE;
+        opt.encryptionMode = EncryptionMode.ASYMMETRIC;
         opt.publicKey = TEST_PUBLIC_KEY;
 
         const client = new ClientConnector(opt);

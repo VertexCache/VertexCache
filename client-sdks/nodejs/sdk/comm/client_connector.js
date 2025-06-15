@@ -28,6 +28,7 @@ const { encrypt } = require("./gcm_crypto_helper");
 const {
     configPublicKeyIfEnabled,
     configSharedKeyIfEnabled,
+    encryptWithRsa
 } = require("./key_parser_helper");
 const { VertexCacheSdkException } = require("../model/vertex_cache_sdk_exception");
 const { EncryptionMode } = require("../model/encryption_mode");
@@ -55,22 +56,13 @@ class ClientConnector {
             this._setProtocolVersion();
             const version = resolveProtocolVersion(this.options.encryptionMode);
             const framed = writeFramedMessage(payload, version);
-
-            console.log("[DEBUG] Raw IDENT string:", identCommand);
-            console.log("[DEBUG] Plaintext buffer (before encryption):", Buffer.from(identCommand).toString("hex"));
-            console.log("[DEBUG] Encrypted payload (if any):", payload.toString("hex"));
-            console.log("[DEBUG] Final framed IDENT (hex):", framed.toString("hex"));
-
             await this._writeSocketFully(framed);
-
             const responseBuffer = await readFramedMessage(this.reader);
-            console.log("[VertexCacheSDK] Raw IDENT response buffer:", responseBuffer);
             const response = responseBuffer?.toString("utf-8").trim() || "";
             if (!response.startsWith("+OK")) {
                 this.close();
                 throw new VertexCacheSdkException("Authorization failed: " + response);
             }
-
             this.connected = true;
         } catch (err) {
             this.close();
@@ -134,20 +126,11 @@ class ClientConnector {
                     if (!pemKey || !pemKey.includes("BEGIN PUBLIC KEY")) {
                         throw new VertexCacheSdkException("Invalid PEM public key for encryption");
                     }
-                    return crypto.publicEncrypt(
-                        {
-                            key: pemKey,
-                            padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-                            oaepHash: "sha256",
-                        },
-                        plainText
-                    );
+                    return encryptWithRsa(pemKey, plainText);
                 case EncryptionMode.SYMMETRIC:
                     const sharedKey = configSharedKeyIfEnabled(this.options.sharedEncryptionKey);
                     return encrypt(plainText, sharedKey);
                 case EncryptionMode.NONE:
-                    console.log("[VertexCacheSDK] _encryptIfEnabled: encryption mode NONE");
-                    console.log("[VertexCacheSDK] Returning unencrypted IDENT buffer");
                 default:
                     return Buffer.from(plainText);
             }
