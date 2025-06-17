@@ -4,7 +4,8 @@
 
 <h1 align="center">VertexCache Client SDKs</h1>
 
-This is the official collection of **Client SDKs** provided by the VertexCache project.
+This is the official collection of **Client SDKs** provided by the VertexCache project.  
+All SDKs communicate directly with the VertexCache server using a **raw TCP socket** and the binary **VCMP protocol** for low-latency, high-throughput access.
 
 > **What is VertexCache?**  
 > VertexCache is a high-performance, open-source in-memory caching system designed for speed, flexibility, and developer-friendly integration. It supports primary and multi-level secondary indexing for fast lookups and reduced database I/O.

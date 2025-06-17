@@ -4,7 +4,8 @@
 
 <h1 align="center">VertexCache Client SDK for Java</h1>
 
-This is the official **Client SDK** for **Java**, provided by the VertexCache project.
+This is the official **Client SDK** for **Java**, provided by the VertexCache project.  
+It communicates with the VertexCache server using a **raw TCP socket** and the binary **VCMP protocol** for high-performance, low-latency operations.
 
 > **What is VertexCache?**  
 > VertexCache is a high-performance, open-source in-memory caching system designed for speed, flexibility, and developer-friendly integration. It supports primary and multi-level secondary indexing for fast lookups and reduced database I/O.
