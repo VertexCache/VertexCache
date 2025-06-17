@@ -1,6 +1,6 @@
-# VertexCache Client SDK for Go
+# VertexCache Client SDK for Rust
 
-This is the official **Client SDK** for **Go**, provided by the VertexCache project.
+This is the official **Client SDK** for **Rust**, provided by the VertexCache project.
 
 > **What is VertexCache?**  
 > VertexCache is a high-performance, open-source in-memory caching system designed for speed, flexibility, and developer-friendly integration. It supports primary and multi-level secondary indexing for fast lookups and reduced database I/O.
