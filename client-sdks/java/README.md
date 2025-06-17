@@ -1,4 +1,8 @@
-# VertexCache Client SDK for Java
+<p align="center">
+  <img src="https://github.com/jasonlam604/VertexCache/blob/main/etc/assets/vertexcache-logo-192x192.png" alt="VertexCache Logo" width="120" height="120"/>
+</p>
+
+<h1 align="center">VertexCache Client SDK for Java</h1>
 
 This is the official **Client SDK** for **Java**, provided by the VertexCache project.
 
