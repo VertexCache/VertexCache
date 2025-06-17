@@ -43,20 +43,21 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 /**
- * Handles individual client connections to the VertexCache server.
+ * Handles the lifecycle of an individual client connection to the VertexCache server.
  *
- * Manages the client socket lifecycle, including reading framed messages,
- * decrypting input based on configured encryption mode, authenticating clients,
- * processing commands, and sending responses.
+ * Responsibilities include:
+ * - Reading framed messages using the VertexCache binary protocol.
+ * - Handling decryption using RSA or AES-GCM based on the configured encryption mode.
+ * - Processing IDENT commands to authenticate and assign client roles (ADMIN, NODE, etc.).
+ * - Executing cache commands through the central CommandService.
+ * - Managing idle timeouts, with extended timeout support for ADMIN clients.
+ * - Tracking authenticated session context and registering it with the SessionRegistry.
+ * - Logging client interactions in verbose mode for debugging or auditing.
  *
- * Supports idle timeouts, with extended timeout for ADMIN role clients.
- * Tracks session context and registers/unregisters sessions in SessionRegistry.
+ * This handler supports both secure (encrypted) and unencrypted client communication,
+ * and gracefully handles disconnections, socket timeouts, and malformed input.
  *
- * Processes IDENT commands for client identification and authentication,
- * including legacy and JSON payload formats. Enforces authentication if enabled.
- *
- * Logs requests and responses when verbose mode is enabled.
- * Handles exceptions and ensures proper resource cleanup on disconnect.
+ * It is instantiated per socket and run as a separate thread for each client connection.
  */
 public class ClientHandler implements Runnable {
 
@@ -94,11 +95,6 @@ public class ClientHandler implements Runnable {
         try (InputStream inputStream = clientSocket.getInputStream();
              OutputStream outputStream = clientSocket.getOutputStream()) {
 
-            //byte[] aesKeyBytes = null;
-            //if (config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.SYMMETRIC) {
-              //  aesKeyBytes = GcmCryptoHelper.decodeBase64Key(config.getSecurityConfigLoader().getSharedEncryptionKey());
-            //}
-
             while (true) {
                 if ((System.currentTimeMillis() - lastActivityTime) > maxIdle) {
                     LogHelper.getInstance().logInfo("Idle timeout: " + clientSocket.getRemoteSocketAddress());
@@ -110,19 +106,15 @@ public class ClientHandler implements Runnable {
 
                 try {
                     framedRequest = MessageCodec.readFramedMessage(inputStream);
-                   // LogHelper.getInstance().logInfo("[DEBUG] Received framedRequest (hex): " + HexHelper.bytesToHex(framedRequest));
 
                     if (rsaCipher == null && config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.ASYMMETRIC) {
                         rsaCipher = CipherHelper.getCipherFromId(MessageCodec.extractEncryptionHint(), config.getSecurityConfigLoader().getPrivateKey());
                     } else if (aesTransformation == null && config.getSecurityConfigLoader().getEncryptionMode() == EncryptionMode.SYMMETRIC) {
                         aesTransformation = CipherHelper.getSymmetricTransformation(MessageCodec.extractEncryptionHint());
                         aesKeyBytes = GcmCryptoHelper.decodeBase64Key(config.getSecurityConfigLoader().getSharedEncryptionKey());
-                    } else {
-                        //LogHelper.getInstance().logInfo("[DEBUG] Encryption is NONE for Message Layer");
                     }
 
                     if (framedRequest == null) {
-                       // LogHelper.getInstance().logDebug("[DEBUG] Null framedRequest encountered, likely client closed connection");
                         break;
                     }
                     lastActivityTime = System.currentTimeMillis();
@@ -160,15 +152,6 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    public class HexHelper {
-        public static String bytesToHex(byte[] bytes) {
-            StringBuilder sb = new StringBuilder();
-            for (byte b : bytes)
-                sb.append(String.format("%02X", b));
-            return sb.toString();
-        }
-    }
-
     private byte[] processInputData(byte[] data)  {
         byte[] decrypted;
 
@@ -185,12 +168,6 @@ public class ClientHandler implements Runnable {
         }
 
         String input = new String(decrypted, StandardCharsets.UTF_8).trim();
-        //LogHelper.getInstance().logInfo("[DEBUG] Decrypted input: " + input);
-        //LogHelper.getInstance().logInfo("[DEBUG] Encryption Mode: " + config.getSecurityConfigLoader().getEncryptionMode());
-        //LogHelper.getInstance().logInfo("[DEBUG] Extracted Protocol Version Hint: " + MessageCodec.extractProtocolVersion());
-        //LogHelper.getInstance().logInfo("[DEBUG] Extracted Encryption Hint: " + MessageCodec.extractEncryptionHint());
-
-
         String logTag = "[client:" + (clientName != null ? clientName : clientSocket.getRemoteSocketAddress()) + "]";
 
         if(Config.getInstance().getClusterConfigLoader().isSecondaryNode() && !Config.getInstance().getClusterConfigLoader().getSecondaryEnabledClusterNode().isPromotedToPrimary()) {

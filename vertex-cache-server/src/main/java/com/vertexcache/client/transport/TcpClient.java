@@ -202,10 +202,12 @@ public class TcpClient implements TcpClientInterface {
         try {
             switch (encryptionMode) {
                 case ASYMMETRIC:
+                    MessageCodec.switchToAsymmetric();
                     Cipher cipher = Cipher.getInstance("RSA");
                     cipher.init(Cipher.ENCRYPT_MODE, publicKey);
                     return cipher.doFinal(plainText);
                 case SYMMETRIC:
+                    MessageCodec.switchToSymmetric();
                     return GcmCryptoHelper.encrypt(plainText, sharedKeyBytes,GcmCryptoHelper.AES_GCM_NO_PADDING);
                 case NONE:
                 default:

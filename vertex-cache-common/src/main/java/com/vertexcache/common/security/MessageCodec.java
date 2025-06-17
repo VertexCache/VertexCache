@@ -118,9 +118,17 @@ public class MessageCodec {
         }
         ByteBuffer buffer = ByteBuffer.allocate(4 + 4 + data.length); // 4 bytes for length + 4 bytes for version
         buffer.putInt(data.length);
-        buffer.putInt(PROTOCOL_VERSION_DEFAULT); // 4-byte version
+        buffer.putInt(protocolVersion); // 4-byte version
         buffer.put(data);
         out.write(buffer.array());
+    }
+
+    public static void switchToSymmetric() {
+        protocolVersion = PROTOCOL_VERSION_AES_GCM;
+    }
+
+    public static void switchToAsymmetric() {
+        protocolVersion = PROTOCOL_VERSION_RSA_PKCS1;
     }
 
 }

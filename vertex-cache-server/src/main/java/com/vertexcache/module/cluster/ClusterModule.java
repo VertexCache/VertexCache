@@ -165,15 +165,17 @@ public class ClusterModule extends Module {
 
                 // Message Layer Encryption
                 if (Config.getInstance().getSecurityConfigLoader().getEncryptionMode().equals(EncryptionMode.ASYMMETRIC)) {
+                    LogHelper.getInstance().logInfo("internal set to asymmetric ");
                     options.setEncryptionMode(EncryptionMode.ASYMMETRIC);
                     options.setPublicKey(Config.getInstance().getSecurityConfigLoader().getPublicKey());
                 } else if (Config.getInstance().getSecurityConfigLoader().getEncryptionMode().equals(EncryptionMode.SYMMETRIC)) {
+                    LogHelper.getInstance().logInfo("internal set to symmetric " + Config.getInstance().getSecurityConfigLoader().getSharedEncryptionKey());
                     options.setEncryptionMode(EncryptionMode.SYMMETRIC);
                     options.setSharedEncryptionKey(Config.getInstance().getSecurityConfigLoader().getSharedEncryptionKey());
                 } else {
                     options.setEncryptionMode(EncryptionMode.NONE);
                 }
-                options.setEncryptionMode(EncryptionMode.ASYMMETRIC);
+                //options.setEncryptionMode(EncryptionMode.ASYMMETRIC);
                 this.vertexCacheInternalClient = new VertexCacheInternalClient(options);
 
                 if(!this.vertexCacheInternalClient.isConnected()) {
