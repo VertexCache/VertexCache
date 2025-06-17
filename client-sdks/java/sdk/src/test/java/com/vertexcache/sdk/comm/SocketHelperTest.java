@@ -148,24 +148,4 @@ class SocketHelperTest {
         });
         assertEquals("Failed to create Secure Socket", ex.getMessage());
     }
-
-    @Test
-    void createSecureSocket_shouldSucceedWithLiveServer() {
-        Assumptions.assumeTrue(ENABLE_LIVE_TLS_TESTS, "Live TLS test skipped");
-
-        ClientOption option = new ClientOption();
-        option.setServerHost("localhost");
-        option.setServerPort(50505);
-        option.setConnectTimeout(1000);
-        option.setReadTimeout(1000);
-        option.setVerifyCertificate(true);
-        option.setTlsCertificate(VALID_PEM_CERT);
-
-        assertDoesNotThrow(() -> {
-            Socket socket = SocketHelper.createSecureSocket(option);
-            assertNotNull(socket);
-            assertTrue(socket.isConnected());
-            socket.close();
-        });
-    }
 }

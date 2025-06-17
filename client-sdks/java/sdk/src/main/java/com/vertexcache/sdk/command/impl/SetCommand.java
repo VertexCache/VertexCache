@@ -57,6 +57,14 @@ public class SetCommand extends CommandBase<SetCommand> {
             throw new VertexCacheSdkException("Missing Value");
         }
 
+        if(secondaryKey != null && secondaryKey.isBlank()) {
+            throw new VertexCacheSdkException("Secondary key can't be empty when used");
+        }
+
+        if(secondaryKey != null && !secondaryKey.isBlank() && tertiaryKey != null && tertiaryKey.isBlank()) {
+            throw new VertexCacheSdkException("Tertiary key can't be empty when used");
+        }
+
         this.primaryKey = primaryKey;
         this.value = value;
         this.secondaryKey = secondaryKey;

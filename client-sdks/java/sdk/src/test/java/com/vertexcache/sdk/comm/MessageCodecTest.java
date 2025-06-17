@@ -42,15 +42,21 @@ public class MessageCodecTest {
     }
 
     @Test
-    public void testInvalidVersionByte() {
-        byte[] badFrame = ByteBuffer.allocate(4 + 1 + 3)
-                .putInt(3)         // length
-                .put((byte) 0x02)  // invalid version
-                .put("abc".getBytes())
-                .array();
+    public void testInvalidProtocolVersionShouldNotThrowButCapture() throws IOException {
+        int invalidVersion = 0xDEADBEEF;
+        byte[] payload = "abc".getBytes();
 
-        ByteArrayInputStream in = new ByteArrayInputStream(badFrame);
-        assertThrows(IOException.class, () -> MessageCodec.readFramedMessage(in));
+        ByteBuffer buffer = ByteBuffer.allocate(8 + payload.length);
+        buffer.putInt(payload.length);        // Length = 3
+        buffer.putInt(invalidVersion);        // Invalid version
+        buffer.put(payload);
+
+        ByteArrayInputStream in = new ByteArrayInputStream(buffer.array());
+
+        // This does not throw by default — protocolVersion is just updated
+        byte[] result = MessageCodec.readFramedMessage(in);
+        assertNotNull(result);
+        assertEquals("abc", new String(result));
     }
 
     @Test
@@ -73,13 +79,15 @@ public class MessageCodecTest {
     public void testWriteEmptyPayloadThenReadShouldFail() throws IOException {
         byte[] payload = new byte[0];
 
-        // Writing should be allowed
+        // Writing should still be allowed
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         MessageCodec.writeFramedMessage(out, payload);
         byte[] framed = out.toByteArray();
-        assertEquals(5, framed.length); // 4-byte length + 1 version
 
-        // Reading should fail due to invalid message length (0)
+        // Header is now 8 bytes: 4 (length) + 4 (version)
+        assertEquals(8, framed.length);
+
+        // Reading should fail because length == 0
         ByteArrayInputStream in = new ByteArrayInputStream(framed);
         assertThrows(IOException.class, () -> MessageCodec.readFramedMessage(in));
     }

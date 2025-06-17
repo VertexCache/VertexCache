@@ -7,13 +7,13 @@ cd "$SDK_DIR" || {
     exit 1
 }
 
-if [[ "$1" == "--with-live" ]]; then
+if [[ "$1" == "--live" ]]; then
     echo "---------------------------------------------------"
     echo "Running live test only: VertexCacheSDKLiveTest"
-    echo "VC_LIVE_TEST=true"
+    echo "VC_LIVE_TLS_ASYMMETRIC_TEST=true"
     echo "---------------------------------------------------"
 
-    VC_LIVE_TEST=true mvn clean -Dtest=VertexCacheSDKLiveTest test \
+    VC_LIVE_TLS_ASYMMETRIC_TEST=true mvn clean -Dtest=VertexCacheSDKLiveTest test \
       -Dsurefire.printSummary=true \
       -Dsurefire.useFile=false
 

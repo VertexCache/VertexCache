@@ -43,10 +43,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * This suite is designed to allow you to easily get a quick understanding of how the SDK works
  * and see VertexCache in action with minimal friction.
  */
-@EnabledIfEnvironmentVariable(named = "VC_LIVE_TEST", matches = "true")
+@EnabledIfEnvironmentVariable(named = "VC_LIVE_TLS_ASYMMETRIC_TEST", matches = "true")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class VertexCacheSDKLiveTest {
-
 
     private final static String CLIENT_ID = "sdk-client-java";
     private final static String CLIENT_TOKEN = "ea143c4a-1426-4d43-b5be-f0ecffe4a6c7";
@@ -176,9 +175,23 @@ class VertexCacheSDKLiveTest {
         assertEquals("value-123", result.getValue(), "Value should match what was set");
     }
 
-
     @Test
     @Order(10)
+    public void testMultibyteKeyAndValueShouldSucceed() {
+        String multibyteKey = "键🔑値🌟";
+        String multibyteValue = "测试🧪データ💾";
+
+        CommandResult setResult = sdk.set(multibyteKey, multibyteValue);
+        assertTrue(setResult.isSuccess(), "SET command with multibyte key/value should succeed");
+        assertEquals("OK", setResult.getMessage());
+
+        GetResult getResult = sdk.get(multibyteKey);
+        assertTrue(getResult.isSuccess(), "GET command with multibyte key should succeed");
+        assertEquals(multibyteValue, getResult.getValue(), "Multibyte value should be preserved");
+    }
+
+    @Test
+    @Order(11)
     public void testFailedHost() {
         ClientOption clientOption = new ClientOption();
         clientOption.setClientId(CLIENT_ID);
@@ -195,7 +208,7 @@ class VertexCacheSDKLiveTest {
     }
 
     @Test
-    @Order(11)
+    @Order(12)
     public void testFailedPort() {
         ClientOption clientOption = new ClientOption();
         clientOption.setClientId(CLIENT_ID);
@@ -212,7 +225,7 @@ class VertexCacheSDKLiveTest {
     }
 
     @Test
-    @Order(12)
+    @Order(13)
     public void testFailedSecureTLS() {
         ClientOption clientOption = new ClientOption();
         clientOption.setClientId(CLIENT_ID);
@@ -235,7 +248,7 @@ class VertexCacheSDKLiveTest {
 
 
     @Test
-    @Order(13)
+    @Order(14)
     public void testNonSecureTLS() {
         ClientOption clientOption = new ClientOption();
         clientOption.setClientId(CLIENT_ID);
@@ -250,7 +263,7 @@ class VertexCacheSDKLiveTest {
     }
 
     @Test
-    @Order(14)
+    @Order(15)
     public void testInvalidPublicKey() {
         ClientOption clientOption = new ClientOption();
         clientOption.setClientId(CLIENT_ID);
@@ -272,7 +285,7 @@ class VertexCacheSDKLiveTest {
     }
 
     @Test
-    @Order(15)
+    @Order(16)
     public void testInvalidSharedKey() {
         ClientOption clientOption = new ClientOption();
         clientOption.setClientId(CLIENT_ID);
@@ -291,5 +304,65 @@ class VertexCacheSDKLiveTest {
                 ex.getMessage().contains("Invalid shared key"),
                 "Expected shared key failure message"
         );
+    }
+
+    @Test
+    @Order(17)
+    public void testSetWithEmptyKeyShouldFail() {
+        VertexCacheSdkException ex = assertThrows(
+                VertexCacheSdkException.class,
+                () -> sdk.set("", "value-123")
+        );
+        assertTrue(ex.getMessage().contains("Missing Primary Key"));
+    }
+
+    @Test
+    @Order(18)
+    public void testSetWithEmptyValueShouldFail() {
+        VertexCacheSdkException ex = assertThrows(
+                VertexCacheSdkException.class,
+                () -> sdk.set("empty-value-key", "")
+        );
+        assertTrue(ex.getMessage().contains("Missing Value"));
+    }
+
+    @Test
+    @Order(19)
+    public void testSetWithNullKeyShouldThrow() {
+        VertexCacheSdkException ex = assertThrows(
+                VertexCacheSdkException.class,
+                () -> sdk.set(null, "value-123")
+        );
+        assertTrue(ex.getMessage().contains("Missing Primary Key"));
+    }
+
+    @Test
+    @Order(20)
+    public void testSetWithNullValueShouldThrow() {
+        VertexCacheSdkException ex = assertThrows(
+                VertexCacheSdkException.class,
+                () -> sdk.set("empty-value-key", null)
+        );
+        assertTrue(ex.getMessage().contains("Missing Value"));
+    }
+
+    @Test
+    @Order(21)
+    public void testSetWithEmptySecondaryIndexShouldThrow() {
+        VertexCacheSdkException ex = assertThrows(
+                VertexCacheSdkException.class,
+                () -> sdk.set("key", "value", "")
+        );
+        assertTrue(ex.getMessage().contains("Secondary key can't be empty when used"));
+    }
+
+    @Test
+    @Order(22)
+    public void testSetWithEmptyTertiaryIndexShouldThrow() {
+        VertexCacheSdkException ex = assertThrows(
+                VertexCacheSdkException.class,
+                () -> sdk.set("key", "value", "sec-key","")
+        );
+        assertTrue(ex.getMessage().contains("Tertiary key can't be empty when used"));
     }
 }

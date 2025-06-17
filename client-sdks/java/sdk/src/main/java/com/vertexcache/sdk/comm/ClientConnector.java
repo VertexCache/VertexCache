@@ -132,10 +132,12 @@ public class ClientConnector implements ClientConnectorInterface {
         try {
             switch (options.getEncryptionMode()) {
                 case ASYMMETRIC:
+                    MessageCodec.switchToAsymmetric();
                     Cipher cipher = Cipher.getInstance("RSA");
                     cipher.init(Cipher.ENCRYPT_MODE, options.getPublicKeyAsObject());
                     return cipher.doFinal(plainText);
                 case SYMMETRIC:
+                    MessageCodec.switchToSymmetric();
                     return GcmCryptoHelper.encrypt(plainText, options.getSharedEncryptionKeyAsBytes());
                 case NONE:
                 default:

@@ -19,6 +19,7 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 import java.util.Base64;
@@ -38,35 +39,33 @@ import java.util.Base64;
 public class GcmCryptoHelper {
 
     private static final String AES = "AES";
-    private static final String AES_GCM_NO_PADDING = "AES/GCM/NoPadding";
-    private static final int GCM_IV_LENGTH = 12; // 96 bits (recommended)
-    private static final int GCM_TAG_LENGTH = 128; // bits
+    public static final String AES_GCM_NO_PADDING = "AES/GCM/NoPadding";
+    private static final String AES_CBC_PKCS5 = "AES/CBC/PKCS5Padding";
+
+    private static final int GCM_IV_LENGTH = 12;
+    private static final int CBC_IV_LENGTH = 16;
+    private static final int GCM_TAG_LENGTH = 128;
+
+    public static final String transformation = "AES/GCM/NoPadding";
 
     private static final SecureRandom secureRandom = new SecureRandom();
 
-    /**
-     * Encrypts the given plaintext using AES-GCM with the provided symmetric key.
-     *
-     * This method generates a random IV (Initialization Vector) and uses AES in GCM mode
-     * without padding. The IV is prepended to the ciphertext in the returned byte array.
-     *
-     * The resulting format is:
-     * [12-byte IV][ciphertext with 16-byte GCM tag]
-     *
-     * @param plaintext the data to encrypt
-     * @param keyBytes the AES key in byte array form (must match expected key size)
-     * @return a byte array containing the IV followed by the ciphertext
-     * @throws Exception if encryption fails or the cipher initialization is invalid
-     */
     public static byte[] encrypt(byte[] plaintext, byte[] keyBytes) throws Exception {
-        byte[] iv = new byte[GCM_IV_LENGTH];
-        secureRandom.nextBytes(iv);
+        byte[] iv = generateIv(transformation);
 
-        Cipher cipher = Cipher.getInstance(AES_GCM_NO_PADDING);
+        Cipher cipher = Cipher.getInstance(transformation);
         SecretKeySpec key = new SecretKeySpec(keyBytes, AES);
-        GCMParameterSpec spec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
 
-        cipher.init(Cipher.ENCRYPT_MODE, key, spec);
+        if (AES_GCM_NO_PADDING.equals(transformation)) {
+            GCMParameterSpec spec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
+            cipher.init(Cipher.ENCRYPT_MODE, key, spec);
+        } else if (AES_CBC_PKCS5.equals(transformation)) {
+            IvParameterSpec spec = new IvParameterSpec(iv);
+            cipher.init(Cipher.ENCRYPT_MODE, key, spec);
+        } else {
+            throw new IllegalArgumentException("Unsupported transformation: " + transformation);
+        }
+
         byte[] ciphertext = cipher.doFinal(plaintext);
 
         // Concatenate IV + ciphertext
@@ -77,36 +76,44 @@ public class GcmCryptoHelper {
         return combined;
     }
 
-    /**
-     * Decrypts the given AES-GCM encrypted byte array using the provided symmetric key.
-     *
-     * This method expects the encrypted input to be in the format:
-     * [12-byte IV][ciphertext with 16-byte GCM tag].
-     *
-     * The IV is extracted and used to initialize the cipher for decryption.
-     *
-     * @param encrypted the encrypted byte array containing the IV followed by ciphertext
-     * @param keyBytes the AES key in byte array form (must match expected key size)
-     * @return the decrypted plaintext as a byte array
-     * @throws Exception if decryption fails or the input format is invalid
-     */
     public static byte[] decrypt(byte[] encrypted, byte[] keyBytes) throws Exception {
-        if (encrypted.length < GCM_IV_LENGTH) {
+        int ivLength = getIvLength(transformation);
+        if (encrypted.length < ivLength) {
             throw new IllegalArgumentException("Invalid encrypted data: too short");
         }
 
-        byte[] iv = new byte[GCM_IV_LENGTH];
-        byte[] ciphertext = new byte[encrypted.length - GCM_IV_LENGTH];
+        byte[] iv = new byte[ivLength];
+        byte[] ciphertext = new byte[encrypted.length - ivLength];
+        System.arraycopy(encrypted, 0, iv, 0, ivLength);
+        System.arraycopy(encrypted, ivLength, ciphertext, 0, ciphertext.length);
 
-        System.arraycopy(encrypted, 0, iv, 0, GCM_IV_LENGTH);
-        System.arraycopy(encrypted, GCM_IV_LENGTH, ciphertext, 0, ciphertext.length);
-
-        Cipher cipher = Cipher.getInstance(AES_GCM_NO_PADDING);
+        Cipher cipher = Cipher.getInstance(transformation);
         SecretKeySpec key = new SecretKeySpec(keyBytes, AES);
-        GCMParameterSpec spec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
 
-        cipher.init(Cipher.DECRYPT_MODE, key, spec);
+        if (AES_GCM_NO_PADDING.equals(transformation)) {
+            GCMParameterSpec spec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
+            cipher.init(Cipher.DECRYPT_MODE, key, spec);
+        } else if (AES_CBC_PKCS5.equals(transformation)) {
+            IvParameterSpec spec = new IvParameterSpec(iv);
+            cipher.init(Cipher.DECRYPT_MODE, key, spec);
+        } else {
+            throw new IllegalArgumentException("Unsupported transformation: " + transformation);
+        }
+
         return cipher.doFinal(ciphertext);
+    }
+
+    private static byte[] generateIv(String transformation) {
+        int length = getIvLength(transformation);
+        byte[] iv = new byte[length];
+        secureRandom.nextBytes(iv);
+        return iv;
+    }
+
+    private static int getIvLength(String transformation) {
+        if (AES_GCM_NO_PADDING.equals(transformation)) return GCM_IV_LENGTH;
+        if (AES_CBC_PKCS5.equals(transformation)) return CBC_IV_LENGTH;
+        throw new IllegalArgumentException("Unsupported transformation: " + transformation);
     }
 
     public static byte[] decodeBase64Key(String base64) {

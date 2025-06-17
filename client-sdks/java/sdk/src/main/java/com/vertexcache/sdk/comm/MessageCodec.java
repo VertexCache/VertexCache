@@ -32,54 +32,19 @@ import java.nio.ByteBuffer;
  */
 public class MessageCodec {
 
-    // 10 MB is probably enough, unless we really want to support images and videos...etc
     public static final int MAX_MESSAGE_SIZE = 10 * 1024 * 1024; // 10MB
 
-
-    // CMSRTPEV bit layout for framing flags (32-bit int)
-    // C = Compression, M = Multipart, S = Signed, R = Request ACK
-    // T = Tracing, P = Protocol Format, E = Encryption Hint, V = Version
-
-    // Default protocol flag: Version 1 + RSA_PKCS1, no compression, no multipart, etc.
-    public static final int PROTOCOL_VERSION_DEFAULT = 0x00000101;
-
-    // Alternate supported variants with Version 1
     public static final int PROTOCOL_VERSION_RSA_PKCS1     = 0x00000101;
-    public static final int PROTOCOL_VERSION_RSA_OAEP_SHA256 = 0x00000201;
-    public static final int PROTOCOL_VERSION_RSA_OAEP_SHA1   = 0x00000301;
+    public static final int PROTOCOL_VERSION_AES_GCM            = 0x00000181;
 
-    private static int protocolVersion = PROTOCOL_VERSION_DEFAULT;
+    private static int protocolVersion = PROTOCOL_VERSION_RSA_PKCS1;
 
-    public static int extractProtocolVersion() {
-        return protocolVersion & 0x000000FF; // V
+    public static void switchToSymmetric() {
+        protocolVersion = PROTOCOL_VERSION_AES_GCM;
     }
 
-    public static int extractEncryptionHint() {
-        return (protocolVersion >> 8) & 0x000000FF; // E
-    }
-
-    public static int extractProtocolFormat() {
-        return (protocolVersion >> 16) & 0x0000000F; // P
-    }
-
-    public static boolean isTracingEnabled() {
-        return (protocolVersion & 0x00100000) != 0; // T
-    }
-
-    public static boolean isAckRequested() {
-        return (protocolVersion & 0x00080000) != 0; // R
-    }
-
-    public static boolean isSignedMessage() {
-        return (protocolVersion & 0x00040000) != 0; // S
-    }
-
-    public static boolean isMultipartMessage() {
-        return (protocolVersion & 0x00020000) != 0; // M
-    }
-
-    public static boolean isCompressed() {
-        return (protocolVersion & 0x00010000) != 0; // C
+    public static void switchToAsymmetric() {
+        protocolVersion = PROTOCOL_VERSION_RSA_PKCS1;
     }
 
     public static byte[] readFramedMessage(InputStream in) throws IOException {
@@ -102,7 +67,7 @@ public class MessageCodec {
         }
         ByteBuffer buffer = ByteBuffer.allocate(4 + 4 + data.length); // 4 bytes for length + 4 bytes for version
         buffer.putInt(data.length);
-        buffer.putInt(PROTOCOL_VERSION_DEFAULT); // 4-byte version
+        buffer.putInt(protocolVersion); // 4-byte version
         buffer.put(data);
         out.write(buffer.array());
     }
