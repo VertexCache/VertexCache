@@ -18,12 +18,16 @@ package com.vertexcache.core.validation.validators;
 import com.vertexcache.core.validation.model.Validator;
 import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 
+import java.util.regex.Pattern;
+
 /**
  * KeyValidator is responsible for validating the primary cache key provided by clients.
  * It ensures the key is non-null, non-empty, and conforms to the constraints expected
  * by the VertexCache system, such as length or character encoding rules.
  */
 public class KeyValidator implements Validator {
+
+    Pattern UNICODE_KEY_PATTERN = Pattern.compile("^[\\P{Cntrl}\\p{L}\\p{N}\\p{P}\\p{S}]+$");
 
     private final String fieldName;
     private final String value;
@@ -42,7 +46,7 @@ public class KeyValidator implements Validator {
             throw new VertexCacheValidationException(fieldName + " exceeds maximum length (255)");
         }
 
-        if (!value.matches("^[a-zA-Z0-9:_\\-\\.]+$")) {
+        if (!UNICODE_KEY_PATTERN.matcher(value).matches()) {
             throw new VertexCacheValidationException(fieldName + " contains invalid characters");
         }
     }
