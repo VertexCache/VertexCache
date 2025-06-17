@@ -153,41 +153,54 @@ namespace VertexCacheSdk.Tests
             Assert.Equal("value-123", result.GetValue());
         }
 
-/*
+        [Fact(DisplayName = "testMultibyteKeyAndValueShouldSucceed")]
+        public void TestMultibyteKeyAndValueShouldSucceed()
+        {
+            string multibyteKey = "键🔑値🌟";
+            string multibyteValue = "测试🧪データ💾";
+
+            sdk.Set(multibyteKey, multibyteValue);
+            var result = sdk.Get(multibyteKey);
+            Assert.True(result.IsSuccess());
+            Assert.Equal(multibyteValue, result.GetValue());
+        }
+
         [Fact]
         public void FailedHostShouldThrow()
         {
             var option = new ClientOption
             {
-                ClientId = CLIENT_ID,
-                ClientToken = CLIENT_TOKEN,
                 ServerHost = "bad-host",
                 ServerPort = SERVER_PORT,
                 EnableTlsEncryption = ENABLE_TLS,
                 TlsCertificate = TEST_TLS_CERT,
-                EncryptionMode = EncryptionMode.ASYMMETRIC,
+                EncryptionMode = EncryptionMode.Asymmetric,
                 PublicKey = TEST_PUBLIC_KEY
             };
+            option.SetClientId(CLIENT_ID);
+            option.SetClientToken(CLIENT_TOKEN);
             Assert.Throws<VertexCacheSdkException>(() => new VertexCacheSDK(option).OpenConnection());
         }
+
 
         [Fact]
         public void FailedPortShouldThrow()
         {
             var option = new ClientOption
             {
-                ClientId = CLIENT_ID,
-                ClientToken = CLIENT_TOKEN,
                 ServerHost = SERVER_HOST,
                 ServerPort = 0,
                 EnableTlsEncryption = ENABLE_TLS,
                 TlsCertificate = TEST_TLS_CERT,
-                EncryptionMode = EncryptionMode.ASYMMETRIC,
+                EncryptionMode = EncryptionMode.Asymmetric,
                 PublicKey = TEST_PUBLIC_KEY
             };
+            option.SetClientId(CLIENT_ID);
+            option.SetClientToken(CLIENT_TOKEN);
             Assert.Throws<VertexCacheSdkException>(() => new VertexCacheSDK(option).OpenConnection());
         }
 
+/*
         [Fact]
         public void FailedSecureTlsShouldThrow()
         {
