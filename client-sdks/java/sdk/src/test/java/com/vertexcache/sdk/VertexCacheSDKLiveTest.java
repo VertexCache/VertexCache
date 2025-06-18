@@ -59,11 +59,6 @@ class VertexCacheSDKLiveTest {
     private final static EncryptionMode ENABLE_PUBLIC_PRIVATE_KEY_USE = EncryptionMode.ASYMMETRIC;
     private final static String TEST_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnwwKN2M7niJj+Vd0+w9Q\nbw5gw5TzAWw2PUBl5rnepgn5QrLmvQ0s4aoDL6JGsnyx+GpSo6UmkrvXknObW+AI\nUzsHLc7bFe9qe/urSvgLKzThl9kb/KN4NueDVJ+s33sDA9z+rRA9+sjp8Pc2Ycmm\nGzN1lC22KM+oPSxHQvRcT5dQ7u6NGg7pX81DJ1ZsCXReE3vGoCQRyJoRPdLA54oR\nNwC82/xKm9cRfghjRKqvnkmpS3FfCj0sLPy4W7ARBWU+RbhU0UmdUutB3Ce1LfIo\n6DpmfhgHJ1P1yd/0ic8qfkqjvwUoxRUhR5+dWIakA8KZYQ95gP6oawmXiu2PcPeV\nEwIDAQAB\n-----END PUBLIC KEY-----";
 
-    // Not actually used in the Live Test but is used for some the Unit Tests
-    private final static EncryptionMode ENABLE_SHARED_ENCRYPTION_KEY = EncryptionMode.SYMMETRIC;
-    private final static String TEST_SHARED_KEY = "neEvmCDMRdEgive402Taji9I/vrrpqrjJ+qeAF4QRNc=";
-
-
     private  VertexCacheSDK sdk;
 
     @BeforeEach
@@ -77,9 +72,6 @@ class VertexCacheSDKLiveTest {
         clientOption.setTlsCertificate(TEST_TLS_CERT);
         clientOption.setEncryptionMode(ENABLE_PUBLIC_PRIVATE_KEY_USE);
         clientOption.setPublicKey(TEST_PUBLIC_KEY);
-
-        //clientOption.setEncryptionMode(ENABLE_SHARED_ENCRYPTION_KEY);
-        //clientOption.setSharedEncryptionKey(TEST_SHARED_KEY);
 
         sdk = new VertexCacheSDK(clientOption);
         sdk.openConnection();
@@ -245,7 +237,6 @@ class VertexCacheSDKLiveTest {
                 "Expected TLS failure message"
         );
     }
-
 
     @Test
     @Order(14)
