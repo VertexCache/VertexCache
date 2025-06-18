@@ -55,11 +55,8 @@ namespace VertexCacheSdk.Model
         public int ReadTimeout { get; set; } = DefaultReadTimeout;
         public int ConnectTimeout { get; set; } = DefaultConnectTimeout;
 
-        public string ClientId => _clientId ?? string.Empty;
-        public string ClientToken => _clientToken ?? string.Empty;
-
-        public void SetClientId(string clientId) => _clientId = clientId;
-        public void SetClientToken(string clientToken) => _clientToken = clientToken;
+        public string ClientId { get; set; } = string.Empty;
+        public string ClientToken { get; set; } = string.Empty;
 
         /// <summary>
         /// Constructs the IDENT command used during client handshake.

@@ -58,12 +58,12 @@ namespace VertexCacheSdk.Tests.Comm
         {
             var opt = new ClientOption
             {
+                ClientId = "test-sym",
                 ServerHost = "127.0.0.1",
                 ServerPort = Port,
                 EncryptionMode = EncryptionMode.Symmetric,
                 SharedEncryptionKey = TestSharedKey
             };
-            opt.SetClientId("test-sym");
 
             var client = new ClientConnector(opt);
             client.Connect();
@@ -81,11 +81,11 @@ namespace VertexCacheSdk.Tests.Comm
         {
             var opt = new ClientOption
             {
+                ClientId = "bad-sym",
                 ServerHost = "127.0.0.1",
                 ServerPort = Port,
                 EncryptionMode = EncryptionMode.Symmetric
             };
-            opt.SetClientId("bad-sym");
 
             var ex = Assert.Throws<VertexCacheSdkException>(() =>
             {
@@ -101,11 +101,11 @@ namespace VertexCacheSdk.Tests.Comm
         {
             var opt = new ClientOption
             {
+                ClientId = "bad-asym",
                 ServerHost = "127.0.0.1",
                 ServerPort = Port,
                 EncryptionMode = EncryptionMode.Asymmetric
             };
-            opt.SetClientId("bad-asym");
 
             var ex = Assert.Throws<VertexCacheSdkException>(() =>
             {
@@ -121,11 +121,11 @@ namespace VertexCacheSdk.Tests.Comm
         {
             var opt = new ClientOption
             {
+                ClientId = "wrong-port",
                 ServerHost = "127.0.0.1",
                 ServerPort = 65530,
                 EncryptionMode = EncryptionMode.None
             };
-            opt.SetClientId("wrong-port");
 
             var client = new ClientConnector(opt);
             var ex = Assert.Throws<VertexCacheSdkException>(() => client.Connect());
@@ -160,16 +160,15 @@ namespace VertexCacheSdk.Tests.Comm
 
             var opt = new ClientOption
             {
+                ClientId = "fail-ident",
                 ServerHost = "127.0.0.1",
                 ServerPort = TempPort,
                 EncryptionMode = EncryptionMode.None
             };
-            opt.SetClientId("fail-ident");
 
             var client = new ClientConnector(opt);
             var ex = Assert.Throws<VertexCacheSdkException>(() => client.Connect());
 
-            // ✅ Assert generic failure message (Java-style)
             Assert.Contains("Connection failed", ex.Message);
         }
 

@@ -33,10 +33,9 @@ namespace VertexCacheSdk.Comm
     {
         public const int MaxMessageSize = 10 * 1024 * 1024;
 
-        /// <summary>
-        /// Protocol version used for compatibility validation.
-        /// </summary>
-        public const int ProtocolVersion = 0x00000101;
+        public const int PROTOCOL_VERSION_RSA_PKCS1 = 0x00000101;
+        public const int PROTOCOL_VERSION_AES_GCM   = 0x00000181;
+        private static int protocolVersion = PROTOCOL_VERSION_RSA_PKCS1;
 
         /// <summary>
         /// Writes a framed message to the given stream using the VertexCache protocol.
@@ -54,7 +53,7 @@ namespace VertexCacheSdk.Comm
             byte[] header = new byte[8];
 
             byte[] lengthBytes = BitConverter.GetBytes(data.Length);
-            byte[] versionBytes = BitConverter.GetBytes(ProtocolVersion);
+            byte[] versionBytes = BitConverter.GetBytes(protocolVersion);
 
             if (BitConverter.IsLittleEndian)
             {
@@ -92,7 +91,7 @@ namespace VertexCacheSdk.Comm
             int length = BitConverter.ToInt32(header, 0);
             int version = BitConverter.ToInt32(header, 4);
 
-            if (version != ProtocolVersion)
+            if (version != protocolVersion)
                 throw new IOException($"Unsupported protocol version: 0x{version:X8}");
 
             if (length <= 0 || length > MaxMessageSize)
@@ -109,6 +108,16 @@ namespace VertexCacheSdk.Comm
             }
 
             return buffer;
+        }
+
+        public static void SwitchToSymmetric()
+        {
+            protocolVersion = PROTOCOL_VERSION_AES_GCM;
+        }
+
+        public static void SwitchToAsymmetric()
+        {
+            protocolVersion = PROTOCOL_VERSION_RSA_PKCS1;
         }
     }
 }

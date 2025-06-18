@@ -71,6 +71,10 @@ namespace VertexCacheSdk.Comm
 
                 _connected = true;
             }
+            catch (VertexCacheSdkException)
+            {
+                throw; // rethrow cleanly
+            }
             catch (Exception ex)
             {
                 throw new VertexCacheSdkException("Connection failed", ex);
@@ -109,12 +113,14 @@ namespace VertexCacheSdk.Comm
                 switch (_options.EncryptionMode)
                 {
                     case EncryptionMode.Asymmetric:
+                        MessageCodec.SwitchToAsymmetric();
                         using (RSA rsa = KeyParserHelper.ConfigPublicKeyIfEnabled(_options.PublicKey))
                         {
                             return rsa.Encrypt(plainText, RSAEncryptionPadding.Pkcs1);
                         }
 
                     case EncryptionMode.Symmetric:
+                        MessageCodec.SwitchToSymmetric();
                         return GcmCryptoHelper.Encrypt(plainText, KeyParserHelper.ConfigSharedKeyIfEnabled(_options.SharedEncryptionKey));
 
                     case EncryptionMode.None:
@@ -122,6 +128,11 @@ namespace VertexCacheSdk.Comm
                         return plainText;
                 }
             }
+            catch (VertexCacheSdkException)
+                {
+                    // Already wrapped — rethrow as-is to preserve message
+                    throw;
+                }
             catch (Exception ex)
             {
                 throw new VertexCacheSdkException("Encryption failed for plaintext message", ex);

@@ -47,12 +47,13 @@ namespace VertexCacheSdk.Tests
 
         public VertexCacheSDKLiveTest()
         {
-           // if (Environment.GetEnvironmentVariable("VC_LIVE_TEST") != "true")
-             //   throw new InvalidOperationException("VC_LIVE_TEST not enabled");
-
+           if (Environment.GetEnvironmentVariable("VC_LIVE_TEST") != "true")
+                throw new InvalidOperationException("VC_LIVE_TEST not enabled");
 
             var option = new ClientOption
             {
+                ClientId = CLIENT_ID,
+                ClientToken = CLIENT_TOKEN,
                 ServerHost = SERVER_HOST,
                 ServerPort = SERVER_PORT,
                 EnableTlsEncryption = ENABLE_TLS,
@@ -61,9 +62,6 @@ namespace VertexCacheSdk.Tests
                 EncryptionMode = EncryptionMode.Asymmetric,
                 PublicKey = TEST_PUBLIC_KEY
             };
-            option.SetClientId(CLIENT_ID);
-            option.SetClientToken(CLIENT_TOKEN);
-
             sdk = new VertexCacheSDK(option);
             sdk.OpenConnection();
         }
@@ -170,6 +168,8 @@ namespace VertexCacheSdk.Tests
         {
             var option = new ClientOption
             {
+                ClientId = CLIENT_ID,
+                ClientToken = CLIENT_TOKEN,
                 ServerHost = "bad-host",
                 ServerPort = SERVER_PORT,
                 EnableTlsEncryption = ENABLE_TLS,
@@ -177,8 +177,6 @@ namespace VertexCacheSdk.Tests
                 EncryptionMode = EncryptionMode.Asymmetric,
                 PublicKey = TEST_PUBLIC_KEY
             };
-            option.SetClientId(CLIENT_ID);
-            option.SetClientToken(CLIENT_TOKEN);
             Assert.Throws<VertexCacheSdkException>(() => new VertexCacheSDK(option).OpenConnection());
         }
 
@@ -188,6 +186,8 @@ namespace VertexCacheSdk.Tests
         {
             var option = new ClientOption
             {
+                ClientId = CLIENT_ID,
+                ClientToken = CLIENT_TOKEN,
                 ServerHost = SERVER_HOST,
                 ServerPort = 0,
                 EnableTlsEncryption = ENABLE_TLS,
@@ -195,12 +195,10 @@ namespace VertexCacheSdk.Tests
                 EncryptionMode = EncryptionMode.Asymmetric,
                 PublicKey = TEST_PUBLIC_KEY
             };
-            option.SetClientId(CLIENT_ID);
-            option.SetClientToken(CLIENT_TOKEN);
             Assert.Throws<VertexCacheSdkException>(() => new VertexCacheSDK(option).OpenConnection());
         }
 
-/*
+
         [Fact]
         public void FailedSecureTlsShouldThrow()
         {
@@ -213,12 +211,14 @@ namespace VertexCacheSdk.Tests
                 EnableTlsEncryption = true,
                 VerifyCertificate = true,
                 TlsCertificate = TEST_TLS_CERT,
-                EncryptionMode = EncryptionMode.ASYMMETRIC,
+                EncryptionMode = EncryptionMode.Asymmetric,
                 PublicKey = TEST_PUBLIC_KEY
             };
             var ex = Assert.Throws<VertexCacheSdkException>(() => new VertexCacheSDK(option).OpenConnection());
+
             Assert.Contains("Failed to create Secure Socket", ex.Message);
-        }
+       }
+
 
         [Fact]
         public void NonSecureTlsShouldSucceed()
@@ -232,7 +232,7 @@ namespace VertexCacheSdk.Tests
                 EnableTlsEncryption = true,
                 VerifyCertificate = false,
                 TlsCertificate = null,
-                EncryptionMode = EncryptionMode.ASYMMETRIC,
+                EncryptionMode = EncryptionMode.Asymmetric,
                 PublicKey = TEST_PUBLIC_KEY
             };
             var tempSdk = new VertexCacheSDK(option);
@@ -252,11 +252,16 @@ namespace VertexCacheSdk.Tests
                 EnableTlsEncryption = ENABLE_TLS,
                 VerifyCertificate = false,
                 TlsCertificate = TEST_TLS_CERT,
-                EncryptionMode = EncryptionMode.ASYMMETRIC
+                EncryptionMode = EncryptionMode.Asymmetric
             };
 
-            var ex = Assert.Throws<VertexCacheSdkException>(() => option.SetPublicKey(TEST_PUBLIC_KEY + "_BAD"));
-            Assert.Contains("Invalid public key", ex.Message);
+            option.PublicKey = TEST_PUBLIC_KEY + "_BAD";
+
+            var ex = Assert.Throws<VertexCacheSdkException>(() =>
+                new VertexCacheSDK(option).OpenConnection()
+            );
+
+            Assert.Contains("Invalid public key", ex.Message, StringComparison.OrdinalIgnoreCase);
         }
 
         [Fact]
@@ -271,13 +276,17 @@ namespace VertexCacheSdk.Tests
                 EnableTlsEncryption = ENABLE_TLS,
                 VerifyCertificate = false,
                 TlsCertificate = TEST_TLS_CERT,
-                EncryptionMode = EncryptionMode.SYMMETRIC
+                EncryptionMode = EncryptionMode.Symmetric
             };
 
-            var ex = Assert.Throws<VertexCacheSdkException>(() => option.SetSharedEncryptionKey("_BAD_SHARED_KEY"));
+            option.SharedEncryptionKey = "_BAD_SHARED_KEY";
+
+            var ex = Assert.Throws<VertexCacheSdkException>(() =>
+                new VertexCacheSDK(option).OpenConnection()
+            );
             Assert.Contains("Invalid shared key", ex.Message);
         }
-            */
+
     }
 
 }
