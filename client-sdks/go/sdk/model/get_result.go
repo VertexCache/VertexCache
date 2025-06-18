@@ -10,18 +10,28 @@
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 // ------------------------------------------------------------------------------
 
-package sdk
+package model
 
-type VertexCacheSDK struct{}
-
-func NewSDK() *VertexCacheSDK {
-	return &VertexCacheSDK{}
+// GetResult represents the result of a GET command in the VertexCache SDK.
+//
+// It embeds CommandResult and includes an additional field `value`,
+// which contains the cached value associated with the requested key, if present.
+type GetResult struct {
+	CommandResult
+	value string
 }
 
-func (sdk *VertexCacheSDK) Ping() string {
-	return "+PONG VertexCache Go SDK v" + Version
+// NewGetResult creates and returns a new GetResult instance.
+func NewGetResult(success bool, message, value string) *GetResult {
+	return &GetResult{
+		CommandResult: *NewCommandResult(success, message),
+		value:         value,
+	}
+}
+
+// Value returns the cached value retrieved by the GET command.
+func (r *GetResult) Value() string {
+	return r.value
 }

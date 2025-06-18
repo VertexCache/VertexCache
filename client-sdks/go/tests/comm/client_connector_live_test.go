@@ -17,7 +17,6 @@
 package comm_test
 
 import (
-	"os"
 	"strings"
 	"testing"
 
@@ -44,9 +43,9 @@ EwIDAQAB
 )
 
 func TestClientConnector_LiveConnectAndPing(t *testing.T) {
-	if os.Getenv("VC_LIVE_TEST") != "true" {
-		t.Skip("Skipping live test unless VC_LIVE_TEST=true")
-	}
+	//if os.Getenv("VC_LIVE_TEST") != "true" {
+	//	t.Skip("Skipping live test unless VC_LIVE_TEST=true")
+	//}
 
 	opt := model.NewClientOption()
 	opt.ClientID = clientID
