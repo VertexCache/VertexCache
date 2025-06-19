@@ -25,9 +25,13 @@ import (
 )
 
 const (
-	MaxMessageSize  = 10 * 1024 * 1024 // 10MB
-	ProtocolVersion = 0x00000101
+	MaxMessageSize                 = 10 * 1024 * 1024 // 10MB
+	ProtocolVersionRSAPKCS1 uint32 = 0x00000101
+	ProtocolVersionAESGCM   uint32 = 0x00000181
 )
+
+// ProtocolVersion holds the current version used in message framing.
+var ProtocolVersion uint32 = ProtocolVersionRSAPKCS1
 
 // WriteFramedMessage writes a framed message:
 // [4 bytes length][4 bytes protocol version][payload]
@@ -85,4 +89,14 @@ func ReadFramedMessage(r io.Reader) ([]byte, error) {
 		return nil, err
 	}
 	return payload, nil
+}
+
+// SwitchToSymmetric sets the global protocol version to AES-GCM.
+func SwitchToSymmetric() {
+	ProtocolVersion = ProtocolVersionAESGCM
+}
+
+// SwitchToAsymmetric sets the global protocol version to RSA-PKCS1.
+func SwitchToAsymmetric() {
+	ProtocolVersion = ProtocolVersionRSAPKCS1
 }

@@ -1,5 +1,5 @@
 // ------------------------------------------------------------------------------
-// Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache/vertexcache)
+// Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -53,8 +53,10 @@ func (d *DelCommand) BuildCommand() string {
 
 // ParseResponse interprets the response from the VertexCache server after a DEL command.
 func (d *DelCommand) ParseResponse(responseBody string) {
-	if !strings.EqualFold(responseBody, "OK") {
+	if strings.HasPrefix(responseBody, "ERR") {
 		d.SetFailure("DEL failed: " + responseBody)
+	} else {
+		d.SetSuccessWithResponse(responseBody)
 	}
 }
 

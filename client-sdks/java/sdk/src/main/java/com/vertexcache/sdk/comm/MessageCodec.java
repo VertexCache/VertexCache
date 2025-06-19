@@ -34,8 +34,8 @@ public class MessageCodec {
 
     public static final int MAX_MESSAGE_SIZE = 10 * 1024 * 1024; // 10MB
 
-    public static final int PROTOCOL_VERSION_RSA_PKCS1     = 0x00000101;
-    public static final int PROTOCOL_VERSION_AES_GCM            = 0x00000181;
+    public static final int PROTOCOL_VERSION_RSA_PKCS1 = 0x00000101;
+    public static final int PROTOCOL_VERSION_AES_GCM = 0x00000181;
 
     private static int protocolVersion = PROTOCOL_VERSION_RSA_PKCS1;
 

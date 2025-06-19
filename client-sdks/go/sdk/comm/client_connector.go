@@ -119,6 +119,7 @@ func (cc *ClientConnector) Send(message string) (string, error) {
 func (cc *ClientConnector) encryptIfEnabled(plain []byte) ([]byte, error) {
 	switch cc.options.EncryptionMode {
 	case model.Asymmetric:
+		SwitchToAsymmetric()
 		block, _ := pem.Decode([]byte(cc.options.PublicKey))
 		if block == nil {
 			return nil, errors.New("Invalid PEM format for public key")
@@ -134,6 +135,7 @@ func (cc *ClientConnector) encryptIfEnabled(plain []byte) ([]byte, error) {
 		return rsa.EncryptPKCS1v15(rand.Reader, key, plain)
 
 	case model.Symmetric:
+		SwitchToSymmetric()
 		keyBytes, err := ConfigSharedKeyIfEnabled(cc.options.SharedEncryptionKey)
 		if err != nil {
 			return nil, err
