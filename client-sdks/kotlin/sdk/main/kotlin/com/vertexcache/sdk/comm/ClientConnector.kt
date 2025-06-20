@@ -90,11 +90,13 @@ class ClientConnector(private val options: ClientOption) {
         return try {
             when (options.encryptionMode) {
                 EncryptionMode.ASYMMETRIC -> {
+                    MessageCodec.switchToAsymmetric()
                     val cipher = Cipher.getInstance("RSA")
                     cipher.init(Cipher.ENCRYPT_MODE, options.getPublicKeyAsObject())
                     cipher.doFinal(plainText)
                 }
                 EncryptionMode.SYMMETRIC -> {
+                    MessageCodec.switchToSymmetric()
                     GcmCryptoHelper.encrypt(plainText, options.getSharedEncryptionKeyAsBytes())
                 }
                 EncryptionMode.NONE -> plainText

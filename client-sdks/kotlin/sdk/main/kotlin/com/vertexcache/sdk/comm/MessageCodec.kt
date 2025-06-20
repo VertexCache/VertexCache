@@ -31,7 +31,21 @@ import java.nio.ByteBuffer
  */
 object MessageCodec {
     const val MAX_MESSAGE_SIZE = 10 * 1024 * 1024
-    const val PROTOCOL_VERSION = 0x00000101
+    const val PROTOCOL_VERSION_RSA_PKCS1 = 0x00000101
+    const val PROTOCOL_VERSION_AES_GCM = 0x00000181
+
+    @JvmStatic
+    var protocolVersion: Int = PROTOCOL_VERSION_RSA_PKCS1
+
+    @JvmStatic
+    fun switchToSymmetric() {
+        protocolVersion = PROTOCOL_VERSION_AES_GCM
+    }
+
+    @JvmStatic
+    fun switchToAsymmetric() {
+        protocolVersion = PROTOCOL_VERSION_RSA_PKCS1
+    }
 
     /**
      * Writes a framed message to the output stream.
@@ -48,7 +62,7 @@ object MessageCodec {
 
         val buffer = ByteBuffer.allocate(4 + 4 + data.size)
         buffer.putInt(data.size)
-        buffer.putInt(PROTOCOL_VERSION)
+        buffer.putInt(protocolVersion)
         buffer.put(data)
         out.write(buffer.array())
     }
@@ -69,7 +83,7 @@ object MessageCodec {
         val length = buffer.int
         val version = buffer.int
 
-        if (version != PROTOCOL_VERSION) {
+        if (version != protocolVersion) {
             throw IOException("Unsupported protocol version: 0x${version.toUInt().toString(16)}")
         }
 

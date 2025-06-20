@@ -10,21 +10,24 @@
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 // ------------------------------------------------------------------------------
+package com.vertexcache.sdk.command
 
-package com.vertexcache.sdk
+/**
+ * Enum representing the different types of commands supported by the VertexCache SDK.
+ *
+ * Each command type corresponds to a specific cache operation or internal SDK operation,
+ * such as GET, SET, DELETE, or IDENT (used for client identification and authentication).
+ *
+ * This enum is used throughout the SDK to identify and validate command behavior,
+ * facilitate routing, and enforce permission checks based on role capabilities.
+ */
+enum class CommandType(val keyword: String) {
+    PING("PING"),
+    SET("SET"),
+    DEL("DEL"),
+    IDX1("IDX1"),
+    IDX2("IDX2");
 
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.Test
-
-class VertexCacheSDKTest {
-    @Test
-    fun testPingShouldSucceed() {
-        val sdk = VertexCacheSDK()
-        val result = sdk.ping()
-        println("Ping result: $result")
-        assertTrue(result, "Expected ping to succeed")
-    }
+    override fun toString(): String = keyword
 }
