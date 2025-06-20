@@ -14,10 +14,18 @@
 # limitations under the License.
 # ------------------------------------------------------------------------------
 
-defmodule VertexcacheSdkTest do
-  use ExUnit.Case
+defmodule VertexCacheSdk.Command do
+  @moduledoc """
+  Behaviour for all command modules that can be executed by the VertexCache SDK.
 
-  test "ping/0 should return PONG message" do
-    assert VertexcacheSdk.ping() == {:ok, "PONG from VertexCache SDK (Elixir)"}
-  end
+  Implementations must define how the command is built and parsed, and return success/error
+  status based on the response. This abstraction allows consistent handling of commands
+  (e.g. GET, SET, DEL, PING) across the SDK.
+  """
+
+  alias VertexCacheSdk.Comm.ClientConnector
+
+  @callback build_command() :: String.t()
+  @callback parse_response(String.t()) :: map()
+  @callback execute(ClientConnector.t()) :: map()
 end

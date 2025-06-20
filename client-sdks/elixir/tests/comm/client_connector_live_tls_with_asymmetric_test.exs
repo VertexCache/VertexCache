@@ -40,7 +40,7 @@ defmodule VertexCacheSdk.Comm.ClientConnectorLiveTest do
   -----END PUBLIC KEY-----
   """
 
-  @tls_cert System.get_env("VC_LIVE_TLS_CERT") || ""
+  @tls_cert System.get_env("VC_LIVE_TLS_ASYMMETRIC_TEST") || ""
 
   test "live connect and send PING if VC_LIVE_TEST=true" do
     if System.get_env("VC_LIVE_TEST") != "true" do
@@ -61,7 +61,7 @@ defmodule VertexCacheSdk.Comm.ClientConnectorLiveTest do
       public_key: @public_key
     }
 
-    case ClientConnector.connect(opts) do
+    case ClientConnector.connect(%{opts: opts}) do
       {:ok, state} ->
         assert ClientConnector.is_connected(state)
 

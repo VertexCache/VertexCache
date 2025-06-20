@@ -25,7 +25,8 @@ defmodule VertexCacheSdk.Comm.MessageCodec do
   """
 
   @max_message_size 10 * 1024 * 1024
-  @protocol_version 0x00000101
+  @protocol_version_rsa_pkcs1 0x00000101
+  @protocol_version_aes_gcm 0x00000181
 
   @doc """
   Encodes the given payload as a framed binary.
@@ -33,12 +34,19 @@ defmodule VertexCacheSdk.Comm.MessageCodec do
   ## Raises
     - `ArgumentError` if payload exceeds max size.
   """
-  def write_framed_message(payload) when is_binary(payload) do
+  def write_framed_message(payload, client_option) when is_binary(payload) do
     if byte_size(payload) > @max_message_size do
       raise ArgumentError, "Message too large: #{byte_size(payload)}"
     end
 
-    <<byte_size(payload)::32-big, @protocol_version::32-big, payload::binary>>
+    version =
+      case client_option.encryption_mode do
+        :symmetric -> @protocol_version_aes_gcm
+        :asymmetric -> @protocol_version_rsa_pkcs1
+        _ -> @protocol_version_rsa_pkcs1
+      end
+
+    <<byte_size(payload)::32-big, version::32-big, payload::binary>>
   end
 
   @doc """
@@ -51,7 +59,7 @@ defmodule VertexCacheSdk.Comm.MessageCodec do
   """
   def read_framed_message(<<len::32-big, version::32-big, rest::binary>>) do
     cond do
-      version != @protocol_version ->
+      version not in [@protocol_version_rsa_pkcs1, @protocol_version_aes_gcm] ->
         {:error, :unsupported_version}
 
       len <= 0 or len > @max_message_size ->

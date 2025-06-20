@@ -28,8 +28,13 @@ defmodule VertexCacheSdk.Comm.ClientConnector do
   @type socket :: port() | :ssl.sslsocket()
   @type state :: %{socket: socket(), opts: ClientOption.t()}
 
-  @spec connect(ClientOption.t()) :: {:ok, state()} | {:error, VertexCacheSdkException.t()}
-  def connect(%ClientOption{} = opts) do
+  @spec new(ClientOption.t()) :: state()
+  def new(%ClientOption{} = opts) do
+    %{socket: nil, opts: opts}
+  end
+
+  @spec connect(map()) :: {:ok, state()} | {:error, VertexCacheSdkException.t()}
+  def connect(%{opts: %ClientOption{} = opts}) do
     try do
       {:ok, sock} =
         if opts.enable_tls_encryption do
@@ -40,9 +45,9 @@ defmodule VertexCacheSdk.Comm.ClientConnector do
 
       ident = ClientOption.build_ident_command(opts)
       payload = encrypt_if_enabled(ident, opts)
-      send_payload(sock, payload)
+      send_payload(sock, payload, opts)
 
-      response = read_response(sock)
+      response = read_response(sock, opts)
 
       unless String.starts_with?(response, "+OK") do
         raise VertexCacheSdkException, message: "Authorization failed: #{response}"
@@ -56,11 +61,11 @@ defmodule VertexCacheSdk.Comm.ClientConnector do
   end
 
   @spec send(state(), String.t()) :: {:ok, String.t()} | {:error, VertexCacheSdkException.t()}
-  def send(%{socket: sock, opts: opts}, message) do
+  def send(%{socket: sock, opts: opts} = _state, message) do
     try do
       payload = encrypt_if_enabled(message, opts)
-      send_payload(sock, payload)
-      response = read_response(sock)
+      send_payload(sock, payload, opts)
+      response = read_response(sock, opts)
       {:ok, response}
     rescue
       e in VertexCacheSdkException -> {:error, e}
@@ -104,10 +109,7 @@ defmodule VertexCacheSdk.Comm.ClientConnector do
   defp encrypt_if_enabled(payload, %ClientOption{encryption_mode: :none}) when is_binary(payload),
        do: payload
 
-  defp encrypt_if_enabled(payload, %ClientOption{
-    encryption_mode: :symmetric,
-    shared_encryption_key: key
-  }) do
+  defp encrypt_if_enabled(payload, %ClientOption{encryption_mode: :symmetric, shared_encryption_key: key}) do
     decoded = KeyParserHelper.config_shared_key_if_enabled(key)
     GcmCryptoHelper.encrypt(payload, decoded)
   end
@@ -119,8 +121,8 @@ defmodule VertexCacheSdk.Comm.ClientConnector do
     :public_key.encrypt_public(payload, rsa_key)
   end
 
-  defp send_payload(sock, payload) do
-    framed = MessageCodec.write_framed_message(payload)
+  defp send_payload(sock, payload, opts) do
+    framed = MessageCodec.write_framed_message(payload, opts)
 
     if match?({:sslsocket, _, _}, sock) do
       :ssl.send(sock, framed)
@@ -131,7 +133,7 @@ defmodule VertexCacheSdk.Comm.ClientConnector do
     :ok
   end
 
-  defp read_response(sock) do
+  defp read_response(sock, opts) do
     raw =
       if match?({:sslsocket, _, _}, sock) do
         :ssl.recv(sock, 0, 5000)
