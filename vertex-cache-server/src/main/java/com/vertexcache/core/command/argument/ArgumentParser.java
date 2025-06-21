@@ -16,7 +16,9 @@
 package com.vertexcache.core.command.argument;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,7 +35,7 @@ public class ArgumentParser {
 
     private String argumentString;
     private String[] parts;
-    private ArrayList<String> subArguments;
+    private Map<String, Boolean> subArguments;
     private List<Argument> arguments = new ArrayList<>();
 
     public ArgumentParser(String argumentString) {
@@ -41,13 +43,15 @@ public class ArgumentParser {
             this.argumentString = argumentString.trim();
             this.parts = this.splitWithQuotes(this.argumentString);
         }
-        this.subArguments = new ArrayList<>(); // initialized empty
+        this.subArguments = new LinkedHashMap<>();
         this.parseArguments();
     }
 
     public void setSubArguments(ArrayList<String> subArguments) {
         this.arguments = new ArrayList<>(); // reset
-        this.subArguments = subArguments;
+        for (String arg : subArguments) {
+            this.subArguments.put(arg.toUpperCase(), false); // initialize as not-yet-seen
+        }
         this.parseArguments();
     }
 
@@ -123,9 +127,13 @@ public class ArgumentParser {
     }
 
     public boolean isSubArgument(String target) {
-        for (String element : this.subArguments) {
-            if (element.equalsIgnoreCase(target)) {
+        String key = target.toUpperCase();
+        if (this.subArguments.containsKey(key)) {
+            if(this.subArguments.get(key) == false) {
+                this.subArguments.put(key, true); // Mark as seen
                 return true;
+            } else {
+                return false;
             }
         }
         return false;

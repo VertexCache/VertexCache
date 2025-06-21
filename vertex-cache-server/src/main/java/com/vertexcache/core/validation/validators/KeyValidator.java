@@ -18,7 +18,10 @@ package com.vertexcache.core.validation.validators;
 import com.vertexcache.core.validation.model.Validator;
 import com.vertexcache.core.validation.exception.VertexCacheValidationException;
 
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * KeyValidator is responsible for validating the primary cache key provided by clients.
@@ -27,7 +30,16 @@ import java.util.regex.Pattern;
  */
 public class KeyValidator implements Validator {
 
-    Pattern UNICODE_KEY_PATTERN = Pattern.compile("^[\\P{Cntrl}\\p{L}\\p{N}\\p{P}\\p{S}]+$");
+    private static final Pattern UNICODE_KEY_PATTERN =
+            Pattern.compile("^[\\P{Cntrl}\\p{L}\\p{N}\\p{P}\\p{S}]+$");
+
+    // Redundant to CommandFactory but seems to be race condition at bootstrap time
+    // But does allow full what is reserved and what isn't it just happens to be 1:1 this point
+    private static final Set<String> RESERVED_KEYWORDS = Stream.of(
+            "PING", "GET", "SET", "DEL", "STATUS", "SHUTDOWN", "RELOAD", "CONFIG",
+            "RESET", "SESSIONS", "PURGE", "METRICS", "PEERPING", "ROLECHANGE",
+            "IDX1", "IDX2"
+    ).collect(Collectors.toSet());
 
     private final String fieldName;
     private final String value;
@@ -37,7 +49,9 @@ public class KeyValidator implements Validator {
         this.value = value;
     }
 
+    @Override
     public void validate() {
+
         if (value == null || value.isBlank()) {
             throw new VertexCacheValidationException(fieldName + " must not be blank");
         }
@@ -48,6 +62,10 @@ public class KeyValidator implements Validator {
 
         if (!UNICODE_KEY_PATTERN.matcher(value).matches()) {
             throw new VertexCacheValidationException(fieldName + " contains invalid characters");
+        }
+
+        if (RESERVED_KEYWORDS.contains(value.toUpperCase())) {
+            throw new VertexCacheValidationException(fieldName + " cannot be a reserved command keyword");
         }
     }
 }
