@@ -14,8 +14,18 @@
 // limitations under the License.
 // ------------------------------------------------------------------------------
 
-pub mod client_option;
-pub mod command_result;
-pub mod get_result;
-pub mod vertex_cache_sdk_exception;
-pub mod encryption_mode;
+pub struct GetResult {
+    pub success: bool,
+    pub status_message: String,
+    pub value: Option<String>,
+}
+
+impl GetResult {
+    pub fn new(success: bool, status_message: String, value: Option<String>) -> Self {
+        Self {
+            success,
+            status_message,
+            value,
+        }
+    }
+}

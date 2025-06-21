@@ -8,9 +8,10 @@ description = "VertexCache Rust SDK"
 repository = "https://github.com/vertexcache/client-sdks"
 
 [lib]
-path = "sdk/vertexcache_sdk.rs"
+path = "sdk/lib.rs"
 
 [dependencies]
+serial_test = "=3.2.0"
 thiserror = "1.0"
 aes-gcm = "0.10"
 aes = "0.8"

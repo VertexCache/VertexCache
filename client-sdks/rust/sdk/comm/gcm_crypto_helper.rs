@@ -14,84 +14,89 @@
 // limitations under the License.
 // ------------------------------------------------------------------------------
 
-use aes_gcm::{Aes256Gcm, KeyInit, Nonce};
+use aes_gcm::{Aes256Gcm, Key, KeyInit, Nonce};
 use aes_gcm::aead::{Aead, OsRng, rand_core::RngCore};
-use base64::{engine::general_purpose, Engine as _};
-use thiserror::Error;
+use base64::{engine::general_purpose, Engine};
+use crate::model::vertex_cache_sdk_exception::VertexCacheSdkException;
 
 pub struct GcmCryptoHelper;
 
-#[derive(Debug, Error)]
-pub enum GcmCryptoError {
-    #[error("encryption failed")]
-    EncryptionFailed,
-
-    #[error("decryption failed")]
-    DecryptionFailed,
-
-    #[error("input too short")]
-    InvalidInputLength,
-
-    #[error("base64 decode error")]
-    Base64Error(#[from] base64::DecodeError),
-}
-
 impl GcmCryptoHelper {
-    pub fn encrypt(plaintext: &[u8], key: &[u8]) -> Result<Vec<u8>, GcmCryptoError> {
-        let cipher = Aes256Gcm::new_from_slice(key).map_err(|_| GcmCryptoError::EncryptionFailed)?;
-        let mut iv = [0u8; 12];
-        OsRng.fill_bytes(&mut iv);
-        let nonce = Nonce::from_slice(&iv);
+    const NONCE_SIZE: usize = 12;
 
-        let ciphertext = cipher.encrypt(nonce, plaintext).map_err(|_| GcmCryptoError::EncryptionFailed)?;
-
-        let mut result = iv.to_vec();
-        result.extend_from_slice(&ciphertext);
-        Ok(result)
-    }
-
-    pub fn decrypt(ciphertext: &[u8], key: &[u8]) -> Result<Vec<u8>, GcmCryptoError> {
-        if ciphertext.len() < 12 {
-            return Err(GcmCryptoError::InvalidInputLength);
+    pub fn encrypt(plain: &[u8], key_bytes: &[u8]) -> Result<Vec<u8>, &'static str> {
+        if key_bytes.len() != 32 {
+            return Err("Invalid AES key length. Must be 32 bytes for AES-256-GCM");
         }
 
-        let (iv, cipher_data) = ciphertext.split_at(12);
-        let cipher = Aes256Gcm::new_from_slice(key).map_err(|_| GcmCryptoError::DecryptionFailed)?;
-        let nonce = Nonce::from_slice(iv);
+        let key = Key::<Aes256Gcm>::from_slice(key_bytes);
+        let cipher = Aes256Gcm::new(key);
 
-        cipher.decrypt(nonce, cipher_data).map_err(|_| GcmCryptoError::DecryptionFailed)
+        let mut nonce_bytes = [0u8; Self::NONCE_SIZE];
+        OsRng.fill_bytes(&mut nonce_bytes);
+        let nonce = Nonce::from_slice(&nonce_bytes);
+
+        match cipher.encrypt(nonce, plain) {
+            Ok(mut ciphertext) => {
+                let mut result = nonce_bytes.to_vec();
+                result.append(&mut ciphertext);
+                Ok(result)
+            }
+            Err(_) => Err("AES-GCM encryption failed"),
+        }
     }
 
-    pub fn encrypt_with_fixed_iv(plaintext: &[u8], key: &[u8], iv: &[u8]) -> Result<Vec<u8>, GcmCryptoError> {
-        if iv.len() != 12 {
-            return Err(GcmCryptoError::InvalidInputLength);
+    pub fn decrypt(encrypted: &[u8], key_bytes: &[u8]) -> Result<Vec<u8>, &'static str> {
+        if key_bytes.len() != 32 {
+            return Err("Invalid AES key length. Must be 32 bytes for AES-256-GCM");
+        }
+        if encrypted.len() <= Self::NONCE_SIZE {
+            return Err("Invalid encrypted data. Too short.");
         }
 
-        let cipher = Aes256Gcm::new_from_slice(key).map_err(|_| GcmCryptoError::EncryptionFailed)?;
+        let (nonce_bytes, ciphertext) = encrypted.split_at(Self::NONCE_SIZE);
+        let key = Key::<Aes256Gcm>::from_slice(key_bytes);
+        let cipher = Aes256Gcm::new(key);
+        let nonce = Nonce::from_slice(nonce_bytes);
+
+        cipher.decrypt(nonce, ciphertext).map_err(|_| "AES-GCM decryption failed")
+    }
+
+    pub fn encode_base64_key(raw: &[u8]) -> String {
+        general_purpose::STANDARD.encode(raw)
+    }
+
+    pub fn decode_base64_key(encoded: &str) -> Result<Vec<u8>, base64::DecodeError> {
+        general_purpose::STANDARD.decode(encoded.trim())
+    }
+
+    pub fn generate_base64_key() -> String {
+        let mut key = [0u8; 32];
+        OsRng.fill_bytes(&mut key);
+        Self::encode_base64_key(&key)
+    }
+
+    pub fn encrypt_with_fixed_iv(
+        plaintext: &[u8],
+        key: &[u8],
+        iv: &[u8],
+    ) -> Result<Vec<u8>, VertexCacheSdkException> {
+        let cipher = Aes256Gcm::new(aes_gcm::Key::<Aes256Gcm>::from_slice(key));
         let nonce = Nonce::from_slice(iv);
-        let ciphertext = cipher.encrypt(nonce, plaintext).map_err(|_| GcmCryptoError::EncryptionFailed)?;
-
-        Ok(ciphertext) // DO NOT prepend IV
+        cipher.encrypt(nonce, plaintext).map_err(|_| {
+            VertexCacheSdkException::new("AES-GCM encryption failed with fixed IV")
+        })
     }
 
-
-    pub fn decrypt_with_fixed_iv(ciphertext: &[u8], key: &[u8], iv: &[u8]) -> Result<Vec<u8>, GcmCryptoError> {
-        if iv.len() != 12 {
-            return Err(GcmCryptoError::InvalidInputLength);
-        }
-
-        let cipher = Aes256Gcm::new_from_slice(key).map_err(|_| GcmCryptoError::DecryptionFailed)?;
+    pub fn decrypt_with_fixed_iv(
+        ciphertext: &[u8],
+        key: &[u8],
+        iv: &[u8],
+    ) -> Result<Vec<u8>, VertexCacheSdkException> {
+        let cipher = Aes256Gcm::new(aes_gcm::Key::<Aes256Gcm>::from_slice(key));
         let nonce = Nonce::from_slice(iv);
-        let plaintext = cipher.decrypt(nonce, ciphertext).map_err(|_| GcmCryptoError::DecryptionFailed)?;
-
-        Ok(plaintext)
-    }
-
-    pub fn encode_base64(bytes: &[u8]) -> String {
-        general_purpose::STANDARD.encode(bytes)
-    }
-
-    pub fn decode_base64(encoded: &str) -> Result<Vec<u8>, GcmCryptoError> {
-        Ok(general_purpose::STANDARD.decode(encoded)?)
+        cipher.decrypt(nonce, ciphertext).map_err(|_| {
+            VertexCacheSdkException::new("AES-GCM decryption failed with fixed IV")
+        })
     }
 }

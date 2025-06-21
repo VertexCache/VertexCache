@@ -120,8 +120,9 @@ impl ClientConnector {
             EncryptionMode::SYMMETRIC => {
                 MessageCodec::switch_to_symmetric();
                 if let Some(key) = self.options.shared_encryption_key() {
-                    let key_bytes = key.as_bytes();
-                    GcmCryptoHelper::encrypt(plain, key_bytes)
+                    //let key_bytes = key.as_bytes();
+                    let key = self.options.get_shared_encryption_key_as_bytes()?;
+                    GcmCryptoHelper::encrypt(plain, &key)
                         .map_err(|_| VertexCacheSdkException::new("AES-GCM encryption failed"))
                 } else {
                     Err(VertexCacheSdkException::new("Missing shared encryption key"))

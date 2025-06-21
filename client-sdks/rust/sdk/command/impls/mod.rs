@@ -10,12 +10,11 @@
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 // ------------------------------------------------------------------------------
-pub mod model;
-pub mod comm;
 
-pub fn ping() -> &'static str {
-    "PONG"
-}
+pub mod ping_command;
+pub mod del_command;
+pub mod set_command;
+pub mod get_command;
+pub mod get_secondary_idx_one_command;
+pub mod get_secondary_idx_two_command;

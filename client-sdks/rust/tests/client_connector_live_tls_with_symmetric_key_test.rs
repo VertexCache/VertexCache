@@ -24,14 +24,7 @@ const PORT: u16 = 50505;
 const CLIENT_ID: &str = "sdk-client-rust";
 const CLIENT_TOKEN: &str = "635006e5-65d4-4cff-a0d4-197ecf2b3be3";
 
-const TEST_PUBLIC_KEY: &str = "-----BEGIN PUBLIC KEY-----\n\
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnwwKN2M7niJj+Vd0+w9Q\n\
-bw5gw5TzAWw2PUBl5rnepgn5QrLmvQ0s4aoDL6JGsnyx+GpSo6UmkrvXknObW+AI\n\
-UzsHLc7bFe9qe/urSvgLKzThl9kb/KN4NueDVJ+s33sDA9z+rRA9+sjp8Pc2Ycmm\n\
-GzN1lC22KM+oPSxHQvRcT5dQ7u6NGg7pX81DJ1ZsCXReE3vGoCQRyJoRPdLA54oR\n\
-NwC82/xKm9cRfghjRKqvnkmpS3FfCj0sLPy4W7ARBWU+RbhU0UmdUutB3Ce1LfIo\n\
-6DpmfhgHJ1P1yd/0ic8qfkqjvwUoxRUhR5+dWIakA8KZYQ95gP6oawmXiu2PcPeV\n\
-EwIDAQAB\n-----END PUBLIC KEY-----";
+const TEST_SHARED_KEY: &str = "neEvmCDMRdEgive402Taji9I/vrrpqrjJ+qeAF4QRNc=";
 
 #[test]
 fn test_live_connect_and_ping_should_succeed() {
@@ -48,8 +41,8 @@ fn test_live_connect_and_ping_should_succeed() {
     option.set_enable_tls_encryption(true);
     option.set_verify_certificate(false);
     option.set_tls_certificate(None); // Only required if verify is true
-    option.set_encryption_mode(EncryptionMode::ASYMMETRIC);
-    option.set_public_key(Some(TEST_PUBLIC_KEY.to_string()));
+    option.set_encryption_mode(EncryptionMode::SYMMETRIC);
+    option.set_shared_encryption_key(Some(TEST_SHARED_KEY.to_string()));
 
     let mut client = ClientConnector::new(option);
     client.connect().expect("Should connect successfully");

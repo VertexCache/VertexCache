@@ -199,4 +199,18 @@ impl ClientOption {
     pub fn shared_encryption_key(&self) -> Option<&String> {
         self.shared_encryption_key.as_ref()
     }
+
+    pub fn get_shared_encryption_key_as_bytes(&self) -> Result<Vec<u8>, VertexCacheSdkException> {
+        match &self.shared_encryption_key {
+            Some(b64) => {
+                match base64::decode(b64) {
+                    Ok(bytes) => {
+                        Ok(bytes)
+                    },
+                    Err(_) => Err(VertexCacheSdkException::new("Invalid base64 shared key")),
+                }
+            }
+            None => Err(VertexCacheSdkException::new("Missing shared key")),
+        }
+    }
 }

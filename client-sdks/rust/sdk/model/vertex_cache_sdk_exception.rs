@@ -19,7 +19,7 @@ use std::io;
 
 #[derive(Debug, Clone)]
 pub struct VertexCacheSdkException {
-    message: String,
+    pub message: String,
 }
 
 impl VertexCacheSdkException {

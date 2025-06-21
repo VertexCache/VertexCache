@@ -14,8 +14,16 @@
 // limitations under the License.
 // ------------------------------------------------------------------------------
 
-pub mod client_option;
-pub mod command_result;
-pub mod get_result;
-pub mod vertex_cache_sdk_exception;
-pub mod encryption_mode;
+pub struct CommandResult {
+    pub success: bool,
+    pub status_message: String,
+}
+
+impl CommandResult {
+    pub fn new(success: bool, status_message: String) -> Self {
+        Self {
+            success,
+            status_message,
+        }
+    }
+}

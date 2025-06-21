@@ -10,12 +10,8 @@
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 // ------------------------------------------------------------------------------
 
-pub mod client_option;
-pub mod command_result;
-pub mod get_result;
-pub mod vertex_cache_sdk_exception;
-pub mod encryption_mode;
+pub mod command;
+pub mod command_type;
+pub mod impls;
