@@ -11,28 +11,33 @@
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 // ------------------------------------------------------------------------------
 
-namespace VertexCache\Model;
-
-use Exception;
+namespace VertexCache\Command;
 
 /**
- * Represents errors thrown by the VertexCache PHP SDK.
+ * Enum representing the different types of commands supported by the VertexCache SDK.
+ *
+ * Each command type corresponds to a specific cache operation or internal SDK operation,
+ * such as GET, SET, DELETE, or index lookups (IDX1, IDX2).
+ *
+ * This enum is used throughout the SDK to identify and validate command behavior,
+ * facilitate routing, and enforce permission checks based on role capabilities.
  */
-class VertexCacheSdkException extends Exception
+enum CommandType: string
 {
+    case PING = 'PING';
+    case SET  = 'SET';
+    case DEL  = 'DEL';
+    case IDX1 = 'IDX1';
+    case IDX2 = 'IDX2';
+
     /**
-     * VertexCacheSdkException constructor.
-     *
-     * @param string         $message
-     * @param int            $code
-     * @param Exception|null $previous
+     * Returns the command keyword as string.
      */
-    public function __construct(string $message = "", int $code = 0, ?Throwable $previous = null)
+    public function keyword(): string
     {
-        parent::__construct($message, $code, $previous);
+        return $this->value;
     }
+
 }

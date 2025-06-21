@@ -75,7 +75,7 @@ class ClientOption
         );
     }
 
-    public function getPublicKeyAsObject()
+    public function getOpenSslPublicKey()
     {
         $key = $this->getPublicKey();
         $res = openssl_pkey_get_public($key);
@@ -83,6 +83,20 @@ class ClientOption
             throw new VertexCacheSdkException("Invalid public key format");
         }
         return $res;
+    }
+
+    public function getSharedEncryptionKeyAsBase64(): string
+    {
+        if (empty($this->sharedEncryptionKey)) {
+            throw new VertexCacheSdkException("Shared encryption key is not set");
+        }
+
+        $decoded = base64_decode($this->sharedEncryptionKey, true);
+        if ($decoded === false) {
+            throw new VertexCacheSdkException("Failed to decode shared encryption key from Base64");
+        }
+
+        return $decoded;
     }
 
     // Getters/setters follow the same order as fields

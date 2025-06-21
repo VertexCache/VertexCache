@@ -92,14 +92,16 @@ class ClientConnector
         try {
             switch ($this->options->getEncryptionMode()) {
                 case EncryptionMode::ASYMMETRIC:
-                    $pubKey = $this->options->getPublicKeyAsObject();
+                    MessageCodec::switchToAsymmetric();
+                    $pubKey = $this->options->getOpenSslPublicKey();
                     if (!openssl_public_encrypt($plainText, $encrypted, $pubKey, OPENSSL_PKCS1_PADDING)) {
                         throw new VertexCacheSdkException("RSA encryption failed");
                     }
                     return $encrypted;
 
                 case EncryptionMode::SYMMETRIC:
-                    return GcmCryptoHelper::encrypt($plainText, $this->options->getSharedEncryptionKeyAsBytes());
+                    MessageCodec::switchToSymmetric();
+                    return GcmCryptoHelper::encrypt($plainText, $this->options->getSharedEncryptionKeyAsBase64());
 
                 case EncryptionMode::NONE:
                 default:

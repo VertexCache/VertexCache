@@ -11,28 +11,31 @@
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 // ------------------------------------------------------------------------------
 
-namespace VertexCache\Model;
+namespace VertexCache\Command\Impl;
 
-use Exception;
+use VertexCache\Command\CommandBase;
 
 /**
- * Represents errors thrown by the VertexCache PHP SDK.
+ * Handles the PING command in VertexCache.
+ *
+ * This command checks server availability and latency.
+ * It returns a "PONG" response and verifies basic liveness.
+ *
+ * PING is always allowed regardless of authentication or client role.
  */
-class VertexCacheSdkException extends Exception
+class PingCommand extends CommandBase
 {
-    /**
-     * VertexCacheSdkException constructor.
-     *
-     * @param string         $message
-     * @param int            $code
-     * @param Exception|null $previous
-     */
-    public function __construct(string $message = "", int $code = 0, ?Throwable $previous = null)
+    protected function buildCommand(): string
     {
-        parent::__construct($message, $code, $previous);
+        return 'PING';
+    }
+
+    protected function parseResponse(string $responseBody): void
+    {
+        if (trim($responseBody) === '' || strcasecmp($responseBody, 'PONG') !== 0) {
+            $this->setFailure('PONG not received');
+        }
     }
 }

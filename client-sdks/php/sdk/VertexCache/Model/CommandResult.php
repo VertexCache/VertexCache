@@ -11,28 +11,40 @@
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 // ------------------------------------------------------------------------------
 
 namespace VertexCache\Model;
 
-use Exception;
-
 /**
- * Represents errors thrown by the VertexCache PHP SDK.
+ * Represents the result of executing a cache command in the VertexCache SDK.
+ *
+ * This class encapsulates the response status and message returned
+ * from the server after executing a command such as GET, SET, or DEL.
  */
-class VertexCacheSdkException extends Exception
+class CommandResult
 {
-    /**
-     * VertexCacheSdkException constructor.
-     *
-     * @param string         $message
-     * @param int            $code
-     * @param Exception|null $previous
-     */
-    public function __construct(string $message = "", int $code = 0, ?Throwable $previous = null)
+    private bool $success;
+    private string $message;
+
+    public function __construct(bool $success, string $message)
     {
-        parent::__construct($message, $code, $previous);
+        $this->success = $success;
+        $this->message = $message;
+    }
+
+    /**
+     * Returns whether the command succeeded.
+     */
+    public function isSuccess(): bool
+    {
+        return $this->success;
+    }
+
+    /**
+     * Returns the associated server message.
+     */
+    public function getMessage(): string
+    {
+        return $this->message;
     }
 }
