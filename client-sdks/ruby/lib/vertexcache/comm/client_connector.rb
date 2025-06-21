@@ -46,7 +46,7 @@ module VertexCache
         writer = @stream.to_io
         ident_command = @options.build_ident_command
         payload = encrypt_if_enabled(ident_command.encode('UTF-8'))
-        MessageCodec.write_framed_message(writer, payload, resolve_protocol_version)
+        MessageCodec.write_framed_message(writer, payload)
         writer.flush
 
         version, response_payload = MessageCodec.read_framed_message(@stream)
@@ -65,10 +65,9 @@ module VertexCache
         raise VertexCache::Model::VertexCacheSdkException, 'No active connection' unless connected?
 
         payload = encrypt_if_enabled(message.encode('UTF-8'))
-        version = resolve_protocol_version
 
         writer = @stream.to_io
-        MessageCodec.write_framed_message(writer, payload, version)
+        MessageCodec.write_framed_message(writer, payload)
         writer.flush
 
         _version, response_payload = MessageCodec.read_framed_message(@stream)
@@ -83,28 +82,19 @@ module VertexCache
           pem = @options.public_key
           raise VertexCache::Model::VertexCacheSdkException, 'Missing public key' if pem.nil?
 
+          MessageCodec.switch_to_asymmetric
           KeyParserHelper.encrypt_with_rsa(pem, plain)
         when VertexCache::Model::EncryptionMode::SYMMETRIC
-          key = @options.shared_encryption_key
+          key = @options.shared_encryption_key_as_bytes
           raise VertexCache::Model::VertexCacheSdkException, 'Missing shared encryption key' if key.nil?
 
-          GcmCryptoHelper.encrypt(plain, key.bytes)
+          MessageCodec.switch_to_symmetric
+          GcmCryptoHelper.encrypt(plain, key)
         else
           plain
         end
       rescue => e
         raise VertexCache::Model::VertexCacheSdkException, e.message
-      end
-
-      def resolve_protocol_version
-        case @options.encryption_mode
-        when VertexCache::Model::EncryptionMode::ASYMMETRIC
-          MessageCodec::PROTOCOL_VERSION_RSA_PKCS1
-        when VertexCache::Model::EncryptionMode::SYMMETRIC
-          MessageCodec::PROTOCOL_VERSION_AES_GCM
-        else
-          MessageCodec::DEFAULT_PROTOCOL_VERSION
-        end
       end
 
       def connected?

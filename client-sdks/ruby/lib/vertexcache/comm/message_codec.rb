@@ -28,14 +28,24 @@ module VertexCache
 
       PROTOCOL_VERSION_RSA_PKCS1 = 0x00000101
       PROTOCOL_VERSION_AES_GCM   = 0x00000181
-      DEFAULT_PROTOCOL_VERSION   = 0x00000001
+      DEFAULT_PROTOCOL_VERSION   = PROTOCOL_VERSION_RSA_PKCS1
 
-      def self.write_framed_message(io, payload, version)
+      @@protocol_version = DEFAULT_PROTOCOL_VERSION
+
+      def self.switch_to_asymmetric
+        @@protocol_version = PROTOCOL_VERSION_RSA_PKCS1
+      end
+
+      def self.switch_to_symmetric
+        @@protocol_version = PROTOCOL_VERSION_AES_GCM
+      end
+
+      def self.write_framed_message(io, payload)
         raise VertexCache::Model::VertexCacheSdkException, 'Payload must be non-empty' if payload.nil? || payload.empty?
         raise VertexCache::Model::VertexCacheSdkException, 'Payload too large' if payload.bytesize > MAX_MESSAGE_SIZE
 
-        length_prefix = [payload.bytesize].pack('N')     # 4 bytes big-endian
-        version_bytes = [version].pack('N')              # 4 bytes big-endian
+        length_prefix = [payload.bytesize].pack('N')         # 4 bytes big-endian
+        version_bytes = [@@protocol_version].pack('N')       # 4 bytes big-endian
         io.write(length_prefix + version_bytes + payload)
         io.flush
       end
@@ -55,9 +65,9 @@ module VertexCache
         [version, payload]
       end
 
-      def self.hex_dump(payload, version)
+      def self.hex_dump(payload)
         io = StringIO.new
-        write_framed_message(io, payload, version)
+        write_framed_message(io, payload)
         io.rewind
         io.read.unpack1('H*').upcase
       end

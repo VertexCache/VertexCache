@@ -20,6 +20,7 @@ require_relative 'encryption_mode'
 require 'vertexcache/comm/message_codec'
 require 'vertexcache/comm/key_parser_helper'
 require 'vertexcache/model/vertex_cache_sdk_exception'
+require 'base64'
 
 module VertexCache
   module Model
@@ -103,6 +104,25 @@ module VertexCache
         rescue
           raise VertexCache::Model::VertexCacheSdkException.new('Invalid shared key format')
         end
+      end
+
+      def public_key=(pem)
+        begin
+          OpenSSL::PKey::RSA.new(pem)
+        rescue OpenSSL::PKey::RSAError => e
+          raise VertexCache::Model::VertexCacheSdkException.new("Invalid public key: #{e.message}")
+        end
+        @public_key = pem
+      end
+
+      def shared_encryption_key=(key)
+        begin
+          decoded = Base64.strict_decode64(key)
+          raise unless decoded.bytesize == 32
+        rescue
+          raise VertexCache::Model::VertexCacheSdkException.new('Invalid shared key: must be 32 bytes base64')
+        end
+        @shared_encryption_key = key
       end
     end
   end

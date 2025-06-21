@@ -23,22 +23,12 @@ RSpec.describe VertexCache::Comm::ClientConnector do
   PORT = 50505
   CLIENT_ID = 'sdk-client-ruby'
   CLIENT_TOKEN = 'abf024d1-f3fb-4cc8-ae92-549e87988155'
-  TEST_PUBLIC_KEY = <<~PEM.strip
-    -----BEGIN PUBLIC KEY-----
-    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnwwKN2M7niJj+Vd0+w9Q
-    bw5gw5TzAWw2PUBl5rnepgn5QrLmvQ0s4aoDL6JGsnyx+GpSo6UmkrvXknObW+AI
-    UzsHLc7bFe9qe/urSvgLKzThl9kb/KN4NueDVJ+s33sDA9z+rRA9+sjp8Pc2Ycmm
-    GzN1lC22KM+oPSxHQvRcT5dQ7u6NGg7pX81DJ1ZsCXReE3vGoCQRyJoRPdLA54oR
-    NwC82/xKm9cRfghjRKqvnkmpS3FfCj0sLPy4W7ARBWU+RbhU0UmdUutB3Ce1LfIo
-    6DpmfhgHJ1P1yd/0ic8qfkqjvwUoxRUhR5+dWIakA8KZYQ95gP6oawmXiu2PcPeV
-    EwIDAQAB
-    -----END PUBLIC KEY-----
-  PEM
+  TEST_SHARED_KEY = 'neEvmCDMRdEgive402Taji9I/vrrpqrjJ+qeAF4QRNc='
 
-  it 'performs IDENT and PING over TLS with asymmetric encryption' do
-    #unless ENV['VC_LIVE_TEST'] == 'true'
-    #  skip('Live test skipped. Set VC_LIVE_TEST=true to enable.')
-    #end
+  it 'performs IDENT and PING over TLS with symmetric encryption' do
+    unless ENV['VC_LIVE_TLS_SYMMETRIC_TEST'] == 'true'
+      skip('Live test skipped. Set VC_LIVE_TEST=true to enable.')
+    end
 
     option = VertexCache::Model::ClientOption.new
     option.client_id = CLIENT_ID
@@ -48,8 +38,8 @@ RSpec.describe VertexCache::Comm::ClientConnector do
     option.enable_tls_encryption = true
     option.verify_certificate = false
     option.tls_certificate = nil
-    option.encryption_mode = VertexCache::Model::EncryptionMode::ASYMMETRIC
-    option.public_key = TEST_PUBLIC_KEY
+    option.encryption_mode = VertexCache::Model::EncryptionMode::SYMMETRIC
+    option.shared_encryption_key = TEST_SHARED_KEY
 
     connector = VertexCache::Comm::ClientConnector.new(option)
     connector.connect
