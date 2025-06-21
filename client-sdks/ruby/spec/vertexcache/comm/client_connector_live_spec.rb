@@ -36,9 +36,9 @@ RSpec.describe VertexCache::Comm::ClientConnector do
   PEM
 
   it 'performs IDENT and PING over TLS with asymmetric encryption' do
-    unless ENV['VC_LIVE_TEST'] == 'true'
-      skip('Live test skipped. Set VC_LIVE_TEST=true to enable.')
-    end
+    #unless ENV['VC_LIVE_TEST'] == 'true'
+    #  skip('Live test skipped. Set VC_LIVE_TEST=true to enable.')
+    #end
 
     option = VertexCache::Model::ClientOption.new
     option.client_id = CLIENT_ID

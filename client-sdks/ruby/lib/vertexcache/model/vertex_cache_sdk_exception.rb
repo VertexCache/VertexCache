@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # ------------------------------------------------------------------------------
 # Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache/vertexcache)
 #
