@@ -1,4 +1,4 @@
-package com.vertexcache.domain.cache;
+package com.vertexcache.core.command.argument;
 
 import com.vertexcache.core.command.argument.ArgumentParser;
 import org.junit.jupiter.api.Test;
