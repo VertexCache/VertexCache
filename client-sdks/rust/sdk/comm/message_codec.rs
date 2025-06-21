@@ -10,32 +10,38 @@
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 // ------------------------------------------------------------------------------
 
 use std::io::{Read, Write};
-use crate::model::vertex_cache_sdk_exception::VertexCacheSdkException;
+use std::sync::atomic::{AtomicU32, Ordering};
 
-pub struct MessageCodec;
+use crate::model::vertex_cache_sdk_exception::VertexCacheSdkException;
 
 // Active protocol versions
 pub const PROTOCOL_VERSION_RSA_OAEP_SHA256: u32 = 0x00000111;
 pub const PROTOCOL_VERSION_AES_GCM: u32 = 0x00000181;
-pub const DEFAULT_PROTOCOL_VERSION: u32 = 0x00000001;
+
+static PROTOCOL_VERSION: AtomicU32 = AtomicU32::new(PROTOCOL_VERSION_RSA_OAEP_SHA256);
+
+pub struct MessageCodec;
 
 impl MessageCodec {
-
     pub const HEADER_LEN: usize = 8; // 4 bytes for length + 4 bytes for version
     pub const MAX_PAYLOAD_SIZE: usize = 10 * 1024 * 1024;
     pub const MAX_MESSAGE_SIZE: usize = 4 * 1024 * 1024;
 
-    /// Writes a framed message with 8-byte header to the output stream.
-    /// Header layout: [length (4 bytes)] + [version (4 bytes)]
+    pub fn switch_to_symmetric() {
+        PROTOCOL_VERSION.store(PROTOCOL_VERSION_AES_GCM, Ordering::Relaxed);
+    }
+
+    pub fn switch_to_asymmetric() {
+        PROTOCOL_VERSION.store(PROTOCOL_VERSION_RSA_OAEP_SHA256, Ordering::Relaxed);
+    }
+
+    /// Writes a framed message using the global static protocol version
     pub fn write_framed_message<W: Write>(
         writer: &mut W,
         payload: &[u8],
-        version: u32,
     ) -> Result<(), VertexCacheSdkException> {
         if payload.is_empty() {
             return Err(VertexCacheSdkException::new("Payload must be non-empty"));
@@ -44,6 +50,8 @@ impl MessageCodec {
         if payload.len() > Self::MAX_MESSAGE_SIZE {
             return Err(VertexCacheSdkException::new("Payload too large"));
         }
+
+        let version = PROTOCOL_VERSION.load(Ordering::Relaxed);
 
         let mut header = Vec::with_capacity(Self::HEADER_LEN);
         header.extend_from_slice(&(payload.len() as u32).to_be_bytes());
@@ -55,7 +63,7 @@ impl MessageCodec {
         Ok(())
     }
 
-    /// Reads a framed message from input stream. Returns payload if successful.
+    /// Reads a framed message from input stream. Returns (version, payload)
     pub fn read_framed_message<R: Read>(
         reader: &mut R,
     ) -> Result<Option<(u32, Vec<u8>)>, VertexCacheSdkException> {
@@ -81,10 +89,10 @@ impl MessageCodec {
         Ok(Some((version, payload)))
     }
 
-    /// Returns a hex dump string for a framed payload (used for inter-SDK comparison).
-    pub fn hex_dump(payload: &[u8], version: u32) -> Result<String, VertexCacheSdkException> {
+    /// Returns a hex dump string for a framed payload (used for cross-SDK comparison)
+    pub fn hex_dump(payload: &[u8]) -> Result<String, VertexCacheSdkException> {
         let mut framed = Vec::new();
-        Self::write_framed_message(&mut framed, payload, version)?;
-        Ok(framed.iter().map(|b| format!("{:02X}", b)).collect::<Vec<String>>().join(""))
+        Self::write_framed_message(&mut framed, payload)?;
+        Ok(framed.iter().map(|b| format!("{:02X}", b)).collect::<Vec<_>>().join(""))
     }
 }
