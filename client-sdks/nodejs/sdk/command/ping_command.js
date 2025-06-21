@@ -10,18 +10,20 @@
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 // ------------------------------------------------------------------------------
 
-const { expect } = require('chai');
-const VertexCacheSDK = require('../sdk/vertexcache_sdk');
+const { CommandBase } = require('./command_base');
 
-describe('VertexCacheSDK', function () {
-    it('should respond with PONG on ping', function () {
-        const sdk = new VertexCacheSDK();
-        const result = sdk.ping();
-        expect(result.success).to.be.true;
-        expect(result.message).to.equal('PONG');
-    });
-});
+class PingCommand extends CommandBase {
+    buildCommand() {
+        return 'PING';
+    }
+
+    parseResponse(responseBody) {
+        if (!responseBody || responseBody.trim().toUpperCase() !== 'PONG') {
+            this.setFailure('PONG not received');
+        }
+    }
+}
+
+module.exports = { PingCommand };

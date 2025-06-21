@@ -20,12 +20,12 @@ const DEFAULT_PROTOCOL_VERSION = 0x00000001;
 
 const MAX_MESSAGE_SIZE = 10 * 1024 * 1024; // 10MB
 
-let currentProtocolVersion = DEFAULT_PROTOCOL_VERSION;
+let protocolVersion = DEFAULT_PROTOCOL_VERSION;
 
 /**
  * Writes a framed message: [length(4)][version(4)][payload]
  */
-function writeFramedMessage(payload, version = currentProtocolVersion) {
+function writeFramedMessage(payload, version = protocolVersion) {
     if (!Buffer.isBuffer(payload)) {
         throw new Error("Payload must be a Buffer");
     }
@@ -99,15 +99,15 @@ function readFramedMessage(stream) {
 
 // Dynamic switching helpers
 function useRsaProtocol() {
-    currentProtocolVersion = PROTOCOL_VERSION_RSA_OAEP_SHA256;
+    protocolVersion = PROTOCOL_VERSION_RSA_OAEP_SHA256;
 }
 
 function useSymmetricProtocol() {
-    currentProtocolVersion = PROTOCOL_VERSION_AES_GCM;
+    protocolVersion = PROTOCOL_VERSION_AES_GCM;
 }
 
 function useRawProtocol() {
-    currentProtocolVersion = DEFAULT_PROTOCOL_VERSION;
+    protocolVersion = DEFAULT_PROTOCOL_VERSION;
 }
 
 function resolveProtocolVersion(mode) {
