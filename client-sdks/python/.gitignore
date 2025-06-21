@@ -6,7 +6,6 @@ __pycache__/
 # Poetry virtual environments (if enabled)
 .env/
 .venv/
-poetry.lock
 
 # Distribution / packaging
 build/
