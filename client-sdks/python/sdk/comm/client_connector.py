@@ -83,12 +83,14 @@ class ClientConnector:
         mode = self.options.get_encryption_mode()
         try:
             if mode == EncryptionMode.ASYMMETRIC:
+                message_codec.switch_to_asymmetric()
                 public_key = self.options.get_public_key_as_object()
                 return public_key.encrypt(
                     plain_text,
                     padding.PKCS1v15()
                 )
             elif mode == EncryptionMode.SYMMETRIC:
+                message_codec.switch_to_symmetric()
                 return gcm_crypto_helper.encrypt(plain_text, self.options.get_shared_encryption_key_as_bytes())
             else:
                 return plain_text

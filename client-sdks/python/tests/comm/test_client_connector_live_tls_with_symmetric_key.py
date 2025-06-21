@@ -20,18 +20,10 @@ from sdk.model.client_option import ClientOption
 from sdk.model.encryption_mode import EncryptionMode
 from sdk.comm.client_connector import ClientConnector
 
-@unittest.skipUnless(os.getenv("VC_LIVE_TEST") == "true", "Live test skipped")
+@unittest.skipUnless(os.getenv("VC_LIVE_TLS_SYMMETRIC_TEST") == "true", "Live test skipped")
 class ClientConnectorLiveTest(unittest.TestCase):
 
-    TEST_PUBLIC_KEY = """-----BEGIN PUBLIC KEY-----
-    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnwwKN2M7niJj+Vd0+w9Q
-    bw5gw5TzAWw2PUBl5rnepgn5QrLmvQ0s4aoDL6JGsnyx+GpSo6UmkrvXknObW+AI
-    UzsHLc7bFe9qe/urSvgLKzThl9kb/KN4NueDVJ+s33sDA9z+rRA9+sjp8Pc2Ycmm
-    GzN1lC22KM+oPSxHQvRcT5dQ7u6NGg7pX81DJ1ZsCXReE3vGoCQRyJoRPdLA54oR
-    NwC82/xKm9cRfghjRKqvnkmpS3FfCj0sLPy4W7ARBWU+RbhU0UmdUutB3Ce1LfIo
-    6DpmfhgHJ1P1yd/0ic8qfkqjvwUoxRUhR5+dWIakA8KZYQ95gP6oawmXiu2PcPeV
-    EwIDAQAB
-    -----END PUBLIC KEY-----"""
+    TEST_SHARED_KEY = "neEvmCDMRdEgive402Taji9I/vrrpqrjJ+qeAF4QRNc="
 
     def setUp(self):
         self.option = ClientOption()
@@ -43,8 +35,8 @@ class ClientConnectorLiveTest(unittest.TestCase):
         self.option.verify_certificate = False
         self.option.connect_timeout = 3000
         self.option.read_timeout = 3000
-        self.option.set_public_key(self.TEST_PUBLIC_KEY)
-        self.option.encryption_mode = EncryptionMode.ASYMMETRIC
+        self.option.set_shared_encryption_key(self.TEST_SHARED_KEY)
+        self.option.encryption_mode = EncryptionMode.SYMMETRIC
         self.connector = ClientConnector(self.option)
 
     def test_connect_and_ping(self):

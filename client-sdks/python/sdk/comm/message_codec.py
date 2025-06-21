@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache)
+# Copyright 2025 to Present, Jason Lam - VertexCache (https://github.com/vertexcache/vertexcache)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,8 +17,23 @@
 import struct
 
 MAX_MESSAGE_SIZE = 10 * 1024 * 1024  # 10MB
-PROTOCOL_VERSION = 0x00000101
+PROTOCOL_VERSION_RSA_PKCS1 = 0x00000101
+PROTOCOL_VERSION_AES_GCM   = 0x00000181
 
+# Mutable module-level state
+_protocol_version = PROTOCOL_VERSION_RSA_PKCS1
+
+def switch_to_symmetric():
+    global _protocol_version
+    _protocol_version = PROTOCOL_VERSION_AES_GCM
+
+
+def switch_to_asymmetric():
+    global _protocol_version
+    _protocol_version = PROTOCOL_VERSION_RSA_PKCS1
+
+def get_protocol_version():
+    return _protocol_version
 
 def write_framed_message(payload: bytes) -> bytes:
     """
@@ -39,7 +54,7 @@ def write_framed_message(payload: bytes) -> bytes:
         raise ValueError(f"Message too large: {len(payload)}")
 
     length_bytes = struct.pack(">I", len(payload))
-    version_bytes = struct.pack(">I", PROTOCOL_VERSION)
+    version_bytes = struct.pack(">I", get_protocol_version())
     return length_bytes + version_bytes + payload
 
 
@@ -60,7 +75,7 @@ def read_framed_message(buffer: bytes):
 
     length, version = struct.unpack(">II", buffer[:8])
 
-    if version != PROTOCOL_VERSION:
+    if version not in (PROTOCOL_VERSION_RSA_PKCS1, PROTOCOL_VERSION_AES_GCM):
         raise ValueError(f"Unsupported protocol version: 0x{version:08X}")
 
     if length <= 0 or length > MAX_MESSAGE_SIZE:

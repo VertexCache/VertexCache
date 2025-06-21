@@ -10,13 +10,29 @@
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 # ------------------------------------------------------------------------------
 
+from enum import Enum
 
-from sdk.vertexcache_sdk import VertexCacheSDK
+class CommandType(Enum):
+    """
+    Enum representing the different types of commands supported by the VertexCache SDK.
 
-def test_ping():
-    sdk = VertexCacheSDK()
-    assert sdk.ping() is True
+    Each command type corresponds to a specific cache operation or internal SDK operation,
+    such as GET, SET, DELETE, or IDENT (used for client identification and authentication).
+
+    This enum is used throughout the SDK to identify and validate command behavior,
+    facilitate routing, and enforce permission checks based on role capabilities.
+    """
+
+    PING = "PING"
+    SET = "SET"
+    DEL = "DEL"
+    IDX1 = "IDX1"
+    IDX2 = "IDX2"
+
+    def keyword(self) -> str:
+        return self.value
+
+    def __str__(self) -> str:
+        return self.value
