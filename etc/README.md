@@ -13,7 +13,6 @@ These files are not part of the build system, but help with documentation, confi
 
 - `etc/assets/` – Logos, diagrams, and static assets used in documentation and branding
 - `etc/config/` – Sample `.env` files, TLS certificates, and reference configs for development or local testing
-- `scripts/` – Developer utility scripts for local testing, linting, formatting, and CI support
 - `dist-shell/` – Runtime launch scripts (e.g. `run_server.sh`, `run_console.sh`) that are bundled with the **official server distribution archive** for easy use after unpacking
 
 > For full documentation, setup guides, and SDK usage, visit the  
