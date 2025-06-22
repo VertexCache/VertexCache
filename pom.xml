@@ -5,6 +5,8 @@
     <groupId>com.vertexcache</groupId>
     <artifactId>vertexcache</artifactId>
     <version>1.0.0</version>
+    <name>VertexCache</name>
+    <description>High-performance, clustered caching server with secondary indexing and REST API.</description>
     <packaging>pom</packaging>
     <modules>
         <module>vertex-cache-common</module>
