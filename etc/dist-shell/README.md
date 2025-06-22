@@ -20,8 +20,6 @@ See ["What’s Inside"](https://github.com/VertexCache/VertexCache/wiki/Installa
 | `run_console.bat` | Starts the admin console client (Windows)     |
 | `VERSION`         | Server version identifier                     |
 
-> ⚠️ If a `VERSION` file is included, it should be copied from the root project during packaging to ensure consistency.
-
 ---
 
 ### Quick Start
