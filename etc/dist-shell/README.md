@@ -10,6 +10,7 @@ These scripts are designed for easy execution of the VertexCache server and admi
 ---
 
 ### Included Scripts
+See ["What’s Inside"](https://github.com/VertexCache/VertexCache/wiki/Installation#Whats-Inside) for a detailed breakdown of distribution contents.
 
 | File              | Description                                   |
 |-------------------|-----------------------------------------------|
@@ -19,10 +20,12 @@ These scripts are designed for easy execution of the VertexCache server and admi
 | `run_console.bat` | Starts the admin console client (Windows)     |
 | `VERSION`         | Server version identifier                     |
 
+> ⚠️ If a `VERSION` file is included, it should be copied from the root project during packaging to ensure consistency.
 
 ---
 
 ### Quick Start
+Follow the [Quick Start Guide](https://github.com/VertexCache/VertexCache/wiki/Quick-Start-Guide) for complete setup steps.
 
 On Unix/macOS:
 
@@ -41,7 +44,12 @@ run_server.bat
 
 ### About VertexCache
 
-**VertexCache** is a high-performance, secure in-memory caching system with support for multi-level indexing (primary, idx1, idx2), clustering, and encrypted communication over a custom binary protocol (VCMP).
+**VertexCache** is a high-performance, secure in-memory caching system with support for:
+
+- Primary key lookups
+- **Secondary** and **tertiary index keys** for flexible data access
+- Custom binary protocol (VCMP) over encrypted sockets
+- Clustering, logging, and minimal configuration overhead
 
 - GitHub: [github.com/vertexcache/vertexcache](https://github.com/vertexcache/vertexcache)
 - Docs: [VertexCache Wiki](https://github.com/VertexCache/VertexCache/wiki)
