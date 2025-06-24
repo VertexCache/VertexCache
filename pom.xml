@@ -6,12 +6,15 @@
     <artifactId>vertexcache</artifactId>
     <version>1.0.0</version>
     <name>VertexCache</name>
-    <description>High-performance, clustered caching server with secondary indexing and REST API.</description>
+    <description>
+        Ultra-fast, clustered caching server with advanced eviction algorithms, multi-level indexing, TLS, asymmetric encryption, authentication, SmartModule, real-time metrics, REST API, and built-in rate limiting for high-performance workloads.
+    </description>
     <packaging>pom</packaging>
     <modules>
         <module>vertex-cache-common</module>
         <module>vertex-cache-server</module>
         <module>vertex-cache-console</module>
+        <module>vertex-bench</module>
     </modules>
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -61,6 +64,12 @@
             <artifactId>mockito-core</artifactId>
             <version>${mockito-core.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.vertexcache</groupId>
+            <artifactId>vertexcache-sdk</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>

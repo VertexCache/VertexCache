@@ -3,27 +3,31 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>com.vertexcache</groupId>
         <artifactId>vertexcache</artifactId>
         <version>1.0.0</version>
     </parent>
+
     <groupId>com.vertexcache</groupId>
     <artifactId>vertex-cache-server</artifactId>
     <version>1.0.0</version>
+
     <properties>
         <mainClass>com.vertexcache.server.VertexCacheServer</mainClass>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
     <dependencies>
         <!-- Vertex Common Library -->
         <dependency>
             <groupId>com.vertexcache</groupId>
             <artifactId>vertex-cache-common</artifactId>
             <version>1.0.0</version>
-            <scope>compile</scope>
         </dependency>
 
-        <!-- MapDB, specific to server -->
+        <!-- MapDB -->
         <dependency>
             <groupId>org.mapdb</groupId>
             <artifactId>mapdb</artifactId>
@@ -37,13 +41,14 @@
             <version>2.12.1</version>
         </dependency>
 
+        <!-- Jackson -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.19.0</version>
         </dependency>
 
-        <!-- Javalin, Embedded Webserver for REST API Module -->
+        <!-- Javalin -->
         <dependency>
             <groupId>io.javalin</groupId>
             <artifactId>javalin</artifactId>
@@ -56,21 +61,21 @@
             <version>6.6.0</version>
         </dependency>
 
-        <!-- Javalin dependency -->
+        <!-- SLF4J Simple Logger -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>2.0.16</version>
         </dependency>
 
-        <!-- okHttp -->
+        <!-- OkHttp -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
             <version>4.12.0</version>
         </dependency>
-
     </dependencies>
+
     <build>
         <resources>
             <resource>
@@ -91,6 +96,16 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>${mainClass}</mainClass>
