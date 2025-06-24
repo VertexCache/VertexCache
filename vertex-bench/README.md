@@ -12,13 +12,11 @@ It provides a native, framework-free environment for measuring real-world server
 ### What It Does
 
 - Simulates client load using the official Java SDK
-- Measures throughput, latency, and error rates across configurable scenarios
+- Measures throughput and error rates across core operations
 - Supports:
-    - GET/SET/DEL ratio tuning
-    - Key/value size variation
-    - TTL and hot key stress patterns
-    - Warm-up and ramp-up periods
-- Outputs metrics to stdout or file for analysis
+  - GET, SET, and multi-level index lookup scenarios
+  - Configurable thread counts and test durations
+- Outputs real-time performance metrics to stdout
 
 ---
 
@@ -32,9 +30,18 @@ System performance depends on real-world variables: CPU, memory, JVM tuning, net
 
 ---
 
-### Not Included
+### Not Included (Yet)
 
-Eviction algorithm performance comparisons (e.g. LRU vs LFU vs TinyLFU) are covered by unit tests in the main VertexCache server repo:  
+The following features are planned for future releases:
+
+- DEL operation load testing
+- Key/value size variation controls
+- TTL and hot key stress simulations
+- Warm-up and ramp-up phases for smoother test profiles
+- File-based metric exports and detailed reports
+- Latency percentile breakdowns
+
+Eviction algorithm performance comparisons (e.g., LRU vs LFU vs TinyLFU) are covered by unit tests in the main VertexCache server repo:  
 [vertex-cache-server/src/test/java/com/vertexcache/core/cache/perf](https://github.com/VertexCache/VertexCache/tree/main/vertex-cache-server/src/test/java/com/vertexcache/core/cache/perf)
 
 See results here:
@@ -45,11 +52,7 @@ See results here:
 
 ### Project Status
 
-VertexBench is under active development and aligned with upcoming VertexCache releases.  
-Planned features include:
-- Custom workload scenario scripting
-- Report exports with percentile latency breakdowns
-- Distributed client simulation
+VertexBench is under active development and aligned with upcoming VertexCache releases.
 
 ---
 
