@@ -36,7 +36,6 @@ The following features are planned for future releases:
 
 - DEL operation load testing
 - Key/value size variation controls
-- TTL and hot key stress simulations
 - Warm-up and ramp-up phases for smoother test profiles
 - File-based metric exports and detailed reports
 - Latency percentile breakdowns
