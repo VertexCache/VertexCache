@@ -11,7 +11,7 @@ It provides a native, framework-free environment for measuring real-world server
 
 ### What It Does
 
-- Simulates client load using the official Java SDK
+- Simulates client load using the official VertexCache Java Client SDK
 - Measures throughput and error rates across core operations
 - Supports:
   - GET, SET, and multi-level index lookup scenarios
