@@ -11,6 +11,12 @@ Lightweight by design. Secure by default. High-performance TCP clients in your l
 
 ---
 
+### Our Mission
+
+**To do one thing and do it well — caching — guided by the core tenets of Security, Flexibility, and Simplicity.**
+
+---
+
 ### Why VertexCache?
 
 - **Multi-Index Caching** — Query by primary, secondary, or tertiary keys
