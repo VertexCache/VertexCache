@@ -20,8 +20,8 @@ import com.vertexcache.vertexbench.util.VertexBenchConfig;
 
 public class LoadTestFactory {
 
-    public static BaseThroughputLoad createTest(String testName, VertexBenchConfig vertexBenchConfig) {
-        LoadType type = LoadType.fromKey(testName);
+    public static BaseThroughputLoad createTest(VertexBenchConfig vertexBenchConfig) {
+        LoadType type = LoadType.fromKey(vertexBenchConfig.getTestName());
         return switch (type) {
             case DEL_ONLY -> new DelOnlyThroughputLoad(vertexBenchConfig);
             case GET_ONLY -> new GetOnlyThroughputLoad(vertexBenchConfig);

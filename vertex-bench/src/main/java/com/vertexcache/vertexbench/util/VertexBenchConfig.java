@@ -22,9 +22,13 @@ import com.vertexcache.sdk.model.ClientOption;
 import com.vertexcache.sdk.model.EncryptionMode;
 
 import com.google.gson.Gson;
+import com.vertexcache.vertexbench.load.LoadType;
 
 
 public class VertexBenchConfig {
+
+    // === Test to Run ==-
+    private String testName;
 
     // === Benchmark Defaults ===
     private int percentageScale = 100;
@@ -63,7 +67,12 @@ public class VertexBenchConfig {
         clientOption.setServerPort(serverPort);
         clientOption.setEnableTlsEncryption(enableTlsEncryption);
         clientOption.setEncryptionMode(encryptionMode);
-        clientOption.setPublicKey(publicKey);
+        if(encryptionMode == EncryptionMode.SYMMETRIC) {
+            clientOption.setSharedEncryptionKey(sharedKey);
+        }
+        if(encryptionMode == EncryptionMode.ASYMMETRIC) {
+            clientOption.setPublicKey(publicKey);
+        }
         this.vertexCacheSDK = new VertexCacheSDK(clientOption);
         this.vertexCacheSDK.openConnection();
     }
@@ -74,6 +83,10 @@ public class VertexBenchConfig {
 
         VertexBenchConfig config = new VertexBenchConfig();
 
+        if (json.has("testName")) {
+            config.testName = json.get("testName").getAsString();
+            LoadType.fromKey(config.testName);
+        }
 
         if (json.has("threads")) {
             config.threads = json.get("threads").getAsInt();
@@ -131,7 +144,7 @@ public class VertexBenchConfig {
             config.encryptionMode = EncryptionMode.valueOf(json.get("encryptionMode").getAsString());
         }
         if (json.has("sharedKey")) {
-            config.publicKey = json.get("sharedKey").getAsString();
+            config.sharedKey = json.get("sharedKey").getAsString();
         }
         if (json.has("publicKey")) {
             config.publicKey = json.get("publicKey").getAsString();
@@ -143,6 +156,7 @@ public class VertexBenchConfig {
     }
 
     public VertexCacheSDK getVertexCacheSDK() { return vertexCacheSDK; }
+    public String getTestName() {return testName;}
     public int getPercentageScale() { return percentageScale; }
     public int getMaxValueSuffix() { return maxValueSuffix; }
     public int getPercentageReads() { return percentageReads; }

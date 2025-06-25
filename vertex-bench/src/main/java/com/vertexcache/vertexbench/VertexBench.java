@@ -35,14 +35,18 @@ public class VertexBench {
 +--------------------------------------------------+
 """);
 
-        String jsonPayloadx = """
+        /* For testing - the embedded key is the TEST Key we use everywhere, is to you up running fast as possible
+
+
+        String jsonPayload = """
         {
+            "testName": "get-only",
             "threads": 100,
             "duration": 60,
             "percentageReads": 70,
             "percentageWrites": 25,
             "totalKeyCount": 5000,
-            
+
 
             "clientId": "sdk-client-java",
             "clientToken": "ea143c4a-1426-4d43-b5be-f0ecffe4a6c7",
@@ -54,7 +58,7 @@ public class VertexBench {
             "publicKey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnwwKN2M7niJj+Vd0+w9Q\nbw5gw5TzAWw2PUBl5rnepgn5QrLmvQ0s4aoDL6JGsnyx+GpSo6UmkrvXknObW+AI\nUzsHLc7bFe9qe/urSvgLKzThl9kb/KN4NueDVJ+s33sDA9z+rRA9+sjp8Pc2Ycmm\nGzN1lC22KM+oPSxHQvRcT5dQ7u6NGg7pX81DJ1ZsCXReE3vGoCQRyJoRPdLA54oR\nNwC82/xKm9cRfghjRKqvnkmpS3FfCj0sLPy4W7ARBWU+RbhU0UmdUutB3Ce1LfIo\n6DpmfhgHJ1P1yd/0ic8qfkqjvwUoxRUhR5+dWIakA8KZYQ95gP6oawmXiu2PcPeV\nEwIDAQAB\n-----END PUBLIC KEY-----"
         }
         """;
-
+ */
 
         if (args.length < 1) {
             System.out.println("Usage: java -jar vertexbench.jar '<json-payload>'");
@@ -68,13 +72,9 @@ public class VertexBench {
             vertexBenchConfig = VertexBenchConfig.fromJsonPayload(jsonPayload);
 
         } catch (Exception ex) {
-            System.out.println("JSON Configuration Error: " + ex.getMessage());
+            System.out.println("VertexBench configuration error: " + ex.getMessage());
             System.exit(0);
         }
-
-        //VertexBenchConfig vertexBenchConfig = new VertexBenchConfig();
-
-       // vertexBenchConfig.
 
         if(vertexBenchConfig.isEnablePreload()) {
             CacheDataPopulator populator = new CacheDataPopulator(vertexBenchConfig.getVertexCacheSDK());
@@ -83,10 +83,7 @@ public class VertexBench {
             populator.populateWithIdx2(1000);
        }
 
-        ThroughputLoad loadTest = LoadTestFactory.createTest(
-                "get-only",
-                vertexBenchConfig
-        );
+        ThroughputLoad loadTest = LoadTestFactory.createTest(vertexBenchConfig);
 
         loadTest.execute();
     }
