@@ -4,23 +4,45 @@
 
 <h1 align="center">VertexCache</h1>
 
-**VertexCache** is a high-performance, open-source in-memory caching system built for speed, security, and developer control.  
-Designed with modern workloads in mind, it supports powerful multi-index lookups (primary, secondary, tertiary), encrypted communication, and flexible configuration — all backed by a custom binary protocol for low-latency messaging.
+**VertexCache** is a fast, secure, open-source in-memory caching system built for modern workloads.  
+Designed as a developer-first solution, VertexCache combines multi-index lookups, wire-efficient messaging, and built-in encryption — all optimized for performance and control.
 
-VertexCache is lightweight, secure by default, and includes official SDKs for multiple languages.
+Lightweight by design. Secure by default. High-performance TCP clients in your language of choice.
 
 ---
 
-### Key Features
+### Why VertexCache?
 
-- Multi-index caching — Efficient retrieval via primary, secondary, and tertiary keys
-- Custom binary protocol (VCMP) — Built for performance, security, and wire efficiency
-- Encrypted communication — TLS, RSA, and AES-GCM built-in
-- Pluggable eviction algorithms — LRU, LFU, TinyLFU, ARC, FIFO, and more
-- Minimal config — Simple `.env`-style configuration, no XML or YAML required
-- Built-in console client — Interactive shell for admin access
-- Developer SDKs — Official clients in Java, Python, Go, C#, Rust, Elixir, PHP, and more
-- Fully open-source — Apache 2.0 license
+- **Multi-Index Caching** — Query by primary, secondary, or tertiary keys
+- **Custom Binary Protocol (VCMP)** — Low-latency, wire-efficient messaging
+- **Encrypted Communication** — TLS, RSA, AES-GCM built-in
+- **Pluggable Eviction** — LRU, LFU, TinyLFU, ARC, FIFO, and more
+- **Minimal Config** — Simple `.env`-style setup, no YAML or XML required
+- **First-Class Developer SDKs** — Official high-performance **TCP clients**, not REST wrappers:
+  - **C#, Elixir, Go, Java, Kotlin, Node.js, PHP, Python, Ruby, Rust**
+- **Optional REST API** — Lightweight HTTP access for environments where TCP isn't suitable
+- **Fully Open-Source** — Apache 2.0 license
+
+---
+
+### Available Modules
+
+VertexCache is modular — extend functionality only when needed:
+
+- **AdminModule** — Powerful admin commands: `purge`, `metrics`, `config`, `reload`, `reset`, `session`, `shutdown`, `status`
+- **AlertModule** — Webhook alerts for external monitoring; integrates with SmartModule
+- **ClusterModule** — Hot-standby clustering for high availability
+- **MetricModule** — Real-time performance metrics and cache insights
+- **RateLimiterModule** — Built-in traffic rate limiting
+- **RestAPIModule** — Optional REST API for simplified HTTP integration
+- **SmartModule** — Advanced features including indexing and TTL optimization
+
+---
+
+### Load Testing & Benchmarking
+
+- **VertexBench** — Official load testing suite for stress testing, QPS analysis, and real-world scenario validation  
+Ideal for tuning configurations, validating cluster performance, and measuring throughput under load.
 
 ---
 
@@ -34,12 +56,12 @@ VertexCache is lightweight, secure by default, and includes official SDKs for mu
 
 ### Learn More
 
-- Configuration: env-based setup for server, console, logging, and encryption
-- Encryption: TLS + key-based encryption (RSA, AES-GCM) — easily toggled per environment
-- Metrics & Logging: Fine-grained logs with Log4J and structured metrics support
-- Commands: PING, SET, GET, DEL plus indexed queries
-- Eviction: Fully pluggable caching algorithms with real-world benchmarks
-- Distribution Contents: See [Installation → What’s Inside](https://github.com/VertexCache/VertexCache/wiki/Installation#Whats-Inside) for included files and layout
+- `.env`-style configuration for server, console, logging, and encryption
+- Built-in support for TLS + key-based encryption (RSA, AES-GCM)
+- Structured metrics with fine-grained logging via Log4J
+- Command set includes `PING`, `SET`, `GET`, `DEL`, and indexed lookups
+- Real-world benchmark data for eviction algorithms
+- [What’s Inside the Distribution](https://github.com/VertexCache/VertexCache/wiki/Installation#Whats-Inside)
 
 Explore these topics in detail in the [VertexCache Wiki](https://github.com/vertexcache/VertexCache/wiki)
 
