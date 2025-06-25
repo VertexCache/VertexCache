@@ -52,14 +52,15 @@
         <dependency>
             <groupId>io.javalin</groupId>
             <artifactId>javalin</artifactId>
-            <version>6.6.0</version>
+            <version>6.7.0</version>
         </dependency>
 
         <dependency>
             <groupId>io.javalin.community.ssl</groupId>
             <artifactId>ssl-plugin</artifactId>
-            <version>6.6.0</version>
+            <version>6.7.0</version>
         </dependency>
+
 
         <!-- SLF4J Simple Logger -->
         <dependency>
@@ -107,6 +108,10 @@
                                 </filter>
                             </filters>
                             <transformers>
+                                <!-- PRESERVE META-INF/services for ALPN and other SPI -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+
+                                <!-- Main-Class manifest -->
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>${mainClass}</mainClass>
                                 </transformer>
