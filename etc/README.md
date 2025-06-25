@@ -5,7 +5,7 @@
 <h1 align="center">VertexCache – etc/ and Project Resources</h1>
 
 This folder contains **internal resources and support files** for the VertexCache project.  
-These files are not part of the build system, but help with documentation, configuration, and distribution tooling.
+These files are not part of the build system, but assist with documentation, configuration examples, and distribution tooling for both the server and related tools.
 
 ---
 
@@ -13,7 +13,8 @@ These files are not part of the build system, but help with documentation, confi
 
 - `etc/assets/` – Logos, diagrams, and static assets used in documentation and branding
 - `etc/config/` – Sample `.env` files, TLS certificates, and reference configs for development or local testing
-- `dist-shell/` – Runtime launch scripts (e.g. `run_server.sh`, `run_console.sh`) that are bundled with the **official server distribution archive** for easy use after unpacking
+- `dist-shell-vertex-cache/` – Runtime launch scripts for the **VertexCache server**, included in the official server distribution archive
+- `dist-shell-vertex-bench/` – Runtime launch scripts for **VertexBench**, the official load testing and benchmarking tool
 
 > For full documentation, setup guides, and SDK usage, visit the  
 > [VertexCache Wiki](https://github.com/VertexCache/VertexCache/wiki)

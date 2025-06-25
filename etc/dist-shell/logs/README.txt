@@ -1,1 +1,0 @@
-VertexCache Log files will show in this directory

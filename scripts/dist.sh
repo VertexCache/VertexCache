@@ -18,20 +18,27 @@ source ./scripts/init_config.sh
 
 echo
 echo "=============================================================================="
-echo "= Initialize dist folder                                                     ="
+echo "= Initialize dist folder for VertexCache                                     ="
 echo "=============================================================================="
 echo
-rm -rf ./dist
+rm -rf ./dist-vertex-cache
 
-cp -r ./etc/dist-shell ./dist
+cp -r ./etc/dist-shell-vertex-cache ./dist-vertex-cache
 
+# Note ./vertex-cache-config is probably assembed by init_config.sh which why we copy from here instead
+cp -r ./vertex-cache-config ./dist-vertex-cache/vertex-cache-config
 
-cp -r ./vertex-cache-config ./dist/vertex-cache-config
+cp ./vertex-cache-server/target/vertex-cache-server-*.jar ./dist-vertex-cache/vertex-cache-server.jar
+cp ./vertex-cache-console/target/vertex-cache-console-*.jar ./dist-vertex-cache/vertex-cache-console.jar
 
+echo
+echo "=============================================================================="
+echo "= Initialize dist folder for VertexBench                                     ="
+echo "=============================================================================="
+echo
+rm -rf ./dist-vertex-bench
 
+cp -r ./etc/dist-shell-vertex-bench ./dist-vertex-bench
+cp ./vertex-bench/target/vertex-bench-*.jar ./dist-vertex-bench/vertex-bench.jar
 
-cp ./vertex-cache-server/target/vertex-cache-server-*.jar ./dist/vertex-cache-server.jar
-
-cp ./vertex-cache-console/target/vertex-cache-console-*.jar ./dist/vertex-cache-console.jar
-
-echo "done"
+echo "DONE"

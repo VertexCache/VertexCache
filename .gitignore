@@ -29,7 +29,6 @@ Thumbs.db
 # --- Logs / Output ---
 *.log
 /logs
-/dist
 /benchmarks/
 /metrics/
 /results/
@@ -45,4 +44,10 @@ mvnw
 mvnw.cmd
 
 # --- VertexCache Specific ---
+
+# --- Configuration Folder for Local Dev ---
 /vertex-cache-config
+
+# --- Distribution Folders for release packaging ---
+/dist-vertex-cache
+/dist-vertex-bench
