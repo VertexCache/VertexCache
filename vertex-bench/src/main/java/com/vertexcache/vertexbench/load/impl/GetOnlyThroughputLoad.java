@@ -15,21 +15,23 @@
  */
 package com.vertexcache.vertexbench.load.impl;
 
-import com.vertexcache.sdk.VertexCacheSDK;
 import com.vertexcache.vertexbench.load.BaseThroughputLoad;
+import com.vertexcache.vertexbench.load.LoadType;
+import com.vertexcache.vertexbench.util.BenchConstants;
+import com.vertexcache.vertexbench.util.VertexBenchConfig;
 
 import java.util.Random;
 
 public class GetOnlyThroughputLoad extends BaseThroughputLoad {
 
-    private final static String TITLE = "GET-Only";
+    private static final LoadType TYPE = LoadType.GET_ONLY;
 
-    public GetOnlyThroughputLoad(VertexCacheSDK sdk, int threads, int duration) {
-        super(TITLE, sdk, threads, duration);
+    public GetOnlyThroughputLoad(VertexBenchConfig vertexBenchConfig) {
+        super(TYPE, vertexBenchConfig);
     }
 
-    protected void performOperation(VertexCacheSDK sdk, Random rand) throws Exception {
-        String key = "bench:key:" + rand.nextInt(1000);
-        getSdk().get(key);
+    protected void performOperation(Random rand) {
+        String key = BenchConstants.BENCH_KEY + rand.nextInt(getVertexBenchConfig().getTotalKeyCount());
+        this.getVertexBenchConfig().getVertexCacheSDK().get(key);
     }
 }

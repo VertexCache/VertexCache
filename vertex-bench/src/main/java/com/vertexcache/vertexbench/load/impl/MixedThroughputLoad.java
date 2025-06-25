@@ -15,6 +15,8 @@
  */
 package com.vertexcache.vertexbench.load.impl;
 
+import com.vertexcache.sdk.VertexCacheSDK;
+import com.vertexcache.vertexbench.exception.VertexBenchException;
 import com.vertexcache.vertexbench.load.BaseThroughputLoad;
 import com.vertexcache.vertexbench.load.LoadType;
 import com.vertexcache.vertexbench.util.BenchConstants;
@@ -22,21 +24,30 @@ import com.vertexcache.vertexbench.util.VertexBenchConfig;
 
 import java.util.Random;
 
-public class OpenLoopThroughputLoad extends BaseThroughputLoad {
+public class MixedThroughputLoad extends BaseThroughputLoad {
 
-    private static final LoadType TYPE = LoadType.OPEN_LOOP;
+    private static final LoadType TYPE = LoadType.MIXED;
 
-    public OpenLoopThroughputLoad(VertexBenchConfig vertexBenchConfig) {
+    public MixedThroughputLoad(VertexBenchConfig vertexBenchConfig) {
         super(TYPE, vertexBenchConfig);
-    }
-
-    protected void performOperation(Random rand) {
-        String key = BenchConstants.BENCH_KEY + rand.nextInt(getVertexBenchConfig().getTotalKeyCount());
-        if (rand.nextBoolean()) {
-            this.getVertexBenchConfig().getVertexCacheSDK().set(key, BenchConstants.BENCH_VALUE + rand.nextInt(getVertexBenchConfig().getMaxValueSuffix()), null, null);
-        } else {
-            this.getVertexBenchConfig().getVertexCacheSDK().get(key);
+        if (vertexBenchConfig.getPercentageReads() < 0 || vertexBenchConfig.getPercentageWrites() < 0 || (vertexBenchConfig.getPercentageReads() + vertexBenchConfig.getPercentageWrites()) > 100) {
+            throw new VertexBenchException("Invalid operation ratios. GET + SET must be <= 100%");
         }
     }
 
+    @Override
+    protected void performOperation(Random rand) {
+        String key = BenchConstants.BENCH_KEY + rand.nextInt(getVertexBenchConfig().getTotalKeyCount());
+        int op = rand.nextInt(getVertexBenchConfig().getPercentageScale());  // 0 to 99
+
+        VertexCacheSDK sdk = this.getVertexBenchConfig().getVertexCacheSDK();
+
+        if (op < this.getVertexBenchConfig().getPercentageReads()) {
+            sdk.get(key);
+        } else if (op < this.getVertexBenchConfig().getPercentageReads() + this.getVertexBenchConfig().getPercentageWrites()) {
+            sdk.set(key, BenchConstants.BENCH_VALUE + rand.nextInt(getVertexBenchConfig().getMaxValueSuffix()), null, null);
+        } else {
+            sdk.del(key);
+        }
+    }
 }

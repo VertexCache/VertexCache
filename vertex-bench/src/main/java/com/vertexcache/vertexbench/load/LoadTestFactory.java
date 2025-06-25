@@ -15,20 +15,21 @@
  */
 package com.vertexcache.vertexbench.load;
 
-import com.vertexcache.sdk.VertexCacheSDK;
 import com.vertexcache.vertexbench.load.impl.*;
+import com.vertexcache.vertexbench.util.VertexBenchConfig;
 
 public class LoadTestFactory {
 
-    public static BaseThroughputLoad createTest(String testName, VertexCacheSDK sdk, int threads, int durationSeconds) {
-
-        return switch (testName.toLowerCase()) {
-            case "openloop" -> new OpenLoopThroughputLoad(sdk, threads, durationSeconds);
-            case "getonly" -> new GetOnlyThroughputLoad(sdk, threads, durationSeconds);
-            case "setonly" -> new SetOnlyThroughputLoad(sdk, threads, durationSeconds);
-            case "secondaryindex" -> new SecondaryIndexLookupThroughputLoad(sdk, threads, durationSeconds);
-            case "tertiaryindex" -> new TertiaryIndexLookupThroughputLoad(sdk, threads, durationSeconds);
-            default -> throw new IllegalArgumentException("Unknown test name: " + testName);
+    public static BaseThroughputLoad createTest(String testName, VertexBenchConfig vertexBenchConfig) {
+        LoadType type = LoadType.fromKey(testName);
+        return switch (type) {
+            case DEL_ONLY -> new DelOnlyThroughputLoad(vertexBenchConfig);
+            case GET_ONLY -> new GetOnlyThroughputLoad(vertexBenchConfig);
+            case MIXED -> new MixedThroughputLoad(vertexBenchConfig);
+            case OPEN_LOOP -> new OpenLoopThroughputLoad(vertexBenchConfig);
+            case SECONDARY_INDEX -> new SecondaryIndexLookupThroughputLoad(vertexBenchConfig);
+            case SET_ONLY -> new SetOnlyThroughputLoad(vertexBenchConfig);
+            case TERTIARY_INDEX -> new TertiaryIndexLookupThroughputLoad(vertexBenchConfig);
         };
     }
 }

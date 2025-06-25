@@ -16,6 +16,7 @@
 package com.vertexcache.vertexbench.setup;
 
 import com.vertexcache.sdk.VertexCacheSDK;
+import com.vertexcache.vertexbench.util.BenchConstants;
 
 public class CacheDataPopulator {
 
@@ -28,27 +29,27 @@ public class CacheDataPopulator {
     public void populateBasic(int entries) throws Exception {
         System.out.printf("Populating %d basic key/value pairs...\n", entries);
         for (int i = 0; i < entries; i++) {
-            String key = "bench:key:" + i;
-            sdk.set(key, "value-" + i, null, null);
+            String key = BenchConstants.BENCH_KEY + i;
+            sdk.set(key, BenchConstants.BENCH_VALUE + i, null, null);
         }
     }
 
     public void populateWithIdx1(int entries) throws Exception {
         System.out.printf("Populating %d key/value pairs with idx1...\n", entries);
         for (int i = 0; i < entries; i++) {
-            String key = "bench:key:" + i;
-            String idx1 = "bench:idx1:" + i;
-            sdk.set(key, "value-" + i, idx1, null);
+            String key = BenchConstants.BENCH_KEY + i;
+            String idx1 = BenchConstants.BENCH_KEY_IDX1 + i;
+            sdk.set(key, BenchConstants.BENCH_VALUE + i, idx1, null);
         }
     }
 
     public void populateWithIdx2(int entries) throws Exception {
         System.out.printf("Populating %d key/value pairs with idx1 and idx2...\n", entries);
         for (int i = 0; i < entries; i++) {
-            String key = "bench:key:" + i;
-            String idx1 = "bench:idx1:" + i;
-            String idx2 = "bench:idx2:" + i;
-            sdk.set(key, "value-" + i, idx1, idx2);
+            String key = BenchConstants.BENCH_KEY + i;
+            String idx1 = BenchConstants.BENCH_KEY_IDX1 + i;
+            String idx2 = BenchConstants.BENCH_KEY_IDX2 + i;
+            sdk.set(key, BenchConstants.BENCH_VALUE + i, idx1, idx2);
         }
     }
 }

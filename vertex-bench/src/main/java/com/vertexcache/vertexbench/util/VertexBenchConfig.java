@@ -15,60 +15,147 @@
  */
 package com.vertexcache.vertexbench.util;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.vertexcache.sdk.VertexCacheSDK;
 import com.vertexcache.sdk.model.ClientOption;
 import com.vertexcache.sdk.model.EncryptionMode;
 
+import com.google.gson.Gson;
+
+
 public class VertexBenchConfig {
 
-    // TODO All needs to be removed, inject via CLI Command line
+    // === Benchmark Defaults ===
+    private int percentageScale = 100;
+    private int maxValueSuffix = 10000;
+    private int percentageReads = 50;
+    private int percentageWrites = 50;
+    private int totalKeyCount = 1000;
+    private boolean enablePreload = false;
+    private int threads = 50;
+    private int duration = 30;
 
-    private final static String CLIENT_ID = "sdk-client-java";
-    private final static String CLIENT_TOKEN = "ea143c4a-1426-4d43-b5be-f0ecffe4a6c7";
-    private final static String VERTEXCACHE_SERVER_HOST = "localhost";
-    private final static int VERTEXCACHE_SERVER_PORT = 50505;
-    private final static boolean ENABLE_TLS = true;
-    private final static String TEST_TLS_CERT = "-----BEGIN CERTIFICATE-----\\nMIIDgDCCAmigAwIBAgIJAPjdssRy18Ij...<TRIMMED>";
-    private final static EncryptionMode ENABLE_PUBLIC_PRIVATE_KEY_USE = EncryptionMode.ASYMMETRIC;
-    private final static String TEST_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnwwKN2M7niJj+Vd0+w9Q\nbw5gw5TzAWw2PUBl5rnepgn5QrLmvQ0s4aoDL6JGsnyx+GpSo6UmkrvXknObW+AI\nUzsHLc7bFe9qe/urSvgLKzThl9kb/KN4NueDVJ+s33sDA9z+rRA9+sjp8Pc2Ycmm\nGzN1lC22KM+oPSxHQvRcT5dQ7u6NGg7pX81DJ1ZsCXReE3vGoCQRyJoRPdLA54oR\nNwC82/xKm9cRfghjRKqvnkmpS3FfCj0sLPy4W7ARBWU+RbhU0UmdUutB3Ce1LfIo\n6DpmfhgHJ1P1yd/0ic8qfkqjvwUoxRUhR5+dWIakA8KZYQ95gP6oawmXiu2PcPeV\nEwIDAQAB\n-----END PUBLIC KEY-----";
+    // === VertexCache Defaults ===
+    private String clientId;
+    private String clientToken;
+    private String serverHost;
+    private int serverPort;
+    private boolean enableTlsEncryption;
+
+    private EncryptionMode encryptionMode;
+    String sharedKey;
+    String publicKey;
 
 
+    // === Runtime Only ===
+    private transient VertexCacheSDK vertexCacheSDK;
 
-    private boolean enablePreload;
-    private int threads;
-    private int duration;
+    private VertexBenchConfig() throws Exception {
+       // this.buildSdk();
+    }
 
-    public VertexCacheSDK buildSdk() throws Exception {
-
-        // For now, needs refactoring
-
-        this.threads = 50;
-        this.duration = 30;
-
-        this.enablePreload = true;
-
+    private void buildSdk() throws Exception {
         ClientOption clientOption = new ClientOption();
-        clientOption.setClientId(CLIENT_ID);
-        clientOption.setClientToken(CLIENT_TOKEN);
-        clientOption.setServerHost(VERTEXCACHE_SERVER_HOST);
-        clientOption.setServerPort(VERTEXCACHE_SERVER_PORT);
-        clientOption.setEnableTlsEncryption(ENABLE_TLS);
-        clientOption.setTlsCertificate(TEST_TLS_CERT);
-        clientOption.setEncryptionMode(ENABLE_PUBLIC_PRIVATE_KEY_USE);
-        clientOption.setPublicKey(TEST_PUBLIC_KEY);
-
-        return new VertexCacheSDK(clientOption);
+        clientOption.setClientId(clientId);
+        clientOption.setClientToken(clientToken);
+        clientOption.setServerHost(serverHost);
+        clientOption.setServerPort(serverPort);
+        clientOption.setEnableTlsEncryption(enableTlsEncryption);
+        clientOption.setEncryptionMode(encryptionMode);
+        clientOption.setPublicKey(publicKey);
+        this.vertexCacheSDK = new VertexCacheSDK(clientOption);
+        this.vertexCacheSDK.openConnection();
     }
 
-    public boolean isEnablePreload() {
-        return enablePreload;
+    public static VertexBenchConfig fromJsonPayload(String jsonPayload) throws Exception {
+        Gson gson = new Gson();
+        JsonObject json = JsonParser.parseString(jsonPayload).getAsJsonObject();
+
+        VertexBenchConfig config = new VertexBenchConfig();
+
+
+        if (json.has("threads")) {
+            config.threads = json.get("threads").getAsInt();
+        }
+        if (json.has("duration")) {
+            config.duration = json.get("duration").getAsInt();
+        }
+        if (json.has("percentageReads")) {
+            config.percentageReads = json.get("percentageReads").getAsInt();
+        }
+        if (json.has("percentageWrites")) {
+            config.percentageWrites = json.get("percentageWrites").getAsInt();
+        }
+        if (json.has("totalKeyCount")) {
+            config.totalKeyCount = json.get("totalKeyCount").getAsInt();
+        }
+
+
+        if (json.has("maxValueSuffix")) {
+            config.maxValueSuffix = json.get("maxValueSuffix").getAsInt();
+        }
+        if (json.has("percentageScale")) {
+            config.percentageScale = json.get("percentageScale").getAsInt();
+        }
+
+
+        // General Config
+        if (json.has("clientId")) {
+            config.clientId = json.get("clientId").getAsString();
+        }
+        if (json.has("clientToken")) {
+            config.clientToken = json.get("clientToken").getAsString();
+        }
+        if (json.has("serverHost")) {
+            config.serverHost = json.get("serverHost").getAsString();
+        }
+        if (json.has("serverPort")) {
+            config.serverPort = json.get("serverPort").getAsInt();
+        }
+
+
+
+        // Preload cache with some test data when 'true'
+        if (json.has("enablePreload")) {
+            config.enablePreload = json.get("enablePreload").getAsBoolean();
+        }
+
+        // Enable/Disable TLS
+        if (json.has("enableTlsEncryption")) {
+            config.enableTlsEncryption = json.get("enableTlsEncryption").getAsBoolean();
+        }
+
+        // Message Encryption
+        if (json.has("encryptionMode")) {
+            config.encryptionMode = EncryptionMode.valueOf(json.get("encryptionMode").getAsString());
+        }
+        if (json.has("sharedKey")) {
+            config.publicKey = json.get("sharedKey").getAsString();
+        }
+        if (json.has("publicKey")) {
+            config.publicKey = json.get("publicKey").getAsString();
+        }
+
+        config.buildSdk();
+
+        return config;
     }
 
-    public int getThreads() {
-        return threads;
-    }
-
-    public int getDuration() {
-        return duration;
-    }
+    public VertexCacheSDK getVertexCacheSDK() { return vertexCacheSDK; }
+    public int getPercentageScale() { return percentageScale; }
+    public int getMaxValueSuffix() { return maxValueSuffix; }
+    public int getPercentageReads() { return percentageReads; }
+    public int getPercentageWrites() { return percentageWrites; }
+    public int getTotalKeyCount() { return totalKeyCount; }
+    public boolean isEnablePreload() { return enablePreload; }
+    public int getThreads() { return threads; }
+    public int getDuration() { return duration; }
+    public String getClientId() { return clientId; }
+    public String getClientToken() { return clientToken; }
+    public String getServerHost() { return serverHost; }
+    public int getServerPort() { return serverPort; }
+    public boolean isEnableTlsEncryption() { return enableTlsEncryption; }
+    public EncryptionMode getEncryptionMode() { return encryptionMode; }
+    public String getPublicKey() { return publicKey; }
 }

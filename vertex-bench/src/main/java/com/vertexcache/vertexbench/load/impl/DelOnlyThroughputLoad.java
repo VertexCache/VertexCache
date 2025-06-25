@@ -22,17 +22,17 @@ import com.vertexcache.vertexbench.util.VertexBenchConfig;
 
 import java.util.Random;
 
-public class SetOnlyThroughputLoad extends BaseThroughputLoad {
+public class DelOnlyThroughputLoad extends BaseThroughputLoad {
 
-    private static final LoadType TYPE = LoadType.SET_ONLY;
+    private static final LoadType TYPE = LoadType.DEL_ONLY;
 
-    public SetOnlyThroughputLoad(VertexBenchConfig vertexBenchConfig) {
+    public DelOnlyThroughputLoad(VertexBenchConfig vertexBenchConfig) {
         super(TYPE, vertexBenchConfig);
     }
 
+    @Override
     protected void performOperation(Random rand) {
         String key = BenchConstants.BENCH_KEY + rand.nextInt(getVertexBenchConfig().getTotalKeyCount());
-        String value = BenchConstants.BENCH_VALUE + rand.nextInt(getVertexBenchConfig().getMaxValueSuffix());
-        this.getVertexBenchConfig().getVertexCacheSDK().set(key, value, null, null);
+        this.getVertexBenchConfig().getVertexCacheSDK().del(key);
     }
 }

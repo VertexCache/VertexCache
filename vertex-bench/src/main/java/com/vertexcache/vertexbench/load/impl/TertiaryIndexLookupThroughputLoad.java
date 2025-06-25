@@ -15,21 +15,23 @@
  */
 package com.vertexcache.vertexbench.load.impl;
 
-import com.vertexcache.sdk.VertexCacheSDK;
 import com.vertexcache.vertexbench.load.BaseThroughputLoad;
+import com.vertexcache.vertexbench.load.LoadType;
+import com.vertexcache.vertexbench.util.BenchConstants;
+import com.vertexcache.vertexbench.util.VertexBenchConfig;
 
 import java.util.Random;
 
 public class TertiaryIndexLookupThroughputLoad extends BaseThroughputLoad {
 
-    private final static String TITLE = "Tertiary-Index-Lookup";
+    private static final LoadType TYPE = LoadType.TERTIARY_INDEX;
 
-    public TertiaryIndexLookupThroughputLoad(VertexCacheSDK sdk, int threads, int duration) {
-        super(TITLE, sdk, threads, duration);
+    public TertiaryIndexLookupThroughputLoad(VertexBenchConfig vertexBenchConfig) {
+        super(TYPE, vertexBenchConfig);
     }
 
-    protected void performOperation(VertexCacheSDK sdk, Random rand) throws Exception {
-        String idx2 = "bench:idx2:" + rand.nextInt(1000);
-        getSdk().getByTertiaryIndex(idx2);
+    protected void performOperation(Random rand) {
+        String idx2 = BenchConstants.BENCH_KEY_IDX2 + rand.nextInt(getVertexBenchConfig().getTotalKeyCount());
+        this.getVertexBenchConfig().getVertexCacheSDK().getByTertiaryIndex(idx2);
     }
 }
