@@ -31,6 +31,8 @@ cp -r ./vertex-cache-config ./dist-vertex-cache/vertex-cache-config
 cp ./vertex-cache-server/target/vertex-cache-server-*.jar ./dist-vertex-cache/vertex-cache-server.jar
 cp ./vertex-cache-console/target/vertex-cache-console-*.jar ./dist-vertex-cache/vertex-cache-console.jar
 
+cp ./VERSION ./dist-vertex-cache/VERSION
+
 echo
 echo "=============================================================================="
 echo "= Initialize dist folder for VertexBench                                     ="
@@ -40,5 +42,7 @@ rm -rf ./dist-vertex-bench
 
 cp -r ./etc/dist-shell-vertex-bench ./dist-vertex-bench
 cp ./vertex-bench/target/vertex-bench-*.jar ./dist-vertex-bench/vertex-bench.jar
+
+cp ./VERSION ./dist-vertex-bench/VERSION
 
 echo "DONE"
