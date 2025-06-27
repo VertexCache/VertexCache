@@ -19,15 +19,16 @@ Lightweight by design. Secure by default. High-performance TCP clients in your l
 
 ### Why VertexCache?
 
-- **Multi-Index Caching** — Query by primary, secondary, or tertiary keys
-- **Custom Binary Protocol (VCMP)** — Low-latency, wire-efficient messaging
-- **Encrypted Communication** — TLS, RSA, AES-GCM built-in
-- **Pluggable Eviction** — LRU, LFU, TinyLFU, ARC, FIFO, and more
-- **Minimal Config** — Simple `.env`-style setup, no YAML or XML required
-- **First-Class Developer SDKs** — Official high-performance **TCP clients**, not REST wrappers:
-  - **C#, Elixir, Go, Java, Kotlin, Node.js, PHP, Python, Ruby, Rust**
-- **Optional REST API** — Lightweight HTTP access for environments where TCP isn't suitable
-- **Fully Open-Source** — Apache 2.0 license
+- **Multi-Index Caching** — Query by primary, secondary, or tertiary keys  
+- **Multi-Tenant Support** — Isolate tenants and enforce role-based access with the AuthModule  
+- **Custom Binary Protocol (VCMP)** — Low-latency, wire-efficient messaging  
+- **Encrypted Communication** — TLS, RSA, AES-GCM built-in  
+- **Pluggable Eviction** — LRU, LFU, TinyLFU, ARC, FIFO, and more  
+- **Minimal Config** — Simple `.env`-style setup, no YAML or XML required  
+- **First-Class Developer SDKs** — Official high-performance **TCP clients**, not REST wrappers:  
+  - **C#, Elixir, Go, Java, Kotlin, Node.js, PHP, Python, Ruby, Rust**  
+- **Optional REST API** — Lightweight HTTP access for environments where TCP isn't suitable  
+- **Fully Open-Source** — Apache 2.0 license  
 
 ---
 
@@ -35,13 +36,14 @@ Lightweight by design. Secure by default. High-performance TCP clients in your l
 
 VertexCache is modular — extend functionality only when needed:
 
-- **AdminModule** — Powerful admin commands: `purge`, `metrics`, `config`, `reload`, `reset`, `session`, `shutdown`, `status`
-- **AlertModule** — Webhook alerts for external monitoring; integrates with SmartModule
-- **ClusterModule** — Hot-standby clustering for high availability
-- **MetricModule** — Real-time performance metrics and cache insights
-- **RateLimiterModule** — Built-in traffic rate limiting
-- **RestAPIModule** — Optional REST API for simplified HTTP integration
-- **SmartModule** — Advanced features including indexing and TTL optimization
+- **AdminModule** — Powerful admin commands: `purge`, `metrics`, `config`, `reload`, `reset`, `session`, `shutdown`, `status`  
+- **AlertModule** — Webhook alerts for external monitoring; integrates with SmartModule  
+- **AuthModule** — Secure, role-based client authentication with multi-tenant support  
+- **ClusterModule** — Hot-standby clustering for high availability  
+- **MetricModule** — Real-time performance metrics and cache insights  
+- **RateLimiterModule** — Built-in traffic rate limiting  
+- **RestAPIModule** — Optional REST API for simplified HTTP integration  
+- **SmartModule** — Advanced features including indexing and future TTL optimization  
 
 ---
 
@@ -54,24 +56,25 @@ Ideal for tuning configurations, validating cluster performance, and measuring t
 
 ### Get Started
 
-- [Download the latest release](https://github.com/jasonlam604/VertexCache/releases)
-- [Quick Start Guide](https://github.com/vertexcache/VertexCache/wiki/Quick-Start-Guide)
-- [Full Documentation & Wiki](https://github.com/vertexcache/VertexCache/wiki)
+- [Download the latest release](https://github.com/jasonlam604/VertexCache/releases)  
+- [Quick Start Guide](https://github.com/vertexcache/VertexCache/wiki/Quick-Start-Guide)  
+- [Full Documentation & Wiki](https://github.com/vertexcache/VertexCache/wiki)  
 
 ---
 
 ### Learn More
 
-- `.env`-style configuration for server, console, logging, and encryption
-- Built-in support for TLS + key-based encryption (RSA, AES-GCM)
-- Structured metrics with fine-grained logging via Log4J
-- Command set includes `PING`, `SET`, `GET`, `DEL`, and indexed lookups
-- Real-world benchmark data for eviction algorithms
-- [What’s Inside the Distribution](https://github.com/VertexCache/VertexCache/wiki/Installation#Whats-Inside)
+- `.env`-style configuration for server, console, logging, and encryption  
+- Built-in support for TLS + key-based encryption (RSA, AES-GCM)  
+- Multi-tenant isolation and role enforcement via the AuthModule  
+- Structured metrics with fine-grained logging via Log4J  
+- Command set includes `PING`, `SET`, `GET`, `DEL`, and indexed lookups  
+- Real-world benchmark data for eviction algorithms  
+- [What’s Inside the Distribution](https://github.com/VertexCache/VertexCache/wiki/Installation#Whats-Inside)  
 
 Explore these topics in detail in the [VertexCache Wiki](https://github.com/vertexcache/VertexCache/wiki)
 
 ---
 
 Maintained by **Jason Lam** – [github.com/jasonlam604](https://github.com/jasonlam604)  
-Licensed under the [Apache License 2.0](https://github.com/VertexCache/VertexCache/blob/main/LICENSE)
+Licensed under the [Apache License 2.0](https://github.com/VertexCache/VertexCache/blob/main/LICENSE)  
