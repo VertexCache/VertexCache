@@ -54,6 +54,21 @@ Ideal for tuning configurations, validating cluster performance, and measuring t
 
 ---
 
+### Built for Real-World Complexity
+
+Under the hood, VertexCache prioritizes interoperability, fault-tolerance, and security:
+
+- **Binary Protocol Enforcement** — VCMP ensures minimal overhead with predictable framing  
+- **Layered Encryption Stack** — Combine transport security (TLS) with message-layer RSA or AES-GCM  
+- **Cluster-Ready by Design** — Hot-standby, promotable secondaries with automatic or manual failover  
+- **Modular Activation** — Deploy only what you need: SmartModule, AdminModule, Rate Limiting, Alerts  
+- **Cross-Language SDK Consistency** — Identical protocol handling across all official TCP clients  
+- **Predictable Operational Behavior** — Console-driven diagnostics, detailed metrics, and admin commands  
+
+All engineered to deliver fast, controlled caching — without sacrificing security or operational clarity.
+
+---
+
 ### Get Started
 
 - [Download the latest release](https://github.com/jasonlam604/VertexCache/releases)  
