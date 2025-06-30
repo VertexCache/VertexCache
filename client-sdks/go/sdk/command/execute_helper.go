@@ -17,7 +17,7 @@ package command
 import (
 	"strings"
 
-	"github.com/vertexcache/client-sdks/go/sdk/comm"
+	"github.com/vertexcache/vertexcache/client-sdks/go/sdk/comm"
 )
 
 // ExecuteCommand is a reusable shared executor for all commands.

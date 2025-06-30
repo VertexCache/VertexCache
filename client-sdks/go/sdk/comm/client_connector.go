@@ -27,7 +27,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/vertexcache/client-sdks/go/sdk/model"
+	"github.com/vertexcache/vertexcache/client-sdks/go/sdk/model"
 )
 
 type ClientConnector struct {

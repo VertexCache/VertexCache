@@ -20,8 +20,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/vertexcache/client-sdks/go/sdk/comm"
-	"github.com/vertexcache/client-sdks/go/sdk/model"
+	"github.com/vertexcache/vertexcache/client-sdks/go/sdk/comm"
+	"github.com/vertexcache/vertexcache/client-sdks/go/sdk/model"
 )
 
 func TestClientConnector_IsConnected_Default(t *testing.T) {

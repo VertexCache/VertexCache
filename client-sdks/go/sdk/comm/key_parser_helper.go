@@ -21,7 +21,7 @@ import (
 	"encoding/base64"
 	"strings"
 
-	"github.com/vertexcache/client-sdks/go/sdk/model"
+	"github.com/vertexcache/vertexcache/client-sdks/go/sdk/model"
 )
 
 func ConfigPublicKeyIfEnabled(pemString string) (*x509.Certificate, error) {

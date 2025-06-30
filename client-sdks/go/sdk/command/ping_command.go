@@ -1,7 +1,7 @@
 package command
 
 import (
-	"github.com/vertexcache/client-sdks/go/sdk/comm"
+	"github.com/vertexcache/vertexcache/client-sdks/go/sdk/comm"
 	"strings"
 )
 

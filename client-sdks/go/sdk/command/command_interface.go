@@ -15,7 +15,7 @@
 package command
 
 import (
-	"github.com/vertexcache/client-sdks/go/sdk/comm"
+	"github.com/vertexcache/vertexcache/client-sdks/go/sdk/comm"
 )
 
 // CommandInterface represents a generic interface for all command types

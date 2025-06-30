@@ -17,9 +17,9 @@
 package sdk
 
 import (
-	"github.com/vertexcache/client-sdks/go/sdk/comm"
-	"github.com/vertexcache/client-sdks/go/sdk/command"
-	"github.com/vertexcache/client-sdks/go/sdk/model"
+	"github.com/vertexcache/vertexcache/client-sdks/go/sdk/comm"
+	"github.com/vertexcache/vertexcache/client-sdks/go/sdk/command"
+	"github.com/vertexcache/vertexcache/client-sdks/go/sdk/model"
 )
 
 // VertexCacheSDK serves as the main entry point for interacting with the VertexCache server.

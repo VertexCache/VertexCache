@@ -23,7 +23,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vertexcache/client-sdks/go/sdk/comm"
+	"github.com/vertexcache/vertexcache/client-sdks/go/sdk/comm"
 )
 
 func TestWriteThenReadFramedMessage(t *testing.T) {

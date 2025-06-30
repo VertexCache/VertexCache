@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/vertexcache/client-sdks/go/sdk/comm"
-	"github.com/vertexcache/client-sdks/go/sdk/model"
+	"github.com/vertexcache/vertexcache/client-sdks/go/sdk/comm"
+	"github.com/vertexcache/vertexcache/client-sdks/go/sdk/model"
 )
 
 // DelCommand handles the DEL command in VertexCache.

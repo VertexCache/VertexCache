@@ -23,7 +23,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/vertexcache/client-sdks/go/sdk/comm"
+	"github.com/vertexcache/vertexcache/client-sdks/go/sdk/comm"
 )
 
 var key = make([]byte, 32)

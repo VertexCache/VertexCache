@@ -20,7 +20,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/vertexcache/client-sdks/go/sdk/model"
+	"github.com/vertexcache/vertexcache/client-sdks/go/sdk/model"
 )
 
 func TestDefaults(t *testing.T) {

@@ -22,7 +22,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/vertexcache/client-sdks/go/sdk/model"
+	"github.com/vertexcache/vertexcache/client-sdks/go/sdk/model"
 )
 
 func CreateSecureSocket(opt model.ClientOption) (net.Conn, error) {
