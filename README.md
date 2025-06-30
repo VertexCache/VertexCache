@@ -5,7 +5,7 @@
 <h1 align="center">VertexCache</h1>
 
 > # 🚀 VertexCache is Now Live — June 30, 2025
-> ## VertexCache is officially live and ready for early adopters. We're actively refining features, SDKs, and documentation — contributions and feedback are welcome.
+> ## VertexCache is officially live and ready for early adopters. Actively refining features, SDKs, and documentation — contributions and feedback are welcome.
 
 ---
 
