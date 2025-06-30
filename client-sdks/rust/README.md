@@ -16,7 +16,7 @@ It communicates with the VertexCache server using a **raw TCP socket** and the b
 > Licensed under Apache 2.0, VertexCache is production-ready, customizable, and optimized for modern workloads.
 
 Full documentation, installation guides, and usage examples are available in the  
-[VertexCache Wiki – Client SDKs](https://github.com/VertexCache/VertexCache/wiki/Client-SDKs)
+[VertexCache Wiki – Client SDKs](https://github.com/VertexCache/VertexCache/wiki/Client-SDKs-Developer-Guide)
 
 ---
 
