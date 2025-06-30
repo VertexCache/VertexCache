@@ -20,7 +20,8 @@ Full documentation, installation guides, and usage examples are available in the
 
 ---
 
-This Client SDK is part of the [VertexCache](https://github.com/vertexcache/vertexcache) project.
+This SDK is part of the [VertexCache Project](https://github.com/VertexCache/VertexCache), with source code located here:  
+[https://github.com/VertexCache/VertexCache/tree/main/client-sdks/java](https://github.com/VertexCache/VertexCache/tree/main/client-sdks/java)
 
 Released under the [Apache License 2.0](https://github.com/VertexCache/VertexCache/blob/main/LICENSE)
 
