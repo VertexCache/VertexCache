@@ -4,6 +4,11 @@
 
 <h1 align="center">VertexCache</h1>
 
+> # 🚀 VertexCache is Now Live — June 30, 2025
+> ## VertexCache is officially live and ready for early adopters. We're actively refining features, SDKs, and documentation — contributions and feedback are welcome.
+
+---
+
 **VertexCache** is a fast, secure, open-source in-memory caching system built for modern workloads.  
 Designed as a developer-first solution, VertexCache combines multi-index lookups, wire-efficient messaging, and built-in encryption — all optimized for performance and control.
 
