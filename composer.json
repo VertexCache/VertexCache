@@ -1,0 +1,12 @@
+{
+  "name": "vertexcache/sdk",
+  "description": "VertexCache PHP SDK — Mono-repo placeholder",
+  "autoload": {
+    "psr-4": {
+      "VertexCache\\": "client-sdks/php/sdk/VertexCache/"
+    }
+  },
+  "require": {
+    "php": "^8.2"
+  }
+}
