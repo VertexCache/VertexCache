@@ -1,0 +1,28 @@
+# Exclude tests
+tests/
+test/
+__tests__/
+
+# Node modules (should never get published anyway, safety net)
+node_modules/
+
+# Docs, examples, misc
+*.md
+docs/
+examples/
+
+# Version control
+.git/
+.gitignore
+
+# Editor/IDE files
+*.swp
+*.swo
+*.log
+*.DS_Store
+*.idea/
+.vscode/
+
+# Build artifacts (if applicable)
+dist/
+build/
