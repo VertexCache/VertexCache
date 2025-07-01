@@ -25,7 +25,11 @@ defmodule VertexcacheSdk.MixProject do
       start_permanent: Mix.env() == :prod,
       elixirc_paths: elixirc_paths(Mix.env()),
       test_paths: ["tests"],
-      deps: deps()
+      deps: deps(),
+      description: "Elixir SDK for VertexCache — Secure, Fast, Multi-Index Caching Client",
+      package: package(),
+      licenses: ["Apache-2.0"],
+      source_url: "https://github.com/vertexcache/vertexcache"
     ]
   end
 
@@ -43,5 +47,16 @@ defmodule VertexcacheSdk.MixProject do
       {:meck, "~> 0.9", only: :test}
     ]
   end
-end
 
+  defp package do
+    [
+      name: "vertexcache_sdk",
+      maintainers: ["Jason Lam"],
+      licenses: ["Apache-2.0"],
+      links: %{
+        "GitHub" => "https://github.com/vertexcache/vertexcache"
+      },
+      files: ~w(sdk mix.exs README.md LICENSE)
+    ]
+  end
+end
