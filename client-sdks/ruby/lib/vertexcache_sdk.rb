@@ -14,6 +14,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # ------------------------------------------------------------------------------
 
+require_relative 'vertexcache/version'
 require_relative 'vertexcache/comm/client_connector'
 require_relative 'vertexcache/command/impl/ping_command'
 require_relative 'vertexcache/command/impl/set_command'
