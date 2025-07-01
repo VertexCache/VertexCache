@@ -1,19 +1,27 @@
-[tool.poetry]
+[project]
 name = "vertexcache-sdk"
 version = "1.0.0"
-description = "Official Python SDK for VertexCache"
-authors = ["Jason Lam"]
-license = "Apache-2.0"
+description = "Official Python Client SDK for VertexCache"
 readme = "README.md"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Jason Lam"}]
+keywords = ["vertexcache", "cache", "sdk", "client"]
+requires-python = ">=3.9,<4.0"
+dependencies = [
+    "cryptography>=45.0.3; python_version != '3.9.0' and python_version != '3.9.1'"
+]
+
+[project.urls]
+Homepage = "https://github.com/VertexCache/VertexCache"
+Repository = "https://github.com/VertexCache/VertexCache/tree/main/client-sdks/python"
+Documentation = "https://vertexcache.com/docs"
+
+[tool.poetry]
 packages = [{ include = "sdk" }]
-
-[tool.poetry.dependencies]
-python = ">=3.9,<4.0"
-cryptography = { version = "^45.0.3", markers = "python_version != '3.9.0' and python_version != '3.9.1'" }
-
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.0"
 
-[tool.group.poetry.dev-dependencies]
-pytest = "^8.2.0"
+[build-system]
+requires = ["poetry-core>=1.5.0"]
+build-backend = "poetry.core.masonry.api"
