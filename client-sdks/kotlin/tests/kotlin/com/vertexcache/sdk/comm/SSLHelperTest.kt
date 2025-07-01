@@ -79,10 +79,7 @@ class SSLHelperTest {
 
     @Test
     fun createInsecureSocketFactory_connectsToLocalhostTLS_ifEnabled() {
-        if (!enableLiveTLS) {
-            println("⚠️  Skipping live TLS test (disabled via enableLiveTLS = false)")
-            return
-        }
+        Assumptions.assumeTrue(System.getenv("ENABLE_LIVE_TLS_TESTS") == "true")
 
         val factory = SSLHelper.createInsecureSocketFactory()
         val socket = factory.createSocket("localhost", 50505) as? Socket
