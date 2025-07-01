@@ -44,7 +44,8 @@ defmodule VertexcacheSdk.MixProject do
 
   defp deps do
     [
-      {:meck, "~> 0.9", only: :test}
+      {:meck, "~> 0.9", only: :test},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
 
