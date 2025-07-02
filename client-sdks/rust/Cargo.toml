@@ -5,7 +5,9 @@ edition = "2021"
 authors = ["Jason Lam"]
 license = "Apache-2.0"
 description = "VertexCache Rust SDK"
-repository = "https://github.com/vertexcache/client-sdks"
+homepage = "https://www.vertexcache.com"
+documentation = "https://github.com/VertexCache/VertexCache/wiki/VertexCache-Client-SDK-for-Rust"
+repository = "https://github.com/VertexCache/VertexCache/tree/main/client-sdks/rust"
 
 [lib]
 path = "sdk/lib.rs"
