@@ -18,7 +18,6 @@ use vertexcache_sdk::comm::ssl_helper::SSLHelper;
 use vertexcache_sdk::model::vertex_cache_sdk_exception::VertexCacheSdkException;
 
 use std::net::TcpStream;
-use native_tls::TlsConnector;
 
 const VALID_PEM_CERT: &str = r#"-----BEGIN CERTIFICATE-----
 MIIDgDCCAmigAwIBAgIJAPjdssRy18IjMA0GCSqGSIb3DQEBDAUAMG4xEDAOBgNV

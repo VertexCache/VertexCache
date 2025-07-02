@@ -13,11 +13,8 @@
 // ------------------------------------------------------------------------------
 
 use crate::command::command::Command;
-use crate::command::command_type::CommandType;
 use crate::command::impls::{
-    del_command::DelCommand, get_command::GetCommand,
-    get_secondary_idx_one_command::GetSecondaryIdxOneCommand,
-    get_secondary_idx_two_command::GetSecondaryIdxTwoCommand,
+    del_command::DelCommand,
     ping_command::PingCommand, set_command::SetCommand,
 };
 use crate::comm::client_connector::ClientConnector;
