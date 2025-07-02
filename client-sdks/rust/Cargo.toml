@@ -6,14 +6,16 @@ authors = ["Jason Lam"]
 license = "Apache-2.0"
 description = "VertexCache Rust SDK"
 homepage = "https://www.vertexcache.com"
-documentation = "https://github.com/VertexCache/VertexCache/wiki/VertexCache-Client-SDK-for-Rust"
 repository = "https://github.com/VertexCache/VertexCache/tree/main/client-sdks/rust"
+documentation = "https://github.com/VertexCache/VertexCache/wiki/VertexCache-Client-SDK-for-Rust"
+readme = "README.md"
+keywords = ["vertexcache", "sdk", "cache", "client", "high-performance"]
+categories = ["network-programming", "caching", "data-structures"]
 
 [lib]
 path = "sdk/lib.rs"
 
 [dependencies]
-serial_test = "=3.2.0"
 thiserror = "1.0"
 aes-gcm = "0.10"
 aes = "0.8"

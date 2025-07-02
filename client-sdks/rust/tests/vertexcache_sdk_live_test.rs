@@ -54,7 +54,8 @@ fn get_test_client_option() -> ClientOption {
 #[serial_test::serial]
 fn test_01_ping_should_succeed() {
     if env::var("VC_LIVE_TLS_ASYMMETRIC_TEST").unwrap_or_default() != "true" {
-        return;
+        eprintln!("Skipping live test, set VC_LIVE_TLS_ASYMMETRIC_TEST=true to enable.");
+       return;
     }
 
     let mut sdk = VertexCacheSDK::new(get_test_client_option());
@@ -68,6 +69,11 @@ fn test_01_ping_should_succeed() {
 #[test]
 #[serial_test::serial]
 fn test_02_set_should_succeed() {
+    if env::var("VC_LIVE_TLS_ASYMMETRIC_TEST").unwrap_or_default() != "true" {
+        eprintln!("Skipping live test, set VC_LIVE_TLS_ASYMMETRIC_TEST=true to enable.");
+       return;
+    }
+
     let mut sdk = VertexCacheSDK::new(get_test_client_option());
     sdk.open_connection().unwrap();
     let result = sdk.set("test-key", "value-123", None, None);
@@ -83,6 +89,11 @@ fn test_02_set_should_succeed() {
 #[test]
 #[serial_test::serial]
 fn test_03_get_should_return_set_value() {
+    if env::var("VC_LIVE_TLS_ASYMMETRIC_TEST").unwrap_or_default() != "true" {
+        eprintln!("Skipping live test, set VC_LIVE_TLS_ASYMMETRIC_TEST=true to enable.");
+       return;
+    }
+
     let mut sdk = VertexCacheSDK::new(get_test_client_option());
     sdk.open_connection().unwrap();
     sdk.set("test-key", "value-123", None, None);
@@ -95,6 +106,11 @@ fn test_03_get_should_return_set_value() {
 #[test]
 #[serial_test::serial]
 fn test_04_del_should_remove_key() {
+    if env::var("VC_LIVE_TLS_ASYMMETRIC_TEST").unwrap_or_default() != "true" {
+        eprintln!("Skipping live test, set VC_LIVE_TLS_ASYMMETRIC_TEST=true to enable.");
+       return;
+    }
+
     let mut sdk = VertexCacheSDK::new(get_test_client_option());
     sdk.open_connection().unwrap();
     sdk.set("delete-key", "to-be-deleted", None, None);
@@ -109,6 +125,11 @@ fn test_04_del_should_remove_key() {
 #[test]
 #[serial_test::serial]
 fn test_05_get_missing_key_should_return_nil() {
+    if env::var("VC_LIVE_TLS_ASYMMETRIC_TEST").unwrap_or_default() != "true" {
+        eprintln!("Skipping live test, set VC_LIVE_TLS_ASYMMETRIC_TEST=true to enable.");
+       return;
+    }
+
     let mut sdk = VertexCacheSDK::new(get_test_client_option());
     sdk.open_connection().unwrap();
     let result = sdk.get("nonexistent-key");
@@ -120,6 +141,11 @@ fn test_05_get_missing_key_should_return_nil() {
 #[test]
 #[serial_test::serial]
 fn test_06_set_secondary_index_should_succeed() {
+    if env::var("VC_LIVE_TLS_ASYMMETRIC_TEST").unwrap_or_default() != "true" {
+        eprintln!("Skipping live test, set VC_LIVE_TLS_ASYMMETRIC_TEST=true to enable.");
+       return;
+    }
+
     let mut sdk = VertexCacheSDK::new(get_test_client_option());
     sdk.open_connection().unwrap();
     let result = sdk.set("key-sec", "val-sec", Some("sec-idx".to_string()), None);
@@ -131,6 +157,11 @@ fn test_06_set_secondary_index_should_succeed() {
 #[test]
 #[serial_test::serial]
 fn test_07_set_secondary_and_tertiary_index_should_succeed() {
+    if env::var("VC_LIVE_TLS_ASYMMETRIC_TEST").unwrap_or_default() != "true" {
+        eprintln!("Skipping live test, set VC_LIVE_TLS_ASYMMETRIC_TEST=true to enable.");
+       return;
+    }
+
     let mut sdk = VertexCacheSDK::new(get_test_client_option());
     sdk.open_connection().unwrap();
     let result = sdk.set("key-ter", "val-ter", Some("sec-idx".to_string()), Some("ter-idx".to_string()));
@@ -142,6 +173,11 @@ fn test_07_set_secondary_and_tertiary_index_should_succeed() {
 #[test]
 #[serial_test::serial]
 fn test_08_get_by_secondary_should_return_value() {
+    if env::var("VC_LIVE_TLS_ASYMMETRIC_TEST").unwrap_or_default() != "true" {
+        eprintln!("Skipping live test, set VC_LIVE_TLS_ASYMMETRIC_TEST=true to enable.");
+       return;
+    }
+
     let mut sdk = VertexCacheSDK::new(get_test_client_option());
     sdk.open_connection().unwrap();
     sdk.set("key-sec", "val-sec", Some("sec-idx".to_string()), None);
@@ -154,6 +190,11 @@ fn test_08_get_by_secondary_should_return_value() {
 #[test]
 #[serial_test::serial]
 fn test_09_get_by_tertiary_should_return_value() {
+    if env::var("VC_LIVE_TLS_ASYMMETRIC_TEST").unwrap_or_default() != "true" {
+        eprintln!("Skipping live test, set VC_LIVE_TLS_ASYMMETRIC_TEST=true to enable.");
+       return;
+    }
+
     let mut sdk = VertexCacheSDK::new(get_test_client_option());
     sdk.open_connection().unwrap();
     sdk.set("key-ter", "val-ter", Some("sec-idx".to_string()), Some("ter-idx".to_string()));

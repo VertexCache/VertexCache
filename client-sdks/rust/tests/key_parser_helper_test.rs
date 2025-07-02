@@ -13,14 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // ------------------------------------------------------------------------------
-use vertexcache_sdk::comm::key_parser_helper::{
-    config_public_key_if_enabled, config_shared_key_if_enabled,
-};
-
-use rsa::pkcs8::DecodePublicKey;
-use rsa::{Pkcs1v15Encrypt, RsaPublicKey};
-use rand::thread_rng;
-use vertexcache_sdk::model::vertex_cache_sdk_exception;
+use vertexcache_sdk::comm::key_parser_helper::KeyParserHelper;
+use vertexcache_sdk::model::vertex_cache_sdk_exception::VertexCacheSdkException;
 
 const VALID_PEM: &str = "
 -----BEGIN PUBLIC KEY-----
@@ -39,57 +33,58 @@ const VALID_BASE64: &str = "YWJjZGVmZ2hpamtsbW5vcA=="; // "abcdefghijklmnop"
 const INVALID_BASE64: &str = "%%%INVALID%%%";
 
 #[test]
-fn test_config_public_key_if_enabled_valid() {
-    let result = config_public_key_if_enabled(VALID_PEM);
+fn test_public_key_as_bytes_valid() {
+    let result = KeyParserHelper::public_key_as_bytes(VALID_PEM);
     assert!(result.is_ok());
     assert!(!result.unwrap().is_empty());
 }
 
 #[test]
-fn test_config_public_key_if_enabled_invalid() {
-    let err = config_public_key_if_enabled(INVALID_PEM).unwrap_err();
+fn test_public_key_as_bytes_invalid() {
+    let err = KeyParserHelper::public_key_as_bytes(INVALID_PEM).unwrap_err();
     assert_eq!(err.message(), "Invalid public key");
 }
 
 #[test]
-fn test_config_shared_key_if_enabled_valid() {
-    let result = config_shared_key_if_enabled(VALID_BASE64).unwrap();
-    assert_eq!(result.len(), 16);
+fn test_public_key_as_object_valid() {
+    let result = KeyParserHelper::public_key_as_object(VALID_PEM);
+    assert!(result.is_ok());
+}
+
+#[test]
+fn test_public_key_as_object_invalid() {
+    let err = KeyParserHelper::public_key_as_object(INVALID_PEM).unwrap_err();
+    assert_eq!(err.message(), "Invalid public key");
+}
+
+#[test]
+fn test_encrypt_with_rsa_valid() {
+    let result = KeyParserHelper::encrypt_with_rsa(VALID_PEM, b"VertexTest");
+    assert!(result.is_ok());
+    assert!(!result.unwrap().is_empty());
+}
+
+#[test]
+fn test_encrypt_with_rsa_invalid_pem() {
+    let err = KeyParserHelper::encrypt_with_rsa(INVALID_PEM, b"VertexTest").unwrap_err();
+    assert_eq!(err.message(), "Invalid public key");
+}
+
+#[test]
+fn test_shared_key_as_bytes_valid() {
+    let result = KeyParserHelper::shared_key_as_bytes(VALID_BASE64).unwrap();
     assert_eq!(result, b"abcdefghijklmnop");
 }
 
 #[test]
-fn test_config_shared_key_if_enabled_invalid() {
-    let err = config_shared_key_if_enabled(INVALID_BASE64).unwrap_err();
+fn test_shared_key_as_bytes_invalid_format() {
+    let err = KeyParserHelper::shared_key_as_bytes(INVALID_BASE64).unwrap_err();
     assert_eq!(err.message(), "Invalid shared key");
 }
 
 #[test]
-fn test_public_key_can_encrypt_data() {
-    let key_bytes = config_public_key_if_enabled(VALID_PEM).unwrap();
-    let public_key = rsa::RsaPublicKey::from_public_key_der(&key_bytes).unwrap();
-    let padding = rsa::Pkcs1v15Encrypt;
-    let mut rng = rand::thread_rng();
-    let encrypted = public_key.encrypt(&mut rng, padding, b"VertexTest").unwrap();
-    assert!(!encrypted.is_empty());
-}
-
-#[test]
-fn test_config_public_key_if_enabled_empty() {
-    let err = config_public_key_if_enabled("").unwrap_err();
-    assert_eq!(err.message(), "Invalid public key");
-}
-
-#[test]
-fn test_config_shared_key_if_enabled_empty() {
-    let err = config_shared_key_if_enabled("").unwrap_err();
+fn test_shared_key_as_bytes_invalid_length() {
+    let invalid_key = base64::encode(b"shortkey"); // Not 16 or 32 bytes
+    let err = KeyParserHelper::shared_key_as_bytes(&invalid_key).unwrap_err();
     assert_eq!(err.message(), "Invalid shared key");
-}
-
-#[test]
-fn test_shared_key_round_trip() {
-    let key = b"1234567890ABCDEF";
-    let encoded = base64::encode(key);
-    let decoded = config_shared_key_if_enabled(&encoded).unwrap();
-    assert_eq!(decoded, key);
 }
