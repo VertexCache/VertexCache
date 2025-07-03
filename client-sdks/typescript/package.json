@@ -1,0 +1,35 @@
+{
+  "name": "vertexcache-sdk",
+  "version": "1.0.0",
+  "description": "Official TypeScript Client SDK for VertexCache — a high-performance in-memory caching system with multi-level indexing and encrypted communication.",
+  "main": "dist/vertexcache-sdk.js",
+  "types": "dist/vertexcache-sdk.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VertexCache/VertexCache.git"
+  },
+  "keywords": [
+    "vertexcache",
+    "cache",
+    "in-memory-cache",
+    "typescript-sdk",
+    "vcmp",
+    "tcp-client"
+  ],
+  "author": "Jason Lam <contact@vertexcache.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/vertexcache/vertexcache/issues"
+  },
+  "homepage": "https://www.vertexcache.com",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.4.0"
+  }
+}
