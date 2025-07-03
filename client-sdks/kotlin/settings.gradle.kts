@@ -12,4 +12,4 @@ plugins {
 }
 
 rootProject.name = "vertexcache-sdk"
-include("lib")
+

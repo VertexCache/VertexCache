@@ -33,7 +33,15 @@ sourceSets {
     }
 }
 
-// ➤ Top-level publishing block
+tasks.register<Jar>("sourcesJar") {
+    from(sourceSets.main.get().allSource)
+    archiveClassifier.set("sources")
+}
+
+tasks.register<Jar>("javadocJar") {
+    archiveClassifier.set("javadoc")
+}
+
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
@@ -41,6 +49,9 @@ publishing {
             groupId = "com.vertexcache"
             artifactId = "vertexcache-sdk-kotlin"
             version = project.version.toString()
+
+            artifact(tasks["sourcesJar"])
+            artifact(tasks["javadocJar"])
 
             pom {
                 name.set("VertexCache Kotlin SDK")
@@ -92,5 +103,6 @@ publishing {
 
 signing {
     useGpgCmd()
+    isRequired = gradle.taskGraph.hasTask("publish")
     sign(publishing.publications["mavenJava"])
 }
