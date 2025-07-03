@@ -1,11 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <PackageId>VertexCacheSdk</PackageId>
     <Version>1.0.0</Version>
     <Authors>Jason Lam</Authors>
     <Company>VertexCache</Company>
     <Description>VertexCache SDK for .NET</Description>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/VertexCache/VertexCache</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/VertexCache/VertexCache/tree/main/client-sdks/csharp</PackageProjectUrl>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
