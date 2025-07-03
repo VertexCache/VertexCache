@@ -1,0 +1,31 @@
+# Crystal build artifacts
+*.dwarf
+*.o
+*.a
+*.so
+*.dSYM
+*.exe
+*.dll
+*.dylib
+
+# Crystal binary output
+/bin/
+/lib/
+/docs/
+
+# Shards dependencies
+/lib/
+
+# Compiled binaries (if you build local executables)
+*.out
+
+# Cache files
+/.shards/
+/.crystal/
+
+# Editor/OS files
+*~
+*.swp
+.DS_Store
+.idea/
+.vscode/

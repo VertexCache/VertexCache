@@ -1,0 +1,19 @@
+name: vertexcache_sdk
+version: 1.0.0
+description: Official Crystal Client SDK for VertexCache — a high-performance in-memory caching system with multi-level indexing and encrypted communication.
+license: Apache-2.0
+
+authors:
+  - Jason Lam <contact@vertexcache.com>
+
+homepage: https://www.vertexcache.com
+repository: https://github.com/VertexCache/VertexCache/tree/main/client-sdks/crystal
+documentation: https://github.com/vertexcache/vertexcache/wiki/Client-SDKs-Developer-Guide
+
+crystal: ">= 1.9.0"
+
+dependencies:
+
+targets:
+  vertexcache_sdk:
+    main: sdk/vertexcache_sdk.cr
